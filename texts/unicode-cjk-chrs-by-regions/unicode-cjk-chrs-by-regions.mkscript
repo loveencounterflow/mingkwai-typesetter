@@ -1,0 +1,12 @@
+█ 2 █ <document(code'<<(\\$>>''eval block''<<\\$)>>')¶
+(code'<<($>>''eval block''<<$)>>')¶
+!
+
+█ 6 █ IGNORED: [ '#',
+  'info',
+  'encountered `<<!end>>` on line #6',
+  { line_nr: 6,
+    col_nr: 7,
+    markup: '',
+    stamped: true,
+    badge: '$process_end_command' } ]>

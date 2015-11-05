@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+cd $DIR
+
+./build-md-with-rsg-chunks                                          && \
+  echo 'ok' && \
+  pandoc
+    --data-dir=/Users/flow/.pandoc/                                 \
+    --template=flow.latex                                           \
+    -S                                                              \
+    --css=./buttondown.css                                          \
+    --from=markdown                                                 \
+    --to=latex                                                      \
+    --standalone                                                    \
+    ./email-to-leonardo-boiko.md                                    #> \
+  #   ./email-to-leonardo-boiko.tex
+    #                              && \
+    # xelatex email-to-leonardo-boiko.tex
+
+  # pandoc --data-dir=/Users/flow/.pandoc/                            \
+  #   -S                                                              \
+  #   --css=./buttondown.css                                          \
+  #   --from=markdown                                                 \
+  #   --to=latex                                                      \
+  #   --standalone                                                    \
+  #   ./email-to-leonardo-boiko-WITH-RSG-CHUNKS.md                    \
+  #   # --latex-engine=xelatex                                          \
+  #   -o ./email-to-leonardo-boiko.tex                                && \
