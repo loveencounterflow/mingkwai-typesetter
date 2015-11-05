@@ -1,0 +1,6 @@
+{
+  "sysid": "flows-Mac-Pro.local:darwin",
+  "flows-Mac-Pro.local:darwin": {
+    "texlive-package-versions/fontspec": "2.3.0"
+  }
+}
