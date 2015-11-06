@@ -38,15 +38,15 @@
     "commander": "^2.9.0",
     "cxltx-styles": "^1.0.0",
     "htmlparser2": "^3.8.3",
-    "markdown-it": "^4.4.0",
-    "markdown-it-container": "^1.0.0",
-    "markdown-it-footnote": "^1.0.0",
-    "markdown-it-mark": "^1.0.0",
+    "markdown-it": "^5.0.1",
+    "markdown-it-container": "^2.0.0",
+    "markdown-it-footnote": "^2.0.0",
+    "markdown-it-mark": "^2.0.0",
     "markdown-it-regexp": "^0.4.0",
     "markdown-it-sub": "^1.0.0",
     "markdown-it-sup": "^1.0.0",
-    "pipedreams": "^0.2.32",
-    "parse5": "^1.5.0"
+    "parse5": "^1.5.0",
+    "pipedreams": "^0.2.32"
   },
   "devDependencies": {
     "gulp": "^3.9.0",

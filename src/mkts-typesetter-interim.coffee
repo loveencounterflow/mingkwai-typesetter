@@ -770,6 +770,29 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
     else if select event, '.', [ 'text', 'raw', ] then send event[ 2 ]
     else warn "unhandled event: #{JSON.stringify event}" unless is_stamped event
 
+
+#===========================================================================================================
+#
+#-----------------------------------------------------------------------------------------------------------
+@tex_from_md = ( source, settings, handler ) ->
+  throw new Error "not yet implemented"
+  switch arity = arguments.length
+    when 2
+      handler   = settings
+      settings  = {}
+    when 3 then null
+    else throw new Error "expected 2 or 3 arguments, got #{arity}"
+  # bare  = settings[ 'bare' ] ? no
+  input = @create_mdreadstream source
+  Z     = []
+  input.pipe $ ( event, send ) =>
+    # debug '©G3QXt', event
+    Z.push event unless bare and @select event, [ '<', '>', ], 'document'
+  input.on 'end', -> handler null, Z
+  input.resume()
+  return null
+
+
 #===========================================================================================================
 # PDF FROM MD
 #-----------------------------------------------------------------------------------------------------------

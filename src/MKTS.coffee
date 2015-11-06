@@ -1000,7 +1000,7 @@ tracker_pattern = /// ^
 
 #-----------------------------------------------------------------------------------------------------------
 @_ESC.escape_html_comments_raw_spans_and_commands = ( S, text ) =>
-  debug '©II6XI', rpr text
+  # debug '©II6XI', rpr text
   R = text
   R = @_ESC.escape_escape_chrs R
   #.........................................................................................................
@@ -1208,6 +1208,27 @@ tracker_pattern = /// ^
       stream.write md_source
 
 #===========================================================================================================
+#
+#-----------------------------------------------------------------------------------------------------------
+@mkts_events_from_md = ( source, settings, handler ) ->
+  switch arity = arguments.length
+    when 2
+      handler   = settings
+      settings  = {}
+    when 3 then null
+    else throw new Error "expected 2 or 3 arguments, got #{arity}"
+  bare  = settings[ 'bare' ] ? no
+  input = @create_mdreadstream source
+  Z     = []
+  input.pipe $ ( event, send ) =>
+    # debug '©G3QXt', event
+    Z.push event unless bare and @select event, [ '<', '>', ], 'document'
+  input.on 'end', -> handler null, Z
+  input.resume()
+  return null
+
+
+#===========================================================================================================
 # STREAM CREATION
 #-----------------------------------------------------------------------------------------------------------
 @create_mdreadstream = ( md_source, settings ) ->
@@ -1242,10 +1263,10 @@ tracker_pattern = /// ^
     @_ESC.initialize S
     ### TAINT consider to make `<<!end>>` special and detect it before parsing ###
     md_source   = @_ESC.escape_html_comments_raw_spans_and_commands S, md_source
-    urge 'registry    ', S[ '_ESC' ][ 'registry' ]
-    urge 'index       ', S[ '_ESC' ][ 'index' ]
+    # urge 'registry    ', S[ '_ESC' ][ 'registry' ]
+    # urge 'index       ', S[ '_ESC' ][ 'index' ]
     tokens      = md_parser.parse md_source, S.environment
-    debug '©iOCip', S.environment
+    # debug '©iOCip', S.environment
     # process.exit()
     # @set_meta R, 'environment', environment
     confluence.write token for token in tokens
