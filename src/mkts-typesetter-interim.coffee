@@ -944,28 +944,6 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
 #===========================================================================================================
 #
 #-----------------------------------------------------------------------------------------------------------
-@tex_from_md = ( source, settings, handler ) ->
-  throw new Error "not yet implemented"
-  switch arity = arguments.length
-    when 2
-      handler   = settings
-      settings  = {}
-    when 3 then null
-    else throw new Error "expected 2 or 3 arguments, got #{arity}"
-  # bare  = settings[ 'bare' ] ? no
-  input = @create_mdreadstream source
-  Z     = []
-  input.pipe $ ( event, send ) =>
-    # debug '©G3QXt', event
-    Z.push event unless bare and @select event, [ '<', '>', ], 'document'
-  input.on 'end', -> handler null, Z
-  input.resume()
-  return null
-
-
-#===========================================================================================================
-#
-#-----------------------------------------------------------------------------------------------------------
 @create_texwritestream = ( layout_info, input ) ->
   ### TAINT get state via return value of MKTS.create_mdreadstream ###
   S =
@@ -1004,7 +982,7 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
     .pipe @MKTX.CLEANUP.$remove_empty_texts               S
     .pipe MKTS.$close_dangling_open_tags                  S
     .pipe MKTS.$show_mktsmd_events                        S
-    .pipe MKTS.$write_mktscript                           S
+    # .pipe MKTS.$write_mktscript                           S
     .pipe @MKTX.$show_unhandled_tags                      S
     .pipe @$filter_tex                                    S
     .pipe MKTS.$show_illegal_chrs                         S
@@ -1013,17 +991,19 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
   # input.resume()
   return R
 
+#-----------------------------------------------------------------------------------------------------------
+@_handle_error = ( error ) =>
+  alert error[ 'message' ]
+  stack = error[ 'stack' ] ? "(no stacktrace available)"
+  whisper '\n' + ( stack.split '\n' )[ .. 10 ].join '\n'
+  whisper '...'
+  process.exit 1
+
+
 #===========================================================================================================
 # PDF FROM MD
 #-----------------------------------------------------------------------------------------------------------
 @pdf_from_md = ( source_route, handler ) ->
-  #---------------------------------------------------------------------------------------------------------
-  on_error = ( error ) =>
-    alert error[ 'message' ]
-    stack = error[ 'stack' ] ? "(no stacktrace available)"
-    whisper '\n' + ( stack.split '\n' )[ .. 10 ].join '\n'
-    whisper '...'
-    process.exit 1
   #---------------------------------------------------------------------------------------------------------
   f = => step ( resume ) =>
     handler                ?= ->
@@ -1047,7 +1027,31 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
       .pipe tex_output
     input.resume()
   #---------------------------------------------------------------------------------------------------------
-  D.run f, on_error
+  D.run f, @_handle_error
+
+#-----------------------------------------------------------------------------------------------------------
+@tex_from_md = ( text, settings, handler ) ->
+  switch arity = arguments.length
+    when 2
+      handler   = settings
+      settings  = {}
+    when 3 then null
+    else throw new Error "expected 2 or 3 arguments, got #{arity}"
+  #.........................................................................................................
+  source_route  = settings[ 'source-route' ] ? '<STRING>'
+  layout_info   = HELPERS.new_layout_info @options, source_route, false
+  input         = MKTS.create_mdreadstream text
+  f             = -> input.resume()
+  tex_stream    = @create_texwritestream layout_info, input
+  Z             = []
+  #.........................................................................................................
+  tex_stream.pipe $ ( event, send ) =>
+    debug '©G3QXt', rpr event
+    Z.push event
+  input.on 'end', -> handler null, Z.join ''
+  #.........................................................................................................
+  D.run f, @_handle_error
+  return null
 
 
 ############################################################################################################
