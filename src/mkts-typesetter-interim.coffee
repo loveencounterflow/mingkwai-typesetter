@@ -36,6 +36,7 @@ options_route             = '../options.coffee'
 { CACHE, OPTIONS, }       = require './OPTIONS'
 SEMVER                    = require 'semver'
 #...........................................................................................................
+XNCHR                     = require './XNCHR'
 MKTS                      = require './MKTS'
 hide                      = MKTS.hide.bind        MKTS
 copy                      = MKTS.copy.bind        MKTS
@@ -189,6 +190,7 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
 #
 #-----------------------------------------------------------------------------------------------------------
 @MKTX =
+  TEX:        {}
   DOCUMENT:   {}
   COMMAND:    {}
   REGION:     {}
@@ -197,6 +199,133 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
   MIXED:      {}
   CLEANUP:    {}
 
+#-----------------------------------------------------------------------------------------------------------
+@MKTX.TEX._tex_escape_replacements = [
+  [ /// \x01        ///g,  '\x01\x02',              ]
+  [ /// \x5c        ///g,  '\x01\x01',              ]
+  [ ///  \{         ///g,  '\\{',                   ]
+  [ ///  \}         ///g,  '\\}',                   ]
+  [ ///  \$         ///g,  '\\$',                   ]
+  [ ///  \#         ///g,  '\\#',                   ]
+  [ ///  %          ///g,  '\\%',                   ]
+  [ ///  _          ///g,  '\\_',                   ]
+  [ ///  \^         ///g,  '\\textasciicircum{}',   ]
+  [ ///  ~          ///g,  '\\textasciitilde{}',    ]
+  [ ///  &          ///g,  '\\&',                   ]
+  [ /// \x01\x01    ///g,  '\\textbackslash{}',     ]
+  [ /// \x01\x02    ///g,  '\x01',                  ]
+  ]
+
+#-----------------------------------------------------------------------------------------------------------
+@MKTX.TEX.escape_for_tex = ( text ) ->
+  R = text
+  for [ pattern, replacement, ], idx in @MKTX.TEX._tex_escape_replacements
+    R = R.replace pattern, replacement
+  return R
+
+#-----------------------------------------------------------------------------------------------------------
+@MKTX.TEX.$fix_typography_for_tex = ( options ) =>
+  return $ ( event, send ) =>
+    if select event, '.', 'text'
+      [ type, name, text, meta, ] = event
+      meta[ 'raw' ] = text
+      text          = @MKTX.TEX.fix_typography_for_tex text, options
+      send [ type, name, text, meta, ]
+    else
+      send event
+
+#-----------------------------------------------------------------------------------------------------------
+@MKTX.TEX.is_cjk_rsg = ( rsg, options ) => rsg in options[ 'tex' ][ 'cjk-rsgs' ]
+
+#-----------------------------------------------------------------------------------------------------------
+@MKTX.TEX.fix_typography_for_tex = ( text, options, send = null ) =>
+  ### An improved version of `XELATEX.tag_from_chr` ###
+  ### TAINT should accept settings, fall back to `require`d `options.coffee` ###
+  glyph_styles          = options[ 'tex' ]?[ 'glyph-styles'             ] ? {}
+  ### Legacy mode: force one command per non-latin character. This is OK for Chinese texts,
+  but a bad idea for all other scripts; in the future, MKTS's TeX formatting commands like
+  `\cn{}` will be rewritten to make this setting superfluous. ###
+  advance_each_chr      = options[ 'tex' ]?[ 'advance-each-chr'         ] ? no
+  tex_command_by_rsgs   = options[ 'tex' ]?[ 'tex-command-by-rsgs'      ]
+  cjk_interchr_glue     = options[ 'tex' ]?[ 'cjk-interchr-glue'        ] ? '\ue080'
+  last_command          = null
+  R                     = []
+  chunk                 = []
+  last_rsg              = null
+  remark                = if send? then @_get_remark() else null
+  last_was_cjk          = no
+  is_latin_whitespace   = null
+  #.........................................................................................................
+  unless tex_command_by_rsgs?
+    throw new Error "need setting 'tex-command-by-rsgs'"
+  #.........................................................................................................
+  advance = =>
+    if chunk.length > 0
+      # debug '©zDJqU', last_command, JSON.stringify chunk.join '.'
+      R.push chunk.join ''
+      R.push '}' unless last_command in [ null, 'latin', ]
+    chunk.length = 0
+    return null
+  #.........................................................................................................
+  for chr in XNCHR.chrs_from_text text
+    ### Treat whitespace specially ###
+    ### TAINT better to check against /^\s$/ ??? ###
+    if ( is_latin_whitespace = chr in [ '\x20', '\n', '\r', '\t', ] )
+      command = last_command
+    else
+      { chr
+        uchr
+        fncr
+        rsg   }   = XNCHR.analyze chr
+      #.......................................................................................................
+      switch rsg
+        when 'jzr-fig'  then chr = uchr
+        when 'u-pua'    then rsg = 'jzr-fig'
+        when 'u-latin'  then chr = @escape_for_tex chr
+      #.......................................................................................................
+      this_is_cjk = @MKTX.TEX.is_cjk_rsg rsg, options
+      if last_was_cjk and this_is_cjk
+        # chunk.push '\\cjkInterchrSpacing{}'
+        chunk.push cjk_interchr_glue
+      last_was_cjk = this_is_cjk
+      #.......................................................................................................
+      ### TAINT if chr is a TeX active ASCII chr like `$`, `#`, then it will be escaped at this point
+      and no more match entries in `glyph_styles` ###
+      if ( replacement = glyph_styles[ chr ] )?
+        advance()
+        R.push replacement
+        last_command = null
+        continue
+      #.......................................................................................................
+      unless ( command = tex_command_by_rsgs[ rsg ] )?
+        command = tex_command_by_rsgs[ 'fallback' ] ? null
+        message = "unknown RSG #{rpr rsg}: #{fncr} #{chr} (using fallback #{rpr command})"
+        if send? then send remark 'warn', message, {}
+        else          warn message
+    #.......................................................................................................
+    unless command?
+      advance()
+      chunk.push chr
+      continue
+    #.......................................................................................................
+    if advance_each_chr or last_command isnt command
+      advance()
+      last_command = command
+      ### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ###
+      unless command is 'latin'
+        command = 'cn'
+        chunk.push "{\\#{command}{}"
+      # chunk.push "{\\#{command}{}" unless command is 'latin'
+      ### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ###
+    #.......................................................................................................
+    chunk.push chr
+  #.........................................................................................................
+  advance()
+  return R.join ''
+
+
+#===========================================================================================================
+#
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.COMMAND.$do = ( S ) =>
   CS                        = require 'coffee-script'
@@ -761,6 +890,47 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
       send event
 
 
+
+#===========================================================================================================
+#
+#-----------------------------------------------------------------------------------------------------------
+@MKTX.$show_unhandled_tags = ( S ) ->
+  return $ ( event, send ) =>
+    ### TAINT selection could be simpler, less repetitive ###
+    if event[ 0 ] in [ 'tex', 'text', ]
+      send event
+    else if select event, '.', 'text'
+      send event
+    else unless is_stamped event
+      [ type, name, text, meta, ] = event
+      if text?
+        if ( CND.isa_pod text )
+          if ( Object.keys text ).length is 0
+            text = ''
+          else
+            text = rpr text
+      else
+        text = ''
+      if type in [ '.', '!', ] or type in MKTS.FENCES.xleft
+        first             = type
+        last              = name
+        pre               = '█'
+        post              = ''
+      else
+        first             = name
+        last              = type
+        pre               = ''
+        post              = '█'
+      event_txt         = first + last + ' ' + text
+      event_tex         = @MKTS.TEX.fix_typography_for_tex event_txt, S.options
+      ### TAINT use mkts command ###
+      send [ 'tex', """{\\mktsStyleBold\\color{violet}{%
+        \\mktsStyleSymbol#{pre}}#{event_tex}{\\mktsStyleSymbol#{post}}}""" ]
+      send event
+    else
+      send event
+
+
 #===========================================================================================================
 #
 #-----------------------------------------------------------------------------------------------------------
@@ -832,7 +1002,7 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
         handler null if handler?
     #.......................................................................................................
     input
-      .pipe MKTS.$fix_typography_for_tex                    @options
+      .pipe @MKTX.TEX.$fix_typography_for_tex               @options
       .pipe @MKTX.DOCUMENT.$begin                           S
       .pipe @MKTX.DOCUMENT.$end                             S
       .pipe @MKTX.MIXED.$raw                                S
@@ -867,7 +1037,7 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
       .pipe MKTS.$close_dangling_open_tags                  S
       .pipe MKTS.$show_mktsmd_events                        S
       .pipe MKTS.$write_mktscript                           S
-      .pipe MKTS.$show_unhandled_tags                       S
+      .pipe @MKTX.$show_unhandled_tags                      S
       .pipe @$filter_tex()
       .pipe MKTS.$show_illegal_chrs                         S
       .pipe tex_output
