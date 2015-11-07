@@ -797,81 +797,84 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
 # PDF FROM MD
 #-----------------------------------------------------------------------------------------------------------
 @pdf_from_md = ( source_route, handler ) ->
-  D.run =>
-    step ( resume ) =>
-      handler                ?= ->
-      layout_info             = HELPERS.new_layout_info @options, source_route
-      yield @write_mkts_master layout_info, resume
-      source_locator          = layout_info[ 'source-locator'  ]
-      content_locator         = layout_info[ 'content-locator' ]
-      tex_output              = njs_fs.createWriteStream content_locator
-      # debug '©y9meI', layout_info
-      # process.exit()
-      ### TAINT should read MD source stream ###
-      text                    = njs_fs.readFileSync source_locator, encoding: 'utf-8'
-      input                   = MKTS.create_mdreadstream text
-      #---------------------------------------------------------------------------------------------------------
-      ### TAINT get state via return value of MKTS.create_mdreadstream ###
-      S =
-        options:              @options
-        layout_info:          layout_info
-        input:                input
-        # resend:               ( event ) => input.write event
-        resend:               input.XXX_resend
-      #---------------------------------------------------------------------------------------------------------
-      tex_output.on 'close', =>
-        HELPERS.write_pdf layout_info, ( error ) =>
-          throw error if error?
-          handler null if handler?
-      #---------------------------------------------------------------------------------------------------------
-      input
-        .pipe MKTS.$fix_typography_for_tex                    @options
-        .pipe @MKTX.DOCUMENT.$begin                           S
-        .pipe @MKTX.DOCUMENT.$end                             S
-        .pipe @MKTX.MIXED.$raw                                S
-        .pipe @MKTX.MIXED.$footnote                           S
-        .pipe @MKTX.MIXED.$remove_footnote_extra_paragraphs   S
-        .pipe @MKTX.COMMAND.$do                               S
-        .pipe @MKTX.COMMAND.$expansion                        S
-        .pipe @MKTX.COMMAND.$new_page                         S
-        .pipe @MKTX.COMMAND.$comment                          S
-        # .pipe @MKTX.REGION.$correct_p_tags_before_regions     S
-        .pipe @MKTX.COMMAND.$multi_column                     S
-        .pipe @MKTX.REGION.$multi_column                      S
-        .pipe @MKTX.REGION.$single_column                     S
-        .pipe @MKTX.REGION.$keep_lines                        S
-        .pipe @MKTX.REGION.$code                              S
-        .pipe @MKTX.BLOCK.$heading                            S
-        .pipe @MKTX.BLOCK.$hr                                 S
-        .pipe @MKTX.BLOCK.$unordered_list                     S
-        .pipe @MKTX.INLINE.$code                              S
-        # .pipe @MKTX.INLINE.$italic_correction                 S
-        .pipe @MKTX.INLINE.$translate_i_and_b                 S
-        .pipe @MKTX.INLINE.$em_and_strong                     S
-        # .pipe @MKTX.BLOCK.$remove_empty_p_tags                S
-        .pipe @MKTX.BLOCK.$paragraph                          S
-        # .pipe D.$observe ( event ) =>
-        #   if MKTS.select event, 'text'
-        #     # info JSON.stringify event
-        #     debug event
-        #   else
-        #     # whisper JSON.stringify event
-        .pipe @MKTX.CLEANUP.$remove_empty_texts               S
-        .pipe MKTS.$close_dangling_open_tags                  S
-        .pipe MKTS.$show_mktsmd_events                        S
-        .pipe MKTS.$write_mktscript                           S
-        .pipe MKTS.$show_unhandled_tags                       S
-        .pipe @$filter_tex()
-        .pipe MKTS.$show_illegal_chrs                         S
-        .pipe tex_output
-      #---------------------------------------------------------------------------------------------------------
-      input.resume()
-  , ( error ) =>
+  #---------------------------------------------------------------------------------------------------------
+  on_error = ( error ) =>
     alert error[ 'message' ]
     stack = error[ 'stack' ] ? "(no stacktrace available)"
     whisper '\n' + ( stack.split '\n' )[ .. 10 ].join '\n'
     whisper '...'
     process.exit 1
+  #---------------------------------------------------------------------------------------------------------
+  f = => step ( resume ) =>
+    handler                ?= ->
+    layout_info             = HELPERS.new_layout_info @options, source_route
+    yield @write_mkts_master layout_info, resume
+    source_locator          = layout_info[ 'source-locator'  ]
+    content_locator         = layout_info[ 'content-locator' ]
+    tex_output              = njs_fs.createWriteStream content_locator
+    # debug '©y9meI', layout_info
+    # process.exit()
+    ### TAINT should read MD source stream ###
+    text                    = njs_fs.readFileSync source_locator, encoding: 'utf-8'
+    input                   = MKTS.create_mdreadstream text
+    #.......................................................................................................
+    ### TAINT get state via return value of MKTS.create_mdreadstream ###
+    S =
+      options:              @options
+      layout_info:          layout_info
+      input:                input
+      # resend:               ( event ) => input.write event
+      resend:               input.XXX_resend
+    #.......................................................................................................
+    tex_output.on 'close', =>
+      HELPERS.write_pdf layout_info, ( error ) =>
+        throw error if error?
+        handler null if handler?
+    #.......................................................................................................
+    input
+      .pipe MKTS.$fix_typography_for_tex                    @options
+      .pipe @MKTX.DOCUMENT.$begin                           S
+      .pipe @MKTX.DOCUMENT.$end                             S
+      .pipe @MKTX.MIXED.$raw                                S
+      .pipe @MKTX.MIXED.$footnote                           S
+      .pipe @MKTX.MIXED.$remove_footnote_extra_paragraphs   S
+      .pipe @MKTX.COMMAND.$do                               S
+      .pipe @MKTX.COMMAND.$expansion                        S
+      .pipe @MKTX.COMMAND.$new_page                         S
+      .pipe @MKTX.COMMAND.$comment                          S
+      # .pipe @MKTX.REGION.$correct_p_tags_before_regions     S
+      .pipe @MKTX.COMMAND.$multi_column                     S
+      .pipe @MKTX.REGION.$multi_column                      S
+      .pipe @MKTX.REGION.$single_column                     S
+      .pipe @MKTX.REGION.$keep_lines                        S
+      .pipe @MKTX.REGION.$code                              S
+      .pipe @MKTX.BLOCK.$heading                            S
+      .pipe @MKTX.BLOCK.$hr                                 S
+      .pipe @MKTX.BLOCK.$unordered_list                     S
+      .pipe @MKTX.INLINE.$code                              S
+      # .pipe @MKTX.INLINE.$italic_correction                 S
+      .pipe @MKTX.INLINE.$translate_i_and_b                 S
+      .pipe @MKTX.INLINE.$em_and_strong                     S
+      # .pipe @MKTX.BLOCK.$remove_empty_p_tags                S
+      .pipe @MKTX.BLOCK.$paragraph                          S
+      # .pipe D.$observe ( event ) =>
+      #   if MKTS.select event, 'text'
+      #     # info JSON.stringify event
+      #     debug event
+      #   else
+      #     # whisper JSON.stringify event
+      .pipe @MKTX.CLEANUP.$remove_empty_texts               S
+      .pipe MKTS.$close_dangling_open_tags                  S
+      .pipe MKTS.$show_mktsmd_events                        S
+      .pipe MKTS.$write_mktscript                           S
+      .pipe MKTS.$show_unhandled_tags                       S
+      .pipe @$filter_tex()
+      .pipe MKTS.$show_illegal_chrs                         S
+      .pipe tex_output
+    #.......................................................................................................
+    input.resume()
+  #---------------------------------------------------------------------------------------------------------
+  D.run f, on_error
 
 
 ############################################################################################################
