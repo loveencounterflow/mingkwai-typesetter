@@ -1041,12 +1041,12 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
   source_route  = settings[ 'source-route' ] ? '<STRING>'
   layout_info   = HELPERS.new_layout_info @options, source_route, false
   input         = MKTS.create_mdreadstream text
-  f             = -> input.resume()
+  f             = => input.resume()
   tex_stream    = @create_texwritestream layout_info, input
   Z             = []
   #.........................................................................................................
   tex_stream.pipe $ ( event, send ) =>
-    debug '©G3QXt', rpr event
+    # debug '©G3QXt', rpr event
     Z.push event
   input.on 'end', -> handler null, Z.join ''
   #.........................................................................................................

@@ -1,9 +1,12 @@
 {
-  "sysid": "flows-mac-pro.fritz.box:darwin",
+  "sysid": "enceladus:linux",
   "flows-Mac-Pro.local:darwin": {
     "texlive-package-versions/fontspec": "2.3.0"
   },
   "flows-mac-pro.fritz.box:darwin": {
     "texlive-package-versions/fontspec": "2.3.0"
+  },
+  "enceladus:linux": {
+    "texlive-package-versions/fontspec": "2.4.0"
   }
 }

@@ -40,22 +40,23 @@ $async                    = D.remit_async.bind D
 #   return njs_path.join CND.swap_extension tex_locator, extension
 
 #-----------------------------------------------------------------------------------------------------------
-@new_layout_info = ( options, source_route ) ->
+@new_layout_info = ( options, source_route, validate = yes ) ->
   xelatex_command       = options[ 'xelatex-command' ]
   source_home           = njs_path.resolve process.cwd(), source_route
   source_name           = options[ 'main' ][ 'filename' ]
   source_locator        = njs_path.join source_home, source_name
   #.........................................................................................................
-  throw new Error "unable to locate #{source_home}"     unless njs_fs.existsSync source_home
-  throw new Error "not a directory: #{source_home}"     unless ( njs_fs.statSync source_home ).isDirectory()
-  throw new Error "unable to locate #{source_locator}"  unless njs_fs.existsSync source_locator
-  throw new Error "not a file: #{source_locator}"       unless ( njs_fs.statSync source_locator ).isFile()
+  if validate
+    throw new Error "unable to locate #{source_home}"     unless njs_fs.existsSync source_home
+    throw new Error "not a directory: #{source_home}"     unless ( njs_fs.statSync source_home ).isDirectory()
+    throw new Error "unable to locate #{source_locator}"  unless njs_fs.existsSync source_locator
+    throw new Error "not a file: #{source_locator}"       unless ( njs_fs.statSync source_locator ).isFile()
   #.........................................................................................................
   # tex_locator           = njs_path.join tmp_home, CND.swap_extension source_name, '.tex'
   job_name              = njs_path.basename source_home
   aux_locator           = njs_path.join source_home, "#{job_name}.aux"
   pdf_locator           = njs_path.join source_home, "#{job_name}.pdf"
-  mkscript_locator           = njs_path.join source_home, "#{job_name}.mkscript"
+  mkscript_locator      = njs_path.join source_home, "#{job_name}.mkscript"
   # tex_inputs_home       = njs_path.resolve __dirname, '..', 'tex-inputs'
   master_name           = options[ 'master' ][ 'filename' ]
   master_ext            = njs_path.extname master_name

@@ -374,11 +374,18 @@ show_events = ( probe, events ) ->
     A paragraph with **bold text**.
     """
   # warn "missing `.p` inside `(multi-column)`"
-  matcher   = """??????????????????????????????????????????"""
+  matcher   = """
+    % begin of MD document
+    A paragraph with {\\mktsStyleItalic{}emphasis\\/}.\\mktsShowpar\\par
+    A paragraph with {\\mktsStyleBold{}bold text}.\\mktsShowpar\\par
+
+    % end of MD document
+
+    """
   step ( resume ) =>
     result = yield MKTS_XXX.tex_from_md probe, settings, resume
-    # show_events probe, result
-    T.eq matcher, result
+    # echo result
+    T.eq matcher.trim(), result.trim()
     done()
 
 
