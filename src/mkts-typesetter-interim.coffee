@@ -944,7 +944,7 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
 #===========================================================================================================
 #
 #-----------------------------------------------------------------------------------------------------------
-@create_texwritestream = ( layout_info, input ) ->
+@create_tex_writefitting = ( layout_info, input ) ->
   ### TAINT get state via return value of MKTS.create_mdreadstream ###
   S =
     options:              @options
@@ -953,9 +953,9 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
     # resend:               ( event ) => input.write event
     resend:               input.XXX_resend
   #.......................................................................................................
-  R = D.create_throughstream()
+  confluence = D.create_throughstream()
   #.......................................................................................................
-  input
+  confluence
     .pipe @MKTX.TEX.$fix_typography_for_tex               S
     .pipe @MKTX.DOCUMENT.$begin                           S
     .pipe @MKTX.DOCUMENT.$end                             S
@@ -986,9 +986,10 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
     .pipe @MKTX.$show_unhandled_tags                      S
     .pipe @$filter_tex                                    S
     .pipe MKTS.$show_illegal_chrs                         S
-    .pipe R
+    .pipe output
   #.......................................................................................................
   # input.resume()
+  return D.create_fitting transforms, { input, output, }
   return R
 
 #-----------------------------------------------------------------------------------------------------------
@@ -1021,7 +1022,8 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
     ### TAINT should read MD source stream ###
     text                    = njs_fs.readFileSync source_locator, encoding: 'utf-8'
     input                   = MKTS.create_mdreadstream text
-    tex_stream              = @create_texwritestream layout_info, input
+    tex_fitting             = @create_tex_writefitting layout_info, input
+    tex_stream              = tex_fitting[ 'output' ]
     tex_stream
       .pipe D.$show()
       .pipe tex_output
@@ -1042,7 +1044,8 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
   layout_info   = HELPERS.new_layout_info @options, source_route, false
   input         = MKTS.create_mdreadstream text
   f             = => input.resume()
-  tex_stream    = @create_texwritestream layout_info, input
+  tex_fitting   = @create_tex_writefitting layout_info, input
+  tex_stream    = tex_fitting[ 'output' ]
   Z             = []
   #.........................................................................................................
   tex_stream.pipe $ ( event, send ) =>

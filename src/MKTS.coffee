@@ -716,11 +716,11 @@ tracker_pattern = /// ^
     return null
 
 #-----------------------------------------------------------------------------------------------------------
-@$write_mktscript = ( S ) ->
+@$write_mktscript = ( S, output = null ) ->
   indentation       = ''
   tag_stack         = []
   mkscript_locator  = S.layout_info[ 'mkscript-locator' ]
-  output            = njs_fs.createWriteStream mkscript_locator
+  output           ?= njs_fs.createWriteStream mkscript_locator
   confluence        = D.create_throughstream()
   write             = confluence.write.bind confluence
   confluence.pipe output
