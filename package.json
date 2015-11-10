@@ -46,12 +46,12 @@
     "markdown-it-sub": "^1.0.0",
     "markdown-it-sup": "^1.0.0",
     "parse5": "^1.5.0",
-    "pipedreams": "^0.2.32"
+    "pipedreams": "^1.0.3"
   },
   "devDependencies": {
     "gulp": "^3.9.0",
     "gulp-coffee": "^2.3.1",
     "gulp-sourcemaps": "^1.5.2",
-    "guy-test": "^1.1.1"
+    "guy-test": "^1.1.2"
   }
 }
