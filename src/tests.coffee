@@ -388,6 +388,38 @@ show_events = ( probe, events ) ->
     T.eq matcher.trim(), result.trim()
     done()
 
+#-----------------------------------------------------------------------------------------------------------
+@[ "MKTS_XXX.mktscript_from_md (1)" ] = ( T, done ) ->
+  settings  = bare: yes
+  probe     = """
+    A paragraph with *emphasis*.
+
+    A paragraph with **bold text**.
+    """
+  # warn "missing `.p` inside `(multi-column)`"
+  matcher   = """
+    1 █ <document
+    1 █ .text 'A paragraph with '
+    1 █ (em
+    1 █ .text 'emphasis'
+    1 █ )em
+    1 █ .text '.'
+    1 █ .p
+    3 █ .text 'A paragraph with '
+    3 █ (strong
+    3 █ .text 'bold text'
+    3 █ )strong
+    3 █ .text '.'
+    3 █ .p
+    >document
+    # EOF
+    """
+  step ( resume ) =>
+    result = yield MKTS_XXX.mktscript_from_md probe, settings, resume
+    echo result
+    T.eq matcher.trim(), result.trim()
+    done()
+
 
 #===========================================================================================================
 # MAIN

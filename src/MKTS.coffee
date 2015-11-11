@@ -716,49 +716,58 @@ tracker_pattern = /// ^
     return null
 
 #-----------------------------------------------------------------------------------------------------------
-@$write_mktscript = ( S, output = null ) ->
+@$produce_mktscript = ( S ) ->
   indentation       = ''
   tag_stack         = []
-  mkscript_locator  = S.layout_info[ 'mkscript-locator' ]
-  output           ?= njs_fs.createWriteStream mkscript_locator
-  confluence        = D.create_throughstream()
-  write             = confluence.write.bind confluence
-  confluence.pipe output
   #.........................................................................................................
-  return D.$observe ( event, has_ended ) ->
+  return $ ( event, send, end ) ->
     if event?
       [ type, name, text, meta, ] = event
       unless type in [ 'tex', 'text', ]
-        { line_nr, }                = meta
-        anchor                      = "█ #{line_nr} █ "
+        { line_nr, } = meta
+        if line_nr?
+          anchor = "#{line_nr} █ "
+        else
+          anchor = ""
         #.....................................................................................................
-        switch type
-          when '?'
-            write "\n#{anchor}#{type}#{name}\n"
-          when '<', '{', '['
-            write "#{anchor}#{type}#{name}"
-          when '>', '}', ']', '!'
-            write "#{type}\n"
-          when '('
-            write "#{type}#{name}"
-          when ')'
-            write "#{type}"
-          when '.'
-            switch name
-              when 'hr'
-                write "\n#{anchor}#{type}#{name}\n"
-              when 'p'
-                write "¶\n"
-              when 'text'
-                ### TAINT doesn't recognize escaped backslash ###
-                text_rpr = ( rpr text ).replace /\\n/g, '\n'
-                write text_rpr
-              else
-                write "\n#{anchor}IGNORED: #{rpr event}"
-          else
-            write "\n#{anchor}IGNORED: #{rpr event}"
-    if has_ended
-      output.end()
+        # debug '©Yo4cR', event
+        # send JSON.stringify event
+        if text?
+          ### TAINT doesn't recognize escaped backslash ###
+          text_rpr = ( rpr text ).replace /\\n/g, '\n'
+          # send text_rpr
+          send "#{anchor}#{type}#{name} #{text_rpr}"
+        else
+          send "#{anchor}#{type}#{name}"
+        send '\n'
+        # switch type
+        #   when '?'
+        #     send "\n#{anchor}#{type}#{name}\n"
+        #   when '<', '{', '['
+        #     send "#{anchor}#{type}#{name}"
+        #   when '>', '}', ']', '!'
+        #     send "#{type}\n"
+        #   when '('
+        #     send "#{type}#{name}"
+        #   when ')'
+        #     send "#{type}"
+        #   when '.'
+        #     switch name
+        #       when 'hr'
+        #         send "\n#{anchor}#{type}#{name}\n"
+        #       when 'p'
+        #         send "¶\n"
+        #       when 'text'
+        #         ### TAINT doesn't recognize escaped backslash ###
+        #         text_rpr = ( rpr text ).replace /\\n/g, '\n'
+        #         send text_rpr
+        #       else
+        #         send "\n#{anchor}IGNORED: #{rpr event}"
+        #   else
+        #     send "\n#{anchor}IGNORED: #{rpr event}"
+    if end?
+      send "# EOF"
+      end()
     return null
 
 

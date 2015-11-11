@@ -3,7 +3,6 @@
 
 `<<($>>eval block<<$)>>`
 
-<<!end>>
 
 <<!multi-column>>
 
@@ -27,6 +26,7 @@ xxx 这们说时 **xxx**
 xxx 这们说时 **xxx**
 ```
 
+<<!end>>
 
 * HTML:
 * Raw (i.e. <<(raw>>\TeX<<raw)>>/<<(raw>>\LaTeX<<raw)>>): `<<<...raw material...>>>`

@@ -238,6 +238,9 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
 @MKTX.TEX.is_cjk_rsg = ( rsg, options ) => rsg in options[ 'tex' ][ 'cjk-rsgs' ]
 
 #-----------------------------------------------------------------------------------------------------------
+@MKTX.TEX._get_cjk_interchr_glue = ( options ) => options[ 'tex' ]?[ 'cjk-interchr-glue' ] ? '\ue080'
+
+#-----------------------------------------------------------------------------------------------------------
 @MKTX.TEX.fix_typography_for_tex = ( text, options, send = null ) =>
   ### An improved version of `XELATEX.tag_from_chr` ###
   ### TAINT should accept settings, fall back to `require`d `options.coffee` ###
@@ -247,12 +250,13 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
   `\cn{}` will be rewritten to make this setting superfluous. ###
   advance_each_chr      = options[ 'tex' ]?[ 'advance-each-chr'         ] ? no
   tex_command_by_rsgs   = options[ 'tex' ]?[ 'tex-command-by-rsgs'      ]
-  cjk_interchr_glue     = options[ 'tex' ]?[ 'cjk-interchr-glue'        ] ? '\ue080'
+  cjk_interchr_glue     = @MKTX.TEX._get_cjk_interchr_glue options
   last_command          = null
   R                     = []
   chunk                 = []
   last_rsg              = null
   remark                = if send? then @_get_remark() else null
+  this_is_cjk           = no
   last_was_cjk          = no
   is_latin_whitespace   = null
   #.........................................................................................................
@@ -285,8 +289,8 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
       #.......................................................................................................
       this_is_cjk = @MKTX.TEX.is_cjk_rsg rsg, options
       if last_was_cjk and this_is_cjk
-        # chunk.push '\\cjkInterchrSpacing{}'
-        chunk.push cjk_interchr_glue
+        ### Avoid to put second glue between glue and CJK character: ###
+        chunk.push cjk_interchr_glue unless chr is cjk_interchr_glue
       last_was_cjk = this_is_cjk
       #.......................................................................................................
       ### TAINT if chr is a TeX active ASCII chr like `$`, `#`, then it will be escaped at this point
@@ -946,6 +950,8 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
 #-----------------------------------------------------------------------------------------------------------
 @create_tex_writefitting = ( layout_info, input ) ->
   ### TAINT get state via return value of MKTS.create_mdreadstream ###
+  ### TAINT make execution of `$produce_mktscript` a matter of settings ###
+  ### TAINT use `S` or `settings` for arguments ###
   S =
     options:              @options
     layout_info:          layout_info
@@ -953,9 +959,16 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
     # resend:               ( event ) => input.write event
     resend:               input.XXX_resend
   #.......................................................................................................
-  confluence = D.create_throughstream()
+  readstream    = input # D.create_throughstream()
+  writestream   = D.create_throughstream()
+  mktscript_in  = D.create_throughstream()
+  mktscript_out = D.create_throughstream()
   #.......................................................................................................
-  confluence
+  mktscript_in
+    .pipe MKTS.$produce_mktscript                         S
+    .pipe mktscript_out
+  #.......................................................................................................
+  readstream
     .pipe @MKTX.TEX.$fix_typography_for_tex               S
     .pipe @MKTX.DOCUMENT.$begin                           S
     .pipe @MKTX.DOCUMENT.$end                             S
@@ -982,14 +995,21 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
     .pipe @MKTX.CLEANUP.$remove_empty_texts               S
     .pipe MKTS.$close_dangling_open_tags                  S
     .pipe MKTS.$show_mktsmd_events                        S
-    # .pipe MKTS.$write_mktscript                           S
+    .pipe mktscript_in
     .pipe @MKTX.$show_unhandled_tags                      S
     .pipe @$filter_tex                                    S
     .pipe MKTS.$show_illegal_chrs                         S
-    .pipe output
+    .pipe writestream
   #.......................................................................................................
-  # input.resume()
-  return D.create_fitting transforms, { input, output, }
+  settings =
+    inputs:
+      mktscript:        mktscript_in
+    outputs:
+      mktscript:        mktscript_out
+    S:                S
+  #.......................................................................................................
+  R         = D.create_fitting_from_readwritestreams readstream, writestream, settings
+  return R
 
 #-----------------------------------------------------------------------------------------------------------
 @_handle_error = ( error ) =>
@@ -1004,6 +1024,8 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
 # PDF FROM MD
 #-----------------------------------------------------------------------------------------------------------
 @pdf_from_md = ( source_route, handler ) ->
+  ### TAINT code duplication ###
+  ### TAIN only works with docs in the filesystem, not with literal texts ###
   #---------------------------------------------------------------------------------------------------------
   f = => step ( resume ) =>
     handler                ?= ->
@@ -1012,6 +1034,9 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
     source_locator          = layout_info[ 'source-locator'  ]
     content_locator         = layout_info[ 'content-locator' ]
     tex_output              = njs_fs.createWriteStream content_locator
+    #.......................................................................................................
+    mkscript_locator        = layout_info[ 'mkscript-locator' ]
+    mkscript_output         = njs_fs.createWriteStream mkscript_locator
     #.......................................................................................................
     tex_output.on 'close', =>
       HELPERS.write_pdf layout_info, ( error ) =>
@@ -1024,14 +1049,19 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
     tex_fitting             = @create_tex_writefitting layout_info, input
     tex_stream              = tex_fitting[ 'output' ]
     tex_stream
-      .pipe D.$show()
+      # .pipe D.$show()
       .pipe tex_output
+    #.......................................................................................................
+    tex_fitting[ 'outputs' ][ 'mktscript' ]
+      .pipe mkscript_output
+    #.......................................................................................................
     input.resume()
   #---------------------------------------------------------------------------------------------------------
   D.run f, @_handle_error
 
 #-----------------------------------------------------------------------------------------------------------
 @tex_from_md = ( text, settings, handler ) ->
+  ### TAINT code duplication ###
   switch arity = arguments.length
     when 2
       handler   = settings
@@ -1048,6 +1078,32 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
   Z             = []
   #.........................................................................................................
   tex_stream.pipe $ ( event, send ) =>
+    # debug '©G3QXt', rpr event
+    Z.push event
+  input.on 'end', -> handler null, Z.join ''
+  #.........................................................................................................
+  D.run f, @_handle_error
+  return null
+
+#-----------------------------------------------------------------------------------------------------------
+@mktscript_from_md = ( text, settings, handler ) ->
+  ### TAINT code duplication ###
+  switch arity = arguments.length
+    when 2
+      handler   = settings
+      settings  = {}
+    when 3 then null
+    else throw new Error "expected 2 or 3 arguments, got #{arity}"
+  #.........................................................................................................
+  source_route        = settings[ 'source-route' ] ? '<STRING>'
+  layout_info         = HELPERS.new_layout_info @options, source_route, false
+  input               = MKTS.create_mdreadstream text
+  f                   = => input.resume()
+  tex_fitting         = @create_tex_writefitting layout_info, input
+  mktscript_stream    = tex_fitting[ 'outputs' ][ 'mktscript' ]
+  Z                   = []
+  #.........................................................................................................
+  mktscript_stream.pipe $ ( event, send ) =>
     # debug '©G3QXt', rpr event
     Z.push event
   input.on 'end', -> handler null, Z.join ''
