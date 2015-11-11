@@ -2,6 +2,9 @@
 
 - [MingKwai Type Setter 明快排字機](#mingkwai-type-setter-明快排字機)
 - [Syntax](#syntax)
+	- [Level 1—MarkDown Syntax](#level-1—markdown-syntax)
+	- [Level 2—HTML Tags](#level-2—html-tags)
+	- [Level 3—MKTS Tags (MingKwai TypeScript)](#level-3—mkts-tags-mingkwai-typescript)
 
 > **Table of Contents**  *generated with [DocToc](http://doctoc.herokuapp.com/)*
 
@@ -13,9 +16,11 @@ implemented in CoffeeScript.
 
 # Syntax
 
+## Level 1—MarkDown Syntax
+
 MingKwai TypeSetter (MKTS) uses
 [`markdown-it`](https://github.com/markdown-it/markdown-it)* and, as such,
-supports all the parts of [CommonMark, the Common Markdown
+supports all the parts of [CommonMark, the Common MarkDown
 Spec](http://commonmark.org/) that are supported by `markdown-it` core—or any
 available syntax plugin—offers, provided an adapter for the given feature has
 been integrated into the MKTS processing pipeline.
@@ -24,7 +29,18 @@ been integrated into the MKTS processing pipeline.
 > support parsing sources in a piecemeal fashion as would be appropriate
 > for an all-out streaming framework.
 
-Since `markdown-it` accepts raw HTML tag,
+## Level 2—HTML Tags
+
+Since `markdown-it` accepts raw HTML tags, it is possible to 'escape to HTML' to
+quickly get features not available in MarkDown as such; however, this also
+presupposes that an HTML-to-TeX translation for the HTML tags has been implemented.*
+
+> **\*)** at the time of this writng, no plug-in structure for syntax extensions
+> has been establish, but that will hopefully change in the future.
+
+## Level 3—MKTS Tags (MingKwai TypeScript)
+
+
 
 * HTML:
 * Raw (i.e. <<(raw>>\TeX<<raw)>>/<<(raw>>\LaTeX<<raw)>>): `<<<...raw material...>>>`
