@@ -956,17 +956,15 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
     options:              @options
     layout_info:          layout_info
     input:                input
-    # resend:               ( event ) => input.write event
-    resend:               input.XXX_resend
   #.......................................................................................................
   readstream    = input # D.create_throughstream()
   writestream   = D.create_throughstream()
-  mktscript_in  = D.create_throughstream()
-  mktscript_out = D.create_throughstream()
+  # mktscript_in  = D.create_throughstream()
+  # mktscript_out = D.create_throughstream()
   #.......................................................................................................
-  mktscript_in
-    .pipe MKTS.$produce_mktscript                         S
-    .pipe mktscript_out
+  # mktscript_in
+  #   .pipe MKTS.$produce_mktscript                         S
+  #   .pipe mktscript_out
   #.......................................................................................................
   readstream
     .pipe @MKTX.TEX.$fix_typography_for_tex               S
@@ -995,21 +993,20 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
     .pipe @MKTX.CLEANUP.$remove_empty_texts               S
     .pipe MKTS.$close_dangling_open_tags                  S
     .pipe MKTS.$show_mktsmd_events                        S
-    .pipe mktscript_in
+    # .pipe mktscript_in
     .pipe @MKTX.$show_unhandled_tags                      S
     .pipe @$filter_tex                                    S
     .pipe MKTS.$show_illegal_chrs                         S
     .pipe writestream
   #.......................................................................................................
   settings =
-    inputs:
-      mktscript:        mktscript_in
-    outputs:
-      mktscript:        mktscript_out
+    # inputs:
+    #   mktscript:        mktscript_in
+    # outputs:
+    #   mktscript:        mktscript_out
     S:                S
   #.......................................................................................................
-  R         = D.create_fitting_from_readwritestreams readstream, writestream, settings
-  return R
+  return D.create_fitting_from_readwritestreams readstream, writestream, settings
 
 #-----------------------------------------------------------------------------------------------------------
 @_handle_error = ( error ) =>
@@ -1020,96 +1017,74 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
   process.exit 1
 
 
-#===========================================================================================================
-# PDF FROM MD
-#-----------------------------------------------------------------------------------------------------------
-@pdf_from_md = ( source_route, handler ) ->
-  ### TAINT code duplication ###
-  ### TAIN only works with docs in the filesystem, not with literal texts ###
-  #---------------------------------------------------------------------------------------------------------
-  f = => step ( resume ) =>
-    handler                ?= ->
-    layout_info             = HELPERS.new_layout_info @options, source_route
-    yield @write_mkts_master layout_info, resume
-    source_locator          = layout_info[ 'source-locator'  ]
-    content_locator         = layout_info[ 'content-locator' ]
-    tex_output              = njs_fs.createWriteStream content_locator
-    #.......................................................................................................
-    mkscript_locator        = layout_info[ 'mkscript-locator' ]
-    mkscript_output         = njs_fs.createWriteStream mkscript_locator
-    #.......................................................................................................
-    tex_output.on 'close', =>
-      HELPERS.write_pdf layout_info, ( error ) =>
-        throw error if error?
-        handler null if handler?
-    #.......................................................................................................
-    ### TAINT should read MD source stream ###
-    text                    = njs_fs.readFileSync source_locator, encoding: 'utf-8'
-    input                   = MKTS.create_mdreadstream text
-    tex_fitting             = @create_tex_writefitting layout_info, input
-    tex_stream              = tex_fitting[ 'output' ]
-    tex_stream
-      # .pipe D.$show()
-      .pipe tex_output
-    #.......................................................................................................
-    tex_fitting[ 'outputs' ][ 'mktscript' ]
-      .pipe mkscript_output
-    #.......................................................................................................
-    input.resume()
-  #---------------------------------------------------------------------------------------------------------
-  D.run f, @_handle_error
+# #===========================================================================================================
+# # PDF FROM MD
+# #-----------------------------------------------------------------------------------------------------------
+# @pdf_from_md = ( source_route, handler ) ->
+#   ### TAINT code duplication ###
+#   ### TAIN only works with docs in the filesystem, not with literal texts ###
+#   #---------------------------------------------------------------------------------------------------------
+#   f = => step ( resume ) =>
+#     handler                ?= ->
+#     layout_info             = HELPERS.new_layout_info @options, source_route
+#     yield @write_mkts_master layout_info, resume
+#     source_locator          = layout_info[ 'source-locator'  ]
+#     content_locator         = layout_info[ 'content-locator' ]
+#     tex_output              = njs_fs.createWriteStream content_locator
+#     #.......................................................................................................
+#     mkscript_locator        = layout_info[ 'mkscript-locator' ]
+#     mkscript_output         = njs_fs.createWriteStream mkscript_locator
+#     #.......................................................................................................
+#     tex_output.on 'close', =>
+#       HELPERS.write_pdf layout_info, ( error ) =>
+#         throw error if error?
+#         handler null if handler?
+#     #.......................................................................................................
+#     ### TAINT should read MD source stream ###
+#     md_source               = njs_fs.readFileSync source_locator, encoding: 'utf-8'
+#     md_fitting              = MKTS.create_mdreadfitting md_source
+#     { input }               = md_fitting
+#     tex_fitting             = @create_tex_writefitting layout_info, input
+#     tex_stream              = tex_fitting[ 'output' ]
+#     tex_stream
+#       # .pipe D.$show()
+#       .pipe tex_output
+#     #.......................................................................................................
+#     tex_fitting[ 'outputs' ][ 'mktscript' ]
+#       .pipe mkscript_output
+#     #.......................................................................................................
+#     input.resume()
+#   #---------------------------------------------------------------------------------------------------------
+#   D.run f, @_handle_error
 
-#-----------------------------------------------------------------------------------------------------------
-@tex_from_md = ( text, settings, handler ) ->
-  ### TAINT code duplication ###
-  switch arity = arguments.length
-    when 2
-      handler   = settings
-      settings  = {}
-    when 3 then null
-    else throw new Error "expected 2 or 3 arguments, got #{arity}"
-  #.........................................................................................................
-  source_route  = settings[ 'source-route' ] ? '<STRING>'
-  layout_info   = HELPERS.new_layout_info @options, source_route, false
-  input         = MKTS.create_mdreadstream text
-  f             = => input.resume()
-  tex_fitting   = @create_tex_writefitting layout_info, input
-  tex_stream    = tex_fitting[ 'output' ]
-  Z             = []
-  #.........................................................................................................
-  tex_stream.pipe $ ( event, send ) =>
-    # debug '©G3QXt', rpr event
-    Z.push event
-  input.on 'end', -> handler null, Z.join ''
-  #.........................................................................................................
-  D.run f, @_handle_error
-  return null
+# #-----------------------------------------------------------------------------------------------------------
+# @tex_from_md = ( md_source, settings, handler ) ->
+#   ### TAINT code duplication ###
+#   switch arity = arguments.length
+#     when 2
+#       handler   = settings
+#       settings  = {}
+#     when 3 then null
+#     else throw new Error "expected 2 or 3 arguments, got #{arity}"
+#   #.........................................................................................................
+#   source_route        = settings[ 'source-route' ] ? '<STRING>'
+#   layout_info         = HELPERS.new_layout_info @options, source_route, false
+#   md_fitting          = MKTS.create_mdreadfitting md_source
+#   { input
+#     output }          = md_fitting
+#   f                   = => input.resume()
+#   tex_fitting         = @create_tex_writefitting layout_info, input
+#   tex_stream          = tex_fitting[ 'output' ]
+#   Z                   = []
+#   #.........................................................................................................
+#   tex_stream.pipe $ ( event, send ) =>
+#     debug '©G3QXt', rpr event
+#     Z.push event
+#   tex_stream.on 'end', -> handler null, Z.join ''
+#   #.........................................................................................................
+#   D.run f, @_handle_error
+#   return null
 
-#-----------------------------------------------------------------------------------------------------------
-@mktscript_from_md = ( text, settings, handler ) ->
-  ### TAINT code duplication ###
-  switch arity = arguments.length
-    when 2
-      handler   = settings
-      settings  = {}
-    when 3 then null
-    else throw new Error "expected 2 or 3 arguments, got #{arity}"
-  #.........................................................................................................
-  source_route        = settings[ 'source-route' ] ? '<STRING>'
-  layout_info         = HELPERS.new_layout_info @options, source_route, false
-  input               = MKTS.create_mdreadstream text
-  f                   = => input.resume()
-  tex_fitting         = @create_tex_writefitting layout_info, input
-  mktscript_stream    = tex_fitting[ 'outputs' ][ 'mktscript' ]
-  Z                   = []
-  #.........................................................................................................
-  mktscript_stream.pipe $ ( event, send ) =>
-    # debug '©G3QXt', rpr event
-    Z.push event
-  input.on 'end', -> handler null, Z.join ''
-  #.........................................................................................................
-  D.run f, @_handle_error
-  return null
 
 
 ############################################################################################################

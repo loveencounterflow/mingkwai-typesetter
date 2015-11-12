@@ -26,7 +26,10 @@ Markdown_parser           = require 'markdown-it'
 # Html_parser               = ( require 'htmlparser2' ).Parser
 new_md_inline_plugin      = require 'markdown-it-regexp'
 #...........................................................................................................
+HELPERS                   = require './HELPERS'
+#...........................................................................................................
 misfit                    = Symbol 'misfit'
+
 
 #-----------------------------------------------------------------------------------------------------------
 @_get_badge = ( delta = 0 ) ->
@@ -1025,33 +1028,33 @@ tracker_pattern = /// ^
   return R
 
 
-#-----------------------------------------------------------------------------------------------------------
-@new_resender = ( S, stream ) ->
-  ### TAINT new parser not needed, can reuse 'main' parser ###
-  md_parser = @_new_markdown_parser()
-  return ( md_source ) =>
-    ### TAINT must handle data in environment ###
-    if CND.isa_text md_source
-      md_source   = @_ESC.escape_html_comments_raw_spans_and_commands S, md_source
-      environment = {}
-      tokens      = md_parser.parse md_source, environment
-      # tokens      = md_parser.parse md_source, S.environment
-      #.......................................................................................................
-      ### TAINT intermediate solution ###
-      if ( keys = Object.keys environment ).length > 0
-        warn "ignoring keys from sub-parsing environment: #{rpr keys}"
-      #.......................................................................................................
-      if tokens.length > 0
-        ### Omit `paragraph_open` as first and `paragraph_close` as last token: ###
-        first_idx   = 0
-        last_idx    = tokens.length - 1
-        first_idx   = if tokens[ first_idx ][ 'type' ] is 'paragraph_open'  then first_idx + 1 else first_idx
-        last_idx    = if tokens[  last_idx ][ 'type' ] is 'paragraph_close' then  last_idx - 1 else  last_idx
-        ( debug '©9fdeD', "resending", tokens[ idx ] ) for idx in [ first_idx .. last_idx ]
-        stream.write tokens[ idx ] for idx in [ first_idx .. last_idx ]
-    else
-      debug '©vKQlM', "resending", md_source
-      stream.write md_source
+# #-----------------------------------------------------------------------------------------------------------
+# @new_resender = ( S, stream ) ->
+#   ### TAINT new parser not needed, can reuse 'main' parser ###
+#   md_parser = @_new_markdown_parser()
+#   return ( md_source ) =>
+#     ### TAINT must handle data in environment ###
+#     if CND.isa_text md_source
+#       md_source   = @_ESC.escape_html_comments_raw_spans_and_commands S, md_source
+#       environment = {}
+#       tokens      = md_parser.parse md_source, environment
+#       # tokens      = md_parser.parse md_source, S.environment
+#       #.......................................................................................................
+#       ### TAINT intermediate solution ###
+#       if ( keys = Object.keys environment ).length > 0
+#         warn "ignoring keys from sub-parsing environment: #{rpr keys}"
+#       #.......................................................................................................
+#       if tokens.length > 0
+#         ### Omit `paragraph_open` as first and `paragraph_close` as last token: ###
+#         first_idx   = 0
+#         last_idx    = tokens.length - 1
+#         first_idx   = if tokens[ first_idx ][ 'type' ] is 'paragraph_open'  then first_idx + 1 else first_idx
+#         last_idx    = if tokens[  last_idx ][ 'type' ] is 'paragraph_close' then  last_idx - 1 else  last_idx
+#         ( debug '©9fdeD', "resending", tokens[ idx ] ) for idx in [ first_idx .. last_idx ]
+#         stream.write tokens[ idx ] for idx in [ first_idx .. last_idx ]
+#     else
+#       debug '©vKQlM', "resending", md_source
+#       stream.write md_source
 
 #===========================================================================================================
 #
@@ -1063,35 +1066,69 @@ tracker_pattern = /// ^
       settings  = {}
     when 3 then null
     else throw new Error "expected 2 or 3 arguments, got #{arity}"
-  bare  = settings[ 'bare' ] ? no
-  input = @create_mdreadstream source
-  Z     = []
-  input.pipe $ ( event, send ) =>
+  bare        = settings[ 'bare' ] ? no
+  md_fitting  = @create_mdreadfitting source
+  { input
+    output }  = md_fitting
+  Z           = []
+  output.pipe $ ( event, send ) =>
     # debug '©G3QXt', event
     Z.push event unless bare and @select event, [ '<', '>', ], 'document'
-  input.on 'end', -> handler null, Z
+  output.on 'end', -> handler null, Z
   input.resume()
+  return null
+
+#-----------------------------------------------------------------------------------------------------------
+@mktscript_from_md = ( md_source, settings, handler ) ->
+  ### TAINT code duplication ###
+  switch arity = arguments.length
+    when 2
+      handler   = settings
+      settings  = {}
+    when 3 then null
+    else throw new Error "expected 2 or 3 arguments, got #{arity}"
+  #.........................................................................................................
+  source_route        = settings[ 'source-route' ] ? '<STRING>'
+  md_fitting          = @create_mdreadfitting md_source
+  { input
+    output }          = md_fitting
+  f                   = => input.resume()
+  #.........................................................................................................
+  output
+    .pipe @$produce_mktscript md_fitting[ 'S' ]
+    # .pipe D.$show '>>>>>>>>>>>>>>'
+    .pipe do =>
+      Z = []
+      return $ ( event, send, end ) =>
+        Z.push event if event?
+        if end?
+          handler null, Z.join ''
+          end()
+  #.........................................................................................................
+  D.run f, @_handle_error
   return null
 
 
 #===========================================================================================================
 # STREAM CREATION
 #-----------------------------------------------------------------------------------------------------------
-@create_mdreadstream = ( md_source, settings ) ->
+@create_mdreadfitting = ( md_source, settings ) ->
   throw new Error "settings currently unsupported" if settings?
   #.........................................................................................................
-  confluence  = D.create_throughstream()
-  R           = D.create_throughstream()
-  R.pause()
-  #.........................................................................................................
   S =
-    confluence:           confluence
+    # confluence:           confluence
     environment:          {}
   #.........................................................................................................
-  ### TAINT shouldn't attach method here ###
-  R.XXX_resend = @new_resender S, confluence
+  settings =
+    S:                S
   #.........................................................................................................
-  confluence
+  readstream    = D.create_throughstream()
+  writestream   = D.create_throughstream()
+  # confluence  = D.create_throughstream()
+  R             = D.create_fitting_from_readwritestreams readstream, writestream, settings
+  { input }     = R
+  #.........................................................................................................
+  readstream
     .pipe @_PRE.$flatten_tokens                 S
     .pipe @_PRE.$reinject_html_blocks           S
     .pipe @_PRE.$rewrite_markdownit_tokens      S
@@ -1101,22 +1138,20 @@ tracker_pattern = /// ^
     .pipe @_ESC.$expand_do_spans                S
     .pipe @_PRE.$process_end_command            S
     .pipe @_PRE.$consolidate_footnotes          S
-    .pipe R
+    .pipe writestream
   #.........................................................................................................
-  R.on 'resume', =>
+  input.pause()
+  input.on 'resume', =>
     md_parser   = @_new_markdown_parser()
     ### for `environment` see https://markdown-it.github.io/markdown-it/#MarkdownIt.parse ###
     @_ESC.initialize S
     ### TAINT consider to make `<<!end>>` special and detect it before parsing ###
     md_source   = @_ESC.escape_html_comments_raw_spans_and_commands S, md_source
-    # urge 'registry    ', S[ '_ESC' ][ 'registry' ]
-    # urge 'index       ', S[ '_ESC' ][ 'index' ]
     tokens      = md_parser.parse md_source, S.environment
-    # debug '©iOCip', S.environment
-    # process.exit()
-    # @set_meta R, 'environment', environment
-    confluence.write token for token in tokens
-    confluence.end()
+    for token in tokens
+      input.write token
+    # debug '©UomUZ', tokens
+    input.end()
   #.........................................................................................................
   return R
 
