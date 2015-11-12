@@ -545,8 +545,8 @@ tracker_pattern = /// ^
           when '(' then sub_type = ')'
         send remark 'resend', "`#{sub_name}#{sub_type}`", @copy meta
         S.resend "debug '©Vc8qO'"
-        # S.resend [ sub_type, sub_name, sub_text, ( @copy sub_meta ), ]
-        send [ 'tex', "'©nAf98', \\end{multicols}", ]
+        S.resend [ sub_type, sub_name, sub_text, ( @copy sub_meta ), ]
+        # send [ 'tex', "'©nAf98', \\end{multicols}", ]
       send event
     else if @select event, [ '{', '[', '(', ]
       tag_stack.push [ type, name, null, meta, ]
@@ -1028,33 +1028,33 @@ tracker_pattern = /// ^
   return R
 
 
-# #-----------------------------------------------------------------------------------------------------------
-# @new_resender = ( S, stream ) ->
-#   ### TAINT new parser not needed, can reuse 'main' parser ###
-#   md_parser = @_new_markdown_parser()
-#   return ( md_source ) =>
-#     ### TAINT must handle data in environment ###
-#     if CND.isa_text md_source
-#       md_source   = @_ESC.escape_html_comments_raw_spans_and_commands S, md_source
-#       environment = {}
-#       tokens      = md_parser.parse md_source, environment
-#       # tokens      = md_parser.parse md_source, S.environment
-#       #.......................................................................................................
-#       ### TAINT intermediate solution ###
-#       if ( keys = Object.keys environment ).length > 0
-#         warn "ignoring keys from sub-parsing environment: #{rpr keys}"
-#       #.......................................................................................................
-#       if tokens.length > 0
-#         ### Omit `paragraph_open` as first and `paragraph_close` as last token: ###
-#         first_idx   = 0
-#         last_idx    = tokens.length - 1
-#         first_idx   = if tokens[ first_idx ][ 'type' ] is 'paragraph_open'  then first_idx + 1 else first_idx
-#         last_idx    = if tokens[  last_idx ][ 'type' ] is 'paragraph_close' then  last_idx - 1 else  last_idx
-#         ( debug '©9fdeD', "resending", tokens[ idx ] ) for idx in [ first_idx .. last_idx ]
-#         stream.write tokens[ idx ] for idx in [ first_idx .. last_idx ]
-#     else
-#       debug '©vKQlM', "resending", md_source
-#       stream.write md_source
+#-----------------------------------------------------------------------------------------------------------
+@new_resender = ( S, stream ) ->
+  ### TAINT new parser not needed, can reuse 'main' parser ###
+  md_parser = @_new_markdown_parser()
+  return ( md_source ) =>
+    ### TAINT must handle data in environment ###
+    if CND.isa_text md_source
+      md_source   = @_ESC.escape_html_comments_raw_spans_and_commands S, md_source
+      environment = {}
+      tokens      = md_parser.parse md_source, environment
+      # tokens      = md_parser.parse md_source, S.environment
+      #.......................................................................................................
+      ### TAINT intermediate solution ###
+      if ( keys = Object.keys environment ).length > 0
+        warn "ignoring keys from sub-parsing environment: #{rpr keys}"
+      #.......................................................................................................
+      if tokens.length > 0
+        ### Omit `paragraph_open` as first and `paragraph_close` as last token: ###
+        first_idx   = 0
+        last_idx    = tokens.length - 1
+        first_idx   = if tokens[ first_idx ][ 'type' ] is 'paragraph_open'  then first_idx + 1 else first_idx
+        last_idx    = if tokens[  last_idx ][ 'type' ] is 'paragraph_close' then  last_idx - 1 else  last_idx
+        ( debug '©9fdeD', "resending", tokens[ idx ] ) for idx in [ first_idx .. last_idx ]
+        stream.write tokens[ idx ] for idx in [ first_idx .. last_idx ]
+    else
+      debug '©vKQlM', "resending", md_source
+      stream.write md_source
 
 #===========================================================================================================
 #
@@ -1119,6 +1119,7 @@ tracker_pattern = /// ^
     # confluence:           confluence
     environment:          {}
   #.........................................................................................................
+  ### TAINT `settings` and fitting should be the same object ###
   settings =
     S:                S
   #.........................................................................................................
@@ -1127,6 +1128,8 @@ tracker_pattern = /// ^
   # confluence  = D.create_throughstream()
   R             = D.create_fitting_from_readwritestreams readstream, writestream, settings
   { input }     = R
+  #.........................................................................................................
+  S.resend = @new_resender S, readstream
   #.........................................................................................................
   readstream
     .pipe @_PRE.$flatten_tokens                 S

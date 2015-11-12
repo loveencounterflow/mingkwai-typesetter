@@ -948,14 +948,9 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
 #===========================================================================================================
 #
 #-----------------------------------------------------------------------------------------------------------
-@create_tex_writefitting = ( layout_info ) ->
+@create_tex_writefitting = ( S ) ->
   ### TAINT get state via return value of MKTS.create_mdreadstream ###
   ### TAINT make execution of `$produce_mktscript` a matter of settings ###
-  ### TAINT use `S` or `settings` for arguments ###
-  S =
-    options:              @options
-    layout_info:          layout_info
-    # input:                input
   #.......................................................................................................
   readstream    = D.create_throughstream()
   writestream   = D.create_throughstream()
@@ -1017,46 +1012,56 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
   process.exit 1
 
 
-# #===========================================================================================================
-# # PDF FROM MD
-# #-----------------------------------------------------------------------------------------------------------
-# @pdf_from_md = ( source_route, handler ) ->
-#   ### TAINT code duplication ###
-#   ### TAIN only works with docs in the filesystem, not with literal texts ###
-#   #---------------------------------------------------------------------------------------------------------
-#   f = => step ( resume ) =>
-#     handler                ?= ->
-#     layout_info             = HELPERS.new_layout_info @options, source_route
-#     yield @write_mkts_master layout_info, resume
-#     source_locator          = layout_info[ 'source-locator'  ]
-#     content_locator         = layout_info[ 'content-locator' ]
-#     tex_output              = njs_fs.createWriteStream content_locator
-#     #.......................................................................................................
-#     mkscript_locator        = layout_info[ 'mkscript-locator' ]
-#     mkscript_output         = njs_fs.createWriteStream mkscript_locator
-#     #.......................................................................................................
-#     tex_output.on 'close', =>
-#       HELPERS.write_pdf layout_info, ( error ) =>
-#         throw error if error?
-#         handler null if handler?
-#     #.......................................................................................................
-#     ### TAINT should read MD source stream ###
-#     md_source               = njs_fs.readFileSync source_locator, encoding: 'utf-8'
-#     md_fitting              = MKTS.create_md_readfitting md_source
-#     { input }               = md_fitting
-#     tex_fitting             = @create_tex_writefitting layout_info, input
-#     tex_stream              = tex_fitting[ 'output' ]
-#     tex_stream
-#       # .pipe D.$show()
-#       .pipe tex_output
-#     #.......................................................................................................
-#     tex_fitting[ 'outputs' ][ 'mktscript' ]
-#       .pipe mkscript_output
-#     #.......................................................................................................
-#     input.resume()
-#   #---------------------------------------------------------------------------------------------------------
-#   D.run f, @_handle_error
+#===========================================================================================================
+# PDF FROM MD
+#-----------------------------------------------------------------------------------------------------------
+@pdf_from_md = ( source_route, handler ) ->
+  ### TAINT code duplication ###
+  ### TAIN only works with docs in the filesystem, not with literal texts ###
+  #---------------------------------------------------------------------------------------------------------
+  f = => step ( resume ) =>
+    handler                ?= ->
+    layout_info             = HELPERS.new_layout_info @options, source_route
+    yield @write_mkts_master layout_info, resume
+    source_locator          = layout_info[ 'source-locator'  ]
+    content_locator         = layout_info[ 'content-locator' ]
+    file_output             = njs_fs.createWriteStream content_locator
+    #.......................................................................................................
+    mkscript_locator        = layout_info[ 'mkscript-locator' ]
+    mkscript_output         = njs_fs.createWriteStream mkscript_locator
+    #.......................................................................................................
+    file_output.on 'close', =>
+      HELPERS.write_pdf layout_info, ( error ) =>
+        throw error if error?
+        handler null if handler?
+    #.......................................................................................................
+    S =
+      options:              @options
+      layout_info:          layout_info
+    #.......................................................................................................
+    ### TAINT should read MD source stream ###
+    md_source               = njs_fs.readFileSync source_locator, encoding: 'utf-8'
+    md_fitting              = MKTS.create_md_readfitting md_source
+    tex_fitting             = @create_tex_writefitting S
+    md_input                =  md_fitting[ 'input'  ]
+    md_output               =  md_fitting[ 'output' ]
+    tex_input               = tex_fitting[ 'input'  ]
+    tex_output              = tex_fitting[ 'output' ]
+    #.......................................................................................................
+    S.resend = md_fitting[ 'S' ].resend
+    #.......................................................................................................
+    md_output
+      .pipe tex_input
+    tex_output
+      .pipe file_output
+    #.......................................................................................................
+    md_input.resume()
+  #---------------------------------------------------------------------------------------------------------
+  D.run f, @_handle_error
 
+
+#===========================================================================================================
+# TEX FROM MD
 #-----------------------------------------------------------------------------------------------------------
 @tex_from_md = ( md_source, settings, handler ) ->
   ### TAINT code duplication ###
@@ -1067,7 +1072,7 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
     when 3 then null
     else throw new Error "expected 2 or 3 arguments, got #{arity}"
   #.........................................................................................................
-  D.$collect_and_call = ( handler ) =>
+  $collect_and_call = ( handler ) =>
     Z = []
     return $ ( event, send, end ) =>
       Z.push event if event?
@@ -1077,17 +1082,25 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
   #.........................................................................................................
   source_route        = settings[ 'source-route' ] ? '<STRING>'
   layout_info         = HELPERS.new_layout_info @options, source_route, false
+  #.........................................................................................................
+  S =
+    options:              @options
+    layout_info:          layout_info
+  #.........................................................................................................
   md_fitting          = MKTS.create_md_readfitting md_source
-  tex_fitting         = @create_tex_writefitting layout_info
+  tex_fitting         = @create_tex_writefitting S
   md_input            =  md_fitting[ 'input'  ]
   md_output           =  md_fitting[ 'output' ]
   tex_input           = tex_fitting[ 'input'  ]
   tex_output          = tex_fitting[ 'output' ]
   #.........................................................................................................
+  S.resend = md_fitting[ 'S' ].resend
+  #.........................................................................................................
   md_output
     .pipe tex_input
   tex_output
-    .pipe D.$collect_and_call handler
+    # .pipe D.$join()
+    .pipe $collect_and_call handler
   #.........................................................................................................
   D.run ( => md_input.resume() ), @_handle_error
   return null
