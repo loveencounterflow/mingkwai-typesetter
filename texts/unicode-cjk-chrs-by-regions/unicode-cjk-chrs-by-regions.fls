@@ -169,13 +169,3 @@ INPUT /usr/local/texlive/2014/texmf-dist/tex/latex/microtype/mt-LatinModernRoman
 INPUT /usr/local/texlive/2014/texmf-dist/tex/latex/microtype/mt-LatinModernRoman.cfg
 INPUT /Volumes/Storage/io/mingkwai-typesetter/texts/unicode-cjk-chrs-by-regions/.content.tex
 INPUT /Volumes/Storage/io/mingkwai-typesetter/texts/unicode-cjk-chrs-by-regions/.content.tex
-INPUT /usr/local/texlive/2014/texmf-dist/fonts/map/fontname/texfonts.map
-INPUT /usr/local/texlive/2014/texmf-dist/fonts/map/fontname/texfonts.map
-INPUT /usr/local/texlive/2014/texmf-dist/fonts/tfm/public/cm/cmmi9.tfm
-INPUT /usr/local/texlive/2014/texmf-dist/fonts/tfm/public/cm/cmmi6.tfm
-INPUT /usr/local/texlive/2014/texmf-dist/fonts/tfm/public/cm/cmsy9.tfm
-INPUT /usr/local/texlive/2014/texmf-dist/fonts/tfm/public/cm/cmsy6.tfm
-INPUT /usr/local/texlive/2014/texmf-dist/fonts/tfm/public/cm/cmr9.tfm
-INPUT /usr/local/texlive/2014/texmf-dist/tex/latex/microtype/mt-cmr.cfg
-INPUT /usr/local/texlive/2014/texmf-dist/tex/latex/microtype/mt-cmr.cfg
-INPUT /usr/local/texlive/2014/texmf-dist/fonts/tfm/public/cm/cmr6.tfm

@@ -986,7 +986,6 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
     .pipe @MKTX.INLINE.$em_and_strong                     S
     .pipe @MKTX.BLOCK.$paragraph                          S
     .pipe @MKTX.CLEANUP.$remove_empty_texts               S
-    .pipe MKTS.$close_dangling_open_tags                  S
     .pipe MKTS.$show_mktsmd_events                        S
     # .pipe mktscript_in
     .pipe @MKTX.$show_unhandled_tags                      S
@@ -1053,6 +1052,13 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
     md_output
       .pipe tex_input
     tex_output
+      .pipe $ ( event, send, end ) =>
+        if event?
+          info CND.steel '##########', JSON.stringify event
+          send event
+        if end?
+          info CND.steel '##########', 'end'
+          end() # setTimeout end, 1000
       .pipe file_output
     #.......................................................................................................
     md_input.resume()

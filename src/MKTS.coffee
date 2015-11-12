@@ -315,12 +315,13 @@ tracker_pattern = /// ^
   return $ ( token, send ) =>
     { type, map, } = token
     if type is 'html_block'
+      debug '©nVYhf', token
       ### TAINT `map` location data is borked with this method ###
       ### add extraneous text content; this causes the parser to parse the HTML block as a paragraph
       with some inline HTML: ###
       XXX_source  = "XXX" + token[ 'content' ]
       ### for `environment` see https://markdown-it.github.io/markdown-it/#MarkdownIt.parse ###
-      ### TAINT what to do with useful data appearing environment? ###
+      ### TAINT what to do with useful data appearing in `environment`? ###
       environment = {}
       tokens      = md_parser.parse XXX_source, environment
       ### remove extraneous text content: ###
@@ -339,15 +340,24 @@ tracker_pattern = /// ^
   _send                 = null
   remark                = @_get_remark()
   within_footnote_block = false
+  end_token             = Symbol.for 'end'
   #.........................................................................................................
   send_unknown = ( token, meta ) =>
     { type, } = token
     _send [ '?', type, token[ 'content' ], meta, ]
     unknown_tokens.push type unless type in unknown_tokens
   #.........................................................................................................
-  return $ ( token, send, end ) =>
+  # return $ ( token, send, end ) =>
+  return $ ( token, send ) =>
     _send = send
-    if token?
+    #.......................................................................................................
+    if token is end_token
+      if unknown_tokens.length > 0
+        send remark 'warn', "unknown tokens: #{unknown_tokens.sort().join ', '}", {}
+      send [ '>', 'document', null, {}, ]
+      # setImmediate => send.end()
+      setTimeout ( => send.end() ), 1000
+    else if token?
       { type
         map
         markup }      = token
@@ -452,12 +462,13 @@ tracker_pattern = /// ^
         last_map = map
       #.....................................................................................................
       if type is 'footnote_block_close' then within_footnote_block = no
-    #.......................................................................................................
-    if end?
-      if unknown_tokens.length > 0
-        send remark 'warn', "unknown tokens: #{unknown_tokens.sort().join ', '}", {}
-      send [ '>', 'document', null, {}, ]
-      end()
+    # #.......................................................................................................
+    # if end?
+    #   if unknown_tokens.length > 0
+    #     send remark 'warn', "unknown tokens: #{unknown_tokens.sort().join ', '}", {}
+    #   send [ '>', 'document', null, {}, ]
+    #   # setImmediate => end()
+    #   setTimeout ( => end() ), 1000
     return null
 
 #-----------------------------------------------------------------------------------------------------------
@@ -524,11 +535,8 @@ tracker_pattern = /// ^
           send event
       end()
 
-
-#===========================================================================================================
-#
 #-----------------------------------------------------------------------------------------------------------
-@$close_dangling_open_tags = ( S ) ->
+@_PRE.$close_dangling_open_tags = ( S ) =>
   tag_stack = []
   remark    = @_get_remark()
   #.........................................................................................................
@@ -544,9 +552,11 @@ tracker_pattern = /// ^
           when '[' then sub_type = ']'
           when '(' then sub_type = ')'
         send remark 'resend', "`#{sub_name}#{sub_type}`", @copy meta
-        S.resend "debug '©Vc8qO'"
-        S.resend [ sub_type, sub_name, sub_text, ( @copy sub_meta ), ]
-        # send [ 'tex', "'©nAf98', \\end{multicols}", ]
+        debug '©NmqCl', "resending"
+        S.confluence.write "debug '©Vc8qO'"
+        # S.confluence.write [ sub_type, sub_name, sub_text, ( @copy sub_meta ), ]
+        # S.resend "debug '©Vc8qO'"
+        # S.resend [ sub_type, sub_name, sub_text, ( @copy sub_meta ), ]
       send event
     else if @select event, [ '{', '[', '(', ]
       tag_stack.push [ type, name, null, meta, ]
@@ -1027,7 +1037,6 @@ tracker_pattern = /// ^
   R = R.replace /\x10A/g, '\x10'
   return R
 
-
 #-----------------------------------------------------------------------------------------------------------
 @new_resender = ( S, stream ) ->
   ### TAINT new parser not needed, can reuse 'main' parser ###
@@ -1115,11 +1124,12 @@ tracker_pattern = /// ^
 @create_md_readfitting = ( md_source, settings ) ->
   throw new Error "settings currently unsupported" if settings?
   #.........................................................................................................
+  ### for `environment` see https://markdown-it.github.io/markdown-it/#MarkdownIt.parse ###
   S =
     # confluence:           confluence
     environment:          {}
   #.........................................................................................................
-  ### TAINT `settings` and fitting should be the same object ###
+  ### TAINT `settings`, `S` and fitting should be the same object ###
   settings =
     S:                S
   #.........................................................................................................
@@ -1130,9 +1140,12 @@ tracker_pattern = /// ^
   { input }     = R
   #.........................................................................................................
   S.resend = @new_resender S, readstream
+  S.confluence = readstream
+  # S.confluence = input
   #.........................................................................................................
   readstream
     .pipe @_PRE.$flatten_tokens                 S
+    .pipe D.$show '7686756'
     .pipe @_PRE.$reinject_html_blocks           S
     .pipe @_PRE.$rewrite_markdownit_tokens      S
     .pipe @_ESC.$expand_html_comments           S
@@ -1140,13 +1153,18 @@ tracker_pattern = /// ^
     .pipe @_ESC.$expand_raw_spans               S
     .pipe @_ESC.$expand_do_spans                S
     .pipe @_PRE.$process_end_command            S
-    .pipe @_PRE.$consolidate_footnotes          S
+    .pipe @_PRE.$close_dangling_open_tags       S
+    # .pipe @_PRE.$consolidate_footnotes          S
     .pipe writestream
+  #.........................................................................................................
+  readstream.on     'end', -> debug '©tdfA4', "readstream ended"
+  writestream.on    'end', -> debug '©sId1V', "writestream ended"
+  input.on          'end', -> debug '©1sbYv', "input ended"
+  R[ 'output' ].on  'end', -> debug '©zSMOc', "output ended"
   #.........................................................................................................
   input.pause()
   input.on 'resume', =>
     md_parser   = @_new_markdown_parser()
-    ### for `environment` see https://markdown-it.github.io/markdown-it/#MarkdownIt.parse ###
     @_ESC.initialize S
     ### TAINT consider to make `<<!end>>` special and detect it before parsing ###
     md_source   = @_ESC.escape_html_comments_raw_spans_and_commands S, md_source
@@ -1154,7 +1172,9 @@ tracker_pattern = /// ^
     for token in tokens
       input.write token
     # debug '©UomUZ', tokens
-    input.end()
+    # input.end()
+    debug '©AwrCk',  "after hours"
+    input.write Symbol.for 'end'
   #.........................................................................................................
   return R
 
