@@ -948,16 +948,16 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
 #===========================================================================================================
 #
 #-----------------------------------------------------------------------------------------------------------
-@create_tex_writefitting = ( layout_info, input ) ->
+@create_tex_writefitting = ( layout_info ) ->
   ### TAINT get state via return value of MKTS.create_mdreadstream ###
   ### TAINT make execution of `$produce_mktscript` a matter of settings ###
   ### TAINT use `S` or `settings` for arguments ###
   S =
     options:              @options
     layout_info:          layout_info
-    input:                input
+    # input:                input
   #.......................................................................................................
-  readstream    = input # D.create_throughstream()
+  readstream    = D.create_throughstream()
   writestream   = D.create_throughstream()
   # mktscript_in  = D.create_throughstream()
   # mktscript_out = D.create_throughstream()
@@ -1042,7 +1042,7 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
 #     #.......................................................................................................
 #     ### TAINT should read MD source stream ###
 #     md_source               = njs_fs.readFileSync source_locator, encoding: 'utf-8'
-#     md_fitting              = MKTS.create_mdreadfitting md_source
+#     md_fitting              = MKTS.create_md_readfitting md_source
 #     { input }               = md_fitting
 #     tex_fitting             = @create_tex_writefitting layout_info, input
 #     tex_stream              = tex_fitting[ 'output' ]
@@ -1057,33 +1057,40 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
 #   #---------------------------------------------------------------------------------------------------------
 #   D.run f, @_handle_error
 
-# #-----------------------------------------------------------------------------------------------------------
-# @tex_from_md = ( md_source, settings, handler ) ->
-#   ### TAINT code duplication ###
-#   switch arity = arguments.length
-#     when 2
-#       handler   = settings
-#       settings  = {}
-#     when 3 then null
-#     else throw new Error "expected 2 or 3 arguments, got #{arity}"
-#   #.........................................................................................................
-#   source_route        = settings[ 'source-route' ] ? '<STRING>'
-#   layout_info         = HELPERS.new_layout_info @options, source_route, false
-#   md_fitting          = MKTS.create_mdreadfitting md_source
-#   { input
-#     output }          = md_fitting
-#   f                   = => input.resume()
-#   tex_fitting         = @create_tex_writefitting layout_info, input
-#   tex_stream          = tex_fitting[ 'output' ]
-#   Z                   = []
-#   #.........................................................................................................
-#   tex_stream.pipe $ ( event, send ) =>
-#     debug '©G3QXt', rpr event
-#     Z.push event
-#   tex_stream.on 'end', -> handler null, Z.join ''
-#   #.........................................................................................................
-#   D.run f, @_handle_error
-#   return null
+#-----------------------------------------------------------------------------------------------------------
+@tex_from_md = ( md_source, settings, handler ) ->
+  ### TAINT code duplication ###
+  switch arity = arguments.length
+    when 2
+      handler   = settings
+      settings  = {}
+    when 3 then null
+    else throw new Error "expected 2 or 3 arguments, got #{arity}"
+  #.........................................................................................................
+  D.$collect_and_call = ( handler ) =>
+    Z = []
+    return $ ( event, send, end ) =>
+      Z.push event if event?
+      if end?
+        handler null, Z.join ''
+        end()
+  #.........................................................................................................
+  source_route        = settings[ 'source-route' ] ? '<STRING>'
+  layout_info         = HELPERS.new_layout_info @options, source_route, false
+  md_fitting          = MKTS.create_md_readfitting md_source
+  tex_fitting         = @create_tex_writefitting layout_info
+  md_input            =  md_fitting[ 'input'  ]
+  md_output           =  md_fitting[ 'output' ]
+  tex_input           = tex_fitting[ 'input'  ]
+  tex_output          = tex_fitting[ 'output' ]
+  #.........................................................................................................
+  md_output
+    .pipe tex_input
+  tex_output
+    .pipe D.$collect_and_call handler
+  #.........................................................................................................
+  D.run ( => md_input.resume() ), @_handle_error
+  return null
 
 
 
@@ -1098,4 +1105,25 @@ unless module.parent?
   # event = [ '}', 'single-column', ]
   # event = [ '{', 'new-page', ]
   # debug '©Gpn1J', select event, [ '{', '}'], [ 'single-column', 'new-page', ]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

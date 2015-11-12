@@ -365,28 +365,28 @@ MKTS_XXX                  = require './mkts-typesetter-interim'
 #     T.eq matcher, result
 #     done()
 
-# #-----------------------------------------------------------------------------------------------------------
-# @[ "MKTS_XXX.tex_from_md (1)" ] = ( T, done ) ->
-#   settings  = bare: yes
-#   probe     = """
-#     A paragraph with *emphasis*.
+#-----------------------------------------------------------------------------------------------------------
+@[ "MKTS_XXX.tex_from_md (1)" ] = ( T, done ) ->
+  settings  = bare: yes
+  probe     = """
+    A paragraph with *emphasis*.
 
-#     A paragraph with **bold text**.
-#     """
-#   # warn "missing `.p` inside `(multi-column)`"
-#   matcher   = """
-#     % begin of MD document
-#     A paragraph with {\\mktsStyleItalic{}emphasis\\/}.\\mktsShowpar\\par
-#     A paragraph with {\\mktsStyleBold{}bold text}.\\mktsShowpar\\par
+    A paragraph with **bold text**.
+    """
+  # warn "missing `.p` inside `(multi-column)`"
+  matcher   = """
+    % begin of MD document
+    A paragraph with {\\mktsStyleItalic{}emphasis\\/}.\\mktsShowpar\\par
+    A paragraph with {\\mktsStyleBold{}bold text}.\\mktsShowpar\\par
 
-#     % end of MD document
+    % end of MD document
 
-#     """
-#   step ( resume ) =>
-#     result = yield MKTS_XXX.tex_from_md probe, settings, resume
-#     # echo result
-#     T.eq matcher.trim(), result.trim()
-#     done()
+    """
+  step ( resume ) =>
+    result = yield MKTS_XXX.tex_from_md probe, settings, resume
+    echo result
+    T.eq matcher.trim(), result.trim()
+    done()
 
 #-----------------------------------------------------------------------------------------------------------
 @[ "MKTS_XXX.mktscript_from_md (1)" ] = ( T, done ) ->

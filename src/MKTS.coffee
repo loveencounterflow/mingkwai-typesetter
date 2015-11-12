@@ -1067,7 +1067,7 @@ tracker_pattern = /// ^
     when 3 then null
     else throw new Error "expected 2 or 3 arguments, got #{arity}"
   bare        = settings[ 'bare' ] ? no
-  md_fitting  = @create_mdreadfitting source
+  md_fitting  = @create_md_readfitting source
   { input
     output }  = md_fitting
   Z           = []
@@ -1089,7 +1089,7 @@ tracker_pattern = /// ^
     else throw new Error "expected 2 or 3 arguments, got #{arity}"
   #.........................................................................................................
   source_route        = settings[ 'source-route' ] ? '<STRING>'
-  md_fitting          = @create_mdreadfitting md_source
+  md_fitting          = @create_md_readfitting md_source
   { input
     output }          = md_fitting
   f                   = => input.resume()
@@ -1112,7 +1112,7 @@ tracker_pattern = /// ^
 #===========================================================================================================
 # STREAM CREATION
 #-----------------------------------------------------------------------------------------------------------
-@create_mdreadfitting = ( md_source, settings ) ->
+@create_md_readfitting = ( md_source, settings ) ->
   throw new Error "settings currently unsupported" if settings?
   #.........................................................................................................
   S =
