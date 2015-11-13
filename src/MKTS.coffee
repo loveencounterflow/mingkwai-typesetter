@@ -315,7 +315,6 @@ tracker_pattern = /// ^
   return $ ( token, send ) =>
     { type, map, } = token
     if type is 'html_block'
-      debug '©nVYhf', token
       ### TAINT `map` location data is borked with this method ###
       ### add extraneous text content; this causes the parser to parse the HTML block as a paragraph
       with some inline HTML: ###
@@ -352,12 +351,20 @@ tracker_pattern = /// ^
     _send = send
     #.......................................................................................................
     if token is end_token
+      # whisper "encountered `end` token"
       if unknown_tokens.length > 0
         send remark 'warn', "unknown tokens: #{unknown_tokens.sort().join ', '}", {}
       send [ '>', 'document', null, {}, ]
-      # setImmediate => send.end()
-      setTimeout ( => send.end() ), 1000
-    else if token?
+      setImmediate =>
+        whisper "ending input stream"
+        send.end()
+      # setTimeout ( => send.end() ), 1000
+    else if CND.isa_list token
+      ### TAINT this clause shouldn't be here; we should target resends (which could be source texts
+      or MKTS events) to appropriate insertion points in the stream ###
+      ### pass through re-injected MKTS events ###
+      send token
+    else
       { type
         map
         markup }      = token
@@ -552,11 +559,7 @@ tracker_pattern = /// ^
           when '[' then sub_type = ']'
           when '(' then sub_type = ')'
         send remark 'resend', "`#{sub_name}#{sub_type}`", @copy meta
-        debug '©NmqCl', "resending"
-        S.confluence.write "debug '©Vc8qO'"
-        # S.confluence.write [ sub_type, sub_name, sub_text, ( @copy sub_meta ), ]
-        # S.resend "debug '©Vc8qO'"
-        # S.resend [ sub_type, sub_name, sub_text, ( @copy sub_meta ), ]
+        S.resend [ sub_type, sub_name, sub_text, ( @copy sub_meta ), ]
       send event
     else if @select event, [ '{', '[', '(', ]
       tag_stack.push [ type, name, null, meta, ]
@@ -735,6 +738,7 @@ tracker_pattern = /// ^
   #.........................................................................................................
   return $ ( event, send, end ) ->
     if event?
+      # debug '©Yo4cR', rpr event
       [ type, name, text, meta, ] = event
       unless type in [ 'tex', 'text', ]
         { line_nr, } = meta
@@ -743,15 +747,17 @@ tracker_pattern = /// ^
         else
           anchor = ""
         #.....................................................................................................
-        # debug '©Yo4cR', event
         # send JSON.stringify event
+        text_rpr = ''
         if text?
-          ### TAINT doesn't recognize escaped backslash ###
-          text_rpr = ( rpr text ).replace /\\n/g, '\n'
-          # send text_rpr
-          send "#{anchor}#{type}#{name} #{text_rpr}"
-        else
-          send "#{anchor}#{type}#{name}"
+          ### TAINT we have to adopt a new event format; for now, the `text` attribute is misnamed,
+          as it is really a `data` attribute ###
+          if CND.isa_text text
+            ### TAINT doesn't recognize escaped backslash ###
+            text_rpr = ' ' + ( rpr text ).replace /\\n/g, '\n'
+          else if ( Object.keys text ).length > 0
+            text_rpr = ' ' + JSON.stringify text
+        send "#{anchor}#{type}#{name}#{text_rpr}"
         send '\n'
         # switch type
         #   when '?'
@@ -1039,6 +1045,8 @@ tracker_pattern = /// ^
 
 #-----------------------------------------------------------------------------------------------------------
 @new_resender = ( S, stream ) ->
+  ### TAINT re-parsing new source text should be handled by regular stream transform at an appropriate
+  stream entry point ###
   ### TAINT new parser not needed, can reuse 'main' parser ###
   md_parser = @_new_markdown_parser()
   return ( md_source ) =>
@@ -1059,10 +1067,9 @@ tracker_pattern = /// ^
         last_idx    = tokens.length - 1
         first_idx   = if tokens[ first_idx ][ 'type' ] is 'paragraph_open'  then first_idx + 1 else first_idx
         last_idx    = if tokens[  last_idx ][ 'type' ] is 'paragraph_close' then  last_idx - 1 else  last_idx
-        ( debug '©9fdeD', "resending", tokens[ idx ] ) for idx in [ first_idx .. last_idx ]
+        # ( debug '©9fdeD', "resending", tokens[ idx ] ) for idx in [ first_idx .. last_idx ]
         stream.write tokens[ idx ] for idx in [ first_idx .. last_idx ]
     else
-      debug '©vKQlM', "resending", md_source
       stream.write md_source
 
 #===========================================================================================================
@@ -1145,22 +1152,22 @@ tracker_pattern = /// ^
   #.........................................................................................................
   readstream
     .pipe @_PRE.$flatten_tokens                 S
-    .pipe D.$show '7686756'
     .pipe @_PRE.$reinject_html_blocks           S
     .pipe @_PRE.$rewrite_markdownit_tokens      S
+    # .pipe D.$show '7686756'
     .pipe @_ESC.$expand_html_comments           S
     .pipe @_ESC.$expand_actions                 S
     .pipe @_ESC.$expand_raw_spans               S
     .pipe @_ESC.$expand_do_spans                S
     .pipe @_PRE.$process_end_command            S
     .pipe @_PRE.$close_dangling_open_tags       S
-    # .pipe @_PRE.$consolidate_footnotes          S
+    .pipe @_PRE.$consolidate_footnotes          S
     .pipe writestream
   #.........................................................................................................
-  readstream.on     'end', -> debug '©tdfA4', "readstream ended"
-  writestream.on    'end', -> debug '©sId1V', "writestream ended"
-  input.on          'end', -> debug '©1sbYv', "input ended"
-  R[ 'output' ].on  'end', -> debug '©zSMOc', "output ended"
+  # readstream.on     'end', -> debug '©tdfA4', "readstream ended"
+  # writestream.on    'end', -> debug '©sId1V', "writestream ended"
+  # input.on          'end', -> debug '©1sbYv', "input ended"
+  # R[ 'output' ].on  'end', -> debug '©zSMOc', "output ended"
   #.........................................................................................................
   input.pause()
   input.on 'resume', =>
@@ -1171,9 +1178,7 @@ tracker_pattern = /// ^
     tokens      = md_parser.parse md_source, S.environment
     for token in tokens
       input.write token
-    # debug '©UomUZ', tokens
-    # input.end()
-    debug '©AwrCk',  "after hours"
+    # whisper "sending `end` token"
     input.write Symbol.for 'end'
   #.........................................................................................................
   return R

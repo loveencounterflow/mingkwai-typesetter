@@ -898,7 +898,7 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
 #===========================================================================================================
 #
 #-----------------------------------------------------------------------------------------------------------
-@MKTX.$show_unhandled_tags = ( S ) ->
+@MKTX.$show_unhandled_tags = ( S ) =>
   return $ ( event, send ) =>
     ### TAINT selection could be simpler, less repetitive ###
     if event[ 0 ] in [ 'tex', 'text', ]
@@ -926,7 +926,7 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
         pre               = ''
         post              = '█'
       event_txt         = first + last + ' ' + text
-      event_tex         = @MKTS.TEX.fix_typography_for_tex event_txt, S.options
+      event_tex         = @MKTX.TEX.fix_typography_for_tex event_txt, S.options
       ### TAINT use mkts command ###
       send [ 'tex', """{\\mktsStyleBold\\color{violet}{%
         \\mktsStyleSymbol#{pre}}#{event_tex}{\\mktsStyleSymbol#{post}}}""" ]
@@ -1052,13 +1052,11 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
     md_output
       .pipe tex_input
     tex_output
-      .pipe $ ( event, send, end ) =>
-        if event?
-          info CND.steel '##########', JSON.stringify event
-          send event
-        if end?
-          info CND.steel '##########', 'end'
-          end() # setTimeout end, 1000
+      # .pipe $ ( event, send, end ) =>
+      #   if event?
+      #     send event
+      #   if end?
+      #     end() # setTimeout end, 1000
       .pipe file_output
     #.......................................................................................................
     md_input.resume()

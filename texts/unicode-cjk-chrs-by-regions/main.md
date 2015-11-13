@@ -1,7 +1,6 @@
 
-<<!multi-column>>
+<<{multi-column>>
 xxx
-<<!end>>
 
 
 `<<(\$>>eval block<<\$)>>`
@@ -30,7 +29,6 @@ xxx 这们说时 **xxx**
 xxx 这们说时 **xxx**
 ```
 
-<<!end>>
 
 * HTML:
 * Raw (i.e. <<(raw>>\TeX<<raw)>>/<<(raw>>\LaTeX<<raw)>>): `<<<...raw material...>>>`
@@ -51,6 +49,7 @@ xxx 这们说时 **xxx**
 **源**: 水流所从出的地方. 事物的根由.
 **元**: 头、首、始、大. 基本.
 
+<<!end>>
 
 
 Here’s a so-called Euler-Venn-Diagram that shows (1) how many CJK character (a.k.a. ideograph, sinograph, tetragraph, …) codepoints in Unicode are considered ‘important for daily use’ (just under 10,000); (2) how many of those are used in each of the three important usage areas (i.e. Ⓒ for Mainland China (PRC without the Hong Kong and Macau SARs), Ⓙ for Japan, and Ⓣ for Taiwan, Hong Kong, and Macau); and (3) how much overlap there is for each of these regions. The bars made up from sample characters in the lower part visualize the same data, but this time with bar heights instead of circle areas being proportional to numbers.
