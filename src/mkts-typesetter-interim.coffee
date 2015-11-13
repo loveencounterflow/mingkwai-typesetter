@@ -267,7 +267,7 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
     if chunk.length > 0
       # debug '©zDJqU', last_command, JSON.stringify chunk.join '.'
       R.push chunk.join ''
-      R.push '}' unless last_command in [ null, 'latin', ]
+      R.push "}" unless last_command in [ null, 'latin', ]
     chunk.length = 0
     return null
   #.........................................................................................................
@@ -405,7 +405,7 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
   #.........................................................................................................
   return $ ( event, send ) =>
     #.......................................................................................................
-    if select event, '<', 'document'
+    if select event, '(', 'document'
       send stamp event
       send [ 'tex', "\n% begin of MD document\n", ]
     #.......................................................................................................
@@ -417,7 +417,7 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
   #.........................................................................................................
   return $ ( event, send ) =>
     #.......................................................................................................
-    if select event, '>', 'document'
+    if select event, ')', 'document'
       send stamp event
       send [ 'tex', "\n% end of MD document\n", ]
     #.......................................................................................................
@@ -440,7 +440,7 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
     if select event, '!', 'multi-column'
       [ type, name, text, meta, ] = event
       send stamp hide [ '(', '!', name, ( copy meta ), ]
-      send [ '{', 'multi-column', text, ( copy meta ), ]
+      send [ '(', 'multi-column', text, ( copy meta ), ]
       send stamp hide [ ')', '!', name, ( copy meta ), ]
     #.......................................................................................................
     else
@@ -456,13 +456,13 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
   return $ ( event, send ) =>
     within_multi_column = track.within '{multi-column}'
     track event
-    if select event, [ '{', '}', ], 'multi-column'
+    if select event, [ '(', ')', ], 'multi-column'
       send stamp event
       [ type, name, text, meta, ] = event
       #.....................................................................................................
-      if type is '{'
+      if type is '('
         if within_multi_column
-          send remark 'drop', "`{multi-column` because already within `{multi-column}`". copy meta
+          send remark 'drop', "`(multi-column` because already within `(multi-column)`", ( copy meta )
         else
           send track @MKTX.REGION._begin_multi_column()
       #.....................................................................................................
@@ -470,7 +470,7 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
         if within_multi_column
           send track @MKTX.REGION._end_multi_column()
         else
-          send remark 'drop', "`multi-column}` because not within `{multi-column}`". copy meta
+          send remark 'drop', "`multi-column)` because not within `(multi-column)`", ( copy meta )
     #.......................................................................................................
     else
       send event
@@ -487,10 +487,10 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
     within_multi_column = track.within '{multi-column}'
     track event
     #.......................................................................................................
-    if select event, [ '{', '}', ], 'single-column'
+    if select event, [ '(', ')', ], 'single-column'
       [ type, name, text, meta, ] = event
       #.....................................................................................................
-      if type is '{'
+      if type is '('
         if within_multi_column
           send remark 'insert', "`multi-column}`", copy meta
           send track @MKTX.REGION._end_multi_column()
@@ -527,11 +527,11 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
       text = text.replace /\u0020/g, '\u00a0' if within_keep_lines
       send [ type, name, text, meta, ]
     #.......................................................................................................
-    else if select event, [ '{', '}', ], 'keep-lines'
+    else if select event, [ '(', ')', ], 'keep-lines'
       send stamp event
       [ type, name, text, meta, ] = event
       #.....................................................................................................
-      if type is '{'
+      if type is '('
         track.enter '{keep-lines}'
         send [ 'tex', "\\begingroup\\mktsObeyAllLines{}", ]
       else
@@ -556,11 +556,11 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
         text = text.replace /\u0020/g, '\u00a0'
       send [ type, name, text, meta, ]
     #.......................................................................................................
-    else if select event, [ '{', '}', ], 'code'
+    else if select event, [ '(', ')', ], 'code'
       send stamp event
       [ type, name, text, meta, ] = event
       #.....................................................................................................
-      if type is '{'
+      if type is '('
         send [ 'tex', "\\begingroup\\mktsObeyAllLines\\mktsStyleCode{}", ]
       else
         send [ 'tex', "\\endgroup{}", ]
@@ -577,14 +577,14 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
     within_multi_column = track.within '{multi-column}'
     track event
     #.......................................................................................................
-    if select event, [ '[', ']', ], [ 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', ]
+    if select event, [ '(', ')', ], [ 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', ]
       # debug '@rg19TQ', event
       send stamp event
       [ type, name, text, meta, ] = event
       #.....................................................................................................
       # OPEN
       #.....................................................................................................
-      if type is '['
+      if type is '('
         #...................................................................................................
         if within_multi_column and ( name in [ 'h1', 'h2', ] )
           send track @MKTX.REGION._end_multi_column meta
@@ -648,7 +648,7 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
   #.........................................................................................................
   return $ ( event, send ) =>
     #.......................................................................................................
-    if select event, '[', 'ul'
+    if select event, '(', 'ul'
       [ type, name, text, meta, ] = event
       { markup } = meta
       ### TAINT won't work in nested lists ###
@@ -657,15 +657,15 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
       send stamp event
       send [ 'tex', '\\begin{itemize}' ]
     #.......................................................................................................
-    else if select event, '[', 'li'
+    else if select event, '(', 'li'
       send stamp event
       send [ 'tex', "\\item[#{item_markup_tex}] " ]
     #.......................................................................................................
-    else if select event, ']', 'li'
+    else if select event, ')', 'li'
       send stamp event
       send [ 'tex', '\n' ]
     #.......................................................................................................
-    else if select event, ']', 'ul'
+    else if select event, ')', 'ul'
       send stamp event
       send [ 'tex', '\\end{itemize}' ]
     #.......................................................................................................
@@ -724,11 +724,10 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
       # send remark 'convert', "escaped to raw text", copy meta
       send stamp [ '.', 'raw', raw_text, meta, ]
     #.......................................................................................................
-    # else if select event, [ '{', '}', '[', ']', '(', ')', ], 'raw'
-    else if select event, [ '}', ']', ], 'raw'
+    else if select event, [ ')', ], 'raw'
       send stamp event
       send @MKTX.BLOCK._end_paragraph()
-    else if select event, [ '{', '[', '(', ')', ], 'raw'
+    else if select event, [ '(', ')', ], 'raw'
       null
       # send stamp event
     #.......................................................................................................
@@ -831,7 +830,7 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
   #.........................................................................................................
   return $ ( event, send ) =>
     #.......................................................................................................
-    if select event, [ ']', '}', ]
+    if select event, [ ')', ]
       text_count = 0
       send event
     #.......................................................................................................
@@ -862,7 +861,7 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
     if select event, 'tex'
       send event
     #.......................................................................................................
-    else if select event, '<', 'document'
+    else if select event, '(', 'document'
       # debug '©---1', last_was_begin_document
       # debug '©---2', last_was_p
       last_was_p              = no
@@ -876,7 +875,7 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
       last_was_begin_document = no
       send event
     #.......................................................................................................
-    else if select event, [ '{', '[', ]
+    else if select event, [ '(', ]
       # debug '©---5', last_was_begin_document
       # debug '©---6', last_was_p
       if ( not last_was_begin_document ) and ( not last_was_p )
@@ -1118,10 +1117,10 @@ unless module.parent?
 
   # debug '©nL12s', MKTS.as_tex_text '亻龵helo さしすサシス 臺灣國語Ⓒ, Ⓙ, Ⓣ𠀤𠁥&jzr#e202;'
   # debug '©nL12s', MKTS.as_tex_text 'helo さし'
-  # event = [ '{', 'single-column', ]
-  # event = [ '}', 'single-column', ]
-  # event = [ '{', 'new-page', ]
-  # debug '©Gpn1J', select event, [ '{', '}'], [ 'single-column', 'new-page', ]
+  # event = [ '(', 'single-column', ]
+  # event = [ ')', 'single-column', ]
+  # event = [ '(', 'new-page', ]
+  # debug '©Gpn1J', select event, [ '(', ')'], [ 'single-column', 'new-page', ]
 
 
 

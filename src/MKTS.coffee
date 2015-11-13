@@ -162,18 +162,13 @@ parse_methods = get_parse_html_methods()
 @FENCES = {}
 
 #-----------------------------------------------------------------------------------------------------------
-@FENCES.xleft   = [ '<', '{', '[', '(', ]
-@FENCES.xright  = [ '>', '}', ']', ')', ]
-@FENCES.left    = [      '{', '[', '(', ]
-@FENCES.right   = [      '}', ']', ')', ]
+### TAINT moving to parentheses-only syntax; note that most of the `FENCES` submodule can then go ###
+@FENCES.xleft   = [ '(', ]
+@FENCES.xright  = [ ')', ]
+@FENCES.left    = [ '(', ]
+@FENCES.right   = [ ')', ]
 @FENCES.xpairs  =
-  '<':  '>'
-  '{':  '}'
-  '[':  ']'
   '(':  ')'
-  '>':  '<'
-  '}':  '{'
-  ']':  '['
   ')':  '('
 
 #-----------------------------------------------------------------------------------------------------------
@@ -189,13 +184,10 @@ parse_methods = get_parse_html_methods()
 @TRACKER = {}
 
 #-----------------------------------------------------------------------------------------------------------
-### TAINT shouldn't be defined at module level ###
-fences_rxcc     = /// < \. \{ \[ \( \) \] \} > ///
-name_rx         = /// [^ \s #{fences_rxcc.source} ]* ///
 tracker_pattern = /// ^
-    ( [ #{fences_rxcc.source} ]? )
-    ( #{name_rx.source}          )
-    ( [ #{fences_rxcc.source} ]? )
+    ( [     .!$(  ]? )
+    ( [^ \s .!$() ]* )
+    ( [         ) ]? )
     $ ///
 
 #-----------------------------------------------------------------------------------------------------------
@@ -354,7 +346,7 @@ tracker_pattern = /// ^
       # whisper "encountered `end` token"
       if unknown_tokens.length > 0
         send remark 'warn', "unknown tokens: #{unknown_tokens.sort().join ', '}", {}
-      send [ '>', 'document', null, {}, ]
+      send [ ')', 'document', null, {}, ]
       setImmediate =>
         whisper "ending input stream"
         send.end()
@@ -379,7 +371,7 @@ tracker_pattern = /// ^
         }
       if is_first
         is_first = no
-        send [ '<', 'document', null, meta, ]
+        send [ '(', 'document', null, meta, ]
       # #.....................................................................................................
       # if type in [
       #   'footnote_ref',
@@ -394,14 +386,14 @@ tracker_pattern = /// ^
         # urge '@a20g', token[ 'type' ], within_footnote_block
         switch type
           # blocks
-          when 'heading_open'       then send [ '[', token[ 'tag' ],  null,               meta, ]
-          when 'heading_close'      then send [ ']', token[ 'tag' ],  null,               meta, ]
+          when 'heading_open'       then send [ '(', token[ 'tag' ],  null,               meta, ]
+          when 'heading_close'      then send [ ')', token[ 'tag' ],  null,               meta, ]
           when 'paragraph_open'     then null
           when 'paragraph_close'    then send [ '.', 'p',             null,               meta, ]
-          when 'bullet_list_open'   then send [ '[', 'ul',            null,               meta, ]
-          when 'bullet_list_close'  then send [ ']', 'ul',            null,               meta, ]
-          when 'list_item_open'     then send [ '[', 'li',            null,               meta, ]
-          when 'list_item_close'    then send [ ']', 'li',            null,               meta, ]
+          when 'bullet_list_open'   then send [ '(', 'ul',            null,               meta, ]
+          when 'bullet_list_close'  then send [ ')', 'ul',            null,               meta, ]
+          when 'list_item_open'     then send [ '(', 'li',            null,               meta, ]
+          when 'list_item_close'    then send [ ')', 'li',            null,               meta, ]
           # inlines
           when 'strong_open'        then send [ '(', 'strong',        null,               meta, ]
           when 'strong_close'       then send [ ')', 'strong',        null,               meta, ]
@@ -444,9 +436,9 @@ tracker_pattern = /// ^
               when 'code'
                 language_name = token[ 'info' ]
                 language_name = 'text' if language_name.length is 0
-                send [ '{', 'code', language_name,               meta,    ]
+                send [ '(', 'code', language_name,               meta,    ]
                 send [ '.', 'text', token[ 'content' ], ( @copy meta ),  ]
-                send [ '}', 'code', language_name,      ( @copy meta ),  ]
+                send [ ')', 'code', language_name,      ( @copy meta ),  ]
               else send_unknown token, meta
           #.................................................................................................
           when 'html_inline'
@@ -473,7 +465,7 @@ tracker_pattern = /// ^
     # if end?
     #   if unknown_tokens.length > 0
     #     send remark 'warn', "unknown tokens: #{unknown_tokens.sort().join ', '}", {}
-    #   send [ '>', 'document', null, {}, ]
+    #   send [ ')', 'document', null, {}, ]
     #   # setImmediate => end()
     #   setTimeout ( => end() ), 1000
     return null
@@ -550,21 +542,21 @@ tracker_pattern = /// ^
   return $ ( event, send ) =>
     [ type, name, text, meta, ] = event
     # debug '©nLnB5', event
-    if @select event, '>', 'document'
+    if @select event, ')', 'document'
       while tag_stack.length > 0
         sub_event                                   = tag_stack.pop()
         [ sub_type, sub_name, sub_text, sub_meta, ] = sub_event
         switch sub_type
-          when '{' then sub_type = '}'
-          when '[' then sub_type = ']'
+          when '(' then sub_type = ')'
+          when '(' then sub_type = ')'
           when '(' then sub_type = ')'
         send remark 'resend', "`#{sub_name}#{sub_type}`", @copy meta
         S.resend [ sub_type, sub_name, sub_text, ( @copy sub_meta ), ]
       send event
-    else if @select event, [ '{', '[', '(', ]
+    else if @select event, '('
       tag_stack.push [ type, name, null, meta, ]
       send event
-    else if @select event, [ '}', ']', ')', ]
+    else if @select event, ')'
       ### TAINT should check matching pairs ###
       tag_stack.pop()
       send event
@@ -673,11 +665,11 @@ tracker_pattern = /// ^
           color = CND.brown
         else
           switch type
-            when '<', '>'      then color = CND.yellow
-            when '{','[',  '(' then color = CND.lime
-            when ')', ']', '}' then color = CND.olive
-            when '!'           then color = CND.indigo
-            when '#'           then color = CND.plum
+            # when '('  then color = CND.yellow
+            when '('  then color = CND.lime
+            when ')'  then color = CND.olive
+            when '!'  then color = CND.indigo
+            when '#'  then color = CND.plum
             when '.'
               switch name
                 when 'text' then color = CND.BLUE
@@ -710,16 +702,15 @@ tracker_pattern = /// ^
         unless @is_hidden event
           switch type
             #.................................................................................................
-            when '{', '[', '(', ')', ']', '}'
+            when '(', ')'
               switch type
-                when '{', '[', '('
+                when '('
                   tag_stack.push [ type, name, ]
-                when ')', ']', '}'
+                when ')'
                   if tag_stack.length > 0
                     [ topmost_type, topmost_name, ] = tag_stack.pop()
                     unless topmost_name is name
-                      topmost_type = { '{': '}', '[': ']', '(', ')', }[ topmost_type ]
-                      warn "encountered #{type}#{name} when #{topmost_type}#{topmost_name} was expected"
+                      warn "encountered <<#{name}#{type}>> when <<#{topmost_name})>> was expected"
                   else
                     warn "level below zero"
               indentation = ( new Array tag_stack.length ).join '  '
@@ -762,9 +753,9 @@ tracker_pattern = /// ^
         # switch type
         #   when '?'
         #     send "\n#{anchor}#{type}#{name}\n"
-        #   when '<', '{', '['
+        #   when '('
         #     send "#{anchor}#{type}#{name}"
-        #   when '>', '}', ']', '!'
+        #   when ')', '!'
         #     send "#{type}\n"
         #   when '('
         #     send "#{type}#{name}"
@@ -852,13 +843,14 @@ tracker_pattern = /// ^
   ///g
 
 #-----------------------------------------------------------------------------------------------------------
+### Code duplication; see `FENCES` ###
 @_ESC.command_pattern = ///
   ( ^ | [^\\] )
   (
     <<
-    ( [     ! { [ (           ]?  )
-    ( [^ \s ! { [ ( ) \] > }  ]+? )
-    ( [              ) \]   } ]?  )
+    ( [     !(    ]?  )
+    ( [^ \s !()\] ]+? )
+    ( [       )\] ]?  )
     >>
     )
   ///g
@@ -1089,7 +1081,7 @@ tracker_pattern = /// ^
   Z           = []
   output.pipe $ ( event, send ) =>
     # debug '©G3QXt', event
-    Z.push event unless bare and @select event, [ '<', '>', ], 'document'
+    Z.push event unless bare and @select event, [ '(', ')', ], 'document'
   output.on 'end', -> handler null, Z
   input.resume()
   return null
