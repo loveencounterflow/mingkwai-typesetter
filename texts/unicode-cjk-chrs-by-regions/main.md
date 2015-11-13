@@ -34,20 +34,23 @@ xxx 这们说时 **xxx**
 * Raw (i.e. <<(raw>>\TeX<<raw)>>/<<(raw>>\LaTeX<<raw)>>): `<<<...raw material...>>>`
 <!-- * Raw (i.e. <<<\TeX>>>/<<<\LaTeX>>>): `<<<...raw material...>>>` -->
 * Regions:
-  <!-- distinction between span and block needed? -->
-  * Spans: `<<(span>>...<<span)>>`
-  * Blocks: `<<[block>>...<<block]>>`
-* ...
-  * ...
-    * Actions: `<<!action>>`
-    * Exec-Block: <<(!>>exec block<<!)>>
-  * Value Interpolation:
+  * Full Notation: `<<(name>>...<<name)>>`
+  * Short Notation: `<<(name>>...<<)>>`
+* Commands: `<<!action>>`
+* Exec-Block:
+  * Full Notation: <<(!>>exec block<<!)>>
+* Values:
+  `<<$foo>>` will be replaced by the current value of variable `foo` into the source
+  <<(### TAINT>> unclear how to derive value in case it is not
+    already a string ### <<)>>
     <!-- * Variables: `<<$variable>>` -->
     * Eval-Block: `<<(\$>>eval block<<\$)>>`
 
 **原**: 最初的，开始的. 本来.
 **源**: 水流所从出的地方. 事物的根由.
 **元**: 头、首、始、大. 基本.
+
+
 
 <<!end>>
 

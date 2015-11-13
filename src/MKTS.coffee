@@ -542,27 +542,24 @@ tracker_pattern = /// ^
   return $ ( event, send ) =>
     [ type, name, text, meta, ] = event
     # debug '©nLnB5', event
-    if @select event, ')', 'document'
-      while tag_stack.length > 0
-        sub_event                                   = tag_stack.pop()
-        [ sub_type, sub_name, sub_text, sub_meta, ] = sub_event
-        switch sub_type
-          when '(' then sub_type = ')'
-          when '(' then sub_type = ')'
-          when '(' then sub_type = ')'
-        send remark 'resend', "`#{sub_name}#{sub_type}`", @copy meta
-        S.resend [ sub_type, sub_name, sub_text, ( @copy sub_meta ), ]
-      send event
+    if name is 'document'
+      if type is ')'
+        while tag_stack.length > 0
+          sub_event                                   = tag_stack.pop()
+          [ sub_type, sub_name, sub_text, sub_meta, ] = sub_event
+          switch sub_type
+            when '(' then sub_type = ')'
+            when '(' then sub_type = ')'
+            when '(' then sub_type = ')'
+          send remark 'resend', "`#{sub_name}#{sub_type}`", @copy meta
+          S.resend [ sub_type, sub_name, sub_text, ( @copy sub_meta ), ]
     else if @select event, '('
       tag_stack.push [ type, name, null, meta, ]
-      send event
     else if @select event, ')'
       ### TAINT should check matching pairs ###
       tag_stack.pop()
-      send event
-    else
-      send event
     #.......................................................................................................
+    send event
     return null
 
 #-----------------------------------------------------------------------------------------------------------
