@@ -49,11 +49,49 @@ show_events = ( probe, events ) ->
     echo "    #{JSON.stringify event}"
   echo "    ]"
 
+#-----------------------------------------------------------------------------------------------------------
+copy_regex_non_global = ( re ) ->
+  flags = ( if re.ignoreCase then 'i' else '' ) + \
+          ( if re.multiline  then 'm' else '' ) +
+          ( if re.sticky     then 'y' else '' )
+  return new RegExp re.source, flags
 
+#-----------------------------------------------------------------------------------------------------------
+list_from_mtach = ( match ) ->
+  return null unless match?
+  R = Array.from match
+  R.splice 0, 1
+  return R
 
-# #===========================================================================================================
-# # TESTS
-# #-----------------------------------------------------------------------------------------------------------
+#===========================================================================================================
+# TESTS
+#-----------------------------------------------------------------------------------------------------------
+@[ "MKTS._ESC.action_patterns[ 0 ] matches action macro" ] = ( T, done ) ->
+  probes_and_matchers = [
+    ["<<(.>><<)>>",["",".",""]]
+    ["<<(.>>xxx<<)>>",null]
+    ]
+  re = copy_regex_non_global MKTS._ESC.action_patterns[ 0 ]
+  for [ probe, matcher, ] in probes_and_matchers
+    result = list_from_mtach probe.match re
+    help JSON.stringify [ probe, result, ]
+    T.eq result, matcher
+  done()
+
+#-----------------------------------------------------------------------------------------------------------
+@[ "MKTS._ESC.action_patterns[ 1 ] matches action macro" ] = ( T, done ) ->
+  probes_and_matchers = [
+    ["<<(.>><<)>>",null]
+    ["<<(.>>some code<<)>>",["",".","some code"]]
+    ]
+  re = copy_regex_non_global MKTS._ESC.action_patterns[ 1 ]
+  for [ probe, matcher, ] in probes_and_matchers
+    result = list_from_mtach probe.match re
+    help JSON.stringify [ probe, result, ]
+    T.eq result, matcher
+  done()
+
+#-----------------------------------------------------------------------------------------------------------
 # @[ "MKTS.FENCES.parse accepts dot patterns" ] = ( T, done ) ->
 #   probes_and_matchers = [
 #     [ '.',     [ '.', null,   null, ], ]
@@ -174,26 +212,26 @@ show_events = ( probe, events ) ->
 #     T.eq ( track.within '{multi-column}'  ), matcher[ 1 ]
 #   done()
 
-#-----------------------------------------------------------------------------------------------------------
-@[ "MKTS.mkts_events_from_md (1)" ] = ( T, done ) ->
-  # settings  = bare: yes
-  probe     = """`<<($>>eval block<<$)>>`"""
-  warn "should merge texts"
-  matcher   = [
-    ["<","document",null,{"line_nr":1,"col_nr":2,"markup":""}]
-    ["(","code",null,{"line_nr":1,"col_nr":2,"markup":"`"}]
-    [".","text","<<($>>",{"line_nr":1,"col_nr":2,"markup":"`"}]
-    [".","text","eval block",{"line_nr":1,"col_nr":2,"markup":"`"}]
-    [".","text","<<$)>>",{"line_nr":1,"col_nr":2,"markup":"`"}]
-    [")","code",null,{"line_nr":1,"col_nr":2,"markup":"`"}]
-    [".","p",null,{"line_nr":1,"col_nr":2,"markup":""}]
-    [">","document",null,{}]
-    ]
-  step ( resume ) =>
-    result = yield MKTS.mkts_events_from_md probe, resume
-    show_events probe, result
-    T.eq matcher, result
-    done()
+# #-----------------------------------------------------------------------------------------------------------
+# @[ "MKTS.mkts_events_from_md (1)" ] = ( T, done ) ->
+#   # settings  = bare: yes
+#   probe     = """`<<($>>eval block<<$)>>`"""
+#   warn "should merge texts"
+#   matcher   = [
+#     ["<","document",null,{"line_nr":1,"col_nr":2,"markup":""}]
+#     ["(","code",null,{"line_nr":1,"col_nr":2,"markup":"`"}]
+#     [".","text","<<($>>",{"line_nr":1,"col_nr":2,"markup":"`"}]
+#     [".","text","eval block",{"line_nr":1,"col_nr":2,"markup":"`"}]
+#     [".","text","<<$)>>",{"line_nr":1,"col_nr":2,"markup":"`"}]
+#     [")","code",null,{"line_nr":1,"col_nr":2,"markup":"`"}]
+#     [".","p",null,{"line_nr":1,"col_nr":2,"markup":""}]
+#     [">","document",null,{}]
+#     ]
+#   step ( resume ) =>
+#     result = yield MKTS.mkts_events_from_md probe, resume
+#     show_events probe, result
+#     T.eq matcher, result
+#     done()
 
 # #-----------------------------------------------------------------------------------------------------------
 # @[ "MKTS.mkts_events_from_md (2)" ] = ( T, done ) ->
@@ -364,90 +402,102 @@ show_events = ( probe, events ) ->
 #     T.eq matcher, result
 #     done()
 
-#-----------------------------------------------------------------------------------------------------------
-@[ "MKTS_XXX.tex_from_md (1)" ] = ( T, done ) ->
-  settings  = bare: yes
-  probe     = """
-    A paragraph with *emphasis*.
+# #-----------------------------------------------------------------------------------------------------------
+# @[ "MKTS_XXX.tex_from_md (1)" ] = ( T, done ) ->
+#   settings  = bare: yes
+#   probe     = """
+#     A paragraph with *emphasis*.
 
-    A paragraph with **bold text**.
-    """
-  # warn "missing `.p` inside `(multi-column)`"
-  matcher   = """
-    % begin of MD document
-    A paragraph with {\\mktsStyleItalic{}emphasis\\/}.\\mktsShowpar\\par
-    A paragraph with {\\mktsStyleBold{}bold text}.\\mktsShowpar\\par
+#     A paragraph with **bold text**.
+#     """
+#   # warn "missing `.p` inside `(multi-column)`"
+#   matcher   = """
+#     % begin of MD document
+#     A paragraph with {\\mktsStyleItalic{}emphasis\\/}.\\mktsShowpar\\par
+#     A paragraph with {\\mktsStyleBold{}bold text}.\\mktsShowpar\\par
 
-    % end of MD document
+#     % end of MD document
 
-    """
-  step ( resume ) =>
-    result = yield MKTS_XXX.tex_from_md probe, settings, resume
-    echo result
-    T.eq matcher.trim(), result.trim()
-    done()
+#     """
+#   step ( resume ) =>
+#     result = yield MKTS_XXX.tex_from_md probe, settings, resume
+#     echo result
+#     T.eq matcher.trim(), result.trim()
+#     done()
 
-#-----------------------------------------------------------------------------------------------------------
-@[ "MKTS_XXX.mktscript_from_md (1)" ] = ( T, done ) ->
-  settings  = bare: yes
-  probe     = """
-    A paragraph with *emphasis*.
+# #-----------------------------------------------------------------------------------------------------------
+# @[ "MKTS_XXX.mktscript_from_md (1)" ] = ( T, done ) ->
+#   settings  = bare: yes
+#   probe     = """
+#     A paragraph with *emphasis*.
 
-    A paragraph with **bold text**.
-    """
-  # warn "missing `.p` inside `(multi-column)`"
-  matcher   = """
-    1 █ (document
-    1 █ .text 'A paragraph with '
-    1 █ (em
-    1 █ .text 'emphasis'
-    1 █ )em
-    1 █ .text '.'
-    1 █ .p
-    3 █ .text 'A paragraph with '
-    3 █ (strong
-    3 █ .text 'bold text'
-    3 █ )strong
-    3 █ .text '.'
-    3 █ .p
-    )document
-    # EOF
-    """
-  step ( resume ) =>
-    result = yield MKTS.mktscript_from_md probe, settings, resume
-    echo result
-    T.eq matcher.trim(), result.trim()
-    done()
+#     A paragraph with **bold text**.
 
-#-----------------------------------------------------------------------------------------------------------
-@[ "MKTS_XXX.mktscript_from_md (2)" ] = ( T, done ) ->
-  settings  = bare: yes
-  probe     = """
-    <<(multi-column>>
+#     Using <foo>HTML tags **inhibits** MD syntax</foo>.
+#     """
+#   # warn "missing `.p` inside `(multi-column)`"
+#   matcher   = """
+#     1 █ (document
+#     1 █ .text 'A paragraph with '
+#     1 █ (em
+#     1 █ .text 'emphasis'
+#     1 █ )em
+#     1 █ .text '.'
+#     1 █ .p
+#     3 █ .text 'A paragraph with '
+#     3 █ (strong
+#     3 █ .text 'bold text'
+#     3 █ )strong
+#     3 █ .text '.'
+#     3 █ .p
+#     5 █ .text 'Using '
+#     5 █ (foo
+#     5 █ .text 'HTML tags '
+#     5 █ (strong
+#     5 █ .text 'inhibits'
+#     5 █ )strong
+#     5 █ .text ' MD syntax'
+#     5 █ )foo
+#     5 █ .text '.'
+#     5 █ .p
+#     )document
+#     # EOF
+#     """
+#   step ( resume ) =>
+#     result = yield MKTS.mktscript_from_md probe, settings, resume
+#     echo result
+#     T.eq matcher.trim(), result.trim()
+#     done()
 
-    <div>B</div>
+# #-----------------------------------------------------------------------------------------------------------
+# @[ "MKTS_XXX.mktscript_from_md (2)" ] = ( T, done ) ->
+#   settings  = bare: yes
+#   probe     = """
+#     <<(multi-column>>
 
-    """
-  # warn "missing `.p` inside `(multi-column)`"
-  matcher   = """
-    1 █ (document
-    1 █ (multi-column
-    1 █ .p
-    1 █ (div
-    1 █ .text 'B'
-    1 █ )div
-    1 █ .p
-    #resend '`multi-column)`'
-    1 █ )multi-column
-    )document
-    # EOF
-    """
-  step ( resume ) =>
-    result = yield MKTS.mktscript_from_md probe, settings, resume
-    echo result
-    T.eq matcher.trim(), result.trim()
-    # T.fail "not yet ready"
-    done()
+#     <div>B</div>
+
+#     """
+#   # warn "missing `.p` inside `(multi-column)`"
+#   matcher   = """
+#     1 █ (document
+#     1 █ (multi-column
+#     1 █ .p
+#     1 █ (div
+#     1 █ .text 'B'
+#     1 █ )div
+#     1 █ .p
+#     #resend '`multi-column)`'
+#     1 █ )multi-column
+#     )document
+#     # EOF
+#     """
+#   step ( resume ) =>
+#     result = yield MKTS.mktscript_from_md probe, settings, resume
+#     echo result
+#     T.eq matcher.trim(), result.trim()
+#     # T.fail "not yet ready"
+#     done()
 
 
 #===========================================================================================================
