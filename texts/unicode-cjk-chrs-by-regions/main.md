@@ -80,8 +80,13 @@ block.
     * Full Notation: `<<(:>>some code<<:)>>`, `<<(:js>>some code<<:js)>>`
     * Short Notation: `<<(:>>some code<<)>>`, `<<(:js>>some code<<)>>`
 
+    As with regions, the rule is that wherever the more explicit long form
+    is used, the action type marker (`.` (dot) or `:` (colon)) and the action
+    name of the start and end tags must match. 
+
 * To interpolate the value of a variable into the document,
-  either a vocal action `<<(:>>foo<<)>>` or the shorter **Value** notation `<<$foo>>` that uses a single pair of macro brackets can be used.
+  either a vocal action `<<(:>>foo<<)>>` or the shorter **Value**
+  notation `<<$foo>>` can be used.
   <!-- ### TAINT unclear how to derive value in case it is not already a string ### -->
 
 * Finally, there are **Raw** regions that give authors an opportunity
