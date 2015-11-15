@@ -838,6 +838,10 @@ tracker_pattern = /// ^
     \)>>                        # then: right round bracket, then: two RPBs.
   ///g ]
 
+# debug '234652', @_ESC.action_patterns
+# debug "abc<<(:js>>4 + 3<<:js)>>def".match @_ESC.action_patterns[ 0 ]
+# process.exit()
+
 #-----------------------------------------------------------------------------------------------------------
 @_ESC.bracketed_raw_patterns = [ ///  # A bracketed raw macro
   ( ^ | [^ \\ ] )               # starts either at the first chr or a chr other than backslash
@@ -858,10 +862,7 @@ tracker_pattern = /// ^
 #   ///g
 
 #-----------------------------------------------------------------------------------------------------------
-### NB While the documentation distinguishes between 'command macros' (`<<!foo>>`) and 'value macros'
-(`<<$foo>>`), they're treated together here because they're syntactically identical except for the
-macro marker (`!` vs `$`). ###
-@_ESC.command_patterns = [ ///  # A command macro
+@_ESC.command_and_value_patterns = [ ///  # A command macro
   ( ^ | [^ \\ ] )               # starts either at the first chr or a chr other than backslash
   <<                            # then: two left pointy brackets,
     ( [ ! $ ] )                 # then: an exclamation mark or a dollar sign,
@@ -876,9 +877,9 @@ macro marker (`!` vs `$`). ###
   ///g ]
 
 #-----------------------------------------------------------------------------------------------------------
-### NB The end command macro looks like any other command except we can detect it with a much simpler,
-almost no-op RegEx; we want to do that so we can, as a first processing step, remove it and any material
-that appears after it, thereby inhibiting any processing of those portions. ###
+### NB The end command macro looks like any other command except we can detect it with a much simpler
+RegEx; we want to do that so we can, as a first processing step, remove it and any material that appears
+after it, thereby inhibiting any processing of those portions. ###
 @_ESC.end_command_patterns = [ ///  # Then end command macro
   ( ^ |                         # starts either at the first chr
     ^ [ \s\S ]+ [^ \\ ] )       # or a number of chrs whose last one is not a backslash
@@ -922,57 +923,82 @@ that appears after it, thereby inhibiting any processing of those portions. ###
   return null
 
 #-----------------------------------------------------------------------------------------------------------
-@_ESC.truncate_text_at_end_command_macro = ( text ) =>
+@_ESC.truncate_text_at_end_command_macro = ( S, text ) =>
   return [ text, 0, ] unless ( match = @_ESC.match_first @_ESC.end_command_patterns, text )?
   R = match[ 1 ]
   return [ R, text.length - R.length, ]
 
 #-----------------------------------------------------------------------------------------------------------
-@_ESC.escape_macro_tags = ( S, text ) =>
-  # debug '©II6XI', rpr text
-  [ R, discard_count, ] = @_ESC.truncate_text_at_end_command_macro text
-  whisper "detected <<!end>> macro; discarding approx. #{discard_count} characters" if discard_count > 0
-  R = @_ESC.escape_escape_chrs R
+@_ESC.escape_html_comments = ( S, text ) =>
+  R = text
   #.........................................................................................................
-  R = R.replace @_ESC.html_comment_pattern, ( _, $1, $2 ) =>
-    key           = @_ESC.register_content S, 'comment', $2 #.trim()
-    return "#{$1}\x15#{key}\x13"
-  # #.........................................................................................................
-  # R = R.replace @_ESC.action_pattern, ( _, $1, $2, $3 ) =>
-  #   $1           ?= ''
-  #   $2           ?= ''
-  #   $1           += $2
-  #   raw_content   = $3 ? ''
-  #   debug '©0qY0t', raw_content
-  #   id            = @_ESC.register_content S, 'do', raw_content
-  #   return "#{$1}\x15#{id}\x13"
-  # #.........................................................................................................
-  # R = R.replace @_ESC.raw_bracketed_pattern, ( _, $1, $2, $3 ) =>
-  #   $1           ?= ''
-  #   $2           ?= ''
-  #   $1           += $2
-  #   raw_content   = $3 ? ''
-  #   id            = @_ESC.register_content S, 'raw', raw_content
-  #   return "#{$1}\x15#{id}\x13"
-  # #.........................................................................................................
-  # R = R.replace @_ESC.raw_heredoc_pattern, ( _, $1, $2, $3 ) =>
-  #   raw_content   = $3 ? ''
-  #   id            = @_ESC.register_content S, 'raw', raw_content
-  #   return "#{$1}\x15#{id}\x13"
-  # #.........................................................................................................
-  # R = R.replace @_ESC.command_pattern, ( _, $1, $2, $3, $4, $5 ) =>
-  #   raw_content     = $2
-  #   parsed_content  = [ $3, $4, $5, ]
-  #   ### replace fences by `null` in case of empty string: ###
-  #   parsed_content[ 0 ] = null if parsed_content[ 0 ].length is 0
-  #   parsed_content[ 2 ] = null if parsed_content[ 2 ].length is 0
-  #   key                 = @_ESC.register_content S, 'action', raw_content, parsed_content
-  #   return "#{$1}\x15#{key}\x13"
+  R = R.replace @_ESC.html_comment_pattern, ( _, previous_chr, content ) =>
+    key = @_ESC.register_content S, 'comment', null, content, content.trim()
+    return "#{previous_chr}\x15#{key}\x13"
   #.........................................................................................................
   return R
 
 #-----------------------------------------------------------------------------------------------------------
-@_ESC.register_content = ( S, kind, raw, parsed = null ) =>
+@_ESC.escape_bracketed_raw_macros = ( S, text ) =>
+  R = text
+  #.........................................................................................................
+  for pattern in @_ESC.bracketed_raw_patterns
+    R = R.replace pattern, ( _, previous_chr, markup, content ) =>
+      id = @_ESC.register_content S, 'raw', markup, content
+      return "#{previous_chr}\x15#{id}\x13"
+  #.........................................................................................................
+  return R
+
+#-----------------------------------------------------------------------------------------------------------
+@_ESC.escape_action_macros = ( S, text ) =>
+  R = text
+  #.........................................................................................................
+  for pattern in @_ESC.action_patterns
+    R = R.replace pattern, ( _, previous_chr, starter, content, stopper ) =>
+      # debug '©0qY0t'
+      # debug '©0qY0t', rpr text
+      # debug '©0qY0t', rpr previous_chr
+      # debug 'starter', rpr starter
+      # debug 'content', rpr content
+      # debug 'stopper', rpr stopper
+      mode      = starter[ 0 ]
+      mode      = if mode is '.' then 'silent' else 'vocal'
+      language  = starter[ 1 .. ]
+      language  = 'coffee' if language is ''
+      ### TAINT not using arguments peoperly ###
+      id        = @_ESC.register_content S, 'action', [ mode, language, ], content
+      return "#{previous_chr}\x15#{id}\x13"
+  #.........................................................................................................
+  return R
+
+#-----------------------------------------------------------------------------------------------------------
+@_ESC.escape_command_and_value_macros = ( S, text ) =>
+  R = text
+  #.........................................................................................................
+  for pattern in @_ESC.command_and_value_patterns
+    R = R.replace pattern, ( _, previous_chr, markup, content ) =>
+      kind            = if markup is '!' then 'command' else 'value'
+      parsed_content  = '???'
+      key             = @_ESC.register_content S, kind, markup, content, parsed_content
+      return "#{previous_chr}\x15#{key}\x13"
+  #.........................................................................................................
+  return R
+
+#-----------------------------------------------------------------------------------------------------------
+@_ESC.escape_macros = ( S, text ) =>
+  # debug '©II6XI', rpr text
+  [ R, discard_count, ] = @_ESC.truncate_text_at_end_command_macro S, text
+  whisper "detected <<!end>> macro; discarding approx. #{discard_count} characters" if discard_count > 0
+  R = @_ESC.escape_escape_chrs                 R
+  R = @_ESC.escape_html_comments            S, R
+  R = @_ESC.escape_bracketed_raw_macros     S, R
+  R = @_ESC.escape_action_macros            S, R
+  R = @_ESC.escape_command_and_value_macros S, R
+  #.........................................................................................................
+  return R
+
+#-----------------------------------------------------------------------------------------------------------
+@_ESC.register_content = ( S, kind, markup, raw, parsed = null ) =>
   registry  = S[ '_ESC' ][ 'registry' ]
   index     = S[ '_ESC' ][ 'index' ]
   id        = index.get raw
@@ -982,7 +1008,7 @@ that appears after it, thereby inhibiting any processing of those portions. ###
   else
     id      = registry.length
     key     = "#{kind}#{id}"
-    registry.push { key, raw, parsed, }
+    registry.push { key, markup, raw, parsed, }
     index.set raw, id
   return key
 
@@ -1113,7 +1139,7 @@ that appears after it, thereby inhibiting any processing of those portions. ###
   return ( md_source ) =>
     ### TAINT must handle data in environment ###
     if CND.isa_text md_source
-      md_source   = @_ESC.escape_macro_tags S, md_source
+      md_source   = @_ESC.escape_macros S, md_source
       environment = {}
       tokens      = md_parser.parse md_source, environment
       # tokens      = md_parser.parse md_source, S.environment
@@ -1235,7 +1261,7 @@ that appears after it, thereby inhibiting any processing of those portions. ###
     md_parser   = @_new_markdown_parser()
     @_ESC.initialize S
     ### TAINT consider to make `<<!end>>` special and detect it before parsing ###
-    md_source   = @_ESC.escape_macro_tags S, md_source
+    md_source   = @_ESC.escape_macros S, md_source
     tokens      = md_parser.parse md_source, S.environment
     for token in tokens
       input.write token

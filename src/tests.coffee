@@ -70,113 +70,113 @@ match_first = ( patterns, probe ) ->
   return null
 
 
-# #===========================================================================================================
-# # TESTS
-# #-----------------------------------------------------------------------------------------------------------
-# @[ "MKTS._ESC.action_patterns[ 0 ] matches action macro" ] = ( T, done ) ->
-#   probes_and_matchers = [
-#     ["<<(.>><<)>>",["",".","",""]]
-#     ["<<(.>>xxx<<)>>",["",".","xxx",""]]
-#     ["<<(.>>some code<<)>>",["",".","some code",""]]
-#     ["abc<<(.>>4 + 3<<)>>def",["c",".","4 + 3",""]]
-#     ["<<(:>><<)>>",["",":","",""]]
-#     ["<<(:>>xxx<<)>>",["",":","xxx",""]]
-#     ["<<(:>>some code<<)>>",["",":","some code",""]]
-#     ["abc<<(:>>4 + 3<<)>>def",["c",":","4 + 3",""]]
-#     ["abc<<(:>>bitfield \\>> 1 <<)>>def",["c",":","bitfield \\>> 1 ",""]]
-#     ["abc<<(:>>bitfield >\\> 1 <<)>>def",["c",":","bitfield >\\> 1 ",""]]
-#     ["abc<<(:js>>4 + 3<<)>>def",["c",":js","4 + 3",""]]
-#     ["abc<<(.js>>4 + 3<<)>>def",["c",".js","4 + 3",""]]
-#     ["abc<<(:js>>4 + 3<<:js)>>def",["c",":js","4 + 3",":js"]]
-#     ["abc<<(.js>>4 + 3<<.js)>>def",["c",".js","4 + 3",".js"]]
-#     ["abc<<(:js>>4 + 3<<:)>>def",null]
-#     ["abc<<(.js>>4 + 3<<.)>>def",null]
-#     ]
-#   patterns = ( copy_regex_non_global pattern for pattern in MKTS._ESC.action_patterns )
-#   for [ probe, matcher, ] in probes_and_matchers
-#     result = list_from_match match_first patterns, probe
-#     help JSON.stringify [ probe, result, ]
-#     T.eq result, matcher
-#   done()
+#===========================================================================================================
+# TESTS
+#-----------------------------------------------------------------------------------------------------------
+@[ "MKTS._ESC.action_patterns[ 0 ] matches action macro" ] = ( T, done ) ->
+  probes_and_matchers = [
+    ["<<(.>><<)>>",["",".","",""]]
+    ["<<(.>>xxx<<)>>",["",".","xxx",""]]
+    ["<<(.>>some code<<)>>",["",".","some code",""]]
+    ["abc<<(.>>4 + 3<<)>>def",["c",".","4 + 3",""]]
+    ["<<(:>><<)>>",["",":","",""]]
+    ["<<(:>>xxx<<)>>",["",":","xxx",""]]
+    ["<<(:>>some code<<)>>",["",":","some code",""]]
+    ["abc<<(:>>4 + 3<<)>>def",["c",":","4 + 3",""]]
+    ["abc<<(:>>bitfield \\>> 1 <<)>>def",["c",":","bitfield \\>> 1 ",""]]
+    ["abc<<(:>>bitfield >\\> 1 <<)>>def",["c",":","bitfield >\\> 1 ",""]]
+    ["abc<<(:js>>4 + 3<<)>>def",["c",":js","4 + 3",""]]
+    ["abc<<(.js>>4 + 3<<)>>def",["c",".js","4 + 3",""]]
+    ["abc<<(:js>>4 + 3<<:js)>>def",["c",":js","4 + 3",":js"]]
+    ["abc<<(.js>>4 + 3<<.js)>>def",["c",".js","4 + 3",".js"]]
+    ["abc<<(:js>>4 + 3<<:)>>def",null]
+    ["abc<<(.js>>4 + 3<<.)>>def",null]
+    ]
+  patterns = ( copy_regex_non_global pattern for pattern in MKTS._ESC.action_patterns )
+  for [ probe, matcher, ] in probes_and_matchers
+    result = list_from_match match_first patterns, probe
+    help JSON.stringify [ probe, result, ]
+    T.eq result, matcher
+  done()
 
-# #-----------------------------------------------------------------------------------------------------------
-# @[ "MKTS._ESC.bracketed_raw_patterns matches raw macro" ] = ( T, done ) ->
-#   probes_and_matchers = [
-#     ["<<<...raw material...>>>",["","<","...raw material..."]]
-#     ["<<(.>>some code<<)>>",null]
-#     ["<<<>>>",["","<",""]]
-#     ["abcdef<<<\\XeLaTeX{}>>>ghijklm",["f","<","\\XeLaTeX{}"]]
-#     ["abcdef<<<123\\>>>0>>>ghijklm",["f","<","123\\>>>0"]]
-#     ["abcdef\\<<<123>>>ghijklm",null]
-#     ["abcdef<\\<<123>>>ghijklm",null]
-#     ["abcdef<<\\<123>>>ghijklm",null]
-#     ["abcdef<<<123>>\\>ghijklm",null]
-#     ]
-#   patterns = ( copy_regex_non_global pattern for pattern in MKTS._ESC.bracketed_raw_patterns )
-#   for [ probe, matcher, ] in probes_and_matchers
-#     result = list_from_match match_first patterns, probe
-#     help JSON.stringify [ probe, result, ]
-#     T.eq result, matcher
-#   done()
+#-----------------------------------------------------------------------------------------------------------
+@[ "MKTS._ESC.bracketed_raw_patterns matches raw macro" ] = ( T, done ) ->
+  probes_and_matchers = [
+    ["<<<...raw material...>>>",["","<","...raw material..."]]
+    ["<<(.>>some code<<)>>",null]
+    ["<<<>>>",["","<",""]]
+    ["abcdef<<<\\XeLaTeX{}>>>ghijklm",["f","<","\\XeLaTeX{}"]]
+    ["abcdef<<<123\\>>>0>>>ghijklm",["f","<","123\\>>>0"]]
+    ["abcdef\\<<<123>>>ghijklm",null]
+    ["abcdef<\\<<123>>>ghijklm",null]
+    ["abcdef<<\\<123>>>ghijklm",null]
+    ["abcdef<<<123>>\\>ghijklm",null]
+    ]
+  patterns = ( copy_regex_non_global pattern for pattern in MKTS._ESC.bracketed_raw_patterns )
+  for [ probe, matcher, ] in probes_and_matchers
+    result = list_from_match match_first patterns, probe
+    help JSON.stringify [ probe, result, ]
+    T.eq result, matcher
+  done()
 
-# #-----------------------------------------------------------------------------------------------------------
-# @[ "MKTS._ESC.command_patterns matches command macro" ] = ( T, done ) ->
-#   probes_and_matchers = [
-#     ["<<!>>",["","!",""]]
-#     ["<<!name>>",["","!","name"]]
-#     ["abc<<!name>>def",["c","!","name"]]
-#     ["abc<<!n>me>>def",["c","!","n>me"]]
-#     ["abc<<!n>\\>me>>def",["c","!","n>\\>me"]]
-#     ["abc<<!n\\>me>>def",["c","!","n\\>me"]]
-#     ["abc\\<<!nme>>def",null]
-#     ["<<$>>",["","$",""]]
-#     ["<<$name>>",["","$","name"]]
-#     ["abc<<$name>>def",["c","$","name"]]
-#     ["abc<<$n>me>>def",["c","$","n>me"]]
-#     ["abc<<$n>\\>me>>def",["c","$","n>\\>me"]]
-#     ["abc<<$n\\>me>>def",["c","$","n\\>me"]]
-#     ["abc\\<<$nme>>def",null]
-#     ]
-#   patterns = ( copy_regex_non_global pattern for pattern in MKTS._ESC.command_patterns )
-#   for [ probe, matcher, ] in probes_and_matchers
-#     result = list_from_match match_first patterns, probe
-#     help JSON.stringify [ probe, result, ]
-#     T.eq result, matcher
-#   done()
+#-----------------------------------------------------------------------------------------------------------
+@[ "MKTS._ESC.command_and_value_patterns matches command macro" ] = ( T, done ) ->
+  probes_and_matchers = [
+    ["<<!>>",["","!",""]]
+    ["<<!name>>",["","!","name"]]
+    ["abc<<!name>>def",["c","!","name"]]
+    ["abc<<!n>me>>def",["c","!","n>me"]]
+    ["abc<<!n>\\>me>>def",["c","!","n>\\>me"]]
+    ["abc<<!n\\>me>>def",["c","!","n\\>me"]]
+    ["abc\\<<!nme>>def",null]
+    ["<<$>>",["","$",""]]
+    ["<<$name>>",["","$","name"]]
+    ["abc<<$name>>def",["c","$","name"]]
+    ["abc<<$n>me>>def",["c","$","n>me"]]
+    ["abc<<$n>\\>me>>def",["c","$","n>\\>me"]]
+    ["abc<<$n\\>me>>def",["c","$","n\\>me"]]
+    ["abc\\<<$nme>>def",null]
+    ]
+  patterns = ( copy_regex_non_global pattern for pattern in MKTS._ESC.command_and_value_patterns )
+  for [ probe, matcher, ] in probes_and_matchers
+    result = list_from_match match_first patterns, probe
+    help JSON.stringify [ probe, result, ]
+    T.eq result, matcher
+  done()
 
-# #-----------------------------------------------------------------------------------------------------------
-# @[ "MKTS._ESC.illegal_patterns matches consecutive unescaped LPBs" ] = ( T, done ) ->
-#   probes_and_matchers = [
-#     ["helo world",null]
-#     ["helo \\<< world",null]
-#     ["helo <\\< world",null]
-#     ["helo << world",[" ","<<"," world"]]
-#     ]
-#   patterns = ( copy_regex_non_global pattern for pattern in MKTS._ESC.illegal_patterns )
-#   for [ probe, matcher, ] in probes_and_matchers
-#     result = list_from_match match_first patterns, probe
-#     help JSON.stringify [ probe, result, ]
-#     T.eq result, matcher
-#   done()
+#-----------------------------------------------------------------------------------------------------------
+@[ "MKTS._ESC.illegal_patterns matches consecutive unescaped LPBs" ] = ( T, done ) ->
+  probes_and_matchers = [
+    ["helo world",null]
+    ["helo \\<< world",null]
+    ["helo <\\< world",null]
+    ["helo << world",[" ","<<"," world"]]
+    ]
+  patterns = ( copy_regex_non_global pattern for pattern in MKTS._ESC.illegal_patterns )
+  for [ probe, matcher, ] in probes_and_matchers
+    result = list_from_match match_first patterns, probe
+    help JSON.stringify [ probe, result, ]
+    T.eq result, matcher
+  done()
 
-# #-----------------------------------------------------------------------------------------------------------
-# @[ "MKTS._ESC.end_command_patterns matches end command macro" ] = ( T, done ) ->
-#   probes_and_matchers = [
-#     ["some text here <<!end>> and some there",["some text here "]]
-#     ["some text here <<!end>>",["some text here "]]
-#     ["<<!end>>",[""]]
-#     ["",null]
-#     ["<<!end>> and some there",[""]]
-#     ["\\<<!end>> and some there",null]
-#     ["some text here \\<<!end>> and some there",null]
-#     ["some text here <<!end>\\> and some there",null]
-#     ]
-#   patterns = MKTS._ESC.end_command_patterns
-#   for [ probe, matcher, ] in probes_and_matchers
-#     result = list_from_match match_first patterns, probe
-#     help JSON.stringify [ probe, result, ]
-#     T.eq result, matcher
-#   done()
+#-----------------------------------------------------------------------------------------------------------
+@[ "MKTS._ESC.end_command_patterns matches end command macro" ] = ( T, done ) ->
+  probes_and_matchers = [
+    ["some text here <<!end>> and some there",["some text here "]]
+    ["some text here <<!end>>",["some text here "]]
+    ["<<!end>>",[""]]
+    ["",null]
+    ["<<!end>> and some there",[""]]
+    ["\\<<!end>> and some there",null]
+    ["some text here \\<<!end>> and some there",null]
+    ["some text here <<!end>\\> and some there",null]
+    ]
+  patterns = MKTS._ESC.end_command_patterns
+  for [ probe, matcher, ] in probes_and_matchers
+    result = list_from_match match_first patterns, probe
+    help JSON.stringify [ probe, result, ]
+    T.eq result, matcher
+  done()
 
 #-----------------------------------------------------------------------------------------------------------
 @[ "MKTS._ESC.truncate_text_at_end_command_macro" ] = ( T, done ) ->
@@ -191,23 +191,122 @@ match_first = ( patterns, probe ) ->
     ["some text here <<!end>\\> and some there",["some text here <<!end>\\> and some there",0]]
     ]
   for [ probe, matcher, ] in probes_and_matchers
-    result = MKTS._ESC.truncate_text_at_end_command_macro probe
+    result = MKTS._ESC.truncate_text_at_end_command_macro null, probe
     help JSON.stringify [ probe, result, ]
     T.eq result, matcher
   done()
 
 #-----------------------------------------------------------------------------------------------------------
-@[ "MKTS._ESC.escape_macro_tags" ] = ( T, done ) ->
+@[ "MKTS._ESC.escape_html_comments" ] = ( T, done ) ->
   probes_and_matchers = [
-    ["some text here and some there","some text here and some there",{"registry":[],"index":{}}]
-    ["some text here<!-- omit this --> and some there","some text here\u0015comment0\u0013 and some there",{"registry":[{"key":"comment0","raw":" omit this ","parsed":null}],"index":{}}]
+    ["some text here and some there","some text here and some there",[]]
+    ["some text here<!-- omit this --> and some there","some text here\u0015comment0\u0013 and some there",[{"key":"comment0","markup":null,"raw":" omit this ","parsed":"omit this"}]]
+    ["some text here\\<!-- omit this --> and some there","some text here\\<!-- omit this --> and some there",[]]
+    ["abcd<<<some raw content>>>efg","abcd<<<some raw content>>>efg",[]]
     ]
-  for [ probe, matcher, ] in probes_and_matchers
+  for [ probe, text_matcher, registry_matcher, ] in probes_and_matchers
     S = MKTS._ESC.initialize {}
-    result = MKTS._ESC.escape_macro_tags S, probe
-    help JSON.stringify [ probe, result, S._ESC, ]
-    T.eq result, matcher
+    text_result = MKTS._ESC.escape_html_comments S, probe
+    help JSON.stringify [ probe, text_result, S._ESC[ 'registry' ], ]
+    T.eq text_result, text_matcher
+    T.eq S._ESC[ 'registry' ], registry_matcher
   done()
+
+#-----------------------------------------------------------------------------------------------------------
+@[ "MKTS._ESC.escape_bracketed_raw_macros" ] = ( T, done ) ->
+  probes_and_matchers = [
+    ["some text here<<!foo>>and some there","some text here<<!foo>>and some there",[]]
+    ["abcd<<<some raw content>>>efg","abcd\u0015raw0\u0013efg",[{"key":"raw0","markup":"<","raw":"some raw content","parsed":null}]]
+    ["abcd\\<<<some raw content>>>efg","abcd\\<<<some raw content>>>efg",[]]
+    ]
+  for [ probe, text_matcher, registry_matcher, ] in probes_and_matchers
+    S = MKTS._ESC.initialize {}
+    text_result = MKTS._ESC.escape_bracketed_raw_macros S, probe
+    help JSON.stringify [ probe, text_result, S._ESC[ 'registry' ], ]
+    T.eq text_result, text_matcher
+    T.eq S._ESC[ 'registry' ], registry_matcher
+  done()
+
+#-----------------------------------------------------------------------------------------------------------
+@[ "MKTS._ESC.escape_region_macros" ] = ( T, done ) ->
+  probes_and_matchers = [
+    ["some text here <<(em>>and some there<<em)>>",null]
+    ["some text here \\<<(em>>and some there<<em)>>",null]
+    ["some text here <<(em>>and some there\\<<em)>>",null]
+    ["some text here <<(em>>and some there<<)>>",null]
+    ["some text here \\<<(em>>and some there<<)>>",null]
+    ["some text here <<(em>>and some there\\<<)>>",null]
+    ["some text here <<(em>>and some there<<foo)>>",null]
+    ]
+  for [ probe, text_matcher, registry_matcher, ] in probes_and_matchers
+    S = MKTS._ESC.initialize {}
+    text_result = MKTS._ESC.escape_region_macros S, probe
+    help JSON.stringify [ probe, text_result, S._ESC[ 'registry' ], ]
+    T.eq text_result, text_matcher
+    T.eq S._ESC[ 'registry' ], registry_matcher
+  done()
+
+#-----------------------------------------------------------------------------------------------------------
+@[ "MKTS._ESC.escape_action_macros" ] = ( T, done ) ->
+  probes_and_matchers = [
+    ["<<(.>><<)>>","\u0015action0\u0013",[{"key":"action0","markup":["silent","coffee"],"raw":"","parsed":null}]]
+    ["<<(.>>xxx<<)>>","\u0015action0\u0013",[{"key":"action0","markup":["silent","coffee"],"raw":"xxx","parsed":null}]]
+    ["<<(.>>some code<<)>>","\u0015action0\u0013",[{"key":"action0","markup":["silent","coffee"],"raw":"some code","parsed":null}]]
+    ["abc<<(.>>4 + 3<<)>>def","abc\u0015action0\u0013def",[{"key":"action0","markup":["silent","coffee"],"raw":"4 + 3","parsed":null}]]
+    ["<<(:>><<)>>","\u0015action0\u0013",[{"key":"action0","markup":["vocal","coffee"],"raw":"","parsed":null}]]
+    ["<<(:>>xxx<<)>>","\u0015action0\u0013",[{"key":"action0","markup":["vocal","coffee"],"raw":"xxx","parsed":null}]]
+    ["<<(:>>some code<<)>>","\u0015action0\u0013",[{"key":"action0","markup":["vocal","coffee"],"raw":"some code","parsed":null}]]
+    ["abc<<(:>>4 + 3<<)>>def","abc\u0015action0\u0013def",[{"key":"action0","markup":["vocal","coffee"],"raw":"4 + 3","parsed":null}]]
+    ["abc<<(:>>bitfield \\>> 1 <<)>>def","abc\u0015action0\u0013def",[{"key":"action0","markup":["vocal","coffee"],"raw":"bitfield \\>> 1 ","parsed":null}]]
+    ["abc<<(:>>bitfield >\\> 1 <<)>>def","abc\u0015action0\u0013def",[{"key":"action0","markup":["vocal","coffee"],"raw":"bitfield >\\> 1 ","parsed":null}]]
+    ["abc<<(:js>>4 + 3<<)>>def","abc\u0015action0\u0013def",[{"key":"action0","markup":["vocal","js"],"raw":"4 + 3","parsed":null}]]
+    ["abc<<(.js>>4 + 3<<)>>def","abc\u0015action0\u0013def",[{"key":"action0","markup":["silent","js"],"raw":"4 + 3","parsed":null}]]
+    ["abc<<(:js>>4 + 3<<:js)>>def","abc\u0015action0\u0013def",[{"key":"action0","markup":["vocal","js"],"raw":"4 + 3","parsed":null}]]
+    ["abc<<(.js>>4 + 3<<.js)>>def","abc\u0015action0\u0013def",[{"key":"action0","markup":["silent","js"],"raw":"4 + 3","parsed":null}]]
+    ["abc<<(:js>>4 + 3<<:)>>def","abc<<(:js>>4 + 3<<:)>>def",[]]
+    ["abc<<(.js>>4 + 3<<.)>>def","abc<<(.js>>4 + 3<<.)>>def",[]]
+    ]
+  for [ probe, text_matcher, registry_matcher, ] in probes_and_matchers
+    S = MKTS._ESC.initialize {}
+    text_result = MKTS._ESC.escape_action_macros S, probe
+    help JSON.stringify [ probe, text_result, S._ESC[ 'registry' ], ]
+    T.eq text_result, text_matcher
+    T.eq S._ESC[ 'registry' ], registry_matcher
+  done()
+
+#-----------------------------------------------------------------------------------------------------------
+@[ "MKTS._ESC.escape_command_and_value_macros" ] = ( T, done ) ->
+  probes_and_matchers = [
+    ["some text here <<!foo>> and some there","some text here \u0015command0\u0013 and some there",[{"key":"command0","markup":"!","raw":"foo","parsed":"???"}]]
+    ["some text here <<$foo>> and some there","some text here \u0015value0\u0013 and some there",[{"key":"value0","markup":"$","raw":"foo","parsed":"???"}]]
+    ["some text here \\<<!foo>> and some there","some text here \\<<!foo>> and some there",[]]
+    ["some text here \\<<$foo>> and some there","some text here \\<<$foo>> and some there",[]]
+    ["some text here<!-- omit this --> and some there","some text here<!-- omit this --> and some there",[]]
+    ["abcd<<<some raw content>>>efg","abcd<<<some raw content>>>efg",[]]
+    ]
+  for [ probe, text_matcher, registry_matcher, ] in probes_and_matchers
+    S = MKTS._ESC.initialize {}
+    text_result = MKTS._ESC.escape_command_and_value_macros S, probe
+    help JSON.stringify [ probe, text_result, S._ESC[ 'registry' ], ]
+    T.eq text_result, text_matcher
+    T.eq S._ESC[ 'registry' ], registry_matcher
+  done()
+
+# #-----------------------------------------------------------------------------------------------------------
+# @[ "MKTS._ESC.escape_macros" ] = ( T, done ) ->
+#   probes_and_matchers = [
+#     ["some text here and some there","some text here and some there",[]]
+#     ["some text here<!-- omit this --> and some there","some text here\u0015comment0\u0013 and some there",[{"key":"comment0","raw":" omit this ","parsed":null}]]
+#     ["abcd<<<some raw content>>>efg","abcd\u0015raw0\u0013efg",[{"key":"raw0","markup":"<","raw":"some raw content","parsed":null}]]
+#     ]
+#   for [ probe, text_matcher, registry_matcher, ] in probes_and_matchers
+#     S = MKTS._ESC.initialize {}
+#     text_result = MKTS._ESC.escape_macros S, probe
+#     help JSON.stringify [ probe, text_result, S._ESC[ 'registry' ], ]
+#     T.eq text_result, text_matcher
+#     T.eq S._ESC[ 'registry' ], registry_matcher
+#   done()
+
 
 #-----------------------------------------------------------------------------------------------------------
 # @[ "MKTS.FENCES.parse accepts dot patterns" ] = ( T, done ) ->
