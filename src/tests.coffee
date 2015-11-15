@@ -57,49 +57,104 @@ copy_regex_non_global = ( re ) ->
   return new RegExp re.source, flags
 
 #-----------------------------------------------------------------------------------------------------------
-list_from_mtach = ( match ) ->
+list_from_match = ( match ) ->
   return null unless match?
   R = Array.from match
   R.splice 0, 1
   return R
+
+#-----------------------------------------------------------------------------------------------------------
+match_first = ( patterns, probe ) ->
+  for pattern in patterns
+    return R if ( R = probe.match pattern )?
+  return null
+
 
 #===========================================================================================================
 # TESTS
 #-----------------------------------------------------------------------------------------------------------
 @[ "MKTS._ESC.action_patterns[ 0 ] matches action macro" ] = ( T, done ) ->
   probes_and_matchers = [
-    ["<<(.>><<)>>",["",".",""]]
-    ["<<(.>>xxx<<)>>",null]
+    ["<<(.>><<)>>",["",".","",""]]
+    ["<<(.>>xxx<<)>>",["",".","xxx",""]]
+    ["<<(.>>some code<<)>>",["",".","some code",""]]
+    ["abc<<(.>>4 + 3<<)>>def",["c",".","4 + 3",""]]
+    ["<<(:>><<)>>",["",":","",""]]
+    ["<<(:>>xxx<<)>>",["",":","xxx",""]]
+    ["<<(:>>some code<<)>>",["",":","some code",""]]
+    ["abc<<(:>>4 + 3<<)>>def",["c",":","4 + 3",""]]
+    ["abc<<(:>>bitfield \\>> 1 <<)>>def",["c",":","bitfield \\>> 1 ",""]]
+    ["abc<<(:>>bitfield >\\> 1 <<)>>def",["c",":","bitfield >\\> 1 ",""]]
+    ["abc<<(:js>>4 + 3<<)>>def",["c",":js","4 + 3",""]]
+    ["abc<<(.js>>4 + 3<<)>>def",["c",".js","4 + 3",""]]
+    ["abc<<(:js>>4 + 3<<:js)>>def",["c",":js","4 + 3",":js"]]
+    ["abc<<(.js>>4 + 3<<.js)>>def",["c",".js","4 + 3",".js"]]
+    ["abc<<(:js>>4 + 3<<:)>>def",null]
+    ["abc<<(.js>>4 + 3<<.)>>def",null]
     ]
-  re = copy_regex_non_global MKTS._ESC.action_patterns[ 0 ]
+  patterns = ( copy_regex_non_global pattern for pattern in MKTS._ESC.action_patterns )
   for [ probe, matcher, ] in probes_and_matchers
-    result = list_from_mtach probe.match re
+    result = list_from_match match_first patterns, probe
     help JSON.stringify [ probe, result, ]
     T.eq result, matcher
   done()
 
 #-----------------------------------------------------------------------------------------------------------
-@[ "MKTS._ESC.action_patterns[ 1 ] matches action macro" ] = ( T, done ) ->
+@[ "MKTS._ESC.bracketed_raw_patterns matches raw macro" ] = ( T, done ) ->
   probes_and_matchers = [
-    ["<<(.>><<)>>",null]
-    ["<<(.>>some code<<)>>",["",".","some code"]]
+    ["<<<...raw material...>>>",["","<","...raw material..."]]
+    ["<<(.>>some code<<)>>",null]
+    ["<<<>>>",["","<",""]]
+    ["abcdef<<<\\XeLaTeX{}>>>ghijklm",["f","<","\\XeLaTeX{}"]]
+    ["abcdef<<<123\\>>>0>>>ghijklm",["f","<","123\\>>>0"]]
+    ["abcdef\\<<<123>>>ghijklm",null]
+    ["abcdef<\\<<123>>>ghijklm",null]
+    ["abcdef<<\\<123>>>ghijklm",null]
+    ["abcdef<<<123>>\\>ghijklm",null]
     ]
-  re = copy_regex_non_global MKTS._ESC.action_patterns[ 1 ]
+  patterns = ( copy_regex_non_global pattern for pattern in MKTS._ESC.bracketed_raw_patterns )
   for [ probe, matcher, ] in probes_and_matchers
-    result = list_from_mtach probe.match re
+    result = list_from_match match_first patterns, probe
     help JSON.stringify [ probe, result, ]
     T.eq result, matcher
   done()
 
 #-----------------------------------------------------------------------------------------------------------
-@[ "MKTS._ESC.raw_bracketed_patterns matches raw region" ] = ( T, done ) ->
+@[ "MKTS._ESC.command_patterns matches command macro" ] = ( T, done ) ->
   probes_and_matchers = [
-    ["<<<...raw material...>>>",null]
-    ["<<(.>>some code<<)>>",["",".","some code"]]
+    ["<<!>>",["","!",""]]
+    ["<<!name>>",["","!","name"]]
+    ["abc<<!name>>def",["c","!","name"]]
+    ["abc<<!n>me>>def",["c","!","n>me"]]
+    ["abc<<!n>\\>me>>def",["c","!","n>\\>me"]]
+    ["abc<<!n\\>me>>def",["c","!","n\\>me"]]
+    ["abc\\<<!nme>>def",null]
+    ["<<$>>",["","$",""]]
+    ["<<$name>>",["","$","name"]]
+    ["abc<<$name>>def",["c","$","name"]]
+    ["abc<<$n>me>>def",["c","$","n>me"]]
+    ["abc<<$n>\\>me>>def",["c","$","n>\\>me"]]
+    ["abc<<$n\\>me>>def",["c","$","n\\>me"]]
+    ["abc\\<<$nme>>def",null]
     ]
-  re = copy_regex_non_global MKTS._ESC.raw_bracketed_patterns[ 1 ]
+  patterns = ( copy_regex_non_global pattern for pattern in MKTS._ESC.command_patterns )
   for [ probe, matcher, ] in probes_and_matchers
-    result = list_from_mtach probe.match re
+    result = list_from_match match_first patterns, probe
+    help JSON.stringify [ probe, result, ]
+    T.eq result, matcher
+  done()
+
+#-----------------------------------------------------------------------------------------------------------
+@[ "MKTS._ESC.illegal_patterns matches consecutive unescaped LPBs" ] = ( T, done ) ->
+  probes_and_matchers = [
+    ["helo world",null]
+    ["helo \\<< world",null]
+    ["helo <\\< world",null]
+    ["helo << world",[" ","<<"," world"]]
+    ]
+  patterns = ( copy_regex_non_global pattern for pattern in MKTS._ESC.illegal_patterns )
+  for [ probe, matcher, ] in probes_and_matchers
+    result = list_from_match match_first patterns, probe
     help JSON.stringify [ probe, result, ]
     T.eq result, matcher
   done()

@@ -790,65 +790,120 @@ tracker_pattern = /// ^
     index:      new Map()
 
 #-----------------------------------------------------------------------------------------------------------
-### Code duplication ###
 @_ESC.html_comment_pattern = ///
   (?: ( ^ | [^\\] ) <!--                      --> ) |
   (?: ( ^ | [^\\] ) <!-- ( [ \s\S ]*? [^\\] ) --> )
   ///g
 
-#-----------------------------------------------------------------------------------------------------------
-### Code duplication ###
-@_ESC.action_patterns = [
-  /// (?: ( ^ | [^\\] ) <<\( ( [.:] ) >> (                  ) << \) >> ) ///g
-  /// (?: ( ^ | [^\\] ) <<\( ( [.:] ) >> ( [ \s\S ]*? [^\\] ) << \) >> ) ///g
-  ]
+# #-----------------------------------------------------------------------------------------------------------
+# @_ESC.action_patterns = [
+#   /// (?: ( ^ | [^\\] ) <<\( ( [.:] ) >> (                  ) << \) >> ) ///g
+#   /// (?: ( ^ | [^\\] ) <<\( ( [.:] ) >> ( [ \s\S ]*? [^\\] ) << \) >> ) ///g
+#   ]
+
+# #-----------------------------------------------------------------------------------------------------------
+# @_ESC.raw_bracketed_patterns = [
+#   /// (?: ( ^ | [^\\] ) <<< (                  ) >>> ) ///g
+#   /// (?: ( ^ | [^\\] ) <<< ( [ \s\S ]*? [^\\] ) >>> ) ///g
+#   ]
 
 #-----------------------------------------------------------------------------------------------------------
-### Code duplication ###
-@_ESC.raw_bracketed_patterns = [
-  /// (?: ( ^ | [^\\] ) <<< (                  ) >>> ) ///g
-  /// (?: ( ^ | [^\\] ) <<< ( [ \s\S ]*? [^\\] ) >>> ) ///g
-  ]
+@_ESC.action_patterns = [ ///   # A silent or vocal action macro...
+                                #
+                                # Start Tag
+                                # =========
+  ( ^ | [^ \\ ] )               # starts either at the first chr or a chr other than backslash
+  <<\(                          # then: two left pointy brackets, then: left round bracket,
+    ( [ . : ]                   # then: a dot or a colon;
+      (?:                       # then:
+        \\>                |    #   or: an escaped right pointy bracket (RPB)
+        [^ > ]             |    #   or: anything but a RPB
+        > (?! > )               #   or: a RPB not followed by yet another RPB
+      )*                        # repeated any number of times
+    )
+    >>                          # then: two RPBs...
+                                #
+                                # Content
+                                # =========
+    (
+      (?:                       # ...followed by content, which is:
+        \\<                |    #   or: an escaped left pointy bracket (LPB)
+        [^ < ]             |    #   or: anything but a LPB
+        < (?! < )               #   or: a LPB not followed by yet another LPB
+      )*                        # repeated any number of times
+      )
+                                #
+                                # Stop Tag
+                                # =========
+  <<                            # then: two left pointy brackets,
+    ( \2 ? )                    # then: optionally, whatever appeared in the start tag,
+    \)>>                        # then: right round bracket, then: two RPBs.
+  /// ]
+
+debug '©wZjVz', @_ESC.action_patterns
+
+#-----------------------------------------------------------------------------------------------------------
+@_ESC.bracketed_raw_patterns = [ ///  # A bracketed raw macro
+  ( ^ | [^ \\ ] )               # starts either at the first chr or a chr other than backslash
+  <<(<)                         # then: three left pointy brackets,
+    (
+      (?:                       # then:
+        \\>                |    #   or: an escaped right pointy bracket (RPB)
+        [^ > ]             |    #   or: anything but a RPB
+        >{1,2} (?! > )          #   or: one or two RPBs not followed by yet another RPB
+      )*                        # repeated any number of times
+    )
+    >>>                         # then: three RPBs.
+  /// ]
+
 # #-----------------------------------------------------------------------------------------------------------
 # @_ESC.raw_heredoc_pattern  = ///
 #   ( ^ | [^\\] ) <<! raw: ( [^\s>]* )>> ( .*? ) \2
 #   ///g
 
 #-----------------------------------------------------------------------------------------------------------
-### Code duplication ###
+@_ESC.command_patterns = [ ///  # A command macro
+  ( ^ | [^ \\ ] )               # starts either at the first chr or a chr other than backslash
+  <<                            # then: two left pointy brackets,
+    ( [ ! $ ] )                 # then: an exclamation mark or a dollar sign,
+    (
+      (?:                       # then:
+        \\>                |    #   or: an escaped right pointy bracket (RPB)
+        [^ > ]             |    #   or: anything but a RPB
+        > (?! > )               #   or: a RPB not followed by yet another RPB
+      )*                        # repeated any number of times
+    )
+    >>                          # then: two RPBs.
+  /// ]
+
+#-----------------------------------------------------------------------------------------------------------
+@_ESC.illegal_patterns = [ ///  # After applying all other macro patterns, treat as error: pattern that
+  ( ^ | [^ \\ ] )               # starts either at the first chr or a chr other than backslash
+  ( << | >> )                   # then: either two left or two right pointy brackets
+  ( [ \s\S ] { 0, 10 } )        # followed by any characters (matched for diagnostic messages).
+                                # In other words, you must not have two consecutive unescaped left pointy
+                                # brackets in the MD source, even where those LPBs do not form a macro
+                                # pattern.
+  /// ]
+
+#-----------------------------------------------------------------------------------------------------------
 @_ESC.raw_id_pattern       = ///
   \x15 raw ( [ 0-9 ]+ ) \x13
   ///g
 
 #-----------------------------------------------------------------------------------------------------------
-### Code duplication ###
 @_ESC.html_comment_id_pattern = ///
   \x15 comment ( [ 0-9 ]+ ) \x13
   ///g
 
 #-----------------------------------------------------------------------------------------------------------
-### Code duplication ###
 @_ESC.do_id_pattern   = ///
   \x15 do ( [ 0-9 ]+ ) \x13
   ///g
 
 #-----------------------------------------------------------------------------------------------------------
-### Code duplication ###
 @_ESC.action_id_pattern   = ///
   \x15 action ( [ 0-9 ]+ ) \x13
-  ///g
-
-#-----------------------------------------------------------------------------------------------------------
-### Code duplication; see `FENCES` ###
-@_ESC.command_pattern = ///
-  ( ^ | [^\\] )
-  (
-    <<
-    ( [     !(    ]?  )
-    ( [^ \s !()\] ]+? )
-    ( [       )\] ]?  )
-    >>
-    )
   ///g
 
 #-----------------------------------------------------------------------------------------------------------
