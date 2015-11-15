@@ -92,6 +92,19 @@ list_from_mtach = ( match ) ->
   done()
 
 #-----------------------------------------------------------------------------------------------------------
+@[ "MKTS._ESC.raw_bracketed_patterns matches raw region" ] = ( T, done ) ->
+  probes_and_matchers = [
+    ["<<<...raw material...>>>",null]
+    ["<<(.>>some code<<)>>",["",".","some code"]]
+    ]
+  re = copy_regex_non_global MKTS._ESC.raw_bracketed_patterns[ 1 ]
+  for [ probe, matcher, ] in probes_and_matchers
+    result = list_from_mtach probe.match re
+    help JSON.stringify [ probe, result, ]
+    T.eq result, matcher
+  done()
+
+#-----------------------------------------------------------------------------------------------------------
 # @[ "MKTS.FENCES.parse accepts dot patterns" ] = ( T, done ) ->
 #   probes_and_matchers = [
 #     [ '.',     [ '.', null,   null, ], ]
