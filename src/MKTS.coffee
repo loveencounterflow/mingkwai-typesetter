@@ -1030,7 +1030,7 @@ after it, thereby inhibiting any processing of those portions. ###
   # debug '©II6XI', rpr text
   [ R, discard_count, ] = @_ESC.truncate_text_at_end_command_macro S, text
   whisper "detected <<!end>> macro; discarding approx. #{discard_count} characters" if discard_count > 0
-  R = @_ESC.escape_escape_chrs                 R
+  R = @_ESC.escape_escape_chrs              S, R
   R = @_ESC.escape_html_comments            S, R
   R = @_ESC.escape_bracketed_raw_macros     S, R
   R = @_ESC.escape_action_macros            S, R
@@ -1042,8 +1042,6 @@ after it, thereby inhibiting any processing of those portions. ###
 #-----------------------------------------------------------------------------------------------------------
 @_ESC.register_content = ( S, kind, markup, raw, parsed = null ) =>
   registry  = S[ '_ESC' ][ 'registry' ]
-  ### TAINT both `kind` and `raw` must match ###
-  # debug '©W3DXD', kind, rpr raw
   idx     = registry.length
   key     = "#{kind}#{idx}"
   registry.push { key, markup, raw, parsed, }
@@ -1052,6 +1050,19 @@ after it, thereby inhibiting any processing of those portions. ###
 #-----------------------------------------------------------------------------------------------------------
 @_ESC.retrieve_entry = ( S, id ) =>
   throw new Error "unknown ID #{rpr id}" unless ( R = S[ '_ESC' ][ 'registry' ][ id ] )?
+  return R
+
+#-----------------------------------------------------------------------------------------------------------
+@_ESC.expand_html_comments = ( S, text ) =>
+  is_plain = no
+  for stretch, idx in R = text.split @_ESC.html_comment_id_pattern
+    is_plain = not is_plain
+    if is_plain
+      null
+    else
+      id        = parseInt stretch, 10
+      entry     = @_ESC.retrieve_entry S, id
+      R[ idx ]  = entry[ 'raw' ]
   return R
 
 #-----------------------------------------------------------------------------------------------------------
@@ -1154,14 +1165,14 @@ after it, thereby inhibiting any processing of those portions. ###
       send event
 
 #-----------------------------------------------------------------------------------------------------------
-@_ESC.escape_escape_chrs = ( text ) =>
+@_ESC.escape_escape_chrs = ( S, text ) =>
   R = text
   R = R.replace /\x10/g, '\x10A'
   R = R.replace /\x15/g, '\x10X'
   return R
 
 #-----------------------------------------------------------------------------------------------------------
-@_ESC.unescape_escape_chrs = ( text ) =>
+@_ESC.unescape_escape_chrs = ( S, text ) =>
   R = text
   R = R.replace /\x10X/g, '\x15'
   R = R.replace /\x10A/g, '\x10'

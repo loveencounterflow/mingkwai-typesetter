@@ -69,6 +69,23 @@ match_first = ( patterns, probe ) ->
     return R if ( R = probe.match pattern )?
   return null
 
+#-----------------------------------------------------------------------------------------------------------
+nice_text_rpr = ( text ) ->
+  ### Ad-hoc method to print out text in a readable, CoffeeScript-compatible, triple-quoted way. Line breaks
+  (`\\n`) will be shown as line breaks, so texts should not be as spaghettified as they appear with
+  JSON.stringify (the last line break of a string is, however, always shown in its symbolic form so it
+  won't get swallowed by the CoffeeScript parser). Code points below U+0020 (space) are shown as
+  `\\x00`-style escapes, taken up less space than `\u0000` escapes while keeping things explicit. All
+  double quotes will be prepended with a backslash. ###
+  R = text
+  R = R.replace /[\x00-\x09\x0b-\x19]/g, ( $0 ) ->
+    cid_hex = ( $0.codePointAt 0 ).toString 16
+    cid_hex = '0' + cid_hex if cid_hex.length is 1
+    return "\\x#{cid_hex}"
+  R = R.replace /"/g, '\\"'
+  R = R.replace /\n$/g, '\\n'
+  R = '\n"""' + R + '"""'
+  return R
 
 #===========================================================================================================
 # TESTS
@@ -293,7 +310,7 @@ match_first = ( patterns, probe ) ->
   done()
 
 #-----------------------------------------------------------------------------------------------------------
-@[ "MKTS._ESC.escape_macros" ] = ( T, done ) ->
+@[ "MKTS._ESC.escape_macros 1" ] = ( T, done ) ->
   probes_and_matchers = [
     ["<<(multi-column 3>>\nsome text here<!-- omit this --> and some there\n<<)>>\n<<(multi-column 2>>\nThis text will appear in two-column<!-- omit this --> layout.\n<!--some code-->\n<<(:>>some code<<)>>\n<<)>>\n<<!end>>\n<<!command>><<(:action>><<)>>","\u0015region4\u0013\nsome text here\u0015comment0\u0013 and some there\n\u0015region5\u0013\n\u0015region6\u0013\nThis text will appear in two-column\u0015comment1\u0013 layout.\n\u0015comment2\u0013\n\u0015action3\u0013\n\u0015region7\u0013\n",[{"key":"comment0","markup":null,"raw":" omit this ","parsed":"omit this"},{"key":"comment1","markup":null,"raw":" omit this ","parsed":"omit this"},{"key":"comment2","markup":null,"raw":"some code","parsed":"some code"},{"key":"action3","markup":["vocal","coffee"],"raw":"some code","parsed":null},{"key":"region4","markup":"multi-column 3","raw":"<<(multi-column 3>>","parsed":null},{"key":"region5","markup":"multi-column 3","raw":"<<)>>","parsed":null},{"key":"region6","markup":"multi-column 2","raw":"<<(multi-column 2>>","parsed":null},{"key":"region7","markup":"multi-column 2","raw":"<<)>>","parsed":null}]]
     ]
@@ -301,11 +318,45 @@ match_first = ( patterns, probe ) ->
     S = MKTS._ESC.initialize {}
     text_result = MKTS._ESC.escape_macros S, probe
     help JSON.stringify [ probe, text_result, S._ESC[ 'registry' ], ]
-    urge '\n' + probe
-    info '\n' + text_result
-    # T.fail "not ready"
     T.eq text_result, text_matcher
     T.eq S._ESC[ 'registry' ], registry_matcher
+  done()
+
+#-----------------------------------------------------------------------------------------------------------
+@[ "MKTS._ESC.escape_macros 2" ] = ( T, done ) ->
+  probes_and_matchers = [[
+    """<<(multi-column 3>>
+      some text here<!-- omit this --> and some there
+      <<)>>
+      <<(multi-column 2>>
+      This text will appear in two-column<!-- omit this --> layout.
+      <!--some code-->
+      <<(:>>some code<<)>>
+      <<)>>
+      <<!end>>
+      <<!command>><<(:action>><<)>>
+      """
+    ,
+      """\x15region4\x13
+      some text here\x15comment0\x13 and some there
+      \x15region5\x13
+      \x15region6\x13
+      This text will appear in two-column\x15comment1\x13 layout.
+      \x15comment2\x13
+      \x15action3\x13
+      \x15region7\x13\n
+      """
+      ]]
+  for [ probe, text_matcher, ] in probes_and_matchers
+    S = MKTS._ESC.initialize {}
+    text_result = MKTS._ESC.escape_macros S, probe
+    # help JSON.stringify [ probe, text_result, S._ESC[ 'registry' ], ]
+    urge nice_text_rpr probe
+    info nice_text_rpr text_result
+    # T.fail "not ready"
+    T.eq text_result.trim(), text_matcher.trim()
+    T.eq text_result, text_matcher
+    # T.eq S._ESC[ 'registry' ], registry_matcher
   done()
 
 
