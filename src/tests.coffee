@@ -295,19 +295,15 @@ match_first = ( patterns, probe ) ->
 #-----------------------------------------------------------------------------------------------------------
 @[ "MKTS._ESC.escape_macros" ] = ( T, done ) ->
   probes_and_matchers = [
-    ["""
-      <<(multi-column>>
-      some text here<!-- omit this --> and some there
-      <<)>>
-      <<!end>>
-      <<!command>><<(:action>><<)>>
-      """,null,[]]
+    ["<<(multi-column 3>>\nsome text here<!-- omit this --> and some there\n<<)>>\n<<(multi-column 2>>\nThis text will appear in two-column<!-- omit this --> layout.\n<!--some code-->\n<<(:>>some code<<)>>\n<<)>>\n<<!end>>\n<<!command>><<(:action>><<)>>","\u0015region4\u0013\nsome text here\u0015comment0\u0013 and some there\n\u0015region5\u0013\n\u0015region6\u0013\nThis text will appear in two-column\u0015comment1\u0013 layout.\n\u0015comment2\u0013\n\u0015action3\u0013\n\u0015region7\u0013\n",[{"key":"comment0","markup":null,"raw":" omit this ","parsed":"omit this"},{"key":"comment1","markup":null,"raw":" omit this ","parsed":"omit this"},{"key":"comment2","markup":null,"raw":"some code","parsed":"some code"},{"key":"action3","markup":["vocal","coffee"],"raw":"some code","parsed":null},{"key":"region4","markup":"multi-column 3","raw":"<<(multi-column 3>>","parsed":null},{"key":"region5","markup":"multi-column 3","raw":"<<)>>","parsed":null},{"key":"region6","markup":"multi-column 2","raw":"<<(multi-column 2>>","parsed":null},{"key":"region7","markup":"multi-column 2","raw":"<<)>>","parsed":null}]]
     ]
   for [ probe, text_matcher, registry_matcher, ] in probes_and_matchers
     S = MKTS._ESC.initialize {}
     text_result = MKTS._ESC.escape_macros S, probe
     help JSON.stringify [ probe, text_result, S._ESC[ 'registry' ], ]
-    log ( require 'coffeenode-diff' ).colorize probe, text_result
+    urge '\n' + probe
+    info '\n' + text_result
+    # T.fail "not ready"
     T.eq text_result, text_matcher
     T.eq S._ESC[ 'registry' ], registry_matcher
   done()

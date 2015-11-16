@@ -787,7 +787,6 @@ tracker_pattern = /// ^
 @_ESC.initialize = ( state ) =>
   state[ '_ESC' ] =
     registry:   []
-    index:      new Map()
   return state
 
 #-----------------------------------------------------------------------------------------------------------
@@ -1043,17 +1042,11 @@ after it, thereby inhibiting any processing of those portions. ###
 #-----------------------------------------------------------------------------------------------------------
 @_ESC.register_content = ( S, kind, markup, raw, parsed = null ) =>
   registry  = S[ '_ESC' ][ 'registry' ]
-  index     = S[ '_ESC' ][ 'index' ]
   ### TAINT both `kind` and `raw` must match ###
-  id        = index.get raw
-  if id?
-    entry   = registry[ id ]
-    { key } = entry
-  else
-    id      = registry.length
-    key     = "#{kind}#{id}"
-    registry.push { key, markup, raw, parsed, }
-    index.set raw, id
+  # debug '©W3DXD', kind, rpr raw
+  idx     = registry.length
+  key     = "#{kind}#{idx}"
+  registry.push { key, markup, raw, parsed, }
   return key
 
 #-----------------------------------------------------------------------------------------------------------
