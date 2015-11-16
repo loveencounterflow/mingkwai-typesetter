@@ -230,13 +230,13 @@ match_first = ( patterns, probe ) ->
 #-----------------------------------------------------------------------------------------------------------
 @[ "MKTS._ESC.escape_region_macros" ] = ( T, done ) ->
   probes_and_matchers = [
-    ["some text here <<(em>>and some there<<em)>>",null]
-    ["some text here \\<<(em>>and some there<<em)>>",null]
-    ["some text here <<(em>>and some there\\<<em)>>",null]
-    ["some text here <<(em>>and some there<<)>>",null]
-    ["some text here \\<<(em>>and some there<<)>>",null]
-    ["some text here <<(em>>and some there\\<<)>>",null]
-    ["some text here <<(em>>and some there<<foo)>>",null]
+    ["some text here <<(em>>and some there<<em)>>","some text here \u0015region0\u0013and some there\u0015region1\u0013",[{"key":"region0","markup":"em","raw":"<<(em>>","parsed":null},{"key":"region1","markup":"em","raw":"<<em)>>","parsed":null}]]
+    ["some text here \\<<(em>>and some there<<em)>>","some text here \\<<(em>>and some there<<em)>>",[]]
+    ["some text here <<(em>>and some there\\<<em)>>","some text here \u0015region0\u0013and some there\\\u0015region1\u0013",[{"key":"region0","markup":"em","raw":"<<(em>>","parsed":null},{"key":"region1","markup":"em","raw":"<<em)>>","parsed":null}]]
+    ["some text here <<(em>>and some there<<)>>","some text here \u0015region0\u0013and some there\u0015region1\u0013",[{"key":"region0","markup":"em","raw":"<<(em>>","parsed":null},{"key":"region1","markup":"em","raw":"<<)>>","parsed":null}]]
+    ["some text here \\<<(em>>and some there<<)>>","some text here \\<<(em>>and some there<<)>>",[]]
+    ["some text here <<(em>>and some there\\<<)>>","some text here \u0015region0\u0013and some there\\\u0015region1\u0013",[{"key":"region0","markup":"em","raw":"<<(em>>","parsed":null},{"key":"region1","markup":"em","raw":"<<)>>","parsed":null}]]
+    ["some text here <<(em>>and some there<<foo)>>","some text here <<(em>>and some there<<foo)>>",[]]
     ]
   for [ probe, text_matcher, registry_matcher, ] in probes_and_matchers
     S = MKTS._ESC.initialize {}
@@ -292,20 +292,25 @@ match_first = ( patterns, probe ) ->
     T.eq S._ESC[ 'registry' ], registry_matcher
   done()
 
-# #-----------------------------------------------------------------------------------------------------------
-# @[ "MKTS._ESC.escape_macros" ] = ( T, done ) ->
-#   probes_and_matchers = [
-#     ["some text here and some there","some text here and some there",[]]
-#     ["some text here<!-- omit this --> and some there","some text here\u0015comment0\u0013 and some there",[{"key":"comment0","raw":" omit this ","parsed":null}]]
-#     ["abcd<<<some raw content>>>efg","abcd\u0015raw0\u0013efg",[{"key":"raw0","markup":"<","raw":"some raw content","parsed":null}]]
-#     ]
-#   for [ probe, text_matcher, registry_matcher, ] in probes_and_matchers
-#     S = MKTS._ESC.initialize {}
-#     text_result = MKTS._ESC.escape_macros S, probe
-#     help JSON.stringify [ probe, text_result, S._ESC[ 'registry' ], ]
-#     T.eq text_result, text_matcher
-#     T.eq S._ESC[ 'registry' ], registry_matcher
-#   done()
+#-----------------------------------------------------------------------------------------------------------
+@[ "MKTS._ESC.escape_macros" ] = ( T, done ) ->
+  probes_and_matchers = [
+    ["""
+      <<(multi-column>>
+      some text here<!-- omit this --> and some there
+      <<)>>
+      <<!end>>
+      <<!command>><<(:action>><<)>>
+      """,null,[]]
+    ]
+  for [ probe, text_matcher, registry_matcher, ] in probes_and_matchers
+    S = MKTS._ESC.initialize {}
+    text_result = MKTS._ESC.escape_macros S, probe
+    help JSON.stringify [ probe, text_result, S._ESC[ 'registry' ], ]
+    log ( require 'coffeenode-diff' ).colorize probe, text_result
+    T.eq text_result, text_matcher
+    T.eq S._ESC[ 'registry' ], registry_matcher
+  done()
 
 
 #-----------------------------------------------------------------------------------------------------------

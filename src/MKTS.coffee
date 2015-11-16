@@ -838,6 +838,39 @@ tracker_pattern = /// ^
     \)>>                        # then: right round bracket, then: two RPBs.
   ///g ]
 
+#-----------------------------------------------------------------------------------------------------------
+@_ESC.region_patterns = [ ///   # A region macro...
+                                #
+                                # Start Tag
+                                # =========
+  ( ^ | [^ \\ ] )               # starts either at the first chr or a chr other than backslash
+  <<\(                          # then: two left pointy brackets, then: left round bracket,
+    (                           #
+      (?:                       # then:
+        \\>                |    #   or: an escaped right pointy bracket (RPB)
+        [^ > ]             |    #   or: anything but a RPB
+        > (?! > )               #   or: a RPB not followed by yet another RPB
+      )*                        # repeated any number of times
+    )
+    >>                          # then: two RPBs...
+                                #
+                                # Content
+                                # =========
+    (
+      (?:                       # ...followed by content, which is:
+        \\<                |    #   or: an escaped left pointy bracket (LPB)
+        [^ < ]             |    #   or: anything but a LPB
+        < (?! < )               #   or: a LPB not followed by yet another LPB
+      )*                        # repeated any number of times
+      )
+                                #
+                                # Stop Tag
+                                # =========
+  <<                            # then: two left pointy brackets,
+    ( \2 ? )                    # then: optionally, whatever appeared in the start tag,
+    \)>>                        # then: right round bracket, then: two RPBs.
+  ///g ]
+
 # debug '234652', @_ESC.action_patterns
 # debug "abc<<(:js>>4 + 3<<:js)>>def".match @_ESC.action_patterns[ 0 ]
 # process.exit()
@@ -955,12 +988,6 @@ after it, thereby inhibiting any processing of those portions. ###
   #.........................................................................................................
   for pattern in @_ESC.action_patterns
     R = R.replace pattern, ( _, previous_chr, starter, content, stopper ) =>
-      # debug '©0qY0t'
-      # debug '©0qY0t', rpr text
-      # debug '©0qY0t', rpr previous_chr
-      # debug 'starter', rpr starter
-      # debug 'content', rpr content
-      # debug 'stopper', rpr stopper
       mode      = starter[ 0 ]
       mode      = if mode is '.' then 'silent' else 'vocal'
       language  = starter[ 1 .. ]
@@ -968,6 +995,21 @@ after it, thereby inhibiting any processing of those portions. ###
       ### TAINT not using arguments peoperly ###
       id        = @_ESC.register_content S, 'action', [ mode, language, ], content
       return "#{previous_chr}\x15#{id}\x13"
+  #.........................................................................................................
+  return R
+
+#-----------------------------------------------------------------------------------------------------------
+@_ESC.escape_region_macros = ( S, text ) =>
+  R = text
+  #.........................................................................................................
+  for pattern in @_ESC.region_patterns
+    R = R.replace pattern, ( _, previous_chr, starter, content, stopper ) =>
+      ### TAINT not using arguments peoperly ###
+      starter_rpr = "<<(#{starter}>>"
+      stopper_rpr = "<<#{stopper})>>"
+      starter_id  = @_ESC.register_content S, 'region', starter, starter_rpr
+      stopper_id  = @_ESC.register_content S, 'region', starter, stopper_rpr
+      return "#{previous_chr}\x15#{starter_id}\x13#{content}\x15#{stopper_id}\x13"
   #.........................................................................................................
   return R
 
@@ -993,6 +1035,7 @@ after it, thereby inhibiting any processing of those portions. ###
   R = @_ESC.escape_html_comments            S, R
   R = @_ESC.escape_bracketed_raw_macros     S, R
   R = @_ESC.escape_action_macros            S, R
+  R = @_ESC.escape_region_macros            S, R
   R = @_ESC.escape_command_and_value_macros S, R
   #.........................................................................................................
   return R
@@ -1001,6 +1044,7 @@ after it, thereby inhibiting any processing of those portions. ###
 @_ESC.register_content = ( S, kind, markup, raw, parsed = null ) =>
   registry  = S[ '_ESC' ][ 'registry' ]
   index     = S[ '_ESC' ][ 'index' ]
+  ### TAINT both `kind` and `raw` must match ###
   id        = index.get raw
   if id?
     entry   = registry[ id ]
