@@ -300,8 +300,8 @@ after it, thereby inhibiting any processing of those portions. ###
       ### TAINT not using arguments peoperly ###
       starter_rpr = "<<(#{starter}>>"
       stopper_rpr = "<<#{stopper})>>"
-      starter_id  = @_register_content S, 'region', starter, starter_rpr
-      stopper_id  = @_register_content S, 'region', starter, stopper_rpr
+      starter_id  = @_register_content S, 'region', '(', starter
+      stopper_id  = @_register_content S, 'region', ')', starter
       return "#{previous_chr}\x15#{starter_id}\x13#{content}\x15#{stopper_id}\x13"
   #.........................................................................................................
   return R
@@ -322,7 +322,7 @@ after it, thereby inhibiting any processing of those portions. ###
 #===========================================================================================================
 # EXPANDING
 #-----------------------------------------------------------------------------------------------------------
-@raw_id_pattern       = ///
+@raw_id_pattern = ///
   \x15 raw ( [ 0-9 ]+ ) \x13
   ///g
 
@@ -332,13 +332,18 @@ after it, thereby inhibiting any processing of those portions. ###
   ///g
 
 #-----------------------------------------------------------------------------------------------------------
-@command_id_pattern   = ///
+@command_id_pattern = ///
   \x15 command ( [ 0-9 ]+ ) \x13
   ///g
 
 #-----------------------------------------------------------------------------------------------------------
-@action_id_pattern   = ///
+@action_id_pattern = ///
   \x15 action ( [ 0-9 ]+ ) \x13
+  ///g
+
+#-----------------------------------------------------------------------------------------------------------
+@region_id_pattern = ///
+  \x15 region ( [ 0-9 ]+ ) \x13
   ///g
 
 #-----------------------------------------------------------------------------------------------------------
@@ -346,8 +351,7 @@ after it, thereby inhibiting any processing of those portions. ###
   ### TAINT code duplication ###
   return $ ( event, send ) =>
     #.......................................................................................................
-    ### TAINT wrong selector ###
-    if MKTS.select event, '.', [ 'text', 'code', ]
+    if MKTS.select event, '.', 'text'
       is_comment                  = yes
       [ type, name, text, meta, ] = event
       for stretch in text.split @html_comment_id_pattern
@@ -364,12 +368,11 @@ after it, thereby inhibiting any processing of those portions. ###
       send event
 
 #-----------------------------------------------------------------------------------------------------------
-@$expand_actions  = ( S ) =>
+@$expand_action_macros  = ( S ) =>
   ### TAINT code duplication ###
   return $ ( event, send ) =>
     #.......................................................................................................
-    ### TAINT wrong selector ###
-    if MKTS.select event, '.', [ 'text', 'code', ]
+    if MKTS.select event, '.', 'text'
       is_do                       = yes
       [ type, name, text, meta, ] = event
       for stretch in text.split @action_id_pattern
@@ -387,12 +390,11 @@ after it, thereby inhibiting any processing of those portions. ###
       send event
 
 #-----------------------------------------------------------------------------------------------------------
-@$expand_raw_spans  = ( S ) =>
+@$expand_raw_macros  = ( S ) =>
   ### TAINT code duplication ###
   return $ ( event, send ) =>
     #.......................................................................................................
-    ### TAINT wrong selector ###
-    if MKTS.select event, '.', [ 'text', 'code', 'comment', ]
+    if MKTS.select event, '.', 'text'
       is_raw                      = yes
       [ type, name, text, meta, ] = event
       for stretch in text.split @raw_id_pattern
@@ -409,7 +411,7 @@ after it, thereby inhibiting any processing of those portions. ###
       send event
 
 #-----------------------------------------------------------------------------------------------------------
-@$expand_commands_and_values = ( S ) =>
+@$expand_command_and_value_macros = ( S ) =>
   ### TAINT code duplication ###
   return $ ( event, send ) =>
     #.......................................................................................................
@@ -417,6 +419,28 @@ after it, thereby inhibiting any processing of those portions. ###
       is_command                  = yes
       [ type, name, text, meta, ] = event
       for stretch in text.split @command_id_pattern
+        is_command = not is_command
+        if is_command
+          id        = parseInt stretch, 10
+          entry     = @_retrieve_entry S, id
+          { raw
+            markup} = entry
+          send [ markup, raw, null, ( MKTS.copy meta ), ]
+        else
+          send [ type, name, stretch, ( MKTS.copy meta ), ] unless stretch.length is 0
+    #.......................................................................................................
+    else
+      send event
+
+#-----------------------------------------------------------------------------------------------------------
+@$expand_region_macros = ( S ) =>
+  ### TAINT code duplication ###
+  return $ ( event, send ) =>
+    #.......................................................................................................
+    if MKTS.select event, '.', 'text'
+      is_command                  = yes
+      [ type, name, text, meta, ] = event
+      for stretch in text.split @region_id_pattern
         is_command = not is_command
         if is_command
           id        = parseInt stretch, 10

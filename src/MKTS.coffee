@@ -887,17 +887,18 @@ tracker_pattern = /// ^
   # S.confluence = input
   #.........................................................................................................
   readstream
-    .pipe @_PRE.$flatten_tokens                 S
-    .pipe @_PRE.$reinject_html_blocks           S
-    .pipe @_PRE.$rewrite_markdownit_tokens      S
+    .pipe @_PRE.$flatten_tokens                       S
+    .pipe @_PRE.$reinject_html_blocks                 S
+    .pipe @_PRE.$rewrite_markdownit_tokens            S
     # .pipe D.$show '7686756'
-    .pipe @MACROS.$expand_html_comments         S
-    .pipe @MACROS.$expand_actions               S
-    .pipe @MACROS.$expand_raw_spans             S
-    .pipe @MACROS.$expand_commands_and_values   S
-    .pipe @_PRE.$process_end_command            S
-    .pipe @_PRE.$close_dangling_open_tags       S
-    .pipe @_PRE.$consolidate_footnotes          S
+    .pipe @MACROS.$expand_html_comment_macros         S
+    .pipe @MACROS.$expand_region_macros               S
+    .pipe @MACROS.$expand_action_macros               S
+    .pipe @MACROS.$expand_raw_macros                  S
+    .pipe @MACROS.$expand_commands_and_value_macros   S
+    .pipe @_PRE.$process_end_command                  S
+    .pipe @_PRE.$close_dangling_open_tags             S
+    .pipe @_PRE.$consolidate_footnotes                S
     .pipe writestream
   #.........................................................................................................
   # readstream.on     'end', -> debug '©tdfA4', "readstream ended"
