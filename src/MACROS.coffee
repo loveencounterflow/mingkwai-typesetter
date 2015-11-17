@@ -313,8 +313,7 @@ after it, thereby inhibiting any processing of those portions. ###
   for pattern in @command_and_value_patterns
     R = R.replace pattern, ( _, previous_chr, markup, content ) =>
       kind            = if markup is '!' then 'command' else 'value'
-      parsed_content  = '???'
-      key             = @_register_content S, kind, markup, content, parsed_content
+      key             = @_register_content S, kind, markup, content, null
       return "#{previous_chr}\x15#{key}\x13"
   #.........................................................................................................
   return R
@@ -333,8 +332,8 @@ after it, thereby inhibiting any processing of those portions. ###
   ///g
 
 #-----------------------------------------------------------------------------------------------------------
-@do_id_pattern   = ///
-  \x15 do ( [ 0-9 ]+ ) \x13
+@command_id_pattern   = ///
+  \x15 command ( [ 0-9 ]+ ) \x13
   ///g
 
 #-----------------------------------------------------------------------------------------------------------
@@ -365,34 +364,22 @@ after it, thereby inhibiting any processing of those portions. ###
       send event
 
 #-----------------------------------------------------------------------------------------------------------
-@$expand_actions = ( S ) =>
+@$expand_actions  = ( S ) =>
   ### TAINT code duplication ###
-  track = MKTS.TRACKER.new_tracker '(code)', '{code}'
   return $ ( event, send ) =>
-    within_code = track.within '(code)', '{code}'
-    track event
     #.......................................................................................................
     ### TAINT wrong selector ###
-    if MKTS.select event, '.', [ 'text', 'code', 'comment', ]
-      is_command                  = yes
+    if MKTS.select event, '.', [ 'text', 'code', ]
+      is_do                       = yes
       [ type, name, text, meta, ] = event
       for stretch in text.split @action_id_pattern
-        is_command = not is_command
-        if is_command
-          id      = parseInt stretch, 10
-          entry   = @_retrieve_entry S, id
-          if within_code
-            content = entry[ 'raw' ]
-            send [ '.', 'text', content, ( MKTS.copy meta ), ]
-          else
-            content = entry[ 'parsed' ]
-            ### should never happen: ###
-            debug '©ΘΔΩΕΥ', rpr content
-            debug '©ΘΔΩΕΥ', rpr stretch
-            throw new Error "not registered correctly: #{rpr stretch}"  unless CND.isa_list content
-            [ left_fence, action_name, right_fence, ] = content
-            fence = left_fence ? right_fence
-            send [ fence, action_name, null, ( MKTS.copy meta ), ]
+        is_do = not is_do
+        if is_do
+          id                  = parseInt stretch, 10
+          entry               = @_retrieve_entry S, id
+          [ mode, language, ] = entry[ 'markup' ]
+          content             = entry[ 'raw' ]
+          send [ '.', 'action', content, ( MKTS.copy meta, { mode, language, } ), ]
         else
           send [ type, name, stretch, ( MKTS.copy meta ), ] unless stretch.length is 0
     #.......................................................................................................
@@ -416,29 +403,29 @@ after it, thereby inhibiting any processing of those portions. ###
           content = entry[ 'raw' ]
           send [ '.', 'raw', content, ( MKTS.copy meta ), ]
         else
-          send [ type, name, stretch, ( MKTS.copy meta ), ]
+          send [ type, name, stretch, ( MKTS.copy meta ), ] unless stretch.length is 0
     #.......................................................................................................
     else
       send event
 
 #-----------------------------------------------------------------------------------------------------------
-@$expand_do_spans  = ( S ) =>
+@$expand_commands_and_values = ( S ) =>
   ### TAINT code duplication ###
   return $ ( event, send ) =>
     #.......................................................................................................
-    ### TAINT wrong selector ###
-    if MKTS.select event, '.', [ 'text', 'code', 'comment', ]
-      is_do                       = yes
+    if MKTS.select event, '.', 'text'
+      is_command                  = yes
       [ type, name, text, meta, ] = event
-      for stretch in text.split @do_id_pattern
-        is_do = not is_do
-        if is_do
-          id      = parseInt stretch, 10
-          entry   = @_retrieve_entry S, id
-          content = entry[ 'raw' ]
-          send [ '!', 'do', content, ( MKTS.copy meta ), ]
+      for stretch in text.split @command_id_pattern
+        is_command = not is_command
+        if is_command
+          id        = parseInt stretch, 10
+          entry     = @_retrieve_entry S, id
+          { raw
+            markup} = entry
+          send [ markup, raw, null, ( MKTS.copy meta ), ]
         else
-          send [ type, name, stretch, ( MKTS.copy meta ), ]
+          send [ type, name, stretch, ( MKTS.copy meta ), ] unless stretch.length is 0
     #.......................................................................................................
     else
       send event

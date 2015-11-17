@@ -294,8 +294,8 @@ nice_text_rpr = ( text ) ->
 #-----------------------------------------------------------------------------------------------------------
 @[ "MKTS.MACROS.escape.command_and_value_macros" ] = ( T, done ) ->
   probes_and_matchers = [
-    ["some text here <<!foo>> and some there","some text here \u0015command0\u0013 and some there",[{"key":"command0","markup":"!","raw":"foo","parsed":"???"}]]
-    ["some text here <<$foo>> and some there","some text here \u0015value0\u0013 and some there",[{"key":"value0","markup":"$","raw":"foo","parsed":"???"}]]
+    ["some text here <<!foo>> and some there","some text here \u0015command0\u0013 and some there",[{"key":"command0","markup":"!","raw":"foo","parsed":null}]]
+    ["some text here <<$foo>> and some there","some text here \u0015value0\u0013 and some there",[{"key":"value0","markup":"$","raw":"foo","parsed":null}]]
     ["some text here \\<<!foo>> and some there","some text here \\<<!foo>> and some there",[]]
     ["some text here \\<<$foo>> and some there","some text here \\<<$foo>> and some there",[]]
     ["some text here<!-- omit this --> and some there","some text here<!-- omit this --> and some there",[]]
@@ -392,7 +392,6 @@ nice_text_rpr = ( text ) ->
       .pipe $ ( text, send ) =>
         send [ '.', 'text', text, {}, ]
     D.call_transform stream, ( => MKTS.MACROS.$expand_html_comments S ), ( error, result ) =>
-      debug '©ΠΚΛΩΙ', result
       log CND.white JSON.stringify event for event in result
       T.eq result, matcher
       done()
@@ -402,27 +401,17 @@ nice_text_rpr = ( text ) ->
 @[ "MKTS.MACROS.$expand_actions" ] = ( T, done ) ->
   probes_and_matchers = [[
     """<<(multi-column 3>>
-      some text here<!-- omit this 1 --> and some there
-      <<)>>
-      <<(multi-column 2>>
-      This text will appear in two-column<!-- omit this 2 --> layout.
-      <!--some code-->
-      <<(:>>some code<<)>>
-      <<)>>
-      <<!end>>
-      <<!command>><<(:action>><<)>>
+      some text with <<(:>>vocal action<<)>>.
+      <<(.js>>and( "a silent action" )<<.js)>>
       """
-    ,
-      [
-        [".","text","\u0015region4\u0013\nsome text here",{}]
-        [".","comment"," omit this 1 ",{}]
-        [".","text"," and some there\n\u0015region5\u0013\n\u0015region6\u0013\nThis text will appear in two-column",{}]
-        [".","comment"," omit this 2 ",{}]
-        [".","text"," layout.\n",{}]
-        [".","comment","some code",{}]
-        [".","text","\n\u0015action3\u0013\n\u0015region7\u0013\n",{}]
+  ,
+    [
+      [".","text","<<(multi-column 3>>\nsome text with ",{}]
+      [".","action","vocal action",{"mode":"vocal","language":"coffee"}]
+      [".","text",".\n",{}]
+      [".","action","and( \"a silent action\" )",{"mode":"silent","language":"js"}]
       ]
-      ]]
+    ]]
   for [ pre_probe, matcher, ] in probes_and_matchers
     S       = MKTS.MACROS.initialize_state {}
     probe   = MKTS.MACROS.escape S, pre_probe
@@ -431,9 +420,65 @@ nice_text_rpr = ( text ) ->
       .pipe $ ( text, send ) =>
         send [ '.', 'text', text, {}, ]
     D.call_transform stream, ( => MKTS.MACROS.$expand_actions S ), ( error, result ) =>
-      debug '©ΠΚΛΩΙ', result
       log CND.white JSON.stringify event for event in result
       T.eq result, matcher
+      # T.fail "not ready"
+      done()
+    input.resume()
+
+#-----------------------------------------------------------------------------------------------------------
+@[ "MKTS.MACROS.$expand_raw_spans" ] = ( T, done ) ->
+  probes_and_matchers = [[
+    """<<(multi-column 3>>
+      some text here<<<\\LaTeX{}>>> and some there
+      <<)>>
+      """
+  ,
+    [
+      [".","text","\u0015region1\u0013\nsome text here",{}]
+      [".","raw","\\LaTeX{}",{}]
+      [".","text"," and some there\n\u0015region2\u0013",{}]
+      ]
+    ]]
+  for [ pre_probe, matcher, ] in probes_and_matchers
+    S       = MKTS.MACROS.initialize_state {}
+    probe   = MKTS.MACROS.escape S, pre_probe
+    input   = D.stream_from_text probe
+    stream  = input
+      .pipe $ ( text, send ) =>
+        send [ '.', 'text', text, {}, ]
+    D.call_transform stream, ( => MKTS.MACROS.$expand_raw_spans S ), ( error, result ) =>
+      log CND.white JSON.stringify event for event in result
+      T.eq result, matcher
+      # T.fail "not ready"
+      done()
+    input.resume()
+
+#-----------------------------------------------------------------------------------------------------------
+@[ "MKTS.MACROS.$expand_commands_and_values" ] = ( T, done ) ->
+  probes_and_matchers = [[
+    """<<(multi-column 3>>
+      some text here <<!LATEX>> and some there
+      <<)>>
+      """
+  ,
+    [
+      [".","text","<<(multi-column 3>>\nsome text here ",{}]
+      ["!","LATEX",null,{}]
+      [".","text"," and some there\n<<)>>",{}]
+      ]
+    ]]
+  for [ pre_probe, matcher, ] in probes_and_matchers
+    S       = MKTS.MACROS.initialize_state {}
+    probe   = MKTS.MACROS.escape S, pre_probe
+    input   = D.stream_from_text probe
+    stream  = input
+      .pipe $ ( text, send ) =>
+        send [ '.', 'text', text, {}, ]
+    D.call_transform stream, ( => MKTS.MACROS.$expand_commands_and_values S ), ( error, result ) =>
+      log CND.white JSON.stringify event for event in result
+      T.eq result, matcher
+      # T.fail "not ready"
       done()
     input.resume()
 
