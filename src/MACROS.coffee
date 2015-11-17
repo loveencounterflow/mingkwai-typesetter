@@ -352,14 +352,14 @@ after it, thereby inhibiting any processing of those portions. ###
   return $ ( event, send ) =>
     #.......................................................................................................
     if MKTS.select event, '.', 'text'
-      is_comment                  = yes
+      is_plain                    = no
       [ type, name, text, meta, ] = event
       for stretch in text.split @html_comment_id_pattern
-        is_comment = not is_comment
-        if is_comment
-          id      = parseInt stretch, 10
-          entry   = @_retrieve_entry S, id
-          content = entry[ 'raw' ]
+        is_plain = not is_plain
+        unless is_plain
+          id                  = parseInt stretch, 10
+          entry               = @_retrieve_entry S, id
+          content             = entry[ 'raw' ]
           send [ '.', 'comment', content, ( MKTS.copy meta ), ]
         else
           send [ type, name, stretch, ( MKTS.copy meta ), ] unless stretch.length is 0
@@ -373,11 +373,11 @@ after it, thereby inhibiting any processing of those portions. ###
   return $ ( event, send ) =>
     #.......................................................................................................
     if MKTS.select event, '.', 'text'
-      is_do                       = yes
+      is_plain                    = no
       [ type, name, text, meta, ] = event
       for stretch in text.split @action_id_pattern
-        is_do = not is_do
-        if is_do
+        is_plain = not is_plain
+        unless is_plain
           id                  = parseInt stretch, 10
           entry               = @_retrieve_entry S, id
           [ mode, language, ] = entry[ 'markup' ]
@@ -395,14 +395,14 @@ after it, thereby inhibiting any processing of those portions. ###
   return $ ( event, send ) =>
     #.......................................................................................................
     if MKTS.select event, '.', 'text'
-      is_raw                      = yes
+      is_plain                    = no
       [ type, name, text, meta, ] = event
       for stretch in text.split @raw_id_pattern
-        is_raw = not is_raw
-        if is_raw
-          id      = parseInt stretch, 10
-          entry   = @_retrieve_entry S, id
-          content = entry[ 'raw' ]
+        is_plain = not is_plain
+        unless is_plain
+          id                  = parseInt stretch, 10
+          entry               = @_retrieve_entry S, id
+          content             = entry[ 'raw' ]
           send [ '.', 'raw', content, ( MKTS.copy meta ), ]
         else
           send [ type, name, stretch, ( MKTS.copy meta ), ] unless stretch.length is 0
@@ -416,15 +416,15 @@ after it, thereby inhibiting any processing of those portions. ###
   return $ ( event, send ) =>
     #.......................................................................................................
     if MKTS.select event, '.', 'text'
-      is_command                  = yes
+      is_plain                    = no
       [ type, name, text, meta, ] = event
       for stretch in text.split @command_id_pattern
-        is_command = not is_command
-        if is_command
-          id        = parseInt stretch, 10
-          entry     = @_retrieve_entry S, id
+        is_plain = not is_plain
+        unless is_plain
+          id                  = parseInt stretch, 10
+          entry               = @_retrieve_entry S, id
           { raw
-            markup} = entry
+            markup}           = entry
           send [ markup, raw, null, ( MKTS.copy meta ), ]
         else
           send [ type, name, stretch, ( MKTS.copy meta ), ] unless stretch.length is 0
@@ -438,15 +438,15 @@ after it, thereby inhibiting any processing of those portions. ###
   return $ ( event, send ) =>
     #.......................................................................................................
     if MKTS.select event, '.', 'text'
-      is_command                  = yes
+      is_plain                    = no
       [ type, name, text, meta, ] = event
       for stretch in text.split @region_id_pattern
-        is_command = not is_command
-        if is_command
-          id        = parseInt stretch, 10
-          entry     = @_retrieve_entry S, id
+        is_plain = not is_plain
+        unless is_plain
+          id                  = parseInt stretch, 10
+          entry               = @_retrieve_entry S, id
           { raw
-            markup} = entry
+            markup}           = entry
           send [ markup, raw, null, ( MKTS.copy meta ), ]
         else
           send [ type, name, stretch, ( MKTS.copy meta ), ] unless stretch.length is 0
