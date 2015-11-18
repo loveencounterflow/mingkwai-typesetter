@@ -82,17 +82,18 @@ MKTS                      = require './MKTS'
   ]
 
 #-----------------------------------------------------------------------------------------------------------
-@action_patterns = [
+@action_and_region_patterns = [
   ///                           # A silent or vocal action macro...
                                 #
                                 # Start Tag
                                 # =========
   ( ^ | [^ \\ ] )               # starts either at the first chr or a chr other than backslash
   <<\(                          # then: two left pointy brackets, then: left round bracket,
-    ( [ . : ]                   # then: a dot or a colon;
+    ( [ . : ]? )                # then: an optional dot or a colon;
+    (
       (?:                       # then:
         \\>                |    #   or: an escaped right pointy bracket (RPB)
-        [^ > ]             |    #   or: anything but a RPB
+        [^ > . : ]         |    #   or: anything but a RPB, a dot, or a colon
         > (?! > )               #   or: a RPB not followed by yet another RPB
       )*                        # repeated any number of times
     )
@@ -111,45 +112,45 @@ MKTS                      = require './MKTS'
                                 # Stop Tag
                                 # =========
   <<                            # then: two left pointy brackets,
-    ( \2 ? )                    # then: optionally, whatever appeared in the start tag,
+    ( (?: \2 \3 )? )            # then: optionally, whatever appeared in the start tag,
     \)>>                        # then: right round bracket, then: two RPBs.
   ///g
   ]
 
-#-----------------------------------------------------------------------------------------------------------
-@region_patterns = [
-  ///                           # A region macro...
-                                #
-                                # Start Tag
-                                # =========
-  ( ^ | [^ \\ ] )               # starts either at the first chr or a chr other than backslash
-  <<\(                          # then: two left pointy brackets, then: left round bracket,
-    (                           #
-      (?:                       # then:
-        \\>                |    #   or: an escaped right pointy bracket (RPB)
-        [^ > ]             |    #   or: anything but a RPB
-        > (?! > )               #   or: a RPB not followed by yet another RPB
-      )*                        # repeated any number of times
-    )
-    >>                          # then: two RPBs...
-                                #
-                                # Content
-                                # =========
-    (
-      (?:                       # ...followed by content, which is:
-        \\<                |    #   or: an escaped left pointy bracket (LPB)
-        [^ < ]             |    #   or: anything but a LPB
-        < (?! < )               #   or: a LPB not followed by yet another LPB
-      )*                        # repeated any number of times
-      )
-                                #
-                                # Stop Tag
-                                # =========
-  <<                            # then: two left pointy brackets,
-    ( \2 ? )                    # then: optionally, whatever appeared in the start tag,
-    \)>>                        # then: right round bracket, then: two RPBs.
-  ///g
-  ]
+# #-----------------------------------------------------------------------------------------------------------
+# @region_patterns = [
+#   ///                           # A region macro...
+#                                 #
+#                                 # Start Tag
+#                                 # =========
+#   ( ^ | [^ \\ ] )               # starts either at the first chr or a chr other than backslash
+#   <<\(                          # then: two left pointy brackets, then: left round bracket,
+#     (                           #
+#       (?:                       # then:
+#         \\>                |    #   or: an escaped right pointy bracket (RPB)
+#         [^ > ]             |    #   or: anything but a RPB
+#         > (?! > )               #   or: a RPB not followed by yet another RPB
+#       )*                        # repeated any number of times
+#     )
+#     >>                          # then: two RPBs...
+#                                 #
+#                                 # Content
+#                                 # =========
+#     (
+#       (?:                       # ...followed by content, which is:
+#         \\<                |    #   or: an escaped left pointy bracket (LPB)
+#         [^ < ]             |    #   or: anything but a LPB
+#         < (?! < )               #   or: a LPB not followed by yet another LPB
+#       )*                        # repeated any number of times
+#       )
+#                                 #
+#                                 # Stop Tag
+#                                 # =========
+#   <<                            # then: two left pointy brackets,
+#     ( \2 ? )                    # then: optionally, whatever appeared in the start tag,
+#     \)>>                        # then: right round bracket, then: two RPBs.
+#   ///g
+#   ]
 
 # debug '234652', @action_patterns
 # debug "abc<<(:js>>4 + 3<<:js)>>def".match @action_patterns[ 0 ]
@@ -227,8 +228,9 @@ after it, thereby inhibiting any processing of those portions. ###
   R = @escape.escape_chrs              S, R
   R = @escape.html_comments            S, R
   R = @escape.bracketed_raw_macros     S, R
-  R = @escape.action_macros            S, R
-  R = @escape.region_macros            S, R
+  R = @escape.action_and_region_macros S, R
+  # R = @escape.action_macros            S, R
+  # R = @escape.region_macros            S, R
   R = @escape.command_and_value_macros S, R
   #.........................................................................................................
   return R
@@ -276,35 +278,43 @@ after it, thereby inhibiting any processing of those portions. ###
   return R
 
 #-----------------------------------------------------------------------------------------------------------
-@escape.action_macros = ( S, text ) =>
+@escape.action_and_region_macros = ( S, text ) =>
   R = text
   #.........................................................................................................
-  for pattern in @action_patterns
-    R = R.replace pattern, ( _, previous_chr, starter, content, stopper ) =>
-      mode      = starter[ 0 ]
-      mode      = if mode is '.' then 'silent' else 'vocal'
-      language  = starter[ 1 .. ]
-      language  = 'coffee' if language is ''
-      ### TAINT not using arguments peoperly ###
-      id        = @_register_content S, 'action', [ mode, language, ], content
-      return "#{previous_chr}\x15#{id}\x13"
+  for pattern in @action_and_region_patterns
+    R = R.replace pattern, ( _, previous_chr, markup, identifier, content, stopper ) =>
+      debug '©ΛΨΒΓΘ', [ previous_chr, markup, identifier, content, ]
+      switch markup
+        when '' # regions
+          starter_id  = @_register_content S, 'region', '(', identifier
+          stopper_id  = @_register_content S, 'region', ')', identifier
+          return "#{previous_chr}\x15#{starter_id}\x13#{content}\x15#{stopper_id}\x13"
+        when '.', ':' # actions
+          mode      = if markup is '.' then 'silent' else 'vocal'
+          language  = identifier
+          language  = 'coffee' if language is ''
+          ### TAINT not using arguments peoperly ###
+          id        = @_register_content S, 'action', [ mode, language, ], content
+          return "#{previous_chr}\x15#{id}\x13"
+        else
+          throw new Error "internal error; unexpected macro pattern #{rpr _}"
   #.........................................................................................................
   return R
 
-#-----------------------------------------------------------------------------------------------------------
-@escape.region_macros = ( S, text ) =>
-  R = text
-  #.........................................................................................................
-  for pattern in @region_patterns
-    R = R.replace pattern, ( _, previous_chr, starter, content, stopper ) =>
-      ### TAINT not using arguments peoperly ###
-      starter_rpr = "<<(#{starter}>>"
-      stopper_rpr = "<<#{stopper})>>"
-      starter_id  = @_register_content S, 'region', '(', starter
-      stopper_id  = @_register_content S, 'region', ')', starter
-      return "#{previous_chr}\x15#{starter_id}\x13#{content}\x15#{stopper_id}\x13"
-  #.........................................................................................................
-  return R
+# #-----------------------------------------------------------------------------------------------------------
+# @escape.region_macros = ( S, text ) =>
+#   R = text
+#   #.........................................................................................................
+#   for pattern in @region_patterns
+#     R = R.replace pattern, ( _, previous_chr, starter, content, stopper ) =>
+#       ### TAINT not using arguments peoperly ###
+#       starter_rpr = "<<(#{starter}>>"
+#       stopper_rpr = "<<#{stopper})>>"
+#       starter_id  = @_register_content S, 'region', '(', starter
+#       stopper_id  = @_register_content S, 'region', ')', starter
+#       return "#{previous_chr}\x15#{starter_id}\x13#{content}\x15#{stopper_id}\x13"
+#   #.........................................................................................................
+#   return R
 
 #-----------------------------------------------------------------------------------------------------------
 @escape.command_and_value_macros = ( S, text ) =>
@@ -332,11 +342,6 @@ after it, thereby inhibiting any processing of those portions. ###
   ///g
 
 #-----------------------------------------------------------------------------------------------------------
-@command_and_value_id_pattern = ///
-  \x15 (?: command | value ) ( [ 0-9 ]+ ) \x13
-  ///g
-
-#-----------------------------------------------------------------------------------------------------------
 @action_id_pattern = ///
   \x15 action ( [ 0-9 ]+ ) \x13
   ///g
@@ -346,6 +351,14 @@ after it, thereby inhibiting any processing of those portions. ###
   \x15 region ( [ 0-9 ]+ ) \x13
   ///g
 
+#-----------------------------------------------------------------------------------------------------------
+@command_and_value_id_pattern = ///
+  \x15 (?: command | value ) ( [ 0-9 ]+ ) \x13
+  ///g
+
+
+#===========================================================================================================
+# COMMENTS & RAW
 #-----------------------------------------------------------------------------------------------------------
 @$expand_html_comments = ( S ) =>
   ### TAINT code duplication ###
@@ -361,28 +374,6 @@ after it, thereby inhibiting any processing of those portions. ###
           entry               = @_retrieve_entry S, id
           content             = entry[ 'raw' ]
           send [ '.', 'comment', content, ( MKTS.copy meta ), ]
-        else
-          send [ type, name, stretch, ( MKTS.copy meta ), ] unless stretch.length is 0
-    #.......................................................................................................
-    else
-      send event
-
-#-----------------------------------------------------------------------------------------------------------
-@$expand_action_macros  = ( S ) =>
-  ### TAINT code duplication ###
-  return $ ( event, send ) =>
-    #.......................................................................................................
-    if MKTS.select event, '.', 'text'
-      is_plain                    = no
-      [ type, name, text, meta, ] = event
-      for stretch in text.split @action_id_pattern
-        is_plain = not is_plain
-        unless is_plain
-          id                  = parseInt stretch, 10
-          entry               = @_retrieve_entry S, id
-          [ mode, language, ] = entry[ 'markup' ]
-          content             = entry[ 'raw' ]
-          send [ '.', 'action', content, ( MKTS.copy meta, { mode, language, } ), ]
         else
           send [ type, name, stretch, ( MKTS.copy meta ), ] unless stretch.length is 0
     #.......................................................................................................
@@ -410,23 +401,25 @@ after it, thereby inhibiting any processing of those portions. ###
     else
       send event
 
+
+#===========================================================================================================
+# ACTIONS & REGIONS
 #-----------------------------------------------------------------------------------------------------------
-@$expand_command_and_value_macros = ( S ) =>
+@$expand_action_macros  = ( S ) =>
   ### TAINT code duplication ###
   return $ ( event, send ) =>
     #.......................................................................................................
     if MKTS.select event, '.', 'text'
       is_plain                    = no
       [ type, name, text, meta, ] = event
-      for stretch in text.split @command_and_value_id_pattern
+      for stretch in text.split @action_id_pattern
         is_plain = not is_plain
         unless is_plain
           id                  = parseInt stretch, 10
           entry               = @_retrieve_entry S, id
-          { raw
-            markup}           = entry
-          macro_type          = if markup is '!' then 'command' else 'value'
-          send [ '.', macro_type, raw, ( MKTS.copy meta ), ]
+          [ mode, language, ] = entry[ 'markup' ]
+          content             = entry[ 'raw' ]
+          send [ '.', 'action', content, ( MKTS.copy meta, { mode, language, } ), ]
         else
           send [ type, name, stretch, ( MKTS.copy meta ), ] unless stretch.length is 0
     #.......................................................................................................
@@ -449,6 +442,32 @@ after it, thereby inhibiting any processing of those portions. ###
           { raw
             markup}           = entry
           send [ markup, raw, null, ( MKTS.copy meta ), ]
+        else
+          send [ type, name, stretch, ( MKTS.copy meta ), ] unless stretch.length is 0
+    #.......................................................................................................
+    else
+      send event
+
+
+#===========================================================================================================
+# COMMANDS & VALUES
+#-----------------------------------------------------------------------------------------------------------
+@$expand_command_and_value_macros = ( S ) =>
+  ### TAINT code duplication ###
+  return $ ( event, send ) =>
+    #.......................................................................................................
+    if MKTS.select event, '.', 'text'
+      is_plain                    = no
+      [ type, name, text, meta, ] = event
+      for stretch in text.split @command_and_value_id_pattern
+        is_plain = not is_plain
+        unless is_plain
+          id                  = parseInt stretch, 10
+          entry               = @_retrieve_entry S, id
+          { raw
+            markup}           = entry
+          macro_type          = if markup is '!' then 'command' else 'value'
+          send [ '.', macro_type, raw, ( MKTS.copy meta ), ]
         else
           send [ type, name, stretch, ( MKTS.copy meta ), ] unless stretch.length is 0
     #.......................................................................................................
