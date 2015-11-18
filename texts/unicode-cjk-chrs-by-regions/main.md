@@ -1,4 +1,11 @@
 
+<<(keep-lines>>
+我不住上海不住柏林
+而我在上網我在博覽。
+<<keep-lines)>>
+
+“比如，要想找带‘门’字旁的汉字，在我的数据库里一搜，就能找到，这是电子化的好处。”—Richard Sears, [美国“汉字叔叔”自费创建汉字网 为此穷困潦倒](http://news.qq.com/a/20150415/011681.htm)
+
 <<{multi-column>>
 xxx
 
@@ -60,9 +67,6 @@ block.
     As with HTML tags, regions must be properly nested and must
     not overlap.
 
-* **Commands** are indicated by a leading exclamation mark right
-  after the left double pointy brackets, as in `<<!name>>`.
-
 * **Actions** allow to execute code snippets inside the document. They
   come in two flavors: 'silent' and 'vocal'.
 
@@ -73,16 +77,22 @@ block.
   <!-- ### TAINT unclear how to derive value in case it is not already a string ### -->
 
   * **Silent Actions**
-    * Full Notation: `<<(.>>some code<<.)>>`, `<<(.js>>some code<<.js)>>`
-    * Short Notation: `<<(.>>some code<<)>>`, `<<(.js>>some code<<)>>`
+  * Full Notation: `<<(.>>some code<<.)>>`, `<<(.js>>some code<<.js)>>`
+  * Short Notation: `<<(.>>some code<<)>>`, `<<(.js>>some code<<)>>`
 
   * **Vocal Actions**
-    * Full Notation: `<<(:>>some code<<:)>>`, `<<(:js>>some code<<:js)>>`
-    * Short Notation: `<<(:>>some code<<)>>`, `<<(:js>>some code<<)>>`
+  * Full Notation: `<<(:>>some code<<:)>>`, `<<(:js>>some code<<:js)>>`
+  * Short Notation: `<<(:>>some code<<)>>`, `<<(:js>>some code<<)>>`
 
-    As with regions, the rule is that wherever the more explicit long form
-    is used, the action type marker (`.` (dot) or `:` (colon)) and the action
-    name of the start and end tags must match. 
+  As with regions, the rule is that wherever the more explicit long form
+  is used, the action type marker (`.` (dot) or `:` (colon)) and the action
+  name of the start and end tags must match.
+
+* To execute an action without further logic code (i.e. a simple function call)  
+  in the manuscript, either a silent action `<<(.>>makeitso 42<<.)>>` or the
+  short **Command** notation `<<!makeitso 42>>` can be used. Observe that
+  commands do not allow for a language annotation; whatever is inside
+  the macro tag will be parsed as CoffeeScript.
 
 * To interpolate the value of a variable into the document,
   either a vocal action `<<(:>>foo<<)>>` or the shorter **Value**

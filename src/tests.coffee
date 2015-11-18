@@ -408,6 +408,10 @@ nice_text_rpr = ( text ) ->
 
 #-----------------------------------------------------------------------------------------------------------
 @[ "MKTS.MACROS.$expand_action_macros" ] = ( T, done ) ->
+  ### TAINT NB Here, `<<(multi-column 3>>` does *not* get parsed / escaped because it lacks a suitable
+  counterpart and the escape pattern catches the entire region (start macro tag, content, stop macro tag)
+  or else nothing. It could be argues that it'd be better to parse start and stop tags separately,
+  and do the appropriate matching only later down the stream. ###
   probes_and_matchers = [[
     """<<(multi-column 3>>
       some text with <<(:>>vocal action<<)>>.
@@ -467,19 +471,22 @@ nice_text_rpr = ( text ) ->
 @[ "MKTS.MACROS.$expand_command_and_value_macros" ] = ( T, done ) ->
   probes_and_matchers = [[
     """<<(multi-column 3>>
-      some text here <<!LATEX>> and some there
+      a command <<!LATEX>> and a value <<$pagenr>>.
       <<)>>
       """
   ,
     [
-      [".","text","<<(multi-column 3>>\nsome text here ",{}]
-      ["!","LATEX",null,{}]
-      [".","text"," and some there\n<<)>>",{}]
+      [".","text","<<(multi-column 3>>\na command ",{}]
+      [".","command","LATEX",{}]
+      [".","text"," and a value ",{}]
+      [".","value","pagenr",{}]
+      [".","text",".\n<<)>>",{}]
       ]
     ]]
   for [ pre_probe, matcher, ] in probes_and_matchers
     S       = MKTS.MACROS.initialize_state {}
     probe   = MKTS.MACROS.escape S, pre_probe
+    # debug '©ΖΡΤΣΓ', S
     input   = D.stream_from_text probe
     stream  = input
       .pipe $ ( text, send ) =>

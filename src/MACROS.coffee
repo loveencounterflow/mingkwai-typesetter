@@ -332,8 +332,8 @@ after it, thereby inhibiting any processing of those portions. ###
   ///g
 
 #-----------------------------------------------------------------------------------------------------------
-@command_id_pattern = ///
-  \x15 command ( [ 0-9 ]+ ) \x13
+@command_and_value_id_pattern = ///
+  \x15 (?: command | value ) ( [ 0-9 ]+ ) \x13
   ///g
 
 #-----------------------------------------------------------------------------------------------------------
@@ -418,14 +418,15 @@ after it, thereby inhibiting any processing of those portions. ###
     if MKTS.select event, '.', 'text'
       is_plain                    = no
       [ type, name, text, meta, ] = event
-      for stretch in text.split @command_id_pattern
+      for stretch in text.split @command_and_value_id_pattern
         is_plain = not is_plain
         unless is_plain
           id                  = parseInt stretch, 10
           entry               = @_retrieve_entry S, id
           { raw
             markup}           = entry
-          send [ markup, raw, null, ( MKTS.copy meta ), ]
+          macro_type          = if markup is '!' then 'command' else 'value'
+          send [ '.', macro_type, raw, ( MKTS.copy meta ), ]
         else
           send [ type, name, stretch, ( MKTS.copy meta ), ] unless stretch.length is 0
     #.......................................................................................................
