@@ -87,192 +87,208 @@ nice_text_rpr = ( text ) ->
   R = '\n"""' + R + '"""'
   return R
 
-# #===========================================================================================================
-# # TESTS
-# #-----------------------------------------------------------------------------------------------------------
-# @[ "MKTS.MACROS.action_patterns[ 0 ] matches action macro" ] = ( T, done ) ->
-#   probes_and_matchers = [
-#     ["<<(.>><<)>>",["",".","",""]]
-#     ["<<(.>>xxx<<)>>",["",".","xxx",""]]
-#     ["<<(.>>some code<<)>>",["",".","some code",""]]
-#     ["abc<<(.>>4 + 3<<)>>def",["c",".","4 + 3",""]]
-#     ["<<(:>><<)>>",["",":","",""]]
-#     ["<<(:>>xxx<<)>>",["",":","xxx",""]]
-#     ["<<(:>>some code<<)>>",["",":","some code",""]]
-#     ["abc<<(:>>4 + 3<<)>>def",["c",":","4 + 3",""]]
-#     ["abc<<(:>>bitfield \\>> 1 <<)>>def",["c",":","bitfield \\>> 1 ",""]]
-#     ["abc<<(:>>bitfield >\\> 1 <<)>>def",["c",":","bitfield >\\> 1 ",""]]
-#     ["abc<<(:js>>4 + 3<<)>>def",["c",":js","4 + 3",""]]
-#     ["abc<<(.js>>4 + 3<<)>>def",["c",".js","4 + 3",""]]
-#     ["abc<<(:js>>4 + 3<<:js)>>def",["c",":js","4 + 3",":js"]]
-#     ["abc<<(.js>>4 + 3<<.js)>>def",["c",".js","4 + 3",".js"]]
-#     ["abc<<(:js>>4 + 3<<:)>>def",null]
-#     ["abc<<(.js>>4 + 3<<.)>>def",null]
-#     ]
-#   patterns = ( copy_regex_non_global pattern for pattern in MKTS.MACROS.action_patterns )
-#   for [ probe, matcher, ] in probes_and_matchers
-#     result = list_from_match match_first patterns, probe
-#     help JSON.stringify [ probe, result, ]
-#     T.eq result, matcher
-#   done()
-
-# #-----------------------------------------------------------------------------------------------------------
-# @[ "MKTS.MACROS.bracketed_raw_patterns matches raw macro" ] = ( T, done ) ->
-#   probes_and_matchers = [
-#     ["<<<...raw material...>>>",["","<","...raw material..."]]
-#     ["<<(.>>some code<<)>>",null]
-#     ["<<<>>>",["","<",""]]
-#     ["abcdef<<<\\XeLaTeX{}>>>ghijklm",["f","<","\\XeLaTeX{}"]]
-#     ["abcdef<<<123\\>>>0>>>ghijklm",["f","<","123\\>>>0"]]
-#     ["abcdef\\<<<123>>>ghijklm",null]
-#     ["abcdef<\\<<123>>>ghijklm",null]
-#     ["abcdef<<\\<123>>>ghijklm",null]
-#     ["abcdef<<<123>>\\>ghijklm",null]
-#     ]
-#   patterns = ( copy_regex_non_global pattern for pattern in MKTS.MACROS.bracketed_raw_patterns )
-#   for [ probe, matcher, ] in probes_and_matchers
-#     result = list_from_match match_first patterns, probe
-#     help JSON.stringify [ probe, result, ]
-#     T.eq result, matcher
-#   done()
-
-# #-----------------------------------------------------------------------------------------------------------
-# @[ "MKTS.MACROS.command_and_value_patterns matches command macro" ] = ( T, done ) ->
-#   probes_and_matchers = [
-#     ["<<!>>",["","!",""]]
-#     ["<<!name>>",["","!","name"]]
-#     ["abc<<!name>>def",["c","!","name"]]
-#     ["abc<<!n>me>>def",["c","!","n>me"]]
-#     ["abc<<!n>\\>me>>def",["c","!","n>\\>me"]]
-#     ["abc<<!n\\>me>>def",["c","!","n\\>me"]]
-#     ["abc\\<<!nme>>def",null]
-#     ["<<$>>",["","$",""]]
-#     ["<<$name>>",["","$","name"]]
-#     ["abc<<$name>>def",["c","$","name"]]
-#     ["abc<<$n>me>>def",["c","$","n>me"]]
-#     ["abc<<$n>\\>me>>def",["c","$","n>\\>me"]]
-#     ["abc<<$n\\>me>>def",["c","$","n\\>me"]]
-#     ["abc\\<<$nme>>def",null]
-#     ]
-#   patterns = ( copy_regex_non_global pattern for pattern in MKTS.MACROS.command_and_value_patterns )
-#   for [ probe, matcher, ] in probes_and_matchers
-#     result = list_from_match match_first patterns, probe
-#     help JSON.stringify [ probe, result, ]
-#     T.eq result, matcher
-#   done()
-
-# #-----------------------------------------------------------------------------------------------------------
-# @[ "MKTS.MACROS.illegal_patterns matches consecutive unescaped LPBs" ] = ( T, done ) ->
-#   probes_and_matchers = [
-#     ["helo world",null]
-#     ["helo \\<< world",null]
-#     ["helo <\\< world",null]
-#     ["helo << world",[" ","<<"," world"]]
-#     ]
-#   patterns = ( copy_regex_non_global pattern for pattern in MKTS.MACROS.illegal_patterns )
-#   for [ probe, matcher, ] in probes_and_matchers
-#     result = list_from_match match_first patterns, probe
-#     help JSON.stringify [ probe, result, ]
-#     T.eq result, matcher
-#   done()
-
-# #-----------------------------------------------------------------------------------------------------------
-# @[ "MKTS.MACROS.end_command_patterns matches end command macro" ] = ( T, done ) ->
-#   probes_and_matchers = [
-#     ["some text here <<!end>> and some there",["some text here "]]
-#     ["some text here <<!end>>",["some text here "]]
-#     ["<<!end>>",[""]]
-#     ["",null]
-#     ["<<!end>> and some there",[""]]
-#     ["\\<<!end>> and some there",null]
-#     ["some text here \\<<!end>> and some there",null]
-#     ["some text here <<!end>\\> and some there",null]
-#     ]
-#   patterns = MKTS.MACROS.end_command_patterns
-#   for [ probe, matcher, ] in probes_and_matchers
-#     result = list_from_match match_first patterns, probe
-#     help JSON.stringify [ probe, result, ]
-#     T.eq result, matcher
-#   done()
-
-# #-----------------------------------------------------------------------------------------------------------
-# @[ "MKTS.MACROS.escape.truncate_text_at_end_command_macro" ] = ( T, done ) ->
-#   probes_and_matchers = [
-#     ["some text here <<!end>> and some there",["some text here ",23]]
-#     ["some text here <<!end>>",["some text here ",8]]
-#     ["<<!end>>",["",8]]
-#     ["",["",0]]
-#     ["<<!end>> and some there",["",23]]
-#     ["\\<<!end>> and some there",["\\<<!end>> and some there",0]]
-#     ["some text here \\<<!end>> and some there",["some text here \\<<!end>> and some there",0]]
-#     ["some text here <<!end>\\> and some there",["some text here <<!end>\\> and some there",0]]
-#     ]
-#   for [ probe, matcher, ] in probes_and_matchers
-#     result = MKTS.MACROS.escape.truncate_text_at_end_command_macro null, probe
-#     help JSON.stringify [ probe, result, ]
-#     T.eq result, matcher
-#   done()
-
-# #-----------------------------------------------------------------------------------------------------------
-# @[ "MKTS.MACROS.escape.html_comments" ] = ( T, done ) ->
-#   probes_and_matchers = [
-#     ["some text here and some there","some text here and some there",[]]
-#     ["some text here<!-- omit this --> and some there","some text here\u0015comment0\u0013 and some there",[{"key":"comment0","markup":null,"raw":" omit this ","parsed":"omit this"}]]
-#     ["some text here\\<!-- omit this --> and some there","some text here\\<!-- omit this --> and some there",[]]
-#     ["abcd<<<some raw content>>>efg","abcd<<<some raw content>>>efg",[]]
-#     ]
-#   for [ probe, text_matcher, registry_matcher, ] in probes_and_matchers
-#     S = MKTS.MACROS.initialize_state {}
-#     text_result = MKTS.MACROS.escape.html_comments S, probe
-#     help JSON.stringify [ probe, text_result, S.MACROS[ 'registry' ], ]
-#     T.eq text_result, text_matcher
-#     T.eq S.MACROS[ 'registry' ], registry_matcher
-#   done()
-
-# #-----------------------------------------------------------------------------------------------------------
-# @[ "MKTS.MACROS.escape.bracketed_raw_macros" ] = ( T, done ) ->
-#   probes_and_matchers = [
-#     ["some text here<<!foo>>and some there","some text here<<!foo>>and some there",[]]
-#     ["abcd<<<some raw content>>>efg","abcd\u0015raw0\u0013efg",[{"key":"raw0","markup":"<","raw":"some raw content","parsed":null}]]
-#     ["abcd\\<<<some raw content>>>efg","abcd\\<<<some raw content>>>efg",[]]
-#     ]
-#   for [ probe, text_matcher, registry_matcher, ] in probes_and_matchers
-#     S = MKTS.MACROS.initialize_state {}
-#     text_result = MKTS.MACROS.escape.bracketed_raw_macros S, probe
-#     help JSON.stringify [ probe, text_result, S.MACROS[ 'registry' ], ]
-#     T.eq text_result, text_matcher
-#     T.eq S.MACROS[ 'registry' ], registry_matcher
-#   done()
-
+#===========================================================================================================
+# TESTS
 #-----------------------------------------------------------------------------------------------------------
-@[ "MKTS.MACROS.escape.action_and_region_macros (1: regions)" ] = ( T, done ) ->
+@[ "MKTS.MACROS.action_patterns match action macros" ] = ( T, done ) ->
   probes_and_matchers = [
-    ["some text here <<(>>and some there<<)>>",null,null]
-    ["some text here <<(em>>and some there<<em)>>","some text here \u0015region0\u0013and some there\u0015region1\u0013",[{"key":"region0","markup":"(","raw":"em","parsed":null},{"key":"region1","markup":")","raw":"em","parsed":null}]]
-    ["some text here \\<<(em>>and some there<<em)>>","some text here \\<<(em>>and some there<<em)>>",[]]
-    ["some text here <<(em>>and some there\\<<em)>>","some text here \u0015region0\u0013and some there\\\u0015region1\u0013",[{"key":"region0","markup":"(","raw":"em","parsed":null},{"key":"region1","markup":")","raw":"em","parsed":null}]]
-    ["some text here <<(em>>and some there<<)>>","some text here \u0015region0\u0013and some there\u0015region1\u0013",[{"key":"region0","markup":"(","raw":"em","parsed":null},{"key":"region1","markup":")","raw":"em","parsed":null}]]
-    ["some text here \\<<(em>>and some there<<)>>","some text here \\<<(em>>and some there<<)>>",[]]
-    ["some text here <<(em>>and some there\\<<)>>","some text here \u0015region0\u0013and some there\\\u0015region1\u0013",[{"key":"region0","markup":"(","raw":"em","parsed":null},{"key":"region1","markup":")","raw":"em","parsed":null}]]
-    ["some text here <<(em>>and some there<<foo)>>","some text here <<(em>>and some there<<foo)>>",[]]
+    ["<<(.>><<)>>",["",".","","",""]]
+    ["<<(.>>xxx<<)>>",["",".","","xxx",""]]
+    ["<<(.>>some code<<)>>",["",".","","some code",""]]
+    ["abc<<(.>>4 + 3<<)>>def",["c",".","","4 + 3",""]]
+    ["<<(:>><<)>>",["",":","","",""]]
+    ["<<(:>>xxx<<)>>",["",":","","xxx",""]]
+    ["<<(:>>some code<<)>>",["",":","","some code",""]]
+    ["abc<<(:>>4 + 3<<)>>def",["c",":","","4 + 3",""]]
+    ["abc<<(:>>bitfield \\>> 1 <<)>>def",["c",":","","bitfield \\>> 1 ",""]]
+    ["abc<<(:>>bitfield >\\> 1 <<)>>def",["c",":","","bitfield >\\> 1 ",""]]
+    ["abc<<(:js>>4 + 3<<)>>def",["c",":","js","4 + 3",""]]
+    ["abc<<(.js>>4 + 3<<)>>def",["c",".","js","4 + 3",""]]
+    ["abc<<(:js>>4 + 3<<:js)>>def",["c",":","js","4 + 3",":js"]]
+    ["abc<<(.js>>4 + 3<<.js)>>def",["c",".","js","4 + 3",".js"]]
+    ["abc<<(:js>>4 + 3<<:)>>def",null]
+    ["abc<<(.js>>4 + 3<<.)>>def",null]
     ]
-  for [ probe, text_matcher, registry_matcher, ] in probes_and_matchers
-    S = MKTS.MACROS.initialize_state {}
-    text_result = MKTS.MACROS.escape.action_and_region_macros S, probe
-    log CND.white rpr probe
-    urge rpr text_result
-    # help JSON.stringify [ probe, text_result, S.MACROS[ 'registry' ], ]
-    # T.eq text_result, text_matcher
-    # T.eq S.MACROS[ 'registry' ], registry_matcher
-  T.fail 'not ready'
+  patterns = ( copy_regex_non_global pattern for pattern in MKTS.MACROS.action_patterns )
+  for [ probe, matcher, ] in probes_and_matchers
+    result = list_from_match match_first patterns, probe
+    help JSON.stringify [ probe, result, ]
+    T.eq result, matcher
   done()
 
 #-----------------------------------------------------------------------------------------------------------
-@[ "MKTS.MACROS.escape.action_and_region_macros (2: actions)" ] = ( T, done ) ->
+@[ "MKTS.MACROS.region_patterns match region macros" ] = ( T, done ) ->
+  probes_and_matchers = [
+    ["<<(>><<)>>",["","(","",""]]
+    ["<<(bold>><<)>>",["","(","bold",""]]
+    ["<<(bold>><<bold)>>",["","(","bold",""]]
+    ["<<(foo>><<bar)>>",["","(","foo",""]]
+    ["yadda <<(foo>>grom<<bar)>> blah <<)>>",[" ","(","foo",""]]
+    ["yadda <<bar)>> blah <<)>>",[" ","","bar",")"]]
+    ]
+  patterns = ( copy_regex_non_global pattern for pattern in MKTS.MACROS.region_patterns )
+  for [ probe, matcher, ] in probes_and_matchers
+    result = list_from_match match_first patterns, probe
+    help JSON.stringify [ probe, result, ]
+    T.eq result, matcher
+  done()
+
+#-----------------------------------------------------------------------------------------------------------
+@[ "MKTS.MACROS.bracketed_raw_patterns matches raw macro" ] = ( T, done ) ->
+  probes_and_matchers = [
+    ["<<<...raw material...>>>",["","<","...raw material..."]]
+    ["<<(.>>some code<<)>>",null]
+    ["<<<>>>",["","<",""]]
+    ["abcdef<<<\\XeLaTeX{}>>>ghijklm",["f","<","\\XeLaTeX{}"]]
+    ["abcdef<<<123\\>>>0>>>ghijklm",["f","<","123\\>>>0"]]
+    ["abcdef\\<<<123>>>ghijklm",null]
+    ["abcdef<\\<<123>>>ghijklm",null]
+    ["abcdef<<\\<123>>>ghijklm",null]
+    ["abcdef<<<123>>\\>ghijklm",null]
+    ]
+  patterns = ( copy_regex_non_global pattern for pattern in MKTS.MACROS.bracketed_raw_patterns )
+  for [ probe, matcher, ] in probes_and_matchers
+    result = list_from_match match_first patterns, probe
+    help JSON.stringify [ probe, result, ]
+    T.eq result, matcher
+  done()
+
+#-----------------------------------------------------------------------------------------------------------
+@[ "MKTS.MACROS.command_and_value_patterns matches command macro" ] = ( T, done ) ->
+  probes_and_matchers = [
+    ["<<!>>",["","!",""]]
+    ["<<!name>>",["","!","name"]]
+    ["abc<<!name>>def",["c","!","name"]]
+    ["abc<<!n>me>>def",["c","!","n>me"]]
+    ["abc<<!n>\\>me>>def",["c","!","n>\\>me"]]
+    ["abc<<!n\\>me>>def",["c","!","n\\>me"]]
+    ["abc\\<<!nme>>def",null]
+    ["<<$>>",["","$",""]]
+    ["<<$name>>",["","$","name"]]
+    ["abc<<$name>>def",["c","$","name"]]
+    ["abc<<$n>me>>def",["c","$","n>me"]]
+    ["abc<<$n>\\>me>>def",["c","$","n>\\>me"]]
+    ["abc<<$n\\>me>>def",["c","$","n\\>me"]]
+    ["abc\\<<$nme>>def",null]
+    ]
+  patterns = ( copy_regex_non_global pattern for pattern in MKTS.MACROS.command_and_value_patterns )
+  for [ probe, matcher, ] in probes_and_matchers
+    result = list_from_match match_first patterns, probe
+    help JSON.stringify [ probe, result, ]
+    T.eq result, matcher
+  done()
+
+#-----------------------------------------------------------------------------------------------------------
+@[ "MKTS.MACROS.illegal_patterns matches consecutive unescaped LPBs" ] = ( T, done ) ->
+  probes_and_matchers = [
+    ["helo world",null]
+    ["helo \\<< world",null]
+    ["helo <\\< world",null]
+    ["helo << world",[" ","<<"," world"]]
+    ]
+  patterns = ( copy_regex_non_global pattern for pattern in MKTS.MACROS.illegal_patterns )
+  for [ probe, matcher, ] in probes_and_matchers
+    result = list_from_match match_first patterns, probe
+    help JSON.stringify [ probe, result, ]
+    T.eq result, matcher
+  done()
+
+#-----------------------------------------------------------------------------------------------------------
+@[ "MKTS.MACROS.end_command_patterns matches end command macro" ] = ( T, done ) ->
+  probes_and_matchers = [
+    ["some text here <<!end>> and some there",["some text here "]]
+    ["some text here <<!end>>",["some text here "]]
+    ["<<!end>>",[""]]
+    ["",null]
+    ["<<!end>> and some there",[""]]
+    ["\\<<!end>> and some there",null]
+    ["some text here \\<<!end>> and some there",null]
+    ["some text here <<!end>\\> and some there",null]
+    ]
+  patterns = MKTS.MACROS.end_command_patterns
+  for [ probe, matcher, ] in probes_and_matchers
+    result = list_from_match match_first patterns, probe
+    help JSON.stringify [ probe, result, ]
+    T.eq result, matcher
+  done()
+
+#-----------------------------------------------------------------------------------------------------------
+@[ "MKTS.MACROS.escape.truncate_text_at_end_command_macro" ] = ( T, done ) ->
+  probes_and_matchers = [
+    ["some text here <<!end>> and some there",["some text here ",23]]
+    ["some text here <<!end>>",["some text here ",8]]
+    ["<<!end>>",["",8]]
+    ["",["",0]]
+    ["<<!end>> and some there",["",23]]
+    ["\\<<!end>> and some there",["\\<<!end>> and some there",0]]
+    ["some text here \\<<!end>> and some there",["some text here \\<<!end>> and some there",0]]
+    ["some text here <<!end>\\> and some there",["some text here <<!end>\\> and some there",0]]
+    ]
+  for [ probe, matcher, ] in probes_and_matchers
+    result = MKTS.MACROS.escape.truncate_text_at_end_command_macro null, probe
+    help JSON.stringify [ probe, result, ]
+    T.eq result, matcher
+  done()
+
+#-----------------------------------------------------------------------------------------------------------
+@[ "MKTS.MACROS.escape.html_comments" ] = ( T, done ) ->
+  probes_and_matchers = [
+    ["some text here and some there","some text here and some there",[]]
+    ["some text here<!-- omit this --> and some there","some text here\u0015comment0\u0013 and some there",[{"key":"comment0","markup":null,"raw":" omit this ","parsed":"omit this"}]]
+    ["some text here\\<!-- omit this --> and some there","some text here\\<!-- omit this --> and some there",[]]
+    ["abcd<<<some raw content>>>efg","abcd<<<some raw content>>>efg",[]]
+    ]
+  for [ probe, text_matcher, registry_matcher, ] in probes_and_matchers
+    S = MKTS.MACROS.initialize_state {}
+    text_result = MKTS.MACROS.escape.html_comments S, probe
+    help JSON.stringify [ probe, text_result, S.MACROS[ 'registry' ], ]
+    T.eq text_result, text_matcher
+    T.eq S.MACROS[ 'registry' ], registry_matcher
+  done()
+
+#-----------------------------------------------------------------------------------------------------------
+@[ "MKTS.MACROS.escape.bracketed_raw_macros" ] = ( T, done ) ->
+  probes_and_matchers = [
+    ["some text here<<!foo>>and some there","some text here<<!foo>>and some there",[]]
+    ["abcd<<<some raw content>>>efg","abcd\u0015raw0\u0013efg",[{"key":"raw0","markup":"<","raw":"some raw content","parsed":null}]]
+    ["abcd\\<<<some raw content>>>efg","abcd\\<<<some raw content>>>efg",[]]
+    ]
+  for [ probe, text_matcher, registry_matcher, ] in probes_and_matchers
+    S = MKTS.MACROS.initialize_state {}
+    text_result = MKTS.MACROS.escape.bracketed_raw_macros S, probe
+    help JSON.stringify [ probe, text_result, S.MACROS[ 'registry' ], ]
+    T.eq text_result, text_matcher
+    T.eq S.MACROS[ 'registry' ], registry_matcher
+  done()
+
+#-----------------------------------------------------------------------------------------------------------
+@[ "MKTS.MACROS.escape.region_macros" ] = ( T, done ) ->
+  probes_and_matchers = [
+    ["some text here <<(>><<)>>","some text here \u0015region0\u0013\u0015region1\u0013",[{"key":"region0","markup":"(","raw":"","parsed":null},{"key":"region1","markup":")","raw":"","parsed":null}]]
+    ["some text here <<(em>><<)>>","some text here \u0015region0\u0013\u0015region1\u0013",[{"key":"region0","markup":"(","raw":"em","parsed":null},{"key":"region1","markup":")","raw":"","parsed":null}]]
+    ["some text here <<(em>>and some there<<)>><<(more>>markup<<)>>","some text here \u0015region0\u0013and some there\u0015region2\u0013\u0015region1\u0013markup\u0015region3\u0013",[{"key":"region0","markup":"(","raw":"em","parsed":null},{"key":"region1","markup":"(","raw":"more","parsed":null},{"key":"region2","markup":")","raw":"","parsed":null},{"key":"region3","markup":")","raw":"","parsed":null}]]
+    ["some text here <<(em>>and some there<<foo)>>","some text here \u0015region0\u0013and some there\u0015region1\u0013",[{"key":"region0","markup":"(","raw":"em","parsed":null},{"key":"region1","markup":")","raw":"foo","parsed":null}]]
+    ]
+  for [ probe, text_matcher, registry_matcher, ] in probes_and_matchers
+    S = MKTS.MACROS.initialize_state {}
+    text_result = MKTS.MACROS.escape.region_macros S, probe
+    # log CND.white rpr probe
+    # urge rpr text_result
+    help JSON.stringify [ probe, text_result, S.MACROS[ 'registry' ], ]
+    T.eq text_result, text_matcher
+    T.eq S.MACROS[ 'registry' ], registry_matcher
+  # T.fail 'not ready'
+  done()
+
+#-----------------------------------------------------------------------------------------------------------
+@[ "MKTS.MACROS.escape.action_macros" ] = ( T, done ) ->
   probes_and_matchers = [
     ["<<(.>><<)>>","\u0015action0\u0013",[{"key":"action0","markup":["silent","coffee"],"raw":"","parsed":null}]]
+    ["<<(.>><<.)>>","\u0015action0\u0013",[{"key":"action0","markup":["silent","coffee"],"raw":"","parsed":null}]]
     ["<<(.>>xxx<<)>>","\u0015action0\u0013",[{"key":"action0","markup":["silent","coffee"],"raw":"xxx","parsed":null}]]
+    ["<<(.>>xxx<<.)>>","\u0015action0\u0013",[{"key":"action0","markup":["silent","coffee"],"raw":"xxx","parsed":null}]]
     ["<<(.>>some code<<)>>","\u0015action0\u0013",[{"key":"action0","markup":["silent","coffee"],"raw":"some code","parsed":null}]]
+    ["<<(.>>some code<<.)>>","\u0015action0\u0013",[{"key":"action0","markup":["silent","coffee"],"raw":"some code","parsed":null}]]
     ["abc<<(.>>4 + 3<<)>>def","abc\u0015action0\u0013def",[{"key":"action0","markup":["silent","coffee"],"raw":"4 + 3","parsed":null}]]
     ["<<(:>><<)>>","\u0015action0\u0013",[{"key":"action0","markup":["vocal","coffee"],"raw":"","parsed":null}]]
     ["<<(:>>xxx<<)>>","\u0015action0\u0013",[{"key":"action0","markup":["vocal","coffee"],"raw":"xxx","parsed":null}]]
@@ -289,262 +305,252 @@ nice_text_rpr = ( text ) ->
     ]
   for [ probe, text_matcher, registry_matcher, ] in probes_and_matchers
     S = MKTS.MACROS.initialize_state {}
-    text_result = MKTS.MACROS.escape.action_and_region_macros S, probe
-    log CND.white rpr probe
-    urge rpr text_result
-    # help JSON.stringify [ probe, text_result, S.MACROS[ 'registry' ], ]
-    # T.eq text_result, text_matcher
-    # T.eq S.MACROS[ 'registry' ], registry_matcher
-  T.fail 'not ready'
+    text_result = MKTS.MACROS.escape.action_macros S, probe
+    # log CND.white rpr probe
+    # urge rpr text_result
+    help JSON.stringify [ probe, text_result, S.MACROS[ 'registry' ], ]
+    T.eq text_result, text_matcher
+    T.eq S.MACROS[ 'registry' ], registry_matcher
+  # debug '©ΤΓΘΤΝ', MKTS.MACROS.action_and_region_patterns[ 0 ]
+  # debug '©ΤΓΘΤΝ', MKTS.MACROS.action_and_region_patterns[ 1 ]
+  # T.fail 'not ready'
   done()
 
-# #-----------------------------------------------------------------------------------------------------------
-# @[ "MKTS.MACROS.escape.command_and_value_macros" ] = ( T, done ) ->
-#   probes_and_matchers = [
-#     ["some text here <<!foo>> and some there","some text here \u0015command0\u0013 and some there",[{"key":"command0","markup":"!","raw":"foo","parsed":null}]]
-#     ["some text here <<$foo>> and some there","some text here \u0015value0\u0013 and some there",[{"key":"value0","markup":"$","raw":"foo","parsed":null}]]
-#     ["some text here \\<<!foo>> and some there","some text here \\<<!foo>> and some there",[]]
-#     ["some text here \\<<$foo>> and some there","some text here \\<<$foo>> and some there",[]]
-#     ["some text here<!-- omit this --> and some there","some text here<!-- omit this --> and some there",[]]
-#     ["abcd<<<some raw content>>>efg","abcd<<<some raw content>>>efg",[]]
-#     ]
-#   for [ probe, text_matcher, registry_matcher, ] in probes_and_matchers
-#     S = MKTS.MACROS.initialize_state {}
-#     text_result = MKTS.MACROS.escape.command_and_value_macros S, probe
-#     help JSON.stringify [ probe, text_result, S.MACROS[ 'registry' ], ]
-#     T.eq text_result, text_matcher
-#     T.eq S.MACROS[ 'registry' ], registry_matcher
-#   done()
+#-----------------------------------------------------------------------------------------------------------
+@[ "MKTS.MACROS.escape.command_and_value_macros" ] = ( T, done ) ->
+  probes_and_matchers = [
+    ["some text here <<!foo>> and some there","some text here \u0015command0\u0013 and some there",[{"key":"command0","markup":"!","raw":"foo","parsed":null}]]
+    ["some text here <<$foo>> and some there","some text here \u0015value0\u0013 and some there",[{"key":"value0","markup":"$","raw":"foo","parsed":null}]]
+    ["some text here \\<<!foo>> and some there","some text here \\<<!foo>> and some there",[]]
+    ["some text here \\<<$foo>> and some there","some text here \\<<$foo>> and some there",[]]
+    ["some text here<!-- omit this --> and some there","some text here<!-- omit this --> and some there",[]]
+    ["abcd<<<some raw content>>>efg","abcd<<<some raw content>>>efg",[]]
+    ]
+  for [ probe, text_matcher, registry_matcher, ] in probes_and_matchers
+    S = MKTS.MACROS.initialize_state {}
+    text_result = MKTS.MACROS.escape.command_and_value_macros S, probe
+    help JSON.stringify [ probe, text_result, S.MACROS[ 'registry' ], ]
+    T.eq text_result, text_matcher
+    T.eq S.MACROS[ 'registry' ], registry_matcher
+  done()
 
-# # #-----------------------------------------------------------------------------------------------------------
-# # @[ "MKTS.MACROS.escape 1" ] = ( T, done ) ->
-# #   probes_and_matchers = [
-# #     ["<<(multi-column 3>>\nsome text here<!-- omit this --> and some there\n<<)>>\n<<(multi-column 2>>\nThis text will appear in two-column<!-- omit this --> layout.\n<!--some code-->\n<<(:>>some code<<)>>\n<<)>>\n<<!end>>\n<<!command>><<(:action>><<)>>","\u0015region4\u0013\nsome text here\u0015comment0\u0013 and some there\n\u0015region5\u0013\n\u0015region6\u0013\nThis text will appear in two-column\u0015comment1\u0013 layout.\n\u0015comment2\u0013\n\u0015action3\u0013\n\u0015region7\u0013\n",[{"key":"comment0","markup":null,"raw":" omit this ","parsed":"omit this"},{"key":"comment1","markup":null,"raw":" omit this ","parsed":"omit this"},{"key":"comment2","markup":null,"raw":"some code","parsed":"some code"},{"key":"action3","markup":["vocal","coffee"],"raw":"some code","parsed":null},{"key":"region4","markup":"multi-column 3","raw":"<<(multi-column 3>>","parsed":null},{"key":"region5","markup":"multi-column 3","raw":"<<)>>","parsed":null},{"key":"region6","markup":"multi-column 2","raw":"<<(multi-column 2>>","parsed":null},{"key":"region7","markup":"multi-column 2","raw":"<<)>>","parsed":null}]]
-# #     ]
-# #   for [ probe, text_matcher, registry_matcher, ] in probes_and_matchers
-# #     S = MKTS.MACROS.initialize_state {}
-# #     text_result = MKTS.MACROS.escape S, probe
-# #     help JSON.stringify [ probe, text_result, S.MACROS[ 'registry' ], ]
-# #     T.eq text_result, text_matcher
-# #     T.eq S.MACROS[ 'registry' ], registry_matcher
-# #   done()
+# # # #-----------------------------------------------------------------------------------------------------------
+# # # @[ "MKTS.MACROS.escape 1" ] = ( T, done ) ->
+# # #   probes_and_matchers = [
+# # #     ["<<(multi-column 3>>\nsome text here<!-- omit this --> and some there\n<<)>>\n<<(multi-column 2>>\nThis text will appear in two-column<!-- omit this --> layout.\n<!--some code-->\n<<(:>>some code<<)>>\n<<)>>\n<<!end>>\n<<!command>><<(:action>><<)>>","\u0015region4\u0013\nsome text here\u0015comment0\u0013 and some there\n\u0015region5\u0013\n\u0015region6\u0013\nThis text will appear in two-column\u0015comment1\u0013 layout.\n\u0015comment2\u0013\n\u0015action3\u0013\n\u0015region7\u0013\n",[{"key":"comment0","markup":null,"raw":" omit this ","parsed":"omit this"},{"key":"comment1","markup":null,"raw":" omit this ","parsed":"omit this"},{"key":"comment2","markup":null,"raw":"some code","parsed":"some code"},{"key":"action3","markup":["vocal","coffee"],"raw":"some code","parsed":null},{"key":"region4","markup":"multi-column 3","raw":"<<(multi-column 3>>","parsed":null},{"key":"region5","markup":"multi-column 3","raw":"<<)>>","parsed":null},{"key":"region6","markup":"multi-column 2","raw":"<<(multi-column 2>>","parsed":null},{"key":"region7","markup":"multi-column 2","raw":"<<)>>","parsed":null}]]
+# # #     ]
+# # #   for [ probe, text_matcher, registry_matcher, ] in probes_and_matchers
+# # #     S = MKTS.MACROS.initialize_state {}
+# # #     text_result = MKTS.MACROS.escape S, probe
+# # #     help JSON.stringify [ probe, text_result, S.MACROS[ 'registry' ], ]
+# # #     T.eq text_result, text_matcher
+# # #     T.eq S.MACROS[ 'registry' ], registry_matcher
+# # #   done()
 
-# #-----------------------------------------------------------------------------------------------------------
-# @[ "MKTS.MACROS.escape 2" ] = ( T, done ) ->
-#   probes_and_matchers = [[
-#     """<<(multi-column 3>>
-#       some text here<!-- omit this --> and some there
-#       <<)>>
-#       <<(multi-column 2>>
-#       This text will appear in two-column<!-- omit this --> layout.
-#       <!--some code-->
-#       <<(:>>some code<<)>>
-#       <<)>>
-#       <<!end>>
-#       <<!command>><<(:action>><<)>>
-#       """
-#     ,
-#       """\x15region4\x13
-#       some text here\x15comment0\x13 and some there
-#       \x15region5\x13
-#       \x15region6\x13
-#       This text will appear in two-column\x15comment1\x13 layout.
-#       \x15comment2\x13
-#       \x15action3\x13
-#       \x15region7\x13\n
-#       """
-#     ,
-#       [
-#         {"key":"comment0","markup":null,"raw":" omit this ","parsed":"omit this"}
-#         {"key":"comment1","markup":null,"raw":" omit this ","parsed":"omit this"}
-#         {"key":"comment2","markup":null,"raw":"some code","parsed":"some code"}
-#         {"key":"action3","markup":["vocal","coffee"],"raw":"some code","parsed":null}
-#         {"key":"region4","markup":"(","raw":"multi-column 3","parsed":null}
-#         {"key":"region5","markup":")","raw":"multi-column 3","parsed":null}
-#         {"key":"region6","markup":"(","raw":"multi-column 2","parsed":null}
-#         {"key":"region7","markup":")","raw":"multi-column 2","parsed":null}
-#         ]
-#       ]]
-#   for [ probe, text_matcher, registry_matcher, ] in probes_and_matchers
-#     S = MKTS.MACROS.initialize_state {}
-#     text_result = MKTS.MACROS.escape S, probe
-#     # help JSON.stringify entry for entry in S.MACROS[ 'registry' ]
-#     # urge nice_text_rpr probe
-#     # info nice_text_rpr text_result
-#     T.eq text_result,             text_matcher
-#     T.eq S.MACROS[ 'registry' ],  registry_matcher
-#   done()
+#-----------------------------------------------------------------------------------------------------------
+@[ "MKTS.MACROS.escape 2" ] = ( T, done ) ->
+  probes_and_matchers = [[
+    """<<(multi-column 3>>
+      some text here<!-- HTML comment 1 --> and some there
+      <<)>>
+      <<(multi-column 2>>
+      This text will appear in two-column<!-- HTML comment 2 --> layout.
+      <<(:>>some code<<)>>
+      <<)>>
+      <<!end>>
+      <<!command>><<(:action>><<)>>
+      """
+    ,
+      """\x15region3\x13
+      some text here\x15comment0\x13 and some there
+      \x15region5\x13
+      \x15region4\x13
+      This text will appear in two-column\x15comment1\x13 layout.
+      \x15action2\x13
+      \x15region6\x13\n"""
+    ,
+      [
+        {"key":"comment0","markup":null,"raw":" HTML comment 1 ","parsed":"HTML comment 1"}
+        {"key":"comment1","markup":null,"raw":" HTML comment 2 ","parsed":"HTML comment 2"}
+        {"key":"action2","markup":["vocal","coffee"],"raw":"some code","parsed":null}
+        {"key":"region3","markup":"(","raw":"multi-column 3","parsed":null}
+        {"key":"region4","markup":"(","raw":"multi-column 2","parsed":null}
+        {"key":"region5","markup":")","raw":"","parsed":null}
+        {"key":"region6","markup":")","raw":"","parsed":null}
+        ]
+      ]]
+  for [ probe, text_matcher, registry_matcher, ] in probes_and_matchers
+    S = MKTS.MACROS.initialize_state {}
+    text_result = MKTS.MACROS.escape S, probe
+    urge nice_text_rpr probe
+    info nice_text_rpr text_result
+    help JSON.stringify entry for entry in S.MACROS[ 'registry' ]
+    T.eq text_result,             text_matcher
+    T.eq S.MACROS[ 'registry' ],  registry_matcher
+  # T.fail "not ready"
+  done()
 
-# #-----------------------------------------------------------------------------------------------------------
-# @[ "MKTS.MACROS.$expand_html_comments" ] = ( T, done ) ->
-#   probes_and_matchers = [[
-#     """<<(multi-column 3>>
-#       some text here<!-- omit this 1 --> and some there
-#       <<)>>
-#       <<(multi-column 2>>
-#       This text will appear in two-column<!-- omit this 2 --> layout.
-#       <!--some code-->
-#       <<(:>>some code<<)>>
-#       <<)>>
-#       <<!end>>
-#       <<!command>><<(:action>><<)>>
-#       """
-#     ,
-#       [
-#         [".","text","\u0015region4\u0013\nsome text here",{}]
-#         [".","comment"," omit this 1 ",{}]
-#         [".","text"," and some there\n\u0015region5\u0013\n\u0015region6\u0013\nThis text will appear in two-column",{}]
-#         [".","comment"," omit this 2 ",{}]
-#         [".","text"," layout.\n",{}]
-#         [".","comment","some code",{}]
-#         [".","text","\n\u0015action3\u0013\n\u0015region7\u0013\n",{}]
-#       ]
-#       ]]
-#   for [ pre_probe, matcher, ] in probes_and_matchers
-#     S       = MKTS.MACROS.initialize_state {}
-#     probe   = MKTS.MACROS.escape S, pre_probe
-#     input   = D.stream_from_text probe
-#     stream  = input
-#       .pipe $ ( text, send ) =>
-#         send [ '.', 'text', text, {}, ]
-#     D.call_transform stream, ( => MKTS.MACROS.$expand_html_comments S ), ( error, result ) =>
-#       log CND.white JSON.stringify event for event in result
-#       T.eq result, matcher
-#       done()
-#     input.resume()
+#-----------------------------------------------------------------------------------------------------------
+@[ "MKTS.MACROS.$expand_html_comments" ] = ( T, done ) ->
+  probes_and_matchers = [[
+    """<<(multi-column 3>>
+      some text here<!-- HTML comment 1 --> and some there
+      <<)>>
+      <<(multi-column 2>>
+      This text will appear in two-column<!-- HTML comment 2 --> layout.
+      <<(:>>some code<<)>>
+      <<)>>
+      <<!end>>
+      <<!command>><<(:action>><<)>>
+      """
+    ,
+      [
+        [".","text","\u0015region3\u0013\nsome text here",{}]
+        [".","comment"," HTML comment 1 ",{}]
+        [".","text"," and some there\n\u0015region5\u0013\n\u0015region4\u0013\nThis text will appear in two-column",{}]
+        [".","comment"," HTML comment 2 ",{}]
+        [".","text"," layout.\n\u0015action2\u0013\n\u0015region6\u0013\n",{}]
+      ]
+      ]]
+  for [ pre_probe, matcher, ] in probes_and_matchers
+    S       = MKTS.MACROS.initialize_state {}
+    probe   = MKTS.MACROS.escape S, pre_probe
+    input   = D.stream_from_text probe
+    stream  = input
+      .pipe $ ( text, send ) =>
+        send [ '.', 'text', text, {}, ]
+    D.call_transform stream, ( => MKTS.MACROS.$expand_html_comments S ), ( error, result ) =>
+      log CND.white JSON.stringify event for event in result
+      T.eq result, matcher
+      done()
+    input.resume()
 
-# #-----------------------------------------------------------------------------------------------------------
-# @[ "MKTS.MACROS.$expand_action_macros" ] = ( T, done ) ->
-#   ### TAINT NB Here, `<<(multi-column 3>>` does *not* get parsed / escaped because it lacks a suitable
-#   counterpart and the escape pattern catches the entire region (start macro tag, content, stop macro tag)
-#   or else nothing. It could be argues that it'd be better to parse start and stop tags separately,
-#   and do the appropriate matching only later down the stream. ###
-#   probes_and_matchers = [[
-#     """<<(multi-column 3>>
-#       some text with <<(:>>vocal action<<)>>.
-#       <<(.js>>and( "a silent action" )<<.js)>>
-#       """
-#   ,
-#     [
-#       [".","text","<<(multi-column 3>>\nsome text with ",{}]
-#       [".","action","vocal action",{"mode":"vocal","language":"coffee"}]
-#       [".","text",".\n",{}]
-#       [".","action","and( \"a silent action\" )",{"mode":"silent","language":"js"}]
-#       ]
-#     ]]
-#   for [ pre_probe, matcher, ] in probes_and_matchers
-#     S       = MKTS.MACROS.initialize_state {}
-#     probe   = MKTS.MACROS.escape S, pre_probe
-#     input   = D.stream_from_text probe
-#     stream  = input
-#       .pipe $ ( text, send ) =>
-#         send [ '.', 'text', text, {}, ]
-#     D.call_transform stream, ( => MKTS.MACROS.$expand_action_macros S ), ( error, result ) =>
-#       log CND.white JSON.stringify event for event in result
-#       T.eq result, matcher
-#       # T.fail "not ready"
-#       done()
-#     input.resume()
+#-----------------------------------------------------------------------------------------------------------
+@[ "MKTS.MACROS.$expand_action_macros" ] = ( T, done ) ->
+  probes_and_matchers = [[
+    """some text with <<(:>>vocal action<<)>>.
+      <<(.js>>and( "a silent action" )<<.js)>>
+      """
+  ,
+    [
+      [".","text","some text with ",{}]
+      [".","action","vocal action",{"mode":"vocal","language":"coffee"}]
+      [".","text",".\n",{}]
+      [".","action","and( \"a silent action\" )",{"mode":"silent","language":"js"}]
+      ]
+    ]]
+  for [ pre_probe, matcher, ] in probes_and_matchers
+    S       = MKTS.MACROS.initialize_state {}
+    probe   = MKTS.MACROS.escape S, pre_probe
+    input   = D.stream_from_text probe
+    stream  = input
+      .pipe $ ( text, send ) =>
+        send [ '.', 'text', text, {}, ]
+    D.call_transform stream, ( => MKTS.MACROS.$expand_action_macros S ), ( error, result ) =>
+      log CND.white JSON.stringify event for event in result
+      T.eq result, matcher
+      # T.fail "not ready"
+      done()
+    input.resume()
 
-# #-----------------------------------------------------------------------------------------------------------
-# @[ "MKTS.MACROS.$expand_raw_macros" ] = ( T, done ) ->
-#   probes_and_matchers = [[
-#     """<<(multi-column 3>>
-#       some text here<<<\\LaTeX{}>>> and some there
-#       <<)>>
-#       """
-#   ,
-#     [
-#       [".","text","\u0015region1\u0013\nsome text here",{}]
-#       [".","raw","\\LaTeX{}",{}]
-#       [".","text"," and some there\n\u0015region2\u0013",{}]
-#       ]
-#     ]]
-#   for [ pre_probe, matcher, ] in probes_and_matchers
-#     S       = MKTS.MACROS.initialize_state {}
-#     probe   = MKTS.MACROS.escape S, pre_probe
-#     input   = D.stream_from_text probe
-#     stream  = input
-#       .pipe $ ( text, send ) =>
-#         send [ '.', 'text', text, {}, ]
-#     D.call_transform stream, ( => MKTS.MACROS.$expand_raw_macros S ), ( error, result ) =>
-#       log CND.white JSON.stringify event for event in result
-#       T.eq result, matcher
-#       # T.fail "not ready"
-#       done()
-#     input.resume()
+#-----------------------------------------------------------------------------------------------------------
+@[ "MKTS.MACROS.$expand_raw_macros" ] = ( T, done ) ->
+  probes_and_matchers = [[
+    """<<(multi-column 3>>
+      some text here<<<\\LaTeX{}>>> and some there
+      <<)>>
+      """
+  ,
+    [
+      [".","text","\u0015region1\u0013\nsome text here",{}]
+      [".","raw","\\LaTeX{}",{}]
+      [".","text"," and some there\n\u0015region2\u0013",{}]
+      ]
+    ]]
+  for [ pre_probe, matcher, ] in probes_and_matchers
+    S       = MKTS.MACROS.initialize_state {}
+    probe   = MKTS.MACROS.escape S, pre_probe
+    input   = D.stream_from_text probe
+    stream  = input
+      .pipe $ ( text, send ) =>
+        send [ '.', 'text', text, {}, ]
+    D.call_transform stream, ( => MKTS.MACROS.$expand_raw_macros S ), ( error, result ) =>
+      log CND.white JSON.stringify event for event in result
+      T.eq result, matcher
+      # T.fail "not ready"
+      done()
+    input.resume()
 
-# #-----------------------------------------------------------------------------------------------------------
-# @[ "MKTS.MACROS.$expand_command_and_value_macros" ] = ( T, done ) ->
-#   probes_and_matchers = [[
-#     """<<(multi-column 3>>
-#       a command <<!LATEX>> and a value <<$pagenr>>.
-#       <<)>>
-#       """
-#   ,
-#     [
-#       [".","text","<<(multi-column 3>>\na command ",{}]
-#       [".","command","LATEX",{}]
-#       [".","text"," and a value ",{}]
-#       [".","value","pagenr",{}]
-#       [".","text",".\n<<)>>",{}]
-#       ]
-#     ]]
-#   for [ pre_probe, matcher, ] in probes_and_matchers
-#     S       = MKTS.MACROS.initialize_state {}
-#     probe   = MKTS.MACROS.escape S, pre_probe
-#     # debug '©ΖΡΤΣΓ', S
-#     input   = D.stream_from_text probe
-#     stream  = input
-#       .pipe $ ( text, send ) =>
-#         send [ '.', 'text', text, {}, ]
-#     D.call_transform stream, ( => MKTS.MACROS.$expand_command_and_value_macros S ), ( error, result ) =>
-#       log CND.white JSON.stringify event for event in result
-#       T.eq result, matcher
-#       # T.fail "not ready"
-#       done()
-#     input.resume()
+#-----------------------------------------------------------------------------------------------------------
+@[ "MKTS.MACROS.$expand_command_and_value_macros" ] = ( T, done ) ->
+  probes_and_matchers = [[
+    """<<(multi-column 3>>
+      a command <<!LATEX>> and a value <<$pagenr>>.
+      <<)>>
+      """
+  ,
+    [
+      [".","text","\u0015region0\u0013\na command ",{}]
+      [".","command","LATEX",{}]
+      [".","text"," and a value ",{}]
+      [".","value","pagenr",{}]
+      [".","text",".\n\u0015region1\u0013",{}]
+      ]
+    ]]
+  for [ pre_probe, matcher, ] in probes_and_matchers
+    S       = MKTS.MACROS.initialize_state {}
+    probe   = MKTS.MACROS.escape S, pre_probe
+    # debug '©ΖΡΤΣΓ', S
+    input   = D.stream_from_text probe
+    stream  = input
+      .pipe $ ( text, send ) =>
+        send [ '.', 'text', text, {}, ]
+    D.call_transform stream, ( => MKTS.MACROS.$expand_command_and_value_macros S ), ( error, result ) =>
+      log CND.white JSON.stringify event for event in result
+      T.eq result, matcher
+      # T.fail "not ready"
+      done()
+    input.resume()
 
-
-# #-----------------------------------------------------------------------------------------------------------
-# @[ "MKTS.MACROS.$expand_region_macros" ] = ( T, done ) ->
-#   probes_and_matchers = [[
-#     """<<(multi-column 3>>
-#       some text here<!-- omit this --> and some there
-#       <<)>>
-#       <<(multi-column 2>>
-#       This text will appear in two-column<!-- omit this --> layout.
-#       <!--some code-->
-#       <<(:>>some code<<)>>
-#       <<)>>
-#       <<!end>>
-#       <<!command>><<(:action>><<)>>
-#       """
-#   ,
-#     [
-#       ["(","multi-column 3",null,{}]
-#       [".","text","\nsome text here\u0015comment0\u0013 and some there\n",{}]
-#       [")","multi-column 3",null,{}]
-#       [".","text","\n",{}]
-#       ["(","multi-column 2",null,{}]
-#       [".","text","\nThis text will appear in two-column\u0015comment1\u0013 layout.\n\u0015comment2\u0013\n\u0015action3\u0013\n",{}]
-#       [")","multi-column 2",null,{}]
-#       [".","text","\n",{}]
-#       ]
-#     ]]
-#   for [ pre_probe, matcher, ] in probes_and_matchers
-#     S       = MKTS.MACROS.initialize_state {}
-#     probe   = MKTS.MACROS.escape S, pre_probe
-#     input   = D.stream_from_text probe
-#     stream  = input
-#       .pipe $ ( text, send ) =>
-#         send [ '.', 'text', text, {}, ]
-#     D.call_transform stream, ( => MKTS.MACROS.$expand_region_macros S ), ( error, result ) =>
-#       log CND.white JSON.stringify event for event in result
-#       T.eq result, matcher
-#       # T.fail "not ready"
-#       done()
-#     input.resume()
+#-----------------------------------------------------------------------------------------------------------
+@[ "MKTS.MACROS.$expand_region_macros" ] = ( T, done ) ->
+  probes_and_matchers = [[
+    """<<(multi-column 3>>
+      some text here<!-- omit this --> and some there
+      <<)>>
+      <<(multi-column 2>>
+      This text will appear in two-column<!-- omit this --> layout.
+      <!--some code-->
+      <<(:>>some code<<)>>
+      <<)>>
+      <<!end>>
+      <<!command>><<(:action>><<)>>
+      """
+  ,
+    [
+      ["(","multi-column 3",null,{}]
+      [".","text","\nsome text here\u0015comment0\u0013 and some there\n",{}]
+      [")","",null,{}]
+      [".","text","\n",{}]
+      ["(","multi-column 2",null,{}]
+      [".","text","\nThis text will appear in two-column\u0015comment1\u0013 layout.\n\u0015comment2\u0013\n\u0015action3\u0013\n",{}]
+      [")","",null,{}]
+      [".","text","\n",{}]
+      ]
+    ]]
+  for [ pre_probe, matcher, ] in probes_and_matchers
+    S       = MKTS.MACROS.initialize_state {}
+    probe   = MKTS.MACROS.escape S, pre_probe
+    input   = D.stream_from_text probe
+    stream  = input
+      .pipe $ ( text, send ) =>
+        send [ '.', 'text', text, {}, ]
+    D.call_transform stream, ( => MKTS.MACROS.$expand_region_macros S ), ( error, result ) =>
+      log CND.white JSON.stringify event for event in result
+      T.eq result, matcher
+      # T.fail "not ready"
+      done()
+    input.resume()
 
 ### # # # ###
 ### # # # ###
@@ -557,79 +563,80 @@ nice_text_rpr = ( text ) ->
 ### # # # ###
 
 #-----------------------------------------------------------------------------------------------------------
-# @[ "MKTS.FENCES.parse accepts dot patterns" ] = ( T, done ) ->
-#   probes_and_matchers = [
-#     [ '.',     [ '.', null,   null, ], ]
-#     [ '.p',    [ '.', 'p',    null, ], ]
-#     [ '.text', [ '.', 'text', null, ], ]
-#     ]
-#   for [ probe, matcher, ] in probes_and_matchers
-#     # help ( rpr probe ), MKTS.FENCES.parse probe
-#     T.eq ( MKTS.FENCES.parse probe ), matcher
-#   done()
+@[ "MKTS.FENCES.parse accepts dot patterns" ] = ( T, done ) ->
+  probes_and_matchers = [
+    [ '.',     [ '.', null,   null, ], ]
+    [ '.p',    [ '.', 'p',    null, ], ]
+    [ '.text', [ '.', 'text', null, ], ]
+    ]
+  for [ probe, matcher, ] in probes_and_matchers
+    # help ( rpr probe ), MKTS.FENCES.parse probe
+    T.eq ( MKTS.FENCES.parse probe ), matcher
+  done()
 
-# #-----------------------------------------------------------------------------------------------------------
-# @[ "MKTS.FENCES.parse accepts empty fenced patterns" ] = ( T, done ) ->
-#   probes_and_matchers = [
-#     [ '<>', [ '<', null, '>', ], ]
-#     [ '{}', [ '{', null, '}', ], ]
-#     [ '[]', [ '[', null, ']', ], ]
-#     [ '()', [ '(', null, ')', ], ]
-#     ]
-#   for [ probe, matcher, ] in probes_and_matchers
-#     # help ( rpr probe ), MKTS.FENCES.parse probe
-#     T.eq ( MKTS.FENCES.parse probe ), matcher
-#   done()
+#-----------------------------------------------------------------------------------------------------------
+@[ "MKTS.FENCES.parse accepts empty fenced patterns" ] = ( T, done ) ->
+  probes_and_matchers = [
+    # [ '<>', [ '<', null, '>', ], ]
+    # [ '{}', [ '{', null, '}', ], ]
+    # [ '[]', [ '[', null, ']', ], ]
+    [ '()', [ '(', null, ')', ], ]
+    ]
+  for [ probe, matcher, ] in probes_and_matchers
+    # help ( rpr probe ), MKTS.FENCES.parse probe
+    T.eq ( MKTS.FENCES.parse probe ), matcher
+  done()
 
-# #-----------------------------------------------------------------------------------------------------------
-# @[ "MKTS.FENCES.parse accepts unfenced named patterns" ] = ( T, done ) ->
-#   probes_and_matchers = [
-#     [ 'document',       [ null, 'document',     null, ], ]
-#     [ 'singlecolumn',   [ null, 'singlecolumn', null, ], ]
-#     [ 'code',           [ null, 'code',         null, ], ]
-#     [ 'blockquote',     [ null, 'blockquote',   null, ], ]
-#     [ 'em',             [ null, 'em',           null, ], ]
-#     [ 'xxx',            [ null, 'xxx',          null, ], ]
-#     ]
-#   for [ probe, matcher, ] in probes_and_matchers
-#     # help ( rpr probe ), MKTS.FENCES.parse probe
-#     T.eq ( MKTS.FENCES.parse probe ), matcher
-#   done()
+#-----------------------------------------------------------------------------------------------------------
+@[ "MKTS.FENCES.parse accepts unfenced named patterns" ] = ( T, done ) ->
+  probes_and_matchers = [
+    [ 'document',       [ null, 'document',     null, ], ]
+    [ 'singlecolumn',   [ null, 'singlecolumn', null, ], ]
+    [ 'code',           [ null, 'code',         null, ], ]
+    [ 'blockquote',     [ null, 'blockquote',   null, ], ]
+    [ 'em',             [ null, 'em',           null, ], ]
+    [ 'xxx',            [ null, 'xxx',          null, ], ]
+    ]
+  for [ probe, matcher, ] in probes_and_matchers
+    # help ( rpr probe ), MKTS.FENCES.parse probe
+    T.eq ( MKTS.FENCES.parse probe ), matcher
+  done()
 
-# #-----------------------------------------------------------------------------------------------------------
-# @[ "MKTS.FENCES.parse accepts fenced named patterns" ] = ( T, done ) ->
-#   probes_and_matchers = [
-#     [ '<document>',     [ '<', 'document',     '>', ], ]
-#     [ '{singlecolumn}', [ '{', 'singlecolumn', '}', ], ]
-#     [ '{code}',         [ '{', 'code',         '}', ], ]
-#     [ '[blockquote]',   [ '[', 'blockquote',   ']', ], ]
-#     [ '(em)',           [ '(', 'em',           ')', ], ]
-#     ]
-#   for [ probe, matcher, ] in probes_and_matchers
-#     # help ( rpr probe ), MKTS.FENCES.parse probe
-#     T.eq ( MKTS.FENCES.parse probe ), matcher
-#   done()
+#-----------------------------------------------------------------------------------------------------------
+@[ "MKTS.FENCES.parse accepts fenced named patterns" ] = ( T, done ) ->
+  probes_and_matchers = [
+    # [ '<document>',     [ '<', 'document',     '>', ], ]
+    # [ '{singlecolumn}', [ '{', 'singlecolumn', '}', ], ]
+    # [ '{code}',         [ '{', 'code',         '}', ], ]
+    # [ '[blockquote]',   [ '[', 'blockquote',   ']', ], ]
+    [ '(em)',           [ '(', 'em',           ')', ], ]
+    ]
+  for [ probe, matcher, ] in probes_and_matchers
+    # help ( rpr probe ), MKTS.FENCES.parse probe
+    T.eq ( MKTS.FENCES.parse probe ), matcher
+  done()
 
-# #-----------------------------------------------------------------------------------------------------------
-# @[ "MKTS.FENCES.parse rejects empty string" ] = ( T, done ) ->
-#   T.throws "pattern must be non-empty, got ''", ( -> MKTS.FENCES.parse '' )
-#   done()
+#-----------------------------------------------------------------------------------------------------------
+@[ "MKTS.FENCES.parse rejects empty string" ] = ( T, done ) ->
+  T.throws "pattern must be non-empty, got ''", ( -> MKTS.FENCES.parse '' )
+  done()
 
-# #-----------------------------------------------------------------------------------------------------------
-# @[ "MKTS.FENCES.parse rejects non-matching fences etc" ] = ( T, done ) ->
-#   probes_and_matchers = [
-#     [ '(xxx}',  'fences don\'t match in pattern \'(xxx}\'',          ]
-#     [ '.)',     'fence \'.\' can not have right fence, got \'.)\'',  ]
-#     [ '.p)',    'fence \'.\' can not have right fence, got \'.p)\'', ]
-#     [ '.[',     'fence \'.\' can not have right fence, got \'.[\'',  ]
-#     [ '<',      'unmatched fence in \'<\'',                          ]
-#     [ '{',      'unmatched fence in \'{\'',                          ]
-#     [ '[',      'unmatched fence in \'[\'',                          ]
-#     [ '(',      'unmatched fence in \'(\'',                          ]
-#     ]
-#   for [ probe, matcher, ] in probes_and_matchers
-#     T.throws matcher, ( -> MKTS.FENCES.parse probe )
-#   done()
+#-----------------------------------------------------------------------------------------------------------
+@[ "MKTS.FENCES.parse rejects non-matching fences etc" ] = ( T, done ) ->
+  probes_and_matchers = [
+    [ '(xxx}',  'unmatched fence in \'(xxx}\'',          ]
+    # [ '.)',     'fence \'.\' can not have right fence, got \'.)\'',  ]
+    # [ '.p)',    'fence \'.\' can not have right fence, got \'.p)\'', ]
+    # [ '.[',     'fence \'.\' can not have right fence, got \'.[\'',  ]
+    # [ '<',      'unmatched fence in \'<\'',                          ]
+    # [ '{',      'unmatched fence in \'{\'',                          ]
+    # [ '[',      'unmatched fence in \'[\'',                          ]
+    # [ '(',      'unmatched fence in \'(\'',                          ]
+    ]
+  for [ probe, matcher, ] in probes_and_matchers
+    T.throws matcher, ( -> MKTS.FENCES.parse probe )
+  T.fail "not ready"
+  done()
 
 # #-----------------------------------------------------------------------------------------------------------
 # @[ "MKTS.FENCES.parse accepts non-matching fences when so configured" ] = ( T, done ) ->

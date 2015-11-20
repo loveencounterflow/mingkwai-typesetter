@@ -891,11 +891,11 @@ tracker_pattern = /// ^
     .pipe @_PRE.$reinject_html_blocks                 S
     .pipe @_PRE.$rewrite_markdownit_tokens            S
     # .pipe D.$show '7686756'
-    .pipe @MACROS.$expand_html_comment_macros         S
+    .pipe @MACROS.$expand_command_and_value_macros    S
     .pipe @MACROS.$expand_region_macros               S
     .pipe @MACROS.$expand_action_macros               S
     .pipe @MACROS.$expand_raw_macros                  S
-    .pipe @MACROS.$expand_commands_and_value_macros   S
+    .pipe @MACROS.$expand_html_comments               S
     .pipe @_PRE.$process_end_command                  S
     .pipe @_PRE.$close_dangling_open_tags             S
     .pipe @_PRE.$consolidate_footnotes                S

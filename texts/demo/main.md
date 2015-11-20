@@ -1,4 +1,12 @@
 
+
+foo bar
+
+
+
+<<!end>>
+
+
 <<{do>>
 define
   TEX:            "<<(raw>>\\TeX{}<<raw)>>"

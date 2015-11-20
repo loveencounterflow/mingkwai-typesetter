@@ -82,18 +82,45 @@ MKTS                      = require './MKTS'
   ]
 
 #-----------------------------------------------------------------------------------------------------------
-@action_and_region_patterns = [
+@action_patterns = [
   ///                           # A silent or vocal action macro...
                                 #
                                 # Start Tag
                                 # =========
   ( ^ | [^ \\ ] )               # starts either at the first chr or a chr other than backslash
   <<\(                          # then: two left pointy brackets, then: left round bracket,
-    ( [ . : ]? )                # then: an optional dot or a colon;
+    ( [ . : ] )                 # then: a dot or a colon;
     (
       (?:                       # then:
         \\>                |    #   or: an escaped right pointy bracket (RPB)
-        [^ > . : ]         |    #   or: anything but a RPB, a dot, or a colon
+        [^ > ]             |    #   or: anything but a RPB
+        > (?! > )               #   or: a RPB not followed by yet another RPB
+      )*                        # repeated any number of times
+    )
+    >>                          # then: two RPBs...
+                                #
+                                # Content
+                                # =========
+                                # Empty content.
+                                #
+                                # Stop Tag
+                                # =========
+  () <<                         # (then: an empty group; see below), then: two left pointy brackets,
+    ( (?: \2 \3 )? )            # then: optionally, whatever appeared in the start tag,
+    \)>>                        # then: right round bracket, then: two RPBs.
+  ///g
+  ,                             #...........................................................................
+  ///                           # Alternatively (non-empty content):
+                                #
+                                # Start Tag
+                                # =========
+  ( ^ | [^ \\ ] )               # starts either at the first chr or a chr other than backslash
+  <<\(                          # then: two left pointy brackets, then: left round bracket,
+    ( [ . : ] )                 # then: a dot or a colon;
+    (
+      (?:                       # then:
+        \\>                |    #   or: an escaped right pointy bracket (RPB)
+        [^ > ]             |    #   or: anything but a RPB
         > (?! > )               #   or: a RPB not followed by yet another RPB
       )*                        # repeated any number of times
     )
@@ -106,7 +133,8 @@ MKTS                      = require './MKTS'
         \\<                |    #   or: an escaped left pointy bracket (LPB)
         [^ < ]             |    #   or: anything but a LPB
         < (?! < )               #   or: a LPB not followed by yet another LPB
-      )*                        # repeated any number of times
+        )*                      # repeated any number of times
+      [^ \\ ]                   # then: a character other than a backslash,
       )
                                 #
                                 # Stop Tag
@@ -117,40 +145,43 @@ MKTS                      = require './MKTS'
   ///g
   ]
 
-# #-----------------------------------------------------------------------------------------------------------
-# @region_patterns = [
-#   ///                           # A region macro...
-#                                 #
-#                                 # Start Tag
-#                                 # =========
-#   ( ^ | [^ \\ ] )               # starts either at the first chr or a chr other than backslash
-#   <<\(                          # then: two left pointy brackets, then: left round bracket,
-#     (                           #
-#       (?:                       # then:
-#         \\>                |    #   or: an escaped right pointy bracket (RPB)
-#         [^ > ]             |    #   or: anything but a RPB
-#         > (?! > )               #   or: a RPB not followed by yet another RPB
-#       )*                        # repeated any number of times
-#     )
-#     >>                          # then: two RPBs...
-#                                 #
-#                                 # Content
-#                                 # =========
-#     (
-#       (?:                       # ...followed by content, which is:
-#         \\<                |    #   or: an escaped left pointy bracket (LPB)
-#         [^ < ]             |    #   or: anything but a LPB
-#         < (?! < )               #   or: a LPB not followed by yet another LPB
-#       )*                        # repeated any number of times
-#       )
-#                                 #
-#                                 # Stop Tag
-#                                 # =========
-#   <<                            # then: two left pointy brackets,
-#     ( \2 ? )                    # then: optionally, whatever appeared in the start tag,
-#     \)>>                        # then: right round bracket, then: two RPBs.
-#   ///g
-#   ]
+#-----------------------------------------------------------------------------------------------------------
+@region_patterns = [
+  ///                           # A region macro tag...
+                                #
+                                # Start Tag
+                                # =========
+  ( ^ | [^ \\ ] )               # starts either at the first chr or a chr other than backslash
+  <<                            # then: two left pointy brackets
+  ( \( )                        # then: left round bracket,
+    (                           #
+      (?:                       # then:
+        \\>                |    #   or: an escaped right pointy bracket (RPB)
+        [^ > ]             |    #   or: anything but a RPB
+        > (?! > )               #   or: a RPB not followed by yet another RPB
+      )*                        # repeated any number of times
+    )
+    ()                          # then: empty group for no markup here
+    >>                          # then: two RPBs.
+  ///g
+  ,
+  ///                           # Stop Tag
+                                # ========
+                                #
+  ( ^ | [^ \\ ] )               # starts either at the first chr or a chr other than backslash
+  <<                            # then: two left pointy brackets
+    ()                          # then: empty group for no markup here
+    (                           #
+      (?:                       # then:
+        \\>                |    #   or: an escaped right pointy bracket (RPB)
+        [^ > ]             |    #   or: anything but a RPB
+        > (?! > )               #   or: a RPB not followed by yet another RPB
+      )*                        # repeated any number of times
+    )
+    ( \) )                      # a right round bracket;
+    >>                          # then: two RPBs.
+  ///g
+  ]
 
 # debug '234652', @action_patterns
 # debug "abc<<(:js>>4 + 3<<:js)>>def".match @action_patterns[ 0 ]
@@ -225,13 +256,12 @@ after it, thereby inhibiting any processing of those portions. ###
   # debug '©II6XI', rpr text
   [ R, discard_count, ] = @escape.truncate_text_at_end_command_macro S, text
   whisper "detected <<!end>> macro; discarding approx. #{discard_count} characters" if discard_count > 0
-  R = @escape.escape_chrs              S, R
-  R = @escape.html_comments            S, R
-  R = @escape.bracketed_raw_macros     S, R
-  R = @escape.action_and_region_macros S, R
-  # R = @escape.action_macros            S, R
-  # R = @escape.region_macros            S, R
-  R = @escape.command_and_value_macros S, R
+  R = @escape.escape_chrs               S, R
+  R = @escape.html_comments             S, R
+  R = @escape.bracketed_raw_macros      S, R
+  R = @escape.action_macros             S, R
+  R = @escape.region_macros             S, R
+  R = @escape.command_and_value_macros  S, R
   #.........................................................................................................
   return R
 
@@ -278,43 +308,33 @@ after it, thereby inhibiting any processing of those portions. ###
   return R
 
 #-----------------------------------------------------------------------------------------------------------
-@escape.action_and_region_macros = ( S, text ) =>
+@escape.action_macros = ( S, text ) =>
   R = text
   #.........................................................................................................
-  for pattern in @action_and_region_patterns
+  for pattern in @action_patterns
     R = R.replace pattern, ( _, previous_chr, markup, identifier, content, stopper ) =>
-      debug '©ΛΨΒΓΘ', [ previous_chr, markup, identifier, content, ]
-      switch markup
-        when '' # regions
-          starter_id  = @_register_content S, 'region', '(', identifier
-          stopper_id  = @_register_content S, 'region', ')', identifier
-          return "#{previous_chr}\x15#{starter_id}\x13#{content}\x15#{stopper_id}\x13"
-        when '.', ':' # actions
-          mode      = if markup is '.' then 'silent' else 'vocal'
-          language  = identifier
-          language  = 'coffee' if language is ''
-          ### TAINT not using arguments peoperly ###
-          id        = @_register_content S, 'action', [ mode, language, ], content
-          return "#{previous_chr}\x15#{id}\x13"
-        else
-          throw new Error "internal error; unexpected macro pattern #{rpr _}"
+      # debug '©ΛΨΒΓΘ', [ previous_chr, markup, identifier, content, ]
+      mode      = if markup is '.' then 'silent' else 'vocal'
+      language  = identifier
+      language  = 'coffee' if language is ''
+      ### TAINT not using arguments peoperly ###
+      id        = @_register_content S, 'action', [ mode, language, ], content
+      return "#{previous_chr}\x15#{id}\x13"
   #.........................................................................................................
   return R
 
-# #-----------------------------------------------------------------------------------------------------------
-# @escape.region_macros = ( S, text ) =>
-#   R = text
-#   #.........................................................................................................
-#   for pattern in @region_patterns
-#     R = R.replace pattern, ( _, previous_chr, starter, content, stopper ) =>
-#       ### TAINT not using arguments peoperly ###
-#       starter_rpr = "<<(#{starter}>>"
-#       stopper_rpr = "<<#{stopper})>>"
-#       starter_id  = @_register_content S, 'region', '(', starter
-#       stopper_id  = @_register_content S, 'region', ')', starter
-#       return "#{previous_chr}\x15#{starter_id}\x13#{content}\x15#{stopper_id}\x13"
-#   #.........................................................................................................
-#   return R
+#-----------------------------------------------------------------------------------------------------------
+@escape.region_macros = ( S, text ) =>
+  R = text
+  #.........................................................................................................
+  for pattern in @region_patterns
+    R = R.replace pattern, ( _, previous_chr, start_markup, identifier, stop_markup ) =>
+      # debug '©ΓΔΞΔΔ', Array.from arguments
+      markup  = if start_markup.length is 0 then stop_markup else start_markup
+      id      = @_register_content S, 'region', markup, identifier
+      return "#{previous_chr}\x15#{id}\x13"
+  #.........................................................................................................
+  return R
 
 #-----------------------------------------------------------------------------------------------------------
 @escape.command_and_value_macros = ( S, text ) =>

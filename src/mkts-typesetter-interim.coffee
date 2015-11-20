@@ -707,11 +707,11 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
 
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.MIXED.$raw = ( S ) =>
-  track   = MKTS.TRACKER.new_tracker '{raw}', '[raw]', '(raw)', '{definitions}'
+  track   = MKTS.TRACKER.new_tracker '(raw)'
   # remark  = MKTS._get_remark()
   #.........................................................................................................
   return $ ( event, send ) =>
-    within_raw = track.within '{raw}', '[raw]', '(raw)', '{definitions}'
+    within_raw = track.within '(raw)'
     track event
     #.......................................................................................................
     if select event, '.', 'raw'
