@@ -217,7 +217,7 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
   ]
 
 #-----------------------------------------------------------------------------------------------------------
-@MKTX.TEX.escape_for_tex = ( text ) ->
+@MKTX.TEX.escape_for_tex = ( text ) =>
   R = text
   for [ pattern, replacement, ], idx in @MKTX.TEX._tex_escape_replacements
     R = R.replace pattern, replacement
@@ -285,7 +285,7 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
       switch rsg
         when 'jzr-fig'  then chr = uchr
         when 'u-pua'    then rsg = 'jzr-fig'
-        when 'u-latin'  then chr = @escape_for_tex chr
+        when 'u-latn'   then chr = @MKTX.TEX.escape_for_tex chr
       #.......................................................................................................
       this_is_cjk = @MKTX.TEX.is_cjk_rsg rsg, options
       if last_was_cjk and this_is_cjk
@@ -690,11 +690,11 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
       send event
 
 #-----------------------------------------------------------------------------------------------------------
-@MKTX.INLINE.$code = ( S ) =>
+@MKTX.INLINE.$code_span = ( S ) =>
   #.........................................................................................................
   return $ ( event, send ) =>
     #.......................................................................................................
-    if select event, [ '(', ')', ], 'code'
+    if select event, [ '(', ')', ], 'code-span'
       send stamp event
       [ type, name, text, meta, ] = event
       if type is '('
@@ -707,13 +707,15 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
 
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.MIXED.$raw = ( S ) =>
+  remark = MKTS._get_remark()
   #.........................................................................................................
   return $ ( event, send ) =>
     #.......................................................................................................
     if select event, '.', 'raw'
-      debug '©ΙΝΣΓΨ', event
-      # send remark 'convert', "escaped to raw text", copy meta
-      # send stamp [ '.', 'raw', raw_text, meta, ]
+      [ type, name, text, meta, ] = event
+      send stamp hide event
+      send remark 'convert', "raw to TeX", copy meta
+      send [ 'tex', text, ]
       # send stamp event
     #.......................................................................................................
     else
@@ -965,7 +967,7 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
     .pipe @MKTX.BLOCK.$heading                            S
     .pipe @MKTX.BLOCK.$hr                                 S
     .pipe @MKTX.BLOCK.$unordered_list                     S
-    .pipe @MKTX.INLINE.$code                              S
+    .pipe @MKTX.INLINE.$code_span                         S
     .pipe @MKTX.INLINE.$translate_i_and_b                 S
     .pipe @MKTX.INLINE.$em_and_strong                     S
     .pipe @MKTX.BLOCK.$paragraph                          S

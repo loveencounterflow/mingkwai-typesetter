@@ -232,7 +232,7 @@ after it, thereby inhibiting any processing of those portions. ###
 @end_command_patterns = [
   ///                           # Then end command macro
   ( ^ |                         # starts either at the first chr
-    ^ [ \s\S ]+ [^ \\ ] )       # or a number of chrs whose last one is not a backslash
+    ^ [ \s\S ]+? [^ \\ ] )      # or a minimal number of chrs whose last one is not a backslash
   <<!end>>                      # then: the `<<!end>>` literal.
   ///                           # NB that this pattern is not global.
   ]
@@ -269,6 +269,7 @@ after it, thereby inhibiting any processing of those portions. ###
 @escape.truncate_text_at_end_command_macro = ( S, text ) =>
   return [ text, 0, ] unless ( match = @_match_first @end_command_patterns, text )?
   R = match[ 1 ]
+  # urge '©ΣΩΗΔΨ', rpr R
   return [ R, text.length - R.length, ]
 
 #-----------------------------------------------------------------------------------------------------------

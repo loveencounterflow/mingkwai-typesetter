@@ -406,9 +406,9 @@ tracker_pattern = /// ^
           #.................................................................................................
           # specials
           when 'code_inline'
-            send [ '(', 'code', null,                        meta,    ]
-            send [ '.', 'text', token[ 'content' ], ( @copy meta ),  ]
-            send [ ')', 'code', null,               ( @copy meta ),  ]
+            send [ '(', 'code-span',  null,                        meta,   ]
+            send [ '.', 'text',       token[ 'content' ], ( @copy meta ),  ]
+            send [ ')', 'code-span',  null,               ( @copy meta ),  ]
           #.................................................................................................
           when 'footnote_ref'
             id = token[ 'meta' ][ 'id' ]
@@ -910,8 +910,9 @@ tracker_pattern = /// ^
   input.on 'resume', =>
     md_parser   = @_new_markdown_parser()
     @MACROS.initialize_state S
-    ### TAINT consider to make `<<!end>>` special and detect it before parsing ###
     md_source   = @MACROS.escape S, md_source
+    # debug '©ΘΩΓΛΛ', md_source
+    # process.exit 1
     tokens      = md_parser.parse md_source, S.environment
     for token in tokens
       input.write token

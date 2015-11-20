@@ -223,6 +223,8 @@ nice_text_rpr = ( text ) ->
     ["\\<<!end>> and some there",["\\<<!end>> and some there",0]]
     ["some text here \\<<!end>> and some there",["some text here \\<<!end>> and some there",0]]
     ["some text here <<!end>\\> and some there",["some text here <<!end>\\> and some there",0]]
+    ["\n\nfoo bar\n\n\n\n<<!end>>\ndiscarded",["\n\nfoo bar\n\n\n\n",18]]
+    ["\n\nfoo bar\n\n\n\n<<!end>>\ndiscarded<<!end>>\ndiscarded as well",["\n\nfoo bar\n\n\n\n",44]]
     ]
   for [ probe, matcher, ] in probes_and_matchers
     result = MKTS.MACROS.escape.truncate_text_at_end_command_macro null, probe
