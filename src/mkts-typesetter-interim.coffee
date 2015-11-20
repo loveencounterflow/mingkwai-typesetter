@@ -707,28 +707,13 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
 
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.MIXED.$raw = ( S ) =>
-  track   = MKTS.TRACKER.new_tracker '(raw)'
-  # remark  = MKTS._get_remark()
   #.........................................................................................................
   return $ ( event, send ) =>
-    within_raw = track.within '(raw)'
-    track event
     #.......................................................................................................
     if select event, '.', 'raw'
-      send stamp event
-    else if within_raw and select event, '.', 'text'
-      throw new Error "should never happen"
-      [ type, name, text, meta, ] = event
-      raw_text = meta[ 'raw' ]
-      ### TAINT could the added `{}` conflict with some (La)TeX commands? ###
+      debug '©ΙΝΣΓΨ', event
       # send remark 'convert', "escaped to raw text", copy meta
-      send stamp [ '.', 'raw', raw_text, meta, ]
-    #.......................................................................................................
-    else if select event, [ ')', ], 'raw'
-      send stamp event
-      send @MKTX.BLOCK._end_paragraph()
-    else if select event, [ '(', ')', ], 'raw'
-      null
+      # send stamp [ '.', 'raw', raw_text, meta, ]
       # send stamp event
     #.......................................................................................................
     else
