@@ -1026,7 +1026,7 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
     #.......................................................................................................
     ### TAINT should read MD source stream ###
     md_source               = njs_fs.readFileSync source_locator, encoding: 'utf-8'
-    md_tee                  = MKTS.create_md_readtee md_source
+    md_tee                  = MKTS.create_md_read_tee md_source
     tex_tee                 = @create_tex_write_tee S
     md_input                =  md_tee[ 'input'  ]
     md_output               =  md_tee[ 'output' ]
@@ -1077,7 +1077,7 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
     options:              @options
     layout_info:          layout_info
   #.........................................................................................................
-  md_tee              = MKTS.create_md_readtee md_source
+  md_tee              = MKTS.create_md_read_tee md_source
   tex_tee             = @create_tex_write_tee S
   md_input            =  md_tee[ 'input'  ]
   md_output           =  md_tee[ 'output' ]
