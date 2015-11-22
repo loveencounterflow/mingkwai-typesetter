@@ -380,7 +380,7 @@ after it, thereby inhibiting any processing of those portions. ###
 
 
 #===========================================================================================================
-# COMMENTS & RAW
+# EXPANDERS
 #-----------------------------------------------------------------------------------------------------------
 @$expand_html_comments = ( S ) =>
   return @_get_expander S, @html_comment_id_pattern, ( meta, entry ) =>
@@ -415,6 +415,7 @@ after it, thereby inhibiting any processing of those portions. ###
       markup }    = entry
     macro_type    = if markup is '!' then 'command' else 'value'
     return [ '.', macro_type, raw, ( MKTS.copy meta ), ]
+
 
 #===========================================================================================================
 # GENERIC EXPANDER
