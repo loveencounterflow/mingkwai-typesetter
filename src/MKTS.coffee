@@ -348,6 +348,7 @@ tracker_pattern = /// ^
       if is_first
         is_first = no
         send [ '(', 'document', null, {}, ]
+        send [ '.', 'action', 'empty-document', {}, ]
       send [ ')', 'document', null, {}, ]
       setImmediate =>
         whisper "ending input stream"
