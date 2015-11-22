@@ -416,6 +416,17 @@ after it, thereby inhibiting any processing of those portions. ###
     macro_type    = if markup is '!' then 'command' else 'value'
     return [ '.', macro_type, raw, ( MKTS.copy meta ), ]
 
+#-----------------------------------------------------------------------------------------------------------
+@$expand_escape_chrs = ( S ) =>
+  return $ ( event, send ) =>
+    #.......................................................................................................
+    if MKTS.select event, '.', 'text'
+      [ type, name, text, meta, ] = event
+      send [ type, name, ( @escape.unescape_escape_chrs S, text ), meta, ]
+    #.......................................................................................................
+    else
+      send event
+
 
 #===========================================================================================================
 # GENERIC EXPANDER
@@ -438,19 +449,6 @@ after it, thereby inhibiting any processing of those portions. ###
     else
       send event
 
-
-#===========================================================================================================
-# ESCAPE CHARACTERS
-#-----------------------------------------------------------------------------------------------------------
-@$expand_escape_chrs = ( S ) =>
-  return $ ( event, send ) =>
-    #.......................................................................................................
-    if MKTS.select event, '.', 'text'
-      [ type, name, text, meta, ] = event
-      send [ type, name, ( @escape.unescape_escape_chrs S, text ), meta, ]
-    #.......................................................................................................
-    else
-      send event
 
 
 
