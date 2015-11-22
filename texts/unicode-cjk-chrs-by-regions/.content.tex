@@ -1,9 +1,20 @@
 
 % begin of MD document
-\begin{multicols}{2}
+\begingroup\mktsObeyAllLines{}
+{\cn{}我不住上海不住柏林
+而我在上網我在博覽}\prPushRaise{0.5}{0.25}{\cn{。}}
+\endgroup{}\mktsShowpar\par
+“{\cn{}比如，要想找带}‘{\cn{}门}’{\cn{}字旁的汉字，在我的数据库里一搜，就能找到，这是电子化的好处}\prPushRaise{0.5}{0.25}{\cn{。}}”—Richard Sears, {\mktsStyleBold\color{violet}{%
+\mktsStyleSymbol}link\_open? {\mktsStyleSymbol█}}{\cn{}美国}“{\cn{}汉字叔叔}”{\cn{}自费创建汉字网 为此穷困潦倒}{\mktsStyleBold\color{violet}{%
+\mktsStyleSymbol}link\_close? {\mktsStyleSymbol█}}\mktsShowpar\par
+<<\{multi-column>>
 xxx\mktsShowpar\par
-{\mktsStyleCode{}<<(\$>>eval block<<\$)>>}\mktsShowpar\par
-{\mktsStyleCode{}<<($>>eval block<<$)>>}\mktsShowpar\par
+{\mktsStyleCode{}{\mktsStyleBold\color{violet}{%
+\mktsStyleSymbol█}(\textbackslash{}\$ {\mktsStyleSymbol}}eval block{\mktsStyleBold\color{violet}{%
+\mktsStyleSymbol}\textbackslash{}\$) {\mktsStyleSymbol█}}}\mktsShowpar\par
+{\mktsStyleCode{}{\mktsStyleBold\color{violet}{%
+\mktsStyleSymbol█}(\$ {\mktsStyleSymbol}}eval block{\mktsStyleBold\color{violet}{%
+\mktsStyleSymbol}\$) {\mktsStyleSymbol█}}}\mktsShowpar\par
 
 \subsection{xxx
 }
@@ -17,31 +28,94 @@ xxx\mktsShowpar\par
 xxx {\mktsStyleCode{}{\cn{}这们说时}} xxx\mktsShowpar\par
 \begingroup\mktsObeyAllLines\mktsStyleCode{}xxx {\cn{}这们说时 }**xxx**
 \endgroup{}\begingroup\mktsObeyAllLines\mktsStyleCode{}xxx {\cn{}这们说时 }**xxx**
-\endgroup{}\begin{itemize}\item[$\star$] HTML:\mktsShowpar\par
+\endgroup{}MingKwai TypeScript uses three layers of markup:\mktsShowpar\par
+(1) A macro language which uses double pointy brackets—so called
+  macro brackets—to escape into a meta-language;
+(3) MarkDown as parsed by {\mktsStyleBold\color{violet}{%
+\mktsStyleSymbol}link\_open? {\mktsStyleSymbol█}}{\mktsStyleCode{}markdown-it}{\mktsStyleBold\color{violet}{%
+\mktsStyleSymbol}link\_close? {\mktsStyleSymbol█}}
+  (which basically means it should be quite close to the
+  {\mktsStyleBold\color{violet}{%
+\mktsStyleSymbol}link\_open? {\mktsStyleSymbol█}}CommonMark{\mktsStyleBold\color{violet}{%
+\mktsStyleSymbol}link\_close? {\mktsStyleSymbol█}}) specification); and
+(3) HTML markup.\mktsShowpar\par
+The ordering in the list above reflects the precedence of the layers:
+the macro language takes the highest precedence and HTML constructs
+the lowest. Because MarkDown proper takes higher precedence than
+HTML, its constructs are parsed even if they appear between a pair
+of HTML tags. Likewise, because the macro language takes the highest
+priority, it is not possible to inhibit its interpretation by
+putting a macro inside HTML tags or inside a MarkDown fenced code
+block.\mktsShowpar\par
+\begin{itemize}\item[$\star$] MKTS allows to use {\mktsStyleBold{}HTML} in the markup.\mktsShowpar\par
 
-\item[$\star$] Raw (i.e. \TeX/\LaTeX): {\mktsStyleCode{}<<<...raw material...>>>}
+\item[$\star$] {\mktsStyleBold{}Regions} are used to markup stretches within a document,
+be it inline spans, blocks of text or longer portions like
+sections and chapters. Regions use parentheses to indicate
+the start and end points:\mktsShowpar\par
+\begin{itemize}\item[$\star$] Full Notation: {\mktsStyleCode{}{\mktsStyleBold\color{violet}{%
+\mktsStyleSymbol█}(name {\mktsStyleSymbol}}...{\mktsStyleBold\color{violet}{%
+\mktsStyleSymbol}name) {\mktsStyleSymbol█}}}\mktsShowpar\par
+
+\item[$\star$] Short Notation: {\mktsStyleCode{}{\mktsStyleBold\color{violet}{%
+\mktsStyleSymbol█}(name {\mktsStyleSymbol}}...{\mktsStyleBold\color{violet}{%
+\mktsStyleSymbol}) {\mktsStyleSymbol█}}}
+When used in the long form,
+the name used in the start tag must match the one in the end tag.
+As with HTML tags, regions must be properly nested and must
+not overlap.\mktsShowpar\par
+
+\end{itemize}
+\item[$\star$] {\mktsStyleBold{}Actions} allow to execute code snippets inside the document. They
+come in two flavors: ‘silent’ and ‘vocal’.\mktsShowpar\par
+Silent actions do not
+leave a direct trace in the document unless their code calls an
+API function to do that; vocal actions are replaced by their
+evaluated value (i.e. whatever {\mktsStyleCode{}eval( "some code" )} returns).
+\mktsShowpar\par
+\begin{itemize}\item[$\star$] {\mktsStyleBold{}Silent Actions}\mktsShowpar\par
+
+\item[$\star$] Full Notation: {\mktsStyleCode{}{\mktsStyleBold\color{violet}{%
+\mktsStyleSymbol█}.action some code{\mktsStyleSymbol}}}, {\mktsStyleCode{}{\mktsStyleBold\color{violet}{%
+\mktsStyleSymbol█}.action some code{\mktsStyleSymbol}}}\mktsShowpar\par
+
+\item[$\star$] Short Notation: {\mktsStyleCode{}{\mktsStyleBold\color{violet}{%
+\mktsStyleSymbol█}.action some code{\mktsStyleSymbol}}}, {\mktsStyleCode{}{\mktsStyleBold\color{violet}{%
+\mktsStyleSymbol█}.action some code{\mktsStyleSymbol}}}\mktsShowpar\par
+
+\item[$\star$] {\mktsStyleBold{}Vocal Actions}\mktsShowpar\par
+
+\item[$\star$] Full Notation: {\mktsStyleCode{}{\mktsStyleBold\color{violet}{%
+\mktsStyleSymbol█}.action some code{\mktsStyleSymbol}}}, {\mktsStyleCode{}{\mktsStyleBold\color{violet}{%
+\mktsStyleSymbol█}.action some code{\mktsStyleSymbol}}}\mktsShowpar\par
+
+\item[$\star$] Short Notation: {\mktsStyleCode{}{\mktsStyleBold\color{violet}{%
+\mktsStyleSymbol█}.action some code{\mktsStyleSymbol}}}, {\mktsStyleCode{}{\mktsStyleBold\color{violet}{%
+\mktsStyleSymbol█}.action some code{\mktsStyleSymbol}}}\mktsShowpar\par
+
+\end{itemize}As with regions, the rule is that wherever the more explicit long form
+is used, the action type marker ({\mktsStyleCode{}.} (dot) or {\mktsStyleCode{}:} (colon)) and the action
+name of the start and end tags must match.\mktsShowpar\par
+
+\item[$\star$] To execute an action without further logic code (i.e. a simple function call)  
+in the manuscript, either a silent action {\mktsStyleCode{}{\mktsStyleBold\color{violet}{%
+\mktsStyleSymbol█}.action makeitso 42{\mktsStyleSymbol}}} or the
+short {\mktsStyleBold{}Command} notation {\mktsStyleCode{}{\mktsStyleBold\color{violet}{%
+\mktsStyleSymbol█}.command makeitso 42{\mktsStyleSymbol}}} can be used. Observe that
+commands do not allow for a language annotation; whatever is inside
+the macro tag will be parsed as CoffeeScript.\mktsShowpar\par
+
+\item[$\star$] To interpolate the value of a variable into the document,
+either a vocal action {\mktsStyleCode{}{\mktsStyleBold\color{violet}{%
+\mktsStyleSymbol█}.action foo{\mktsStyleSymbol}}} or the shorter {\mktsStyleBold{}Value}
+notation {\mktsStyleCode{}{\mktsStyleBold\color{violet}{%
+\mktsStyleSymbol█}.value foo{\mktsStyleSymbol}}} can be used.
 \mktsShowpar\par
 
-\item[$\star$] Regions:
-\mktsShowpar\par
-\begin{itemize}\item[$\star$] Spans: {\mktsStyleCode{}<<(span>>...<<span)>>}\mktsShowpar\par
+\item[$\star$] Finally, there are {\mktsStyleBold{}Raw} regions that give authors an opportunity
+to talk directly to the \LaTeX typesetting system. Raw regions are
+surrounded by triple pointy brackets, e.g. {\mktsStyleCode{}...raw material...}.\mktsShowpar\par
 
-\item[$\star$] Blocks: {\mktsStyleCode{}<<[block>>...<<block]>>}\mktsShowpar\par
-
-\end{itemize}
-\item[$\star$] …\mktsShowpar\par
-\begin{itemize}\item[$\star$] …\mktsShowpar\par
-\begin{itemize}\item[$\star$] Actions: {\mktsStyleCode{}<<!action>>}\mktsShowpar\par
-
-\item[$\star$] Exec-Block: <<(!>>exec block<<!)>>\mktsShowpar\par
-
-\end{itemize}
-\item[$\star$] Value Interpolation:
-\mktsShowpar\par
-\begin{itemize}\item[$\star$] Eval-Block: {\mktsStyleCode{}<<(\$>>eval block<<\$)>>}\mktsShowpar\par
-
-\end{itemize}
-\end{itemize}
 \end{itemize}{\mktsStyleBold{}{\cn{}原}}: {\cn{}最初的，开始的}. {\cn{}本来}.
 {\mktsStyleBold{}{\cn{}源}}: {\cn{}水流所从出的地方}. {\cn{}事物的根由}.
 {\mktsStyleBold{}{\cn{}元}}: {\cn{}头}{\cn{}、}{\cn{}首}{\cn{}、}{\cn{}始}{\cn{}、}{\cn{}大}. {\cn{}基本}.\mktsShowpar\par
