@@ -934,7 +934,7 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
 #===========================================================================================================
 #
 #-----------------------------------------------------------------------------------------------------------
-@create_tex_writefitting = ( S ) ->
+@create_tex_write_tee = ( S ) ->
   ### TAINT get state via return value of MKTS.create_mdreadstream ###
   ### TAINT make execution of `$produce_mktscript` a matter of settings ###
   #.......................................................................................................
@@ -1026,14 +1026,14 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
     #.......................................................................................................
     ### TAINT should read MD source stream ###
     md_source               = njs_fs.readFileSync source_locator, encoding: 'utf-8'
-    md_fitting              = MKTS.create_md_readfitting md_source
-    tex_fitting             = @create_tex_writefitting S
-    md_input                =  md_fitting[ 'input'  ]
-    md_output               =  md_fitting[ 'output' ]
-    tex_input               = tex_fitting[ 'input'  ]
-    tex_output              = tex_fitting[ 'output' ]
+    md_tee                  = MKTS.create_md_readtee md_source
+    tex_tee                 = @create_tex_write_tee S
+    md_input                =  md_tee[ 'input'  ]
+    md_output               =  md_tee[ 'output' ]
+    tex_input               = tex_tee[ 'input'  ]
+    tex_output              = tex_tee[ 'output' ]
     #.......................................................................................................
-    S.resend = md_fitting[ 'S' ].resend
+    S.resend = md_tee[ 'S' ].resend
     #.......................................................................................................
     md_output
       .pipe tex_input
@@ -1077,14 +1077,14 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
     options:              @options
     layout_info:          layout_info
   #.........................................................................................................
-  md_fitting          = MKTS.create_md_readfitting md_source
-  tex_fitting         = @create_tex_writefitting S
-  md_input            =  md_fitting[ 'input'  ]
-  md_output           =  md_fitting[ 'output' ]
-  tex_input           = tex_fitting[ 'input'  ]
-  tex_output          = tex_fitting[ 'output' ]
+  md_tee              = MKTS.create_md_readtee md_source
+  tex_tee             = @create_tex_write_tee S
+  md_input            =  md_tee[ 'input'  ]
+  md_output           =  md_tee[ 'output' ]
+  tex_input           = tex_tee[ 'input'  ]
+  tex_output          = tex_tee[ 'output' ]
   #.........................................................................................................
-  S.resend = md_fitting[ 'S' ].resend
+  S.resend = md_tee[ 'S' ].resend
   #.........................................................................................................
   md_output
     .pipe tex_input
