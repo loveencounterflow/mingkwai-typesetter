@@ -883,7 +883,7 @@ tracker_pattern = /// ^
   readstream    = D.create_throughstream()
   writestream   = D.create_throughstream()
   # confluence  = D.create_throughstream()
-  R             = D.create_fitting_from_readwritestreams readstream, writestream, settings
+  R             = D.TEE.from_readwritestreams readstream, writestream, settings
   { input }     = R
   #.........................................................................................................
   S.resend = @new_resender S, readstream

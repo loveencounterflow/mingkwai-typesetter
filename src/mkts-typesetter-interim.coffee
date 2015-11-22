@@ -986,7 +986,7 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
     #   mktscript:        mktscript_out
     S:                S
   #.......................................................................................................
-  return D.create_fitting_from_readwritestreams readstream, writestream, settings
+  return D.TEE.from_readwritestreams readstream, writestream, settings
 
 #-----------------------------------------------------------------------------------------------------------
 @_handle_error = ( error ) =>
