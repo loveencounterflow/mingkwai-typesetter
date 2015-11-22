@@ -383,104 +383,41 @@ after it, thereby inhibiting any processing of those portions. ###
 # COMMENTS & RAW
 #-----------------------------------------------------------------------------------------------------------
 @$expand_html_comments = ( S ) =>
-  ### TAINT code duplication ###
-  return $ ( event, send ) =>
-    #.......................................................................................................
-    if MKTS.select event, '.', 'text'
-      is_plain                    = no
-      [ type, name, text, meta, ] = event
-      for stretch in text.split @html_comment_id_pattern
-        is_plain = not is_plain
-        unless is_plain
-          id                  = parseInt stretch, 10
-          entry               = @_retrieve_entry S, id
-          content             = entry[ 'raw' ]
-          send [ '.', 'comment', content, ( MKTS.copy meta ), ]
-        else
-          send [ type, name, stretch, ( MKTS.copy meta ), ] unless stretch.length is 0
-    #.......................................................................................................
-    else
-      send event
+  return @_get_expander S, @html_comment_id_pattern, ( meta, entry ) =>
+    content       = entry[ 'raw' ]
+    return [ '.', 'comment', content, ( MKTS.copy meta ), ]
 
 #-----------------------------------------------------------------------------------------------------------
 @$expand_raw_macros  = ( S ) =>
-  ### TAINT code duplication ###
-  return $ ( event, send ) =>
-    #.......................................................................................................
-    if MKTS.select event, '.', 'text'
-      is_plain                    = no
-      [ type, name, text, meta, ] = event
-      for stretch in text.split @raw_id_pattern
-        is_plain = not is_plain
-        unless is_plain
-          id                  = parseInt stretch, 10
-          entry               = @_retrieve_entry S, id
-          content             = entry[ 'raw' ]
-          send [ '.', 'raw', content, ( MKTS.copy meta ), ]
-        else
-          send [ type, name, stretch, ( MKTS.copy meta ), ] unless stretch.length is 0
-    #.......................................................................................................
-    else
-      send event
+  return @_get_expander S, @raw_id_pattern, ( meta, entry ) =>
+    content       = entry[ 'raw' ]
+    return [ '.', 'raw', content, ( MKTS.copy meta ), ]
 
-
-#===========================================================================================================
-# ACTIONS & REGIONS
 #-----------------------------------------------------------------------------------------------------------
 @$expand_action_macros  = ( S ) =>
-  ### TAINT code duplication ###
-  return $ ( event, send ) =>
-    #.......................................................................................................
-    if MKTS.select event, '.', 'text'
-      is_plain                    = no
-      [ type, name, text, meta, ] = event
-      for stretch in text.split @action_id_pattern
-        is_plain = not is_plain
-        unless is_plain
-          id                  = parseInt stretch, 10
-          entry               = @_retrieve_entry S, id
-          [ mode, language, ] = entry[ 'markup' ]
-          content             = entry[ 'raw' ]
-          send [ '.', 'action', content, ( MKTS.copy meta, { mode, language, } ), ]
-        else
-          send [ type, name, stretch, ( MKTS.copy meta ), ] unless stretch.length is 0
-    #.......................................................................................................
-    else
-      send event
+  return @_get_expander S, @action_id_pattern, ( meta, entry ) =>
+    [ mode
+      language ]  = entry[ 'markup' ]
+    content       = entry[ 'raw' ]
+    return [ '.', 'action', content, ( MKTS.copy meta, { mode, language, } ), ]
 
 #-----------------------------------------------------------------------------------------------------------
 @$expand_region_macros = ( S ) =>
-  ### TAINT code duplication ###
-  return $ ( event, send ) =>
-    #.......................................................................................................
-    if MKTS.select event, '.', 'text'
-      is_plain                    = no
-      [ type, name, text, meta, ] = event
-      for stretch in text.split @region_id_pattern
-        is_plain = not is_plain
-        unless is_plain
-          id                  = parseInt stretch, 10
-          entry               = @_retrieve_entry S, id
-          { raw
-            markup}           = entry
-          send [ markup, raw, null, ( MKTS.copy meta ), ]
-        else
-          send [ type, name, stretch, ( MKTS.copy meta ), ] unless stretch.length is 0
-    #.......................................................................................................
-    else
-      send event
+  return @_get_expander S, @region_id_pattern, ( meta, entry ) =>
+    { raw
+      markup }    = entry
+    return [ markup, raw, null, ( MKTS.copy meta ), ]
 
 #-----------------------------------------------------------------------------------------------------------
 @$expand_command_and_value_macros = ( S ) =>
-  ### TAINT code duplication ###
   return @_get_expander S, @command_and_value_id_pattern, ( meta, entry ) =>
     { raw
-      markup}   = entry
-    macro_type  = if markup is '!' then 'command' else 'value'
+      markup }    = entry
+    macro_type    = if markup is '!' then 'command' else 'value'
     return [ '.', macro_type, raw, ( MKTS.copy meta ), ]
 
 #===========================================================================================================
-# ESCAPE CHARACTERS
+# GENERIC EXPANDER
 #-----------------------------------------------------------------------------------------------------------
 @_get_expander = ( S, pattern, method ) =>
   return $ ( event, send ) =>
