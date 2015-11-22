@@ -164,17 +164,15 @@ parse_methods = get_parse_html_methods()
 
 #-----------------------------------------------------------------------------------------------------------
 ### TAINT moving to parentheses-only syntax; note that most of the `FENCES` submodule can then go ###
-@FENCES.xleft   = [ '(', ]
-@FENCES.xright  = [ ')', ]
 @FENCES.left    = [ '(', ]
 @FENCES.right   = [ ')', ]
-@FENCES.xpairs  =
+@FENCES.pairs   =
   '(':  ')'
   ')':  '('
 
 #-----------------------------------------------------------------------------------------------------------
 @FENCES._get_opposite = ( fence, fallback ) =>
-  unless ( R = @FENCES.xpairs[ fence ] )?
+  unless ( R = @FENCES.pairs[ fence ] )?
     return fallback unless fallback is undefined
     throw new Error "unknown fence: #{rpr fence}"
   return R
@@ -222,7 +220,7 @@ tracker_pattern = /// ^
   #.........................................................................................................
   if left_fence? and left_fence isnt '.'
     ### Complain about unknown left fences ###
-    unless left_fence in @FENCES.xleft
+    unless left_fence in @FENCES.left
       throw new Error "illegal left_fence in pattern #{rpr pattern}"
     if right_fence?
       ### Complain about non-matching fences ###
@@ -230,7 +228,7 @@ tracker_pattern = /// ^
         throw new Error "fences don't match in pattern #{rpr pattern}"
   if right_fence?
     ### Complain about unknown right fences ###
-    unless right_fence in @FENCES.xright
+    unless right_fence in @FENCES.right
       throw new Error "illegal right_fence in pattern #{rpr pattern}"
   #.........................................................................................................
   return [ left_fence, name, right_fence, ]
@@ -347,6 +345,9 @@ tracker_pattern = /// ^
       # whisper "encountered `end` token"
       if unknown_tokens.length > 0
         send remark 'warn', "unknown tokens: #{unknown_tokens.sort().join ', '}", {}
+      if is_first
+        is_first = no
+        send [ '(', 'document', null, {}, ]
       send [ ')', 'document', null, {}, ]
       setImmediate =>
         whisper "ending input stream"
@@ -406,8 +407,10 @@ tracker_pattern = /// ^
           #.................................................................................................
           # specials
           when 'code_inline'
-            send [ '(', 'code-span',  null,                        meta,   ]
-            send [ '.', 'text',       token[ 'content' ], ( @copy meta ),  ]
+            text_meta             = ( @copy meta )
+            text_meta[ 'markup' ] = ''
+            send [ '(', 'code-span',  null,                       meta,   ]
+            send [ '.', 'text',       token[ 'content' ],    text_meta,   ]
             send [ ')', 'code-span',  null,               ( @copy meta ),  ]
           #.................................................................................................
           when 'footnote_ref'
@@ -896,6 +899,7 @@ tracker_pattern = /// ^
     .pipe @MACROS.$expand_action_macros               S
     .pipe @MACROS.$expand_raw_macros                  S
     .pipe @MACROS.$expand_html_comments               S
+    .pipe @MACROS.$expand_escape_chrs                 S
     .pipe @_PRE.$process_end_command                  S
     .pipe @_PRE.$close_dangling_open_tags             S
     .pipe @_PRE.$consolidate_footnotes                S

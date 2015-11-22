@@ -901,7 +901,7 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
             text = rpr text
       else
         text = ''
-      if type in [ '.', '!', ] or type in MKTS.FENCES.xleft
+      if type in [ '.', '!', ] or type in MKTS.FENCES.left
         first             = type
         last              = name
         pre               = '█'
