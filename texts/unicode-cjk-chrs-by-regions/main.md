@@ -67,6 +67,10 @@ block.
     As with HTML tags, regions must be properly nested and must
     not overlap.
 
+<!-- <<(.myclass>>text<<)>>
+<<(#myid>>text<<)>>
+<span id='myid'>text</span> -->
+
 * **Actions** allow to execute code snippets inside the document. They
   come in two flavors: 'silent' and 'vocal'.
 

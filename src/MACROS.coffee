@@ -171,7 +171,8 @@ MKTS                      = require './MKTS'
   ( ^ | [^ \\ ] )               # starts either at the first chr or a chr other than backslash
   <<                            # then: two left pointy brackets
     ()                          # then: empty group for no markup here
-    (                           #
+    ( |                         #
+      [^ . : \\ ]
       (?:                       # then:
         \\>                |    #   or: an escaped right pointy bracket (RPB)
         [^ > ]             |    #   or: anything but a RPB
@@ -314,7 +315,7 @@ after it, thereby inhibiting any processing of those portions. ###
   #.........................................................................................................
   for pattern in @action_patterns
     R = R.replace pattern, ( _, previous_chr, markup, identifier, content, stopper ) =>
-      # debug '©ΛΨΒΓΘ', [ previous_chr, markup, identifier, content, ]
+      # debug '©ΛΨ actions', ( rpr text ), [ previous_chr, markup, identifier, content, stopper, ]
       mode      = if markup is '.' then 'silent' else 'vocal'
       language  = identifier
       language  = 'coffee' if language is ''
@@ -330,7 +331,7 @@ after it, thereby inhibiting any processing of those portions. ###
   #.........................................................................................................
   for pattern in @region_patterns
     R = R.replace pattern, ( _, previous_chr, start_markup, identifier, stop_markup ) =>
-      # debug '©ΓΔΞΔΔ', Array.from arguments
+      # debug '©ΛΨ regions', ( rpr text ), [ previous_chr, markup, identifier, content, stopper, ]
       markup  = if start_markup.length is 0 then stop_markup else start_markup
       id      = @_register_content S, 'region', markup, identifier
       return "#{previous_chr}\x15#{id}\x13"
@@ -494,4 +495,21 @@ after it, thereby inhibiting any processing of those portions. ###
     #.......................................................................................................
     else
       send event
+
+
+#===========================================================================================================
+# ESCAPE CHARACTERS
+#-----------------------------------------------------------------------------------------------------------
+@$expand_escape_chrs = ( S ) =>
+  return $ ( event, send ) =>
+    #.......................................................................................................
+    if MKTS.select event, '.', 'text'
+      [ type, name, text, meta, ] = event
+      send [ type, name, ( @escape.unescape_escape_chrs S, text ), meta, ]
+    #.......................................................................................................
+    else
+      send event
+
+
+
 
