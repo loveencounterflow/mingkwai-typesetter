@@ -741,6 +741,7 @@ nice_text_rpr = ( text ) ->
   warn "match remark?"
   matcher   = [
     ["(","document",null,{}]
+    [".","action","empty-document",{}]
     [")","document",null,{}]
     ]
   step ( resume ) =>

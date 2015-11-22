@@ -470,26 +470,30 @@ after it, thereby inhibiting any processing of those portions. ###
     else
       send event
 
-
-#===========================================================================================================
-# COMMANDS & VALUES
 #-----------------------------------------------------------------------------------------------------------
 @$expand_command_and_value_macros = ( S ) =>
   ### TAINT code duplication ###
+  return @_get_expander S, @command_and_value_id_pattern, ( meta, entry ) =>
+    { raw
+      markup}   = entry
+    macro_type  = if markup is '!' then 'command' else 'value'
+    return [ '.', macro_type, raw, ( MKTS.copy meta ), ]
+
+#===========================================================================================================
+# ESCAPE CHARACTERS
+#-----------------------------------------------------------------------------------------------------------
+@_get_expander = ( S, pattern, method ) =>
   return $ ( event, send ) =>
     #.......................................................................................................
     if MKTS.select event, '.', 'text'
       is_plain                    = no
       [ type, name, text, meta, ] = event
-      for stretch in text.split @command_and_value_id_pattern
+      for stretch in text.split pattern
         is_plain = not is_plain
         unless is_plain
           id                  = parseInt stretch, 10
           entry               = @_retrieve_entry S, id
-          { raw
-            markup}           = entry
-          macro_type          = if markup is '!' then 'command' else 'value'
-          send [ '.', macro_type, raw, ( MKTS.copy meta ), ]
+          send method meta, entry
         else
           send [ type, name, stretch, ( MKTS.copy meta ), ] unless stretch.length is 0
     #.......................................................................................................
