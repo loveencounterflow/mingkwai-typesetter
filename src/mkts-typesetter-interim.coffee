@@ -1026,14 +1026,14 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
     #.......................................................................................................
     ### TAINT should read MD source stream ###
     md_source               = njs_fs.readFileSync source_locator, encoding: 'utf-8'
-    md_tee                  = MKTS.create_md_read_tee md_source
-    tex_tee                 = @create_tex_write_tee S
-    md_input                =  md_tee[ 'input'  ]
-    md_output               =  md_tee[ 'output' ]
-    tex_input               = tex_tee[ 'input'  ]
-    tex_output              = tex_tee[ 'output' ]
+    md_readstream           = MKTS.create_md_read_tee md_source
+    tex_writestream         = @create_tex_write_tee S
+    md_input                =  md_readstream.tee[ 'input'  ]
+    md_output               =  md_readstream.tee[ 'output' ]
+    tex_input               = tex_writestream.tee[ 'input'  ]
+    tex_output              = tex_writestream.tee[ 'output' ]
     #.......................................................................................................
-    S.resend = md_tee[ 'S' ].resend
+    S.resend                = md_readstream.tee[ 'S' ].resend
     #.......................................................................................................
     md_output
       .pipe tex_input
@@ -1077,14 +1077,14 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
     options:              @options
     layout_info:          layout_info
   #.........................................................................................................
-  md_tee              = MKTS.create_md_read_tee md_source
-  tex_tee             = @create_tex_write_tee S
-  md_input            =  md_tee[ 'input'  ]
-  md_output           =  md_tee[ 'output' ]
-  tex_input           = tex_tee[ 'input'  ]
-  tex_output          = tex_tee[ 'output' ]
+  md_readstream       = MKTS.create_md_read_tee md_source
+  tex_writestream     = @create_tex_write_tee S
+  md_input            =  md_readstream.tee[ 'input'  ]
+  md_output           =  md_readstream.tee[ 'output' ]
+  tex_input           = tex_writestream.tee[ 'input'  ]
+  tex_output          = tex_writestream.tee[ 'output' ]
   #.........................................................................................................
-  S.resend = md_tee[ 'S' ].resend
+  S.resend            = md_readstream.tee[ 'S' ].resend
   #.........................................................................................................
   md_output
     .pipe tex_input

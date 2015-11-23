@@ -822,11 +822,11 @@ tracker_pattern = /// ^
       settings  = {}
     when 3 then null
     else throw new Error "expected 2 or 3 arguments, got #{arity}"
-  bare        = settings[ 'bare' ] ? no
-  md_fitting  = @create_md_read_tee source
+  bare          = settings[ 'bare' ] ? no
+  md_readstream = @create_md_read_tee source
   { input
-    output }  = md_fitting
-  Z           = []
+    output }    = md_readstream.tee
+  Z             = []
   output.pipe $ ( event, send ) =>
     # debug '©G3QXt', event
     Z.push event unless bare and @select event, [ '(', ')', ], 'document'
@@ -845,13 +845,13 @@ tracker_pattern = /// ^
     else throw new Error "expected 2 or 3 arguments, got #{arity}"
   #.........................................................................................................
   source_route        = settings[ 'source-route' ] ? '<STRING>'
-  md_fitting          = @create_md_read_tee md_source
+  md_readstream       = @create_md_read_tee md_source
   { input
-    output }          = md_fitting
+    output }          = md_readstream.tee
   f                   = => input.resume()
   #.........................................................................................................
   output
-    .pipe @$produce_mktscript md_fitting[ 'S' ]
+    .pipe @$produce_mktscript md_readstream.tee[ 'S' ]
     # .pipe D.$show '>>>>>>>>>>>>>>'
     .pipe do =>
       Z = []
@@ -880,28 +880,23 @@ tracker_pattern = /// ^
   settings =
     S:                S
   #.........................................................................................................
+  ### TAINT rewrite to use D.TEE.from_pipeline, don't use readstream, writestream ###
   readstream    = D.create_throughstream()
   writestream   = D.create_throughstream()
   # confluence  = D.create_throughstream()
   R             = D.TEE.from_readwritestreams readstream, writestream, settings
-  { input }     = R
+  { input }     = R.tee
+  input.pause()
   #.........................................................................................................
-  S.resend = @new_resender S, readstream
-  S.confluence = readstream
+  S.resend      = @new_resender S, readstream
+  S.confluence  = readstream
   # S.confluence = input
   #.........................................................................................................
   readstream
     .pipe @_PRE.$flatten_tokens                       S
     .pipe @_PRE.$reinject_html_blocks                 S
     .pipe @_PRE.$rewrite_markdownit_tokens            S
-    # .pipe D.$show '7686756'
     .pipe @MACROS.$expand                             S
-    # .pipe @MACROS.$expand_command_and_value_macros    S
-    # .pipe @MACROS.$expand_region_macros               S
-    # .pipe @MACROS.$expand_action_macros               S
-    # .pipe @MACROS.$expand_raw_macros                  S
-    # .pipe @MACROS.$expand_html_comments               S
-    # .pipe @MACROS.$expand_escape_chrs                 S
     .pipe @_PRE.$process_end_command                  S
     .pipe @_PRE.$close_dangling_open_tags             S
     .pipe @_PRE.$consolidate_footnotes                S
@@ -912,7 +907,6 @@ tracker_pattern = /// ^
   # input.on          'end', -> debug '©1sbYv', "input ended"
   # R[ 'output' ].on  'end', -> debug '©zSMOc', "output ended"
   #.........................................................................................................
-  input.pause()
   input.on 'resume', =>
     md_parser   = @_new_markdown_parser()
     @MACROS.initialize_state S
