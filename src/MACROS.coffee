@@ -382,6 +382,34 @@ after it, thereby inhibiting any processing of those portions. ###
 #===========================================================================================================
 # EXPANDERS
 #-----------------------------------------------------------------------------------------------------------
+@$expand = ( S ) ->
+  return @$expand.create_macro_expansion_tee S
+
+#-----------------------------------------------------------------------------------------------------------
+@$expand.create_macro_expansion_tee = ( S ) =>
+  #.......................................................................................................
+  readstream    = D.create_throughstream()
+  writestream   = D.create_throughstream()
+  #.......................................................................................................
+  readstream
+    .pipe @$expand_command_and_value_macros   S
+    .pipe @$expand_region_macros              S
+    .pipe @$expand_action_macros              S
+    .pipe @$expand_raw_macros                 S
+    .pipe @$expand_html_comments              S
+    .pipe @$expand_escape_chrs                S
+    .pipe writestream
+  #.......................................................................................................
+  settings =
+    # inputs:
+    #   mktscript:        mktscript_in
+    # outputs:
+    #   mktscript:        mktscript_out
+    S:                S
+  #.......................................................................................................
+  return D.TEE.from_readwritestreams readstream, writestream, settings
+
+#-----------------------------------------------------------------------------------------------------------
 @$expand_html_comments = ( S ) =>
   return @_get_expander S, @html_comment_id_pattern, ( meta, entry ) =>
     content       = entry[ 'raw' ]

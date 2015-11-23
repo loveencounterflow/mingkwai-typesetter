@@ -1109,24 +1109,3 @@ unless module.parent?
   # event = [ '(', 'new-page', ]
   # debug '©Gpn1J', select event, [ '(', ')'], [ 'single-column', 'new-page', ]
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
