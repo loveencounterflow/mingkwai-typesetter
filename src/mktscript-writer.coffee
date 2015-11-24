@@ -8,7 +8,7 @@ njs_fs                    = require 'fs'
 #...........................................................................................................
 CND                       = require 'cnd'
 rpr                       = CND.rpr
-badge                     = 'MKTS/mktscript-adapter'
+badge                     = 'MKTS/mktscript-writer'
 log                       = CND.get_logger 'plain',     badge
 info                      = CND.get_logger 'info',      badge
 whisper                   = CND.get_logger 'whisper',   badge
@@ -32,12 +32,13 @@ new_md_inline_plugin      = require 'markdown-it-regexp'
 #...........................................................................................................
 misfit                    = Symbol 'misfit'
 MKTS                      = require './main'
-hide                      = MKTS.hide.bind        MKTS
-copy                      = MKTS.copy.bind        MKTS
-stamp                     = MKTS.stamp.bind       MKTS
-select                    = MKTS.select.bind      MKTS
-is_hidden                 = MKTS.is_hidden.bind   MKTS
-is_stamped                = MKTS.is_stamped.bind  MKTS
+MD_READER                 = require './md-reader'
+hide                      = MD_READER.hide.bind        MD_READER
+copy                      = MD_READER.copy.bind        MD_READER
+stamp                     = MD_READER.stamp.bind       MD_READER
+select                    = MD_READER.select.bind      MD_READER
+is_hidden                 = MD_READER.is_hidden.bind   MD_READER
+is_stamped                = MD_READER.is_stamped.bind  MD_READER
 
 
 #-----------------------------------------------------------------------------------------------------------
@@ -182,7 +183,7 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
     when 3 then null
     else throw new Error "expected 2 or 3 arguments, got #{arity}"
   bare          = settings[ 'bare' ] ? no
-  md_readstream = MKTS.create_md_read_tee source
+  md_readstream = MKTS.MD_READER.create_md_read_tee source
   { input
     output }    = md_readstream.tee
   Z             = []
@@ -204,7 +205,7 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
     else throw new Error "expected 2 or 3 arguments, got #{arity}"
   #.........................................................................................................
   source_route        = settings[ 'source-route' ] ? '<STRING>'
-  md_readstream       = MKTS.create_md_read_tee md_source
+  md_readstream       = MKTS.MD_READER.create_md_read_tee md_source
   { input
     output }          = md_readstream.tee
   f                   = => input.resume()

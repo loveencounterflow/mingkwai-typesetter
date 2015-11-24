@@ -36,8 +36,6 @@ $                         = D.remit.bind D
 $async                    = D.remit_async.bind D
 #...........................................................................................................
 MKTS                      = require './main'
-TEX                       = require './tex-adapter'
-MKTSCRIPT                 = require './mktscript-adapter'
 
 
 #===========================================================================================================
@@ -566,19 +564,19 @@ nice_text_rpr = ( text ) ->
 ### # # # ###
 
 #-----------------------------------------------------------------------------------------------------------
-@[ "MKTS.FENCES.parse accepts dot patterns" ] = ( T, done ) ->
+@[ "MKTS.MD_READER.FENCES.parse accepts dot patterns" ] = ( T, done ) ->
   probes_and_matchers = [
     [ '.',     [ '.', null,   null, ], ]
     [ '.p',    [ '.', 'p',    null, ], ]
     [ '.text', [ '.', 'text', null, ], ]
     ]
   for [ probe, matcher, ] in probes_and_matchers
-    # help ( rpr probe ), MKTS.FENCES.parse probe
-    T.eq ( MKTS.FENCES.parse probe ), matcher
+    # help ( rpr probe ), MKTS.MD_READER.FENCES.parse probe
+    T.eq ( MKTS.MD_READER.FENCES.parse probe ), matcher
   done()
 
 #-----------------------------------------------------------------------------------------------------------
-@[ "MKTS.FENCES.parse accepts empty fenced patterns" ] = ( T, done ) ->
+@[ "MKTS.MD_READER.FENCES.parse accepts empty fenced patterns" ] = ( T, done ) ->
   probes_and_matchers = [
     # [ '<>', [ '<', null, '>', ], ]
     # [ '{}', [ '{', null, '}', ], ]
@@ -586,12 +584,12 @@ nice_text_rpr = ( text ) ->
     [ '()', [ '(', null, ')', ], ]
     ]
   for [ probe, matcher, ] in probes_and_matchers
-    # help ( rpr probe ), MKTS.FENCES.parse probe
-    T.eq ( MKTS.FENCES.parse probe ), matcher
+    # help ( rpr probe ), MKTS.MD_READER.FENCES.parse probe
+    T.eq ( MKTS.MD_READER.FENCES.parse probe ), matcher
   done()
 
 #-----------------------------------------------------------------------------------------------------------
-@[ "MKTS.FENCES.parse accepts unfenced named patterns" ] = ( T, done ) ->
+@[ "MKTS.MD_READER.FENCES.parse accepts unfenced named patterns" ] = ( T, done ) ->
   probes_and_matchers = [
     [ 'document',       [ null, 'document',     null, ], ]
     [ 'singlecolumn',   [ null, 'singlecolumn', null, ], ]
@@ -601,12 +599,12 @@ nice_text_rpr = ( text ) ->
     [ 'xxx',            [ null, 'xxx',          null, ], ]
     ]
   for [ probe, matcher, ] in probes_and_matchers
-    # help ( rpr probe ), MKTS.FENCES.parse probe
-    T.eq ( MKTS.FENCES.parse probe ), matcher
+    # help ( rpr probe ), MKTS.MD_READER.FENCES.parse probe
+    T.eq ( MKTS.MD_READER.FENCES.parse probe ), matcher
   done()
 
 #-----------------------------------------------------------------------------------------------------------
-@[ "MKTS.FENCES.parse accepts fenced named patterns" ] = ( T, done ) ->
+@[ "MKTS.MD_READER.FENCES.parse accepts fenced named patterns" ] = ( T, done ) ->
   probes_and_matchers = [
     # [ '<document>',     [ '<', 'document',     '>', ], ]
     # [ '{singlecolumn}', [ '{', 'singlecolumn', '}', ], ]
@@ -615,17 +613,17 @@ nice_text_rpr = ( text ) ->
     [ '(em)',           [ '(', 'em',           ')', ], ]
     ]
   for [ probe, matcher, ] in probes_and_matchers
-    # help ( rpr probe ), MKTS.FENCES.parse probe
-    T.eq ( MKTS.FENCES.parse probe ), matcher
+    # help ( rpr probe ), MKTS.MD_READER.FENCES.parse probe
+    T.eq ( MKTS.MD_READER.FENCES.parse probe ), matcher
   done()
 
 #-----------------------------------------------------------------------------------------------------------
-@[ "MKTS.FENCES.parse rejects empty string" ] = ( T, done ) ->
-  T.throws "pattern must be non-empty, got ''", ( -> MKTS.FENCES.parse '' )
+@[ "MKTS.MD_READER.FENCES.parse rejects empty string" ] = ( T, done ) ->
+  T.throws "pattern must be non-empty, got ''", ( -> MKTS.MD_READER.FENCES.parse '' )
   done()
 
 #-----------------------------------------------------------------------------------------------------------
-@[ "MKTS.FENCES.parse rejects non-matching fences etc" ] = ( T, done ) ->
+@[ "MKTS.MD_READER.FENCES.parse rejects non-matching fences etc" ] = ( T, done ) ->
   probes_and_matchers = [
     ["(xxx}","unmatched fence in '(xxx}'"]
     [".)","fence '.' can not have right fence, got '.)'"]
@@ -635,33 +633,33 @@ nice_text_rpr = ( text ) ->
     ]
   for [ probe, matcher, ] in probes_and_matchers
     try
-      debug '©ΒΩΦΥΨ', JSON.stringify [ probe, MKTS.FENCES.parse probe ]
+      debug '©ΒΩΦΥΨ', JSON.stringify [ probe, MKTS.MD_READER.FENCES.parse probe ]
     catch error
       warn '©ΒΩΦΥΨ', JSON.stringify [ probe, error[ 'message' ], ]
-    T.throws matcher, ( -> MKTS.FENCES.parse probe )
+    T.throws matcher, ( -> MKTS.MD_READER.FENCES.parse probe )
   done()
 
 #-----------------------------------------------------------------------------------------------------------
-@[ "MKTS.FENCES.parse accepts non-matching fences when so configured" ] = ( T, done ) ->
+@[ "MKTS.MD_READER.FENCES.parse accepts non-matching fences when so configured" ] = ( T, done ) ->
   probes_and_matchers = [
     [ '(em)',           [ '(', 'em',           ')', ], ]
     [ 'em)',            [ null, 'em',           ')', ], ]
     [ '(em',            [ '(', 'em',           null, ], ]
     ]
   for [ probe, matcher, ] in probes_and_matchers
-    # help ( rpr probe ), MKTS.FENCES.parse probe
-    T.eq ( MKTS.FENCES.parse probe, symmetric: no ), matcher
+    # help ( rpr probe ), MKTS.MD_READER.FENCES.parse probe
+    T.eq ( MKTS.MD_READER.FENCES.parse probe, symmetric: no ), matcher
   done()
 
 #-----------------------------------------------------------------------------------------------------------
-@[ "MKTS.TRACKER.new_tracker().track rejects unregistered pattern" ] = ( T, done ) ->
-  track = MKTS.TRACKER.new_tracker '(code)', '(em)'
+@[ "MKTS.MD_READER.TRACKER.new_tracker().track rejects unregistered pattern" ] = ( T, done ) ->
+  track = MKTS.MD_READER.TRACKER.new_tracker '(code)', '(em)'
   T.throws "untracked pattern '(code-span)'", ( => track.within '(code-span)' )
   done()
 
 #-----------------------------------------------------------------------------------------------------------
-@[ "MKTS.TRACKER.new_tracker (short comprehensive test)" ] = ( T, done ) ->
-  track = MKTS.TRACKER.new_tracker '(code-span)', '(em)'
+@[ "MKTS.MD_READER.TRACKER.new_tracker (short comprehensive test)" ] = ( T, done ) ->
+  track = MKTS.MD_READER.TRACKER.new_tracker '(code-span)', '(em)'
   probes_and_matchers = [
     [["(","code-span"],[true,false]]
     [["(","em"],[true,true]]
@@ -681,7 +679,7 @@ nice_text_rpr = ( text ) ->
   done()
 
 #-----------------------------------------------------------------------------------------------------------
-@[ "MKTSCRIPT.mkts_events_from_md (1)" ] = ( T, done ) ->
+@[ "MKTS.MKTSCRIPT_WRITER.mkts_events_from_md (1)" ] = ( T, done ) ->
   # settings  = bare: yes
   probe     = """123 `abc<<(:>>vocal action<<)>>def` 456"""
   warn "should merge texts"
@@ -698,13 +696,13 @@ nice_text_rpr = ( text ) ->
     [")","document",null,{}]
     ]
   step ( resume ) =>
-    result = yield MKTSCRIPT.mkts_events_from_md probe, resume
+    result = yield MKTS.MKTSCRIPT_WRITER.mkts_events_from_md probe, resume
     show_events probe, result
     T.eq matcher, result
     done()
 
 #-----------------------------------------------------------------------------------------------------------
-@[ "MKTSCRIPT.mkts_events_from_md (2)" ] = ( T, done ) ->
+@[ "MKTS.MKTSCRIPT_WRITER.mkts_events_from_md (2)" ] = ( T, done ) ->
   settings  = bare: yes
   probe     = """abc<<(:js>>f( 42 );<<:js)>>def"""
   warn "should merge texts"
@@ -715,13 +713,13 @@ nice_text_rpr = ( text ) ->
     [".","p",null,{"line_nr":1,"col_nr":2,"markup":""}]
     ]
   step ( resume ) =>
-    result = yield MKTSCRIPT.mkts_events_from_md probe, settings, resume
+    result = yield MKTS.MKTSCRIPT_WRITER.mkts_events_from_md probe, settings, resume
     show_events probe, result
     T.eq matcher, result
     done()
 
 #-----------------------------------------------------------------------------------------------------------
-@[ "MKTSCRIPT.mkts_events_from_md (3)" ] = ( T, done ) ->
+@[ "MKTS.MKTSCRIPT_WRITER.mkts_events_from_md (3)" ] = ( T, done ) ->
   settings  = bare: yes
   probe     = """abc\\<<(:js>>f( 42 );<<:js)>>def"""
   warn "should merge texts"
@@ -730,13 +728,13 @@ nice_text_rpr = ( text ) ->
     [".","p",null,{"line_nr":1,"col_nr":2,"markup":""}]
     ]
   step ( resume ) =>
-    result = yield MKTSCRIPT.mkts_events_from_md probe, settings, resume
+    result = yield MKTS.MKTSCRIPT_WRITER.mkts_events_from_md probe, settings, resume
     show_events probe, result
     T.eq matcher, result
     done()
 
 #-----------------------------------------------------------------------------------------------------------
-@[ "MKTSCRIPT.mkts_events_from_md (4)" ] = ( T, done ) ->
+@[ "MKTS.MKTSCRIPT_WRITER.mkts_events_from_md (4)" ] = ( T, done ) ->
   settings  = bare: no
   probe     = """<<!end>>"""
   warn "match remark?"
@@ -746,13 +744,13 @@ nice_text_rpr = ( text ) ->
     [")","document",null,{}]
     ]
   step ( resume ) =>
-    result = yield MKTSCRIPT.mkts_events_from_md probe, settings, resume
+    result = yield MKTS.MKTSCRIPT_WRITER.mkts_events_from_md probe, settings, resume
     show_events probe, result
     T.eq matcher, result
     done()
 
 #-----------------------------------------------------------------------------------------------------------
-@[ "MKTSCRIPT.mkts_events_from_md (5)" ] = ( T, done ) ->
+@[ "MKTS.MKTSCRIPT_WRITER.mkts_events_from_md (5)" ] = ( T, done ) ->
   settings  = bare: yes
   probe     = """<<!multi-column>>"""
   warn "should not contain `.p`"
@@ -761,13 +759,13 @@ nice_text_rpr = ( text ) ->
     [".","p",null,{"line_nr":1,"col_nr":2,"markup":""}]
     ]
   step ( resume ) =>
-    result = yield MKTSCRIPT.mkts_events_from_md probe, settings, resume
+    result = yield MKTS.MKTSCRIPT_WRITER.mkts_events_from_md probe, settings, resume
     show_events probe, result
     T.eq matcher, result
     done()
 
 #-----------------------------------------------------------------------------------------------------------
-@[ "MKTSCRIPT.mkts_events_from_md (6)" ] = ( T, done ) ->
+@[ "MKTS.MKTSCRIPT_WRITER.mkts_events_from_md (6)" ] = ( T, done ) ->
   settings  = bare: yes
   probe     = """
     aaa
@@ -786,13 +784,13 @@ nice_text_rpr = ( text ) ->
     [".","p",null,{"line_nr":1,"col_nr":6,"markup":""}]
     ]
   step ( resume ) =>
-    result = yield MKTSCRIPT.mkts_events_from_md probe, settings, resume
+    result = yield MKTS.MKTSCRIPT_WRITER.mkts_events_from_md probe, settings, resume
     show_events probe, result
     T.eq matcher, result
     done()
 
 #-----------------------------------------------------------------------------------------------------------
-@[ "MKTSCRIPT.mkts_events_from_md (7)" ] = ( T, done ) ->
+@[ "MKTS.MKTSCRIPT_WRITER.mkts_events_from_md (7)" ] = ( T, done ) ->
   settings  = bare: yes
   probe     = """
     她說：「你好。」
@@ -803,13 +801,13 @@ nice_text_rpr = ( text ) ->
     [".","p",null,{"line_nr":1,"col_nr":2,"markup":""}]
     ]
   step ( resume ) =>
-    result = yield MKTSCRIPT.mkts_events_from_md probe, settings, resume
+    result = yield MKTS.MKTSCRIPT_WRITER.mkts_events_from_md probe, settings, resume
     show_events probe, result
     T.eq matcher, result
     done()
 
 #-----------------------------------------------------------------------------------------------------------
-@[ "MKTSCRIPT.mkts_events_from_md (8)" ] = ( T, done ) ->
+@[ "MKTS.MKTSCRIPT_WRITER.mkts_events_from_md (8)" ] = ( T, done ) ->
   settings  = bare: yes
   probe     = """
     A paragraph with *emphasis*.
@@ -832,13 +830,13 @@ nice_text_rpr = ( text ) ->
     [".","p",null,{"line_nr":3,"col_nr":4,"markup":""}]
     ]
   step ( resume ) =>
-    result = yield MKTSCRIPT.mkts_events_from_md probe, settings, resume
+    result = yield MKTS.MKTSCRIPT_WRITER.mkts_events_from_md probe, settings, resume
     show_events probe, result
     T.eq matcher, result
     done()
 
 #-----------------------------------------------------------------------------------------------------------
-@[ "MKTSCRIPT.mkts_events_from_md: footnotes" ] = ( T, done ) ->
+@[ "MKTS.MKTSCRIPT_WRITER.mkts_events_from_md: footnotes" ] = ( T, done ) ->
   settings  = bare: yes
   probe     = """
     Here is an inline footnote^[whose text appears at the point of insertion],
@@ -862,13 +860,13 @@ nice_text_rpr = ( text ) ->
     [".","p",null,{"line_nr":1,"col_nr":3,"markup":""}]
     ]
   step ( resume ) =>
-    result = yield MKTSCRIPT.mkts_events_from_md probe, settings, resume
+    result = yield MKTS.MKTSCRIPT_WRITER.mkts_events_from_md probe, settings, resume
     show_events probe, result
     T.eq matcher, result
     done()
 
 #-----------------------------------------------------------------------------------------------------------
-@[ "TEX.tex_from_md (1)" ] = ( T, done ) ->
+@[ "MKTS.TEX_WRITER.tex_from_md (1)" ] = ( T, done ) ->
   settings  = bare: yes
   probe     = """
     A paragraph with *emphasis*.
@@ -885,13 +883,13 @@ nice_text_rpr = ( text ) ->
 
     """
   step ( resume ) =>
-    result = yield TEX.tex_from_md probe, settings, resume
+    result = yield MKTS.TEX_WRITER.tex_from_md probe, settings, resume
     echo result
     T.eq matcher.trim(), result.trim()
     done()
 
 #-----------------------------------------------------------------------------------------------------------
-@[ "MKTSCRIPT.mktscript_from_md (1)" ] = ( T, done ) ->
+@[ "MKTS.MKTSCRIPT_WRITER.mktscript_from_md (1)" ] = ( T, done ) ->
   settings  = bare: yes
   probe     = """
     A paragraph with *emphasis*.
@@ -929,13 +927,13 @@ nice_text_rpr = ( text ) ->
     # EOF
     """
   step ( resume ) =>
-    result = yield MKTSCRIPT.mktscript_from_md probe, settings, resume
+    result = yield MKTS.MKTSCRIPT_WRITER.mktscript_from_md probe, settings, resume
     echo result
     T.eq matcher.trim(), result.trim()
     done()
 
 #-----------------------------------------------------------------------------------------------------------
-@[ "MKTSCRIPT.mktscript_from_md (2)" ] = ( T, done ) ->
+@[ "MKTS.MKTSCRIPT_WRITER.mktscript_from_md (2)" ] = ( T, done ) ->
   settings  = bare: yes
   probe     = """
     <<(multi-column>>
@@ -958,7 +956,7 @@ nice_text_rpr = ( text ) ->
     # EOF
     """
   step ( resume ) =>
-    result = yield MKTSCRIPT.mktscript_from_md probe, settings, resume
+    result = yield MKTS.MKTSCRIPT_WRITER.mktscript_from_md probe, settings, resume
     echo result
     T.eq matcher.trim(), result.trim()
     # T.fail "not yet ready"

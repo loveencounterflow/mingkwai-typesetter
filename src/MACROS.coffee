@@ -31,12 +31,11 @@ $                         = D.remit.bind D
 # misfit                    = Symbol 'misfit'
 MKTS                      = require './main'
 # hide                      = MKTS.hide.bind        MKTS
-# copy                      = MKTS.copy.bind        MKTS
+# copy                      = MKTS.MD_READER.copy.bind        MKTS
 # stamp                     = MKTS.stamp.bind       MKTS
-# select                    = MKTS.select.bind      MKTS
+# select                    = MKTS.MD_READER.select.bind      MKTS
 # is_hidden                 = MKTS.is_hidden.bind   MKTS
 # is_stamped                = MKTS.is_stamped.bind  MKTS
-
 
 
 #===========================================================================================================
@@ -405,13 +404,13 @@ after it, thereby inhibiting any processing of those portions. ###
 @$expand_html_comments = ( S ) =>
   return @_get_expander S, @html_comment_id_pattern, ( meta, entry ) =>
     content       = entry[ 'raw' ]
-    return [ '.', 'comment', content, ( MKTS.copy meta ), ]
+    return [ '.', 'comment', content, ( MKTS.MD_READER.copy meta ), ]
 
 #-----------------------------------------------------------------------------------------------------------
 @$expand_raw_macros  = ( S ) =>
   return @_get_expander S, @raw_id_pattern, ( meta, entry ) =>
     content       = entry[ 'raw' ]
-    return [ '.', 'raw', content, ( MKTS.copy meta ), ]
+    return [ '.', 'raw', content, ( MKTS.MD_READER.copy meta ), ]
 
 #-----------------------------------------------------------------------------------------------------------
 @$expand_action_macros  = ( S ) =>
@@ -419,14 +418,14 @@ after it, thereby inhibiting any processing of those portions. ###
     [ mode
       language ]  = entry[ 'markup' ]
     content       = entry[ 'raw' ]
-    return [ '.', 'action', content, ( MKTS.copy meta, { mode, language, } ), ]
+    return [ '.', 'action', content, ( MKTS.MD_READER.copy meta, { mode, language, } ), ]
 
 #-----------------------------------------------------------------------------------------------------------
 @$expand_region_macros = ( S ) =>
   return @_get_expander S, @region_id_pattern, ( meta, entry ) =>
     { raw
       markup }    = entry
-    return [ markup, raw, null, ( MKTS.copy meta ), ]
+    return [ markup, raw, null, ( MKTS.MD_READER.copy meta ), ]
 
 #-----------------------------------------------------------------------------------------------------------
 @$expand_command_and_value_macros = ( S ) =>
@@ -434,13 +433,13 @@ after it, thereby inhibiting any processing of those portions. ###
     { raw
       markup }    = entry
     macro_type    = if markup is '!' then 'command' else 'value'
-    return [ '.', macro_type, raw, ( MKTS.copy meta ), ]
+    return [ '.', macro_type, raw, ( MKTS.MD_READER.copy meta ), ]
 
 #-----------------------------------------------------------------------------------------------------------
 @$expand_escape_chrs = ( S ) =>
   return $ ( event, send ) =>
     #.......................................................................................................
-    if MKTS.select event, '.', 'text'
+    if MKTS.MD_READER.select event, '.', 'text'
       [ type, name, text, meta, ] = event
       send [ type, name, ( @escape.unescape_escape_chrs S, text ), meta, ]
     #.......................................................................................................
@@ -454,7 +453,7 @@ after it, thereby inhibiting any processing of those portions. ###
 @_get_expander = ( S, pattern, method ) =>
   return $ ( event, send ) =>
     #.......................................................................................................
-    if MKTS.select event, '.', 'text'
+    if MKTS.MD_READER.select event, '.', 'text'
       is_plain                    = no
       [ type, name, text, meta, ] = event
       for stretch in text.split pattern
@@ -464,7 +463,7 @@ after it, thereby inhibiting any processing of those portions. ###
           entry               = @_retrieve_entry S, id
           send method meta, entry
         else
-          send [ type, name, stretch, ( MKTS.copy meta ), ] unless stretch.length is 0
+          send [ type, name, stretch, ( MKTS.MD_READER.copy meta ), ] unless stretch.length is 0
     #.......................................................................................................
     else
       send event

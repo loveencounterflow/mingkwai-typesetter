@@ -37,13 +37,14 @@ SEMVER                    = require 'semver'
 #...........................................................................................................
 XNCHR                     = require './xnchr'
 MKTS                      = require './main'
-MKTSCRIPT                 = require './mktscript-adapter'
-hide                      = MKTS.hide.bind        MKTS
-copy                      = MKTS.copy.bind        MKTS
-stamp                     = MKTS.stamp.bind       MKTS
-select                    = MKTS.select.bind      MKTS
-is_hidden                 = MKTS.is_hidden.bind   MKTS
-is_stamped                = MKTS.is_stamped.bind  MKTS
+MKTSCRIPT_WRITER          = require './mktscript-writer'
+MD_READER                 = require './md-reader'
+hide                      = MD_READER.hide.bind        MD_READER
+copy                      = MD_READER.copy.bind        MD_READER
+stamp                     = MD_READER.stamp.bind       MD_READER
+select                    = MD_READER.select.bind      MD_READER
+is_hidden                 = MD_READER.is_hidden.bind   MD_READER
+is_stamped                = MD_READER.is_stamped.bind  MD_READER
 
 
 #===========================================================================================================
@@ -386,7 +387,7 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
 
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.COMMAND.$expansion = ( S ) =>
-  remark = MKTS._get_remark()
+  remark = MD_READER._get_remark()
   #.........................................................................................................
   return $ ( event, send ) =>
     if select event, '!'
@@ -415,7 +416,7 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
 
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.COMMAND.$comment = ( S ) =>
-  remark = MKTS._get_remark()
+  remark = MD_READER._get_remark()
   #.........................................................................................................
   return $ ( event, send ) =>
     return send event unless select event, '.', 'comment'
@@ -472,8 +473,8 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
 
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.REGION.$multi_column = ( S ) =>
-  track   = MKTS.TRACKER.new_tracker '{multi-column}'
-  remark  = MKTS._get_remark()
+  track   = MD_READER.TRACKER.new_tracker '{multi-column}'
+  remark  = MD_READER._get_remark()
   #.........................................................................................................
   return $ ( event, send ) =>
     within_multi_column = track.within '{multi-column}'
@@ -502,8 +503,8 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.REGION.$single_column = ( S ) =>
   ### TAINT consider to implement command `change_column_count = ( send, n )` ###
-  track   = MKTS.TRACKER.new_tracker '{multi-column}'
-  remark  = MKTS._get_remark()
+  track   = MD_READER.TRACKER.new_tracker '{multi-column}'
+  remark  = MD_READER._get_remark()
   #.........................................................................................................
   return $ ( event, send ) =>
     within_multi_column = track.within '{multi-column}'
@@ -536,7 +537,7 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
 
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.REGION.$keep_lines = ( S ) =>
-  track = MKTS.TRACKER.new_tracker '{keep-lines}'
+  track = MD_READER.TRACKER.new_tracker '{keep-lines}'
   #.........................................................................................................
   return $ ( event, send ) =>
     within_keep_lines = track.within '{keep-lines}'
@@ -566,7 +567,7 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.REGION.$code = ( S ) =>
   ### TAINT code duplication with `REGION.$keep_lines` possible ###
-  track = MKTS.TRACKER.new_tracker '{code}'
+  track = MD_READER.TRACKER.new_tracker '{code}'
   #.........................................................................................................
   return $ ( event, send ) =>
     within_code = track.within '{code}'
@@ -593,7 +594,7 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.BLOCK.$heading = ( S ) =>
   restart_multicols = no
-  track             = MKTS.TRACKER.new_tracker '{multi-column}'
+  track             = MD_READER.TRACKER.new_tracker '{multi-column}'
   #.........................................................................................................
   return $ ( event, send ) =>
     within_multi_column = track.within '{multi-column}'
@@ -636,7 +637,7 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.BLOCK.$paragraph = ( S ) =>
   ### TAINT should unify the two observers ###
-  track = MKTS.TRACKER.new_tracker '{code}', '{keep-lines}'
+  track = MD_READER.TRACKER.new_tracker '{code}', '{keep-lines}'
   #.........................................................................................................
   return $ ( event, send ) =>
     within_code       = track.within '{code}'
@@ -696,7 +697,7 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
 
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.BLOCK.$hr = ( S ) =>
-  remark = MKTS._get_remark()
+  remark = MD_READER._get_remark()
   #.........................................................................................................
   return $ ( event, send ) =>
     #.......................................................................................................
@@ -729,7 +730,7 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
 
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.MIXED.$raw = ( S ) =>
-  remark = MKTS._get_remark()
+  remark = MD_READER._get_remark()
   #.........................................................................................................
   return $ ( event, send ) =>
     #.......................................................................................................
@@ -819,7 +820,7 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
 # CLEANUP
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.CLEANUP.$remove_empty_texts = ( S ) ->
-  remark = MKTS._get_remark()
+  remark = MD_READER._get_remark()
   return $ ( event, send ) =>
     if select event, '.', 'text'
       [ type, name, text, meta, ] = event
@@ -835,7 +836,7 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.CLEANUP.$remove_empty_p_tags = ( S ) =>
   text_count  = 0
-  remark      = MKTS._get_remark()
+  remark      = MD_READER._get_remark()
   #.........................................................................................................
   return $ ( event, send ) =>
     #.......................................................................................................
@@ -862,7 +863,7 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
 @MKTX.REGION.$correct_p_tags_before_regions = ( S ) =>
   last_was_p              = no
   last_was_begin_document = no
-  remark                  = MKTS._get_remark()
+  remark                  = MD_READER._get_remark()
   #.........................................................................................................
   return $ ( event, send ) =>
     # debug '©MwBAv', event
@@ -994,11 +995,11 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
     .pipe @MKTX.INLINE.$em_and_strong                     S
     .pipe @MKTX.BLOCK.$paragraph                          S
     .pipe @MKTX.CLEANUP.$remove_empty_texts               S
-    .pipe MKTSCRIPT.$show_mktsmd_events                   S
+    .pipe MKTSCRIPT_WRITER.$show_mktsmd_events                   S
     # .pipe mktscript_in
     .pipe @MKTX.$show_unhandled_tags                      S
     .pipe @$filter_tex                                    S
-    .pipe MKTS.$show_illegal_chrs                         S
+    .pipe MD_READER.$show_illegal_chrs                    S
     .pipe writestream
   #.......................................................................................................
   settings =
@@ -1048,7 +1049,7 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
     #.......................................................................................................
     ### TAINT should read MD source stream ###
     md_source               = njs_fs.readFileSync source_locator, encoding: 'utf-8'
-    md_readstream           = MKTS.create_md_read_tee md_source
+    md_readstream           = MD_READER.create_md_read_tee md_source
     tex_writestream         = @create_tex_write_tee S
     md_input                =  md_readstream.tee[ 'input'  ]
     md_output               =  md_readstream.tee[ 'output' ]
@@ -1099,7 +1100,7 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
     options:              @options
     layout_info:          layout_info
   #.........................................................................................................
-  md_readstream       = MKTS.create_md_read_tee md_source
+  md_readstream       = MD_READER.create_md_read_tee md_source
   tex_writestream     = @create_tex_write_tee S
   md_input            =  md_readstream.tee[ 'input'  ]
   md_output           =  md_readstream.tee[ 'output' ]

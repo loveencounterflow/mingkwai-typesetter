@@ -19,6 +19,9 @@ The \<<<\LaTeX{}>>> Logo: `\<<<\LaTeX{}>>>`
 
 The \\<<<\LaTeX{}>>> Logo: `\\<<<\LaTeX{}>>>`
 
+
+<<(:>>42<<)>>
+
 <<!end>>
 
 
