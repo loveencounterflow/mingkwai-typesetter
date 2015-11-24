@@ -834,9 +834,7 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
 @MKTX.$show_unhandled_tags = ( S ) =>
   return $ ( event, send ) =>
     ### TAINT selection could be simpler, less repetitive ###
-    if event[ 0 ] in [ 'tex', 'text', ]
-      send event
-    else if select event, '.', 'text'
+    if ( event[ 0 ] in [ 'tex', 'text', ] ) or select event, '.', 'text'
       send event
     else unless is_stamped event
       [ type, name, text, meta, ] = event
@@ -851,19 +849,27 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
       if type in [ '.', '!', ] or type in MKTS.FENCES.left
         first             = type
         last              = name
-        pre               = '█'
-        post              = ''
       else
         first             = name
         last              = type
-        pre               = ''
-        post              = '█'
       event_txt         = first + last + ' ' + text
-      event_tex         = @MKTX.TEX.fix_typography_for_tex event_txt, S.options
-      ### TAINT use mkts command ###
-      send [ 'tex', """{\\mktsStyleBold\\color{violet}{%
-        \\mktsStyleSymbol#{pre}}#{event_tex}{\\mktsStyleSymbol#{post}}}""" ]
+      send [ '.', 'warning', event_txt, ( copy meta ), ]
+      send hide stamp event
+    else
       send event
+
+#-----------------------------------------------------------------------------------------------------------
+@MKTX.$show_warnings = ( S ) =>
+  pre               = '█'
+  post              = '█'
+  return $ ( event, send ) =>
+    ### TAINT this makes clear why we should not use '.' as type here; `warning` is a meta-event, not
+    primarily a formatting instruction ###
+    if select event, '.', 'warning'
+      [ type, name, text, meta, ] = event
+      message                     = @MKTX.TEX.fix_typography_for_tex text, S.options
+      ### TAINT use location data ###
+      send [ 'tex', "\\begin{mktsEnvWarning}#{message}\\end{mktsEnvWarning}" ]
     else
       send event
 
@@ -921,6 +927,7 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
     .pipe @MKTX.CLEANUP.$remove_empty_texts               S
     .pipe MKTSCRIPT_WRITER.$show_mktsmd_events            S
     # .pipe mktscript_in
+    .pipe @MKTX.$show_warnings                            S
     .pipe @MKTX.$show_unhandled_tags                      S
     .pipe @$filter_tex                                    S
     .pipe MD_READER.$show_illegal_chrs                    S

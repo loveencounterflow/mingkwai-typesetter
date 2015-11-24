@@ -595,6 +595,7 @@ tracker_pattern = /// ^
   ### 'Stamping' an event means to mark it as 'processed'; hence, downstream transformers can choose to
   ignore events that have already been marked upstream, or, inversely choose to look out for events
   that have not yet found a representation in the target document. ###
+  # event[ 3 ] = @copy event[ 3 ], { stamped: yes, }
   event[ 3 ][ 'stamped' ] = yes
   return event
 
@@ -607,6 +608,7 @@ tracker_pattern = /// ^
   ### 'Stamping' an event means to mark it as 'processed'; hence, downstream transformers can choose to
   ignore events that have already been marked upstream, or, inversely choose to look out for events
   that have not yet found a representation in the target document. ###
+  # event[ 3 ] = @copy event[ 3 ], { hidden: yes, }
   event[ 3 ][ 'hidden' ] = yes
   return event
 
@@ -638,6 +640,8 @@ tracker_pattern = /// ^
 
 #-----------------------------------------------------------------------------------------------------------
 @$show_illegal_chrs = ( S ) ->
+  ### TAINT if these characters are illegal, we don't have to escape them when tunneling macros ###
+  ### TAINT must send MKTS events, not TeX to keep method general ###
   return $ ( old_text, send ) ->
     new_text = old_text.replace /[\x00-\x08\x0b\x0c\x0e-\x1f\x7f\ufffd-\uffff]/g, ( $0 ) ->
       cid_hex = ( $0.codePointAt 0 ).toString 16

@@ -72,20 +72,37 @@ MKTS                      = require './main'
         else
           return send.error new Error "unknown language #{rpr language} in action on line ##{line_nr}"
       #.....................................................................................................
-      value = VM.runInContext js_source, sandbox, { filename: local_filename, }
-      urge '4742', js_source
-      urge '4742', rpr value
-      debug '©YMF7F', sandbox
-      debug '©YMF7F', S.local.definitions
+      try
+        value   = VM.runInContext js_source, sandbox, { filename: local_filename, }
+        errors  = no
       #.....................................................................................................
-      switch mode
-        when 'silent'
-          null
-        when 'vocal'
-          ### TAINT must resend to allow for TeX-escaping (or MD-escaping?) ###
-          ### TAINT send `tex` or `text`??? ###
-          value_rpr = if ( CND.isa_text value ) then value else rpr value
-          send [ '.', 'text', value_rpr, ( copy meta ), ]
+      catch error
+        errors  = yes
+        warn error[ 'message' ]
+        ### TAINT should resend because error message might need escaping ###
+        ### TAINT should preserve stack trace of error ###
+        debug '@294308', event
+        ### TAINT use method to assemble warning event ###
+        message = "line #{line_nr}: #{error[ 'message' ]}"
+        send [ '.', 'warning', message, ( copy meta, hidden: false, stamped: false, ), ]
+      #.....................................................................................................
+      unless errors
+        urge '4742', js_source
+        urge '4742', rpr value
+        debug '©YMF7F', sandbox
+        debug '©YMF7F', S.local.definitions
+        #.....................................................................................................
+        switch mode
+          when 'silent'
+            null
+          when 'vocal'
+            ### TAINT must resend to allow for TeX-escaping (or MD-escaping?) ###
+            ### TAINT send `tex` or `text`??? ###
+            value_rpr = if ( CND.isa_text value ) then value else rpr value
+            send [ '.', 'text', value_rpr, ( copy meta ), ]
+      #.....................................................................................................
+      else
+        send
     #.......................................................................................................
     else
       send event

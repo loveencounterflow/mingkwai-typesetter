@@ -161,6 +161,19 @@
   \fontsize{0.8\myFontsize}{0.8\myFontsize}%%
   \mktsFontfileSourcecodeproregular}
 
+\newenvironment{mktsEnvWarning}%
+  {\mktsStyleBold%
+  \color{violet}%
+  {\mktsStyleSymbol{}█}}%
+  {{\mktsStyleSymbol{}█}}
+
+% \newenvironment{mktsEnvWarning}[2]%
+%   {\newcommand{\mktsEnvWarningStopChr}{#2}
+%   \mktsStyleBold%
+%   \color{violet}%
+%   \mktsStyleSymbol{}#1}%
+%   {\mktsStyleSymbol{}\mktsEnvWarningStopChr}
+
 % ----------------------------------------------------------------------------------------------------------
 % https://groups.google.com/d/msg/comp.text.tex/J2qcZxgcR5M/3HyPquEDkcgJ
 % obeyalllines is like obeylines, excepts it also keeps blank lines
