@@ -35,8 +35,9 @@ D                         = require 'pipedreams'
 $                         = D.remit.bind D
 $async                    = D.remit_async.bind D
 #...........................................................................................................
-MKTS                      = require './MKTS'
-MKTS_XXX                  = require './mkts-typesetter-interim'
+MKTS                      = require './main'
+TEX                       = require './tex-adapter'
+MKTSCRIPT                 = require './mktscript-adapter'
 
 
 #===========================================================================================================
@@ -680,7 +681,7 @@ nice_text_rpr = ( text ) ->
   done()
 
 #-----------------------------------------------------------------------------------------------------------
-@[ "MKTS.mkts_events_from_md (1)" ] = ( T, done ) ->
+@[ "MKTSCRIPT.mkts_events_from_md (1)" ] = ( T, done ) ->
   # settings  = bare: yes
   probe     = """123 `abc<<(:>>vocal action<<)>>def` 456"""
   warn "should merge texts"
@@ -697,13 +698,13 @@ nice_text_rpr = ( text ) ->
     [")","document",null,{}]
     ]
   step ( resume ) =>
-    result = yield MKTS.mkts_events_from_md probe, resume
+    result = yield MKTSCRIPT.mkts_events_from_md probe, resume
     show_events probe, result
     T.eq matcher, result
     done()
 
 #-----------------------------------------------------------------------------------------------------------
-@[ "MKTS.mkts_events_from_md (2)" ] = ( T, done ) ->
+@[ "MKTSCRIPT.mkts_events_from_md (2)" ] = ( T, done ) ->
   settings  = bare: yes
   probe     = """abc<<(:js>>f( 42 );<<:js)>>def"""
   warn "should merge texts"
@@ -714,13 +715,13 @@ nice_text_rpr = ( text ) ->
     [".","p",null,{"line_nr":1,"col_nr":2,"markup":""}]
     ]
   step ( resume ) =>
-    result = yield MKTS.mkts_events_from_md probe, settings, resume
+    result = yield MKTSCRIPT.mkts_events_from_md probe, settings, resume
     show_events probe, result
     T.eq matcher, result
     done()
 
 #-----------------------------------------------------------------------------------------------------------
-@[ "MKTS.mkts_events_from_md (3)" ] = ( T, done ) ->
+@[ "MKTSCRIPT.mkts_events_from_md (3)" ] = ( T, done ) ->
   settings  = bare: yes
   probe     = """abc\\<<(:js>>f( 42 );<<:js)>>def"""
   warn "should merge texts"
@@ -729,13 +730,13 @@ nice_text_rpr = ( text ) ->
     [".","p",null,{"line_nr":1,"col_nr":2,"markup":""}]
     ]
   step ( resume ) =>
-    result = yield MKTS.mkts_events_from_md probe, settings, resume
+    result = yield MKTSCRIPT.mkts_events_from_md probe, settings, resume
     show_events probe, result
     T.eq matcher, result
     done()
 
 #-----------------------------------------------------------------------------------------------------------
-@[ "MKTS.mkts_events_from_md (4)" ] = ( T, done ) ->
+@[ "MKTSCRIPT.mkts_events_from_md (4)" ] = ( T, done ) ->
   settings  = bare: no
   probe     = """<<!end>>"""
   warn "match remark?"
@@ -745,13 +746,13 @@ nice_text_rpr = ( text ) ->
     [")","document",null,{}]
     ]
   step ( resume ) =>
-    result = yield MKTS.mkts_events_from_md probe, settings, resume
+    result = yield MKTSCRIPT.mkts_events_from_md probe, settings, resume
     show_events probe, result
     T.eq matcher, result
     done()
 
 #-----------------------------------------------------------------------------------------------------------
-@[ "MKTS.mkts_events_from_md (5)" ] = ( T, done ) ->
+@[ "MKTSCRIPT.mkts_events_from_md (5)" ] = ( T, done ) ->
   settings  = bare: yes
   probe     = """<<!multi-column>>"""
   warn "should not contain `.p`"
@@ -760,13 +761,13 @@ nice_text_rpr = ( text ) ->
     [".","p",null,{"line_nr":1,"col_nr":2,"markup":""}]
     ]
   step ( resume ) =>
-    result = yield MKTS.mkts_events_from_md probe, settings, resume
+    result = yield MKTSCRIPT.mkts_events_from_md probe, settings, resume
     show_events probe, result
     T.eq matcher, result
     done()
 
 #-----------------------------------------------------------------------------------------------------------
-@[ "MKTS.mkts_events_from_md (6)" ] = ( T, done ) ->
+@[ "MKTSCRIPT.mkts_events_from_md (6)" ] = ( T, done ) ->
   settings  = bare: yes
   probe     = """
     aaa
@@ -785,13 +786,13 @@ nice_text_rpr = ( text ) ->
     [".","p",null,{"line_nr":1,"col_nr":6,"markup":""}]
     ]
   step ( resume ) =>
-    result = yield MKTS.mkts_events_from_md probe, settings, resume
+    result = yield MKTSCRIPT.mkts_events_from_md probe, settings, resume
     show_events probe, result
     T.eq matcher, result
     done()
 
 #-----------------------------------------------------------------------------------------------------------
-@[ "MKTS.mkts_events_from_md (7)" ] = ( T, done ) ->
+@[ "MKTSCRIPT.mkts_events_from_md (7)" ] = ( T, done ) ->
   settings  = bare: yes
   probe     = """
     她說：「你好。」
@@ -802,13 +803,13 @@ nice_text_rpr = ( text ) ->
     [".","p",null,{"line_nr":1,"col_nr":2,"markup":""}]
     ]
   step ( resume ) =>
-    result = yield MKTS.mkts_events_from_md probe, settings, resume
+    result = yield MKTSCRIPT.mkts_events_from_md probe, settings, resume
     show_events probe, result
     T.eq matcher, result
     done()
 
 #-----------------------------------------------------------------------------------------------------------
-@[ "MKTS.mkts_events_from_md (8)" ] = ( T, done ) ->
+@[ "MKTSCRIPT.mkts_events_from_md (8)" ] = ( T, done ) ->
   settings  = bare: yes
   probe     = """
     A paragraph with *emphasis*.
@@ -831,13 +832,13 @@ nice_text_rpr = ( text ) ->
     [".","p",null,{"line_nr":3,"col_nr":4,"markup":""}]
     ]
   step ( resume ) =>
-    result = yield MKTS.mkts_events_from_md probe, settings, resume
+    result = yield MKTSCRIPT.mkts_events_from_md probe, settings, resume
     show_events probe, result
     T.eq matcher, result
     done()
 
 #-----------------------------------------------------------------------------------------------------------
-@[ "MKTS.mkts_events_from_md: footnotes" ] = ( T, done ) ->
+@[ "MKTSCRIPT.mkts_events_from_md: footnotes" ] = ( T, done ) ->
   settings  = bare: yes
   probe     = """
     Here is an inline footnote^[whose text appears at the point of insertion],
@@ -861,13 +862,13 @@ nice_text_rpr = ( text ) ->
     [".","p",null,{"line_nr":1,"col_nr":3,"markup":""}]
     ]
   step ( resume ) =>
-    result = yield MKTS.mkts_events_from_md probe, settings, resume
+    result = yield MKTSCRIPT.mkts_events_from_md probe, settings, resume
     show_events probe, result
     T.eq matcher, result
     done()
 
 #-----------------------------------------------------------------------------------------------------------
-@[ "MKTS_XXX.tex_from_md (1)" ] = ( T, done ) ->
+@[ "TEX.tex_from_md (1)" ] = ( T, done ) ->
   settings  = bare: yes
   probe     = """
     A paragraph with *emphasis*.
@@ -884,13 +885,13 @@ nice_text_rpr = ( text ) ->
 
     """
   step ( resume ) =>
-    result = yield MKTS_XXX.tex_from_md probe, settings, resume
+    result = yield TEX.tex_from_md probe, settings, resume
     echo result
     T.eq matcher.trim(), result.trim()
     done()
 
 #-----------------------------------------------------------------------------------------------------------
-@[ "MKTS_XXX.mktscript_from_md (1)" ] = ( T, done ) ->
+@[ "MKTSCRIPT.mktscript_from_md (1)" ] = ( T, done ) ->
   settings  = bare: yes
   probe     = """
     A paragraph with *emphasis*.
@@ -928,13 +929,13 @@ nice_text_rpr = ( text ) ->
     # EOF
     """
   step ( resume ) =>
-    result = yield MKTS.mktscript_from_md probe, settings, resume
+    result = yield MKTSCRIPT.mktscript_from_md probe, settings, resume
     echo result
     T.eq matcher.trim(), result.trim()
     done()
 
 #-----------------------------------------------------------------------------------------------------------
-@[ "MKTS_XXX.mktscript_from_md (2)" ] = ( T, done ) ->
+@[ "MKTSCRIPT.mktscript_from_md (2)" ] = ( T, done ) ->
   settings  = bare: yes
   probe     = """
     <<(multi-column>>
@@ -957,7 +958,7 @@ nice_text_rpr = ( text ) ->
     # EOF
     """
   step ( resume ) =>
-    result = yield MKTS.mktscript_from_md probe, settings, resume
+    result = yield MKTSCRIPT.mktscript_from_md probe, settings, resume
     echo result
     T.eq matcher.trim(), result.trim()
     # T.fail "not yet ready"

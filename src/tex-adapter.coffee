@@ -8,7 +8,7 @@ njs_fs                    = require 'fs'
 #...........................................................................................................
 CND                       = require 'cnd'
 rpr                       = CND.rpr
-badge                     = 'JIZURA/MKTS-interim'
+badge                     = 'mkts/tex-adapter'
 log                       = CND.get_logger 'plain',     badge
 info                      = CND.get_logger 'info',      badge
 whisper                   = CND.get_logger 'whisper',   badge
@@ -29,21 +29,22 @@ $async                    = D.remit_async.bind D
 ASYNC                     = require 'async'
 #...........................................................................................................
 ƒ                         = CND.format_number.bind CND
-HELPERS                   = require './HELPERS'
-# options                   = require './options'
-TEXLIVEPACKAGEINFO        = require './TEXLIVEPACKAGEINFO'
+HELPERS                   = require './helpers'
+TEXLIVEPACKAGEINFO        = require './texlivepackageinfo'
 options_route             = '../options.coffee'
-{ CACHE, OPTIONS, }       = require './OPTIONS'
+{ CACHE, OPTIONS, }       = require './options'
 SEMVER                    = require 'semver'
 #...........................................................................................................
-XNCHR                     = require './XNCHR'
-MKTS                      = require './MKTS'
+XNCHR                     = require './xnchr'
+MKTS                      = require './main'
+MKTSCRIPT                 = require './mktscript-adapter'
 hide                      = MKTS.hide.bind        MKTS
 copy                      = MKTS.copy.bind        MKTS
 stamp                     = MKTS.stamp.bind       MKTS
 select                    = MKTS.select.bind      MKTS
 is_hidden                 = MKTS.is_hidden.bind   MKTS
 is_stamped                = MKTS.is_stamped.bind  MKTS
+
 
 #===========================================================================================================
 #
@@ -972,7 +973,7 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
     .pipe @MKTX.INLINE.$em_and_strong                     S
     .pipe @MKTX.BLOCK.$paragraph                          S
     .pipe @MKTX.CLEANUP.$remove_empty_texts               S
-    .pipe MKTS.$show_mktsmd_events                        S
+    .pipe MKTSCRIPT.$show_mktsmd_events                   S
     # .pipe mktscript_in
     .pipe @MKTX.$show_unhandled_tags                      S
     .pipe @$filter_tex                                    S

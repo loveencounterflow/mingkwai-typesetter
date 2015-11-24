@@ -29,7 +29,7 @@ $                         = D.remit.bind D
 # HELPERS                   = require './HELPERS'
 #...........................................................................................................
 # misfit                    = Symbol 'misfit'
-MKTS                      = require './MKTS'
+MKTS                      = require './main'
 # hide                      = MKTS.hide.bind        MKTS
 # copy                      = MKTS.copy.bind        MKTS
 # stamp                     = MKTS.stamp.bind       MKTS
@@ -383,17 +383,14 @@ after it, thereby inhibiting any processing of those portions. ###
 # EXPANDERS
 #-----------------------------------------------------------------------------------------------------------
 @$expand = ( S ) ->
-  readstream    = D.create_throughstream()
-  writestream   = D.create_throughstream()
-  #.......................................................................................................
-  readstream
-    .pipe @$expand_command_and_value_macros   S
-    .pipe @$expand_region_macros              S
-    .pipe @$expand_action_macros              S
-    .pipe @$expand_raw_macros                 S
-    .pipe @$expand_html_comments              S
-    .pipe @$expand_escape_chrs                S
-    .pipe writestream
+  pipeline = [
+    @$expand_command_and_value_macros   S
+    @$expand_region_macros              S
+    @$expand_action_macros              S
+    @$expand_raw_macros                 S
+    @$expand_html_comments              S
+    @$expand_escape_chrs                S
+    ]
   #.......................................................................................................
   settings =
     # inputs:
@@ -402,7 +399,7 @@ after it, thereby inhibiting any processing of those portions. ###
     #   mktscript:        mktscript_out
     S:                S
   #.......................................................................................................
-  return D.TEE.from_readwritestreams readstream, writestream, settings
+  return D.TEE.from_pipeline pipeline, settings
 
 #-----------------------------------------------------------------------------------------------------------
 @$expand_html_comments = ( S ) =>

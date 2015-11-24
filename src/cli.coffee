@@ -34,7 +34,7 @@ echo                      = CND.echo.bind CND
 # { CACHE, OPTIONS, }       = require './OPTIONS'
 # SEMVER                    = require 'semver'
 # #...........................................................................................................
-# MKTS                      = require './MKTS'
+# MKTS                      = require './main'
 
 
 
@@ -47,7 +47,7 @@ app
   .command 'mkts <filename>'
   .action ( filename ) ->
     help ( CND.grey "#{app_name}" ), ( CND.gold 'mkts' ), ( CND.lime filename )
-    MKTS = require './mkts-typesetter-interim'
+    MKTS = require './tex-adapter'
     CND.dir MKTS
     MKTS.pdf_from_md filename
 
