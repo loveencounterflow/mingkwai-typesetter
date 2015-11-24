@@ -333,6 +333,7 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
 #
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.COMMAND.$do = ( S ) =>
+  ### TAINT compilation is independent of this specific adapter ###
   CS                        = require 'coffee-script'
   VM                        = require 'vm'
   local_filename            = 'XXXXXXXXXXXXX'
@@ -348,16 +349,36 @@ is_stamped                = MKTS.is_stamped.bind  MKTS
   VM.createContext sandbox
   #.........................................................................................................
   return $ ( event, send ) =>
+    # warn "re-defining command #{rpr identifier}" if S.definitions[ identifier ]?
+    # S.definitions[ identifier ] = []
     #.......................................................................................................
-    if select event, '!', 'do'
-      [ type, action, cs_source, meta, ] = event
-      # warn "re-defining command #{rpr identifier}" if S.definitions[ identifier ]?
-      # S.definitions[ identifier ] = []
-      js_source = CS.compile cs_source, { bare: true, filename: local_filename, }
+    if select event, '.', 'action'
+      [ type, action, source, meta, ] = event
+      { mode, language, line_nr, }    = meta
+      #.....................................................................................................
+      switch language
+        when 'js'
+          js_source = source
+        when 'coffee'
+          js_source = CS.compile source, { bare: true, filename: local_filename, }
+        else
+          return send.error new Error "unknown language #{rpr language} in action on line ##{line_nr}"
+      #.....................................................................................................
+      value = VM.runInContext js_source, sandbox, { filename: local_filename, }
       urge '4742', js_source
-      VM.runInContext js_source, sandbox, { filename: local_filename, }
-      # debug '©YMF7F', sandbox
-      # debug '©YMF7F', S.local.definitions
+      urge '4742', rpr value
+      debug '©YMF7F', sandbox
+      debug '©YMF7F', S.local.definitions
+      #.....................................................................................................
+      switch mode
+        when 'silent'
+          null
+        when 'vocal'
+          ### TAINT must resend to allow for TeX-escaping (or MD-escaping?) ###
+          ### TAINT send `tex` or `text`??? ###
+          value_rpr = if ( CND.isa_text value ) then value else rpr value
+          send [ '.', 'text', value_rpr, ( copy meta ), ]
+      #.....................................................................................................
       send stamp hide event
     #.......................................................................................................
     else
