@@ -47,9 +47,8 @@ app
   .command 'mkts <filename>'
   .action ( filename ) ->
     help ( CND.grey "#{app_name}" ), ( CND.gold 'mkts' ), ( CND.lime filename )
-    MKTS = require './tex-adapter'
-    CND.dir MKTS
-    MKTS.pdf_from_md filename
+    MKTS = require './main'
+    MKTS.TEX_WRITER.pdf_from_md filename
 
 app.parse process.argv
 # debug '©nES6R', process.argv

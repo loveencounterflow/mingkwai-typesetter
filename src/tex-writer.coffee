@@ -995,7 +995,7 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
     .pipe @MKTX.INLINE.$em_and_strong                     S
     .pipe @MKTX.BLOCK.$paragraph                          S
     .pipe @MKTX.CLEANUP.$remove_empty_texts               S
-    .pipe MKTSCRIPT_WRITER.$show_mktsmd_events                   S
+    .pipe MKTSCRIPT_WRITER.$show_mktsmd_events            S
     # .pipe mktscript_in
     .pipe @MKTX.$show_unhandled_tags                      S
     .pipe @$filter_tex                                    S
