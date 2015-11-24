@@ -22,7 +22,8 @@ echo                      = CND.echo.bind CND
 # $                         = D.remit.bind D
 #...........................................................................................................
 @HELPERS                  = require './helpers'
-@MACROS                   = require './macros'
+@MACRO_ESCAPER            = require './macro-escaper'
+@MACRO_INTERPRETER        = require './macro-interpreter'
 @MD_READER                = require './md-reader'
 @TEX_WRITER               = require './tex-writer'
 @MKTSCRIPT_WRITER         = require './mktscript-writer'

@@ -330,82 +330,6 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
   return R.join ''
 
 
-#===========================================================================================================
-#
-#-----------------------------------------------------------------------------------------------------------
-@MKTX.COMMAND.$do = ( S ) =>
-  ### TAINT compilation is independent of this specific adapter ###
-  CS                        = require 'coffee-script'
-  VM                        = require 'vm'
-  local_filename            = 'XXXXXXXXXXXXX'
-  S.local                   = { definitions: new Map(), }
-  sandbox =
-    urge:         CND.get_logger 'urge', local_filename
-    help:         CND.get_logger 'help', local_filename
-    __filename:   local_filename
-    define:       ( pod ) ->
-      for key, value of pod
-        S.local.definitions.set key, value
-  # sandbox[ '__sandbox' ] = sandbox
-  VM.createContext sandbox
-  #.........................................................................................................
-  return $ ( event, send ) =>
-    # warn "re-defining command #{rpr identifier}" if S.definitions[ identifier ]?
-    # S.definitions[ identifier ] = []
-    #.......................................................................................................
-    if select event, '.', 'action'
-      [ type, action, source, meta, ] = event
-      { mode, language, line_nr, }    = meta
-      #.....................................................................................................
-      switch language
-        when 'js'
-          js_source = source
-        when 'coffee'
-          js_source = CS.compile source, { bare: true, filename: local_filename, }
-        else
-          return send.error new Error "unknown language #{rpr language} in action on line ##{line_nr}"
-      #.....................................................................................................
-      value = VM.runInContext js_source, sandbox, { filename: local_filename, }
-      urge '4742', js_source
-      urge '4742', rpr value
-      debug '©YMF7F', sandbox
-      debug '©YMF7F', S.local.definitions
-      #.....................................................................................................
-      switch mode
-        when 'silent'
-          null
-        when 'vocal'
-          ### TAINT must resend to allow for TeX-escaping (or MD-escaping?) ###
-          ### TAINT send `tex` or `text`??? ###
-          value_rpr = if ( CND.isa_text value ) then value else rpr value
-          send [ '.', 'text', value_rpr, ( copy meta ), ]
-      #.....................................................................................................
-      send stamp hide event
-    #.......................................................................................................
-    else
-      send event
-
-#-----------------------------------------------------------------------------------------------------------
-@MKTX.COMMAND.$expansion = ( S ) =>
-  remark = MD_READER._get_remark()
-  #.........................................................................................................
-  return $ ( event, send ) =>
-    if select event, '!'
-      [ type, identifier, _, meta, ] = event
-      if ( definition = S.local.definitions.get identifier )?
-        # send stamp hide event
-        send stamp hide [ '(', '!', identifier, ( copy meta ), ]
-        # send copy sub_event for sub_event in definition
-        # debug '@16', rpr definition
-        send remark 'resend', "expanding `#{identifier}`", ( copy meta )
-        S.resend definition # [ '.', 'text', definition, ( copy meta ), ]
-        send stamp hide [ ')', '!', identifier, ( copy meta ), ]
-      else
-        send event
-    #.......................................................................................................
-    else
-      send event
-
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.COMMAND.$new_page = ( S ) =>
   #.........................................................................................................
@@ -424,7 +348,7 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
     send remark 'drop', "`.comment`: #{rpr text}", copy meta
 
 #-----------------------------------------------------------------------------------------------------------
-@MKTX.DOCUMENT.$begin= ( S ) =>
+@MKTX.DOCUMENT.$begin = ( S ) =>
   #.........................................................................................................
   return $ ( event, send ) =>
     #.......................................................................................................
@@ -977,8 +901,8 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
     .pipe @MKTX.MIXED.$raw                                S
     .pipe @MKTX.MIXED.$footnote                           S
     .pipe @MKTX.MIXED.$remove_footnote_extra_paragraphs   S
-    .pipe @MKTX.COMMAND.$do                               S
-    .pipe @MKTX.COMMAND.$expansion                        S
+    # .pipe @MKTX.COMMAND.$do                               S
+    # .pipe @MKTX.COMMAND.$expansion                        S
     .pipe @MKTX.COMMAND.$new_page                         S
     .pipe @MKTX.COMMAND.$comment                          S
     # .pipe @MKTX.REGION.$correct_p_tags_before_regions     S

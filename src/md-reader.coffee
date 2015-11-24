@@ -27,9 +27,9 @@ Markdown_parser           = require 'markdown-it'
 new_md_inline_plugin      = require 'markdown-it-regexp'
 #...........................................................................................................
 HELPERS                   = require './helpers'
-@MACROS                   = require './macros'
 #...........................................................................................................
 misfit                    = Symbol 'misfit'
+MKTS                      = require './main'
 
 
 #-----------------------------------------------------------------------------------------------------------
@@ -348,7 +348,7 @@ tracker_pattern = /// ^
       if is_first
         is_first = no
         send [ '(', 'document', null, {}, ]
-        send [ '.', 'action', 'empty-document', {}, ]
+        send [ '.', 'command', 'empty-document', {}, ]
       send [ ')', 'document', null, {}, ]
       setImmediate =>
         whisper "ending input stream"
@@ -658,7 +658,7 @@ tracker_pattern = /// ^
   return ( md_source ) =>
     ### TAINT must handle data in environment ###
     if CND.isa_text md_source
-      md_source   = @MACROS.escape S, md_source
+      md_source   = MKTS.MACRO_ESCAPER.escape S, md_source
       environment = {}
       tokens      = md_parser.parse md_source, environment
       # tokens      = md_parser.parse md_source, S.environment
@@ -711,10 +711,11 @@ tracker_pattern = /// ^
     .pipe @_PRE.$flatten_tokens                       S
     .pipe @_PRE.$reinject_html_blocks                 S
     .pipe @_PRE.$rewrite_markdownit_tokens            S
-    .pipe @MACROS.$expand                             S
+    .pipe MKTS.MACRO_ESCAPER.$expand                  S
     .pipe @_PRE.$process_end_command                  S
     .pipe @_PRE.$close_dangling_open_tags             S
     .pipe @_PRE.$consolidate_footnotes                S
+    .pipe MKTS.MACRO_INTERPRETER.$process_actions     S
     .pipe writestream
   #.........................................................................................................
   # readstream.on     'end', -> debug '©tdfA4', "readstream ended"
@@ -724,8 +725,8 @@ tracker_pattern = /// ^
   #.........................................................................................................
   input.on 'resume', =>
     md_parser   = @_new_markdown_parser()
-    @MACROS.initialize_state S
-    md_source   = @MACROS.escape S, md_source
+    MKTS.MACRO_ESCAPER.initialize_state S
+    md_source   = MKTS.MACRO_ESCAPER.escape S, md_source
     # debug '©ΘΩΓΛΛ', md_source
     # process.exit 1
     tokens      = md_parser.parse md_source, S.environment

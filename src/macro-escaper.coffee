@@ -42,7 +42,7 @@ MKTS                      = require './main'
 # HELPERS
 #-----------------------------------------------------------------------------------------------------------
 @initialize_state = ( state ) =>
-  state[ 'MACROS' ] =
+  state[ 'MACRO_ESCAPER' ] =
     registry:   []
   return state
 
@@ -54,7 +54,7 @@ MKTS                      = require './main'
 
 #-----------------------------------------------------------------------------------------------------------
 @_register_content = ( S, kind, markup, raw, parsed = null ) =>
-  registry  = S[ 'MACROS' ][ 'registry' ]
+  registry  = S[ 'MACRO_ESCAPER' ][ 'registry' ]
   idx     = registry.length
   key     = "#{kind}#{idx}"
   registry.push { key, markup, raw, parsed, }
@@ -62,7 +62,7 @@ MKTS                      = require './main'
 
 #-----------------------------------------------------------------------------------------------------------
 @_retrieve_entry = ( S, id ) =>
-  throw new Error "unknown ID #{rpr id}" unless ( R = S[ 'MACROS' ][ 'registry' ][ id ] )?
+  throw new Error "unknown ID #{rpr id}" unless ( R = S[ 'MACRO_ESCAPER' ][ 'registry' ][ id ] )?
   return R
 
 #===========================================================================================================
