@@ -594,9 +594,9 @@ tracker_pattern = /// ^
 @stamp = ( event ) ->
   ### 'Stamping' an event means to mark it as 'processed'; hence, downstream transformers can choose to
   ignore events that have already been marked upstream, or, inversely choose to look out for events
-  that have not yet found a representation in the target document. ###
-  # event[ 3 ] = @copy event[ 3 ], { stamped: yes, }
-  event[ 3 ][ 'stamped' ] = yes
+  that have not yet found a representation in the target document. **NB** that stamping and hiding an
+  event will place a copy of the `meta` event element into the event. ###
+  event[ 3 ] = @copy event[ 3 ], { stamped: yes, }
   return event
 
 #-----------------------------------------------------------------------------------------------------------
@@ -607,9 +607,9 @@ tracker_pattern = /// ^
 @hide = ( event ) ->
   ### 'Stamping' an event means to mark it as 'processed'; hence, downstream transformers can choose to
   ignore events that have already been marked upstream, or, inversely choose to look out for events
-  that have not yet found a representation in the target document. ###
-  # event[ 3 ] = @copy event[ 3 ], { hidden: yes, }
-  event[ 3 ][ 'hidden' ] = yes
+  that have not yet found a representation in the target document. **NB** that stamping and hiding an
+  event will place a copy of the `meta` event element into the event. ###
+  event[ 3 ] = @copy event[ 3 ], { hidden: yes, }
   return event
 
 #-----------------------------------------------------------------------------------------------------------

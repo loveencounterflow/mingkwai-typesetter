@@ -1,6 +1,23 @@
 
 
 
+<<(:>>( name for name of mkts )<<)>>
+
+<<(:>>`(function(){`
+( name for name of mkts )
+`}).apply(this)`<<)>>
+
+<<(:>>
+R = do =>
+  ( name for name of mkts )
+R<<)>>
+
+<<(:>>
+do =>
+  ( name for name of mkts )
+<<)>>
+
+<<!end>>
 
 
 The &#x3c;<<\LaTeX{}>>> Logo: `&#x3c;<<\LaTeX{}>>>`
@@ -20,13 +37,32 @@ The \<<<\LaTeX{}>>> Logo: `\<<<\LaTeX{}>>>`
 The \\<<<\LaTeX{}>>> Logo: `\\<<<\LaTeX{}>>>`
 
 
+<<(:>>64<<)>>
+
+<<(:>>q = ( name for name of @ )<<)>>
+
+
+<<(:>>mkts.reserved_names<<)>>
+
+<<(.>>
+x = 32
+y = 64
+@z = 128
+<<)>>
+
+x: <<(:>>rpr x<<)>>,
+y: <<(:>>rpr y<<)>>,
+z: <<(:>>rpr z<<)>>,
+name: <<(:>>rpr name<<)>>.
+
 <!-- <<(:>>f 42<<)>> -->
 
 <<(:js>>f( 42 )<<)>>
 
-<<(:>>f 42<<)>>
+<<(:>>"xxx" 123<<)>>
 
-<<!end>>
+<<(:json>>"xxx" 123<<)>>
+
 
 
 

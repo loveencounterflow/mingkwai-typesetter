@@ -44,65 +44,75 @@ MKTS                      = require './main'
   CS                        = require 'coffee-script'
   VM                        = require 'vm'
   local_filename            = 'XXXXXXXXXXXXX'
-  S.local                   = { definitions: new Map(), }
-  sandbox =
-    urge:         CND.get_logger 'urge', local_filename
-    help:         CND.get_logger 'help', local_filename
-    __filename:   local_filename
-    define:       ( pod ) ->
-      for key, value of pod
-        S.local.definitions.set key, value
-  # sandbox[ '__sandbox' ] = sandbox
-  VM.createContext sandbox
+  do =>
+    sandbox                   =
+      'rpr':            CND.rpr
+      urge:             CND.get_logger 'urge', local_filename
+      help:             CND.get_logger 'help', local_filename
+      mkts:
+        reserved_names:   []
+        __filename:       local_filename
+    for name of sandbox
+      sandbox.mkts.reserved_names.push name
+    VM.createContext sandbox
+    S.sandbox = sandbox
   #.........................................................................................................
   return $ ( event, send ) =>
     # warn "re-defining command #{rpr identifier}" if S.definitions[ identifier ]?
     # S.definitions[ identifier ] = []
     #.......................................................................................................
     if MKTS.MD_READER.select event, '.', 'action'
-      send stamp hide event
       [ type, action, source, meta, ] = event
+      send stamp hide event
       { mode, language, line_nr, }    = meta
+      error_message                   = null
       #.....................................................................................................
       switch language
         when 'js'
           js_source = source
         when 'coffee'
-          js_source = CS.compile source, { bare: true, filename: local_filename, }
+          try
+            js_source = CS.compile source, { bare: true, filename: local_filename, }
+          catch error
+            error_message = error[ 'message' ]
         else
-          return send.error new Error "unknown language #{rpr language} in action on line ##{line_nr}"
+          error_message = "unknown language #{rpr language}"
       #.....................................................................................................
       try
-        value   = VM.runInContext js_source, sandbox, { filename: local_filename, }
-        errors  = no
+        value = VM.runInContext js_source, S.sandbox, { filename: local_filename, }
       #.....................................................................................................
       catch error
-        errors  = yes
-        warn error[ 'message' ]
+        error_message = error[ 'message' ]
+      #.....................................................................................................
+      if error_message?
+        warn error_message
+        # debug '@294308', event
         ### TAINT should resend because error message might need escaping ###
         ### TAINT should preserve stack trace of error ###
-        debug '@294308', event
         ### TAINT use method to assemble warning event ###
-        message = "line #{line_nr}: #{error[ 'message' ]}"
-        send [ '.', 'warning', message, ( copy meta, hidden: false, stamped: false, ), ]
+        ### TAINT insert reference to error log ###
+        warning_message = "action on line #{line_nr}: #{error_message}"
+        send [ '.', 'warning', warning_message, ( copy meta ), ]
       #.....................................................................................................
-      unless errors
-        urge '4742', js_source
-        urge '4742', rpr value
-        debug '©YMF7F', sandbox
-        debug '©YMF7F', S.local.definitions
+      else
+        # for sub_name, sub_value of S.sandbox
+        #   continue if sub_name in S.sandbox.mkts.reserved_names
+        #   S.sandbox.mkts.definitions[ sub_name ] = sub_value
+        #.....................................................................................................
+        debug '©Y action: source:    ', rpr source
+        debug '©Y action: js_source: ', rpr js_source
+        debug '©Y action: language:  ', rpr language
+        debug '©Y action: mode:      ', rpr mode
+        debug '©Y action: S.sandbox: ', rpr S.sandbox
+        debug '©Y action: value:     ', rpr value
         #.....................................................................................................
         switch mode
           when 'silent'
             null
           when 'vocal'
-            ### TAINT must resend to allow for TeX-escaping (or MD-escaping?) ###
             ### TAINT send `tex` or `text`??? ###
             value_rpr = if ( CND.isa_text value ) then value else rpr value
             send [ '.', 'text', value_rpr, ( copy meta ), ]
-      #.....................................................................................................
-      else
-        send
     #.......................................................................................................
     else
       send event
