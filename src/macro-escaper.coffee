@@ -241,11 +241,7 @@ after it, thereby inhibiting any processing of those portions. ###
 @illegal_patterns = [
   ///                           # After applying all other macro patterns, treat as error: pattern that
   ( ^ | [^ \\ ] )               # starts either at the first chr or a chr other than backslash
-  ( << | >> )                   # then: either two left or two right pointy brackets
-  ( [ \s\S ] { 0, 10 } )        # followed by any characters (matched for diagnostic messages).
-                                # In other words, you must not have two consecutive unescaped left pointy
-                                # brackets in the MD source, even where those LPBs do not form a macro
-                                # pattern.
+  ( << | >> )                   # then: either two left or two right pointy brackets.
   ///g
   ]
 
@@ -389,6 +385,7 @@ after it, thereby inhibiting any processing of those portions. ###
     @$expand_raw_macros                 S
     @$expand_html_comments              S
     @$expand_escape_chrs                S
+    @$expand_escape_illegals            S
     ]
   #.......................................................................................................
   settings =
@@ -442,6 +439,34 @@ after it, thereby inhibiting any processing of those portions. ###
     if MKTS.MD_READER.select event, '.', 'text'
       [ type, name, text, meta, ] = event
       send [ type, name, ( @escape.unescape_escape_chrs S, text ), meta, ]
+    #.......................................................................................................
+    else
+      send event
+
+#-----------------------------------------------------------------------------------------------------------
+@$expand_escape_illegals = ( S ) =>
+  return $ ( event, send ) =>
+    #.......................................................................................................
+    if MKTS.MD_READER.select event, '.', 'text'
+      [ type, name, text, meta, ] = event
+      #.....................................................................................................
+      for pattern in @illegal_patterns
+        stretches = []
+        #...................................................................................................
+        for raw_stretch, idx in text.split pattern
+          if ( idx % 3 ) is 1 then  stretches[ stretches.length - 1 ] += raw_stretch
+          else                      stretches.push raw_stretch
+        #...................................................................................................
+        is_plain  = no
+        for stretch in stretches
+          is_plain = not is_plain
+          unless is_plain
+            # debug '©10012', stretch
+            { line_nr }   = meta
+            error_message = "illegal macro pattern on line #{line_nr}: #{rpr stretch}"
+            send [ '.', 'warning', error_message, ( MKTS.MD_READER.copy meta ), ]
+          else
+            send [ type, name, stretch, ( MKTS.MD_READER.copy meta ), ] unless stretch.length is 0
     #.......................................................................................................
     else
       send event

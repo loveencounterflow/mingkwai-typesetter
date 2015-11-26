@@ -44,75 +44,107 @@ MKTS                      = require './main'
   CS                        = require 'coffee-script'
   VM                        = require 'vm'
   local_filename            = 'XXXXXXXXXXXXX'
+  #.........................................................................................................
   do =>
-    sandbox                   =
+    S.compiled          = {}
+    S.compiled.coffee   = {}
+    S.sandbox           =
       'rpr':            CND.rpr
       urge:             CND.get_logger 'urge', local_filename
       help:             CND.get_logger 'help', local_filename
       mkts:
         reserved_names:   []
         __filename:       local_filename
-    for name of sandbox
-      sandbox.mkts.reserved_names.push name
-    VM.createContext sandbox
-    S.sandbox = sandbox
+    S.sandbox[ 'here' ] = S.sandbox
+    for name of S.sandbox
+      S.sandbox.mkts.reserved_names.push name
+    VM.createContext S.sandbox
   #.........................................................................................................
   return $ ( event, send ) =>
-    # warn "re-defining command #{rpr identifier}" if S.definitions[ identifier ]?
-    # S.definitions[ identifier ] = []
-    #.......................................................................................................
     if MKTS.MD_READER.select event, '.', 'action'
-      [ type, action, source, meta, ] = event
+      [ _, _, raw_source, meta, ]     = event
       send stamp hide event
       { mode, language, line_nr, }    = meta
       error_message                   = null
       #.....................................................................................................
       switch language
         when 'js'
-          js_source = source
+          js_source = raw_source
         when 'coffee'
-          try
-            js_source = CS.compile source, { bare: true, filename: local_filename, }
-          catch error
-            error_message = error[ 'message' ]
+          unless ( js_source = S.compiled.coffee[ raw_source ] )?
+            wrapped_source  = "do =>\n  " + raw_source.replace /\n/g, "\n  "
+            try
+              js_source     = CS.compile wrapped_source, { bare: true, filename: local_filename, }
+            catch error
+              error_message = error[ 'message' ] ? rpr error
+            unless error_message?
+              S.compiled.coffee[ raw_source ] = js_source
         else
           error_message = "unknown language #{rpr language}"
       #.....................................................................................................
       try
-        value = VM.runInContext js_source, S.sandbox, { filename: local_filename, }
+        action_value = VM.runInContext js_source, S.sandbox, { filename: local_filename, }
       #.....................................................................................................
       catch error
-        error_message = error[ 'message' ]
+        error_message = error[ 'message' ] ? rpr error
       #.....................................................................................................
       if error_message?
         warn error_message
-        # debug '@294308', event
-        ### TAINT should resend because error message might need escaping ###
         ### TAINT should preserve stack trace of error ###
         ### TAINT use method to assemble warning event ###
-        ### TAINT insert reference to error log ###
-        warning_message = "action on line #{line_nr}: #{error_message}"
-        send [ '.', 'warning', warning_message, ( copy meta ), ]
+        ### TAINT write error log with full trace, insert reference (error nr) ###
+        error_message = "action on line #{line_nr}: #{error_message}"
+        send [ '.', 'warning', error_message, ( copy meta ), ]
       #.....................................................................................................
       else
-        # for sub_name, sub_value of S.sandbox
-        #   continue if sub_name in S.sandbox.mkts.reserved_names
-        #   S.sandbox.mkts.definitions[ sub_name ] = sub_value
-        #.....................................................................................................
-        debug '©Y action: source:    ', rpr source
-        debug '©Y action: js_source: ', rpr js_source
-        debug '©Y action: language:  ', rpr language
-        debug '©Y action: mode:      ', rpr mode
-        debug '©Y action: S.sandbox: ', rpr S.sandbox
-        debug '©Y action: value:     ', rpr value
         #.....................................................................................................
         switch mode
           when 'silent'
             null
           when 'vocal'
             ### TAINT send `tex` or `text`??? ###
-            value_rpr = if ( CND.isa_text value ) then value else rpr value
-            send [ '.', 'text', value_rpr, ( copy meta ), ]
+            action_value_rpr = rpr action_value unless CND.isa_text action_value
+            send [ '.', 'text', action_value_rpr, ( copy meta ), ]
+    #.......................................................................................................
+    else
+      send event
+
+        # # for sub_name, sub_value of S.sandbox
+        # #   continue if sub_name in S.sandbox.mkts.reserved_names
+        # #   S.sandbox.mkts.definitions[ sub_name ] = sub_value
+        # #.....................................................................................................
+        # do =>
+        #   # debug '©Y action: source:    ', rpr source
+        #   # debug '©Y action: js_source: ', rpr js_source
+        #   # debug '©Y action: language:  ', rpr language
+        #   # debug '©Y action: mode:      ', rpr mode
+        #   # debug '©Y action: S.sandbox: ', rpr S.sandbox
+        #   debug '©Y action: value:     ', rpr action_value
+        #   for name, value of S.sandbox
+        #     whisper "#{name}: #{rpr value}"
+
+#-----------------------------------------------------------------------------------------------------------
+@$process_values = ( S ) =>
+  copy  = MKTS.MD_READER.copy.bind  MKTS.MD_READER
+  stamp = MKTS.MD_READER.stamp.bind MKTS.MD_READER
+  hide  = MKTS.MD_READER.hide.bind  MKTS.MD_READER
+  #.........................................................................................................
+  throw new Error "internal error: need S.sandbox, must use `$process_actions`" unless S.sandbox?
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    if MKTS.MD_READER.select event, '.', 'value'
+      [ _, _, identifier, meta, ]     = event
+      action_value                    = S.sandbox[ identifier ]
+      unless action_value is undefined
+        action_value_rpr = rpr action_value unless CND.isa_text action_value
+        send [ '.', 'text', action_value_rpr, ( copy meta ), ]
+      else
+        ### TAINT should preserve stack trace of error ###
+        ### TAINT use method to assemble warning event ###
+        ### TAINT write error log with full trace, insert reference (error nr) ###
+        { line_nr, }  = meta
+        error_message = "value on line #{line_nr}: unknown identifier #{rpr identifier}"
+        send [ '.', 'warning', error_message, ( copy meta ), ]
     #.......................................................................................................
     else
       send event

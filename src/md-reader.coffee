@@ -568,12 +568,12 @@ tracker_pattern = /// ^
     return null
 
 #-----------------------------------------------------------------------------------------------------------
-@select = ( event, type, name ) ->
+@select = ( event, type, name, hidden = no ) ->
   ### TAINT should use the same syntax as accepted by `FENCES.parse` ###
   ### check for arity as it's easy to write `select event, '(', ')', 'latex'` when what you meant
   was `select event, [ '(', ')', ], 'latex'` ###
-  return false if @is_hidden event
-  if ( arity = arguments.length ) > 3
+  return false if ( not hidden ) and @is_hidden event
+  if ( arity = arguments.length ) > 4
     throw new Error "expected at most 3 arguments, got #{arity}"
   if type?
     switch type_of_type = CND.type_of type
@@ -720,6 +720,7 @@ tracker_pattern = /// ^
     .pipe @_PRE.$close_dangling_open_tags             S
     .pipe @_PRE.$consolidate_footnotes                S
     .pipe MKTS.MACRO_INTERPRETER.$process_actions     S
+    .pipe MKTS.MACRO_INTERPRETER.$process_values      S
     .pipe writestream
   #.........................................................................................................
   # readstream.on     'end', -> debug '©tdfA4', "readstream ended"

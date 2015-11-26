@@ -41,79 +41,101 @@ is_hidden                 = MD_READER.is_hidden.bind   MD_READER
 is_stamped                = MD_READER.is_stamped.bind  MD_READER
 
 
+# #-----------------------------------------------------------------------------------------------------------
+# @$show_mktsmd_events = ( S ) ->
+#   unknown_events    = []
+#   indentation       = ''
+#   tag_stack         = []
+#   return D.$observe ( event, has_ended ) =>
+#     if event?
+#       [ type, name, text, meta, ] = event
+#       if type is '?'
+#         unknown_events.push name unless name in unknown_events
+#         warn JSON.stringify event
+#       else
+#         color = CND.blue
+#         #...................................................................................................
+#         if is_hidden event
+#           color = CND.brown
+#         else
+#           switch type
+#             # when '('  then color = CND.yellow
+#             when '('  then color = CND.lime
+#             when ')'  then color = CND.olive
+#             when '!'  then color = CND.indigo
+#             when '#'  then color = CND.plum
+#             when '.'
+#               switch name
+#                 when 'text' then color = CND.BLUE
+#                 # when 'code' then color = CND.orange
+#         #...................................................................................................
+#         text = if text? then ( color rpr text ) else ''
+#         switch type
+#           #.................................................................................................
+#           when 'text'
+#             log indentation + ( color type ) + ' ' + rpr name
+#           #.................................................................................................
+#           when 'tex'
+#             if S.show_tex_events ? no
+#               log indentation + ( color type ) + ( color name ) + ' ' + text
+#           #.................................................................................................
+#           when '#'
+#             [ _, kind, message, _, ]  = event
+#             my_badge                  = "(#{meta[ 'badge' ]})"
+#             color = switch kind
+#               when 'insert' then  'lime'
+#               when 'drop'   then  'orange'
+#               when 'warn'   then  'RED'
+#               when 'info'   then  'BLUE'
+#               else                'grey'
+#             log ( CND[ color ] '#' + kind ), ( CND.white message ), ( CND.grey my_badge )
+#           #.................................................................................................
+#           else
+#             log indentation + ( color type ) + ( color name ) + ' ' + text
+#         #...................................................................................................
+#         unless is_hidden event
+#           switch type
+#             #.................................................................................................
+#             when '(', ')'
+#               switch type
+#                 when '('
+#                   tag_stack.push [ type, name, ]
+#                 when ')'
+#                   if tag_stack.length > 0
+#                     [ topmost_type, topmost_name, ] = tag_stack.pop()
+#                     unless topmost_name is name
+#                       warn "encountered <<#{name}#{type}>> when <<#{topmost_name})>> was expected"
+#                   else
+#                     warn "level below zero"
+#               indentation = ( new Array tag_stack.length ).join '  '
+#     #.......................................................................................................
+#     if has_ended
+#       if tag_stack.length > 0
+#         warn "unclosed tags: #{tag_stack.join ', '}"
+#       if unknown_events.length > 0
+#         warn "unknown events: #{unknown_events.sort().join ', '}"
+#     return null
+
 #-----------------------------------------------------------------------------------------------------------
 @$show_mktsmd_events = ( S ) ->
-  unknown_events    = []
-  indentation       = ''
-  tag_stack         = []
   return D.$observe ( event, has_ended ) =>
     if event?
-      [ type, name, text, meta, ] = event
-      if type is '?'
-        unknown_events.push name unless name in unknown_events
-        warn JSON.stringify event
+      if select event, 'tex', null, yes
+        null
       else
-        color = CND.blue
-        #...................................................................................................
+        [ type, name, text, meta, ] = event
         if is_hidden event
-          color = CND.brown
+          line_color = CND.grey
+        else if select event, '.', 'warning'
+          line_color = CND.red
+        else if select event, '.', 'text'
+          line_color = CND.blue
         else
-          switch type
-            # when '('  then color = CND.yellow
-            when '('  then color = CND.lime
-            when ')'  then color = CND.olive
-            when '!'  then color = CND.indigo
-            when '#'  then color = CND.plum
-            when '.'
-              switch name
-                when 'text' then color = CND.BLUE
-                # when 'code' then color = CND.orange
-        #...................................................................................................
-        text = if text? then ( color rpr text ) else ''
-        switch type
-          #.................................................................................................
-          when 'text'
-            log indentation + ( color type ) + ' ' + rpr name
-          #.................................................................................................
-          when 'tex'
-            if S.show_tex_events ? no
-              log indentation + ( color type ) + ( color name ) + ' ' + text
-          #.................................................................................................
-          when '#'
-            [ _, kind, message, _, ]  = event
-            my_badge                  = "(#{meta[ 'badge' ]})"
-            color = switch kind
-              when 'insert' then  'lime'
-              when 'drop'   then  'orange'
-              when 'warn'   then  'RED'
-              when 'info'   then  'BLUE'
-              else                'grey'
-            log ( CND[ color ] '#' + kind ), ( CND.white message ), ( CND.grey my_badge )
-          #.................................................................................................
-          else
-            log indentation + ( color type ) + ( color name ) + ' ' + text
-        #...................................................................................................
-        unless is_hidden event
-          switch type
-            #.................................................................................................
-            when '(', ')'
-              switch type
-                when '('
-                  tag_stack.push [ type, name, ]
-                when ')'
-                  if tag_stack.length > 0
-                    [ topmost_type, topmost_name, ] = tag_stack.pop()
-                    unless topmost_name is name
-                      warn "encountered <<#{name}#{type}>> when <<#{topmost_name})>> was expected"
-                  else
-                    warn "level below zero"
-              indentation = ( new Array tag_stack.length ).join '  '
+          line_color = CND.white
+        log line_color type, name, ( if text? then rpr text else '' )
     #.......................................................................................................
     if has_ended
-      if tag_stack.length > 0
-        warn "unclosed tags: #{tag_stack.join ', '}"
-      if unknown_events.length > 0
-        warn "unknown events: #{unknown_events.sort().join ', '}"
+      null
     return null
 
 #-----------------------------------------------------------------------------------------------------------

@@ -1,7 +1,26 @@
 
 
+<<(:>>( name for name of here )<<)>>
 
-<<(:>>( name for name of mkts )<<)>>
+<<(:>>@x = 42<<)>>
+
+There are <<$x>> bulls on the meadow.
+
+There are <<$y>> bulls on the meadow.
+
+some << unlicensed >> stuff here.
+
+some \<< licensed \>> stuff here.
+
+<<!end>>
+
+<<(:>>( name for name of @ )<<)>>
+
+
+<<(:>>y = 108<<)>>
+
+
+<<(:>>global.y = 108<<)>>
 
 <<(:>>`(function(){`
 ( name for name of mkts )
@@ -17,7 +36,6 @@ do =>
   ( name for name of mkts )
 <<)>>
 
-<<!end>>
 
 
 The &#x3c;<<\LaTeX{}>>> Logo: `&#x3c;<<\LaTeX{}>>>`
