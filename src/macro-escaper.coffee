@@ -449,6 +449,7 @@ after it, thereby inhibiting any processing of those portions. ###
     #.......................................................................................................
     if MKTS.MD_READER.select event, '.', 'text'
       [ type, name, text, meta, ] = event
+      debug '©38889', rpr text
       #.....................................................................................................
       for pattern in @illegal_patterns
         stretches = []
