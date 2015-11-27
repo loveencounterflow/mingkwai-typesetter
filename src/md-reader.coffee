@@ -351,7 +351,7 @@ tracker_pattern = /// ^
         send [ '.', 'command', 'empty-document', {}, ]
       send [ ')', 'document', null, {}, ]
       setImmediate =>
-        whisper "ending input stream"
+        # whisper "ending input stream"
         send.end()
       # setTimeout ( => send.end() ), 1000
     else if CND.isa_list token
