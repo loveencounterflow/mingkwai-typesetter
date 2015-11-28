@@ -714,6 +714,7 @@ tracker_pattern = /// ^
   readstream
     .pipe @_PRE.$flatten_tokens                       S
     .pipe @_PRE.$reinject_html_blocks                 S
+    # .pipe D.$observe ( event ) => debug '©1', rpr event
     .pipe @_PRE.$rewrite_markdownit_tokens            S
     .pipe MKTS.MACRO_ESCAPER.$expand                  S
     .pipe @_PRE.$process_end_command                  S
@@ -734,6 +735,7 @@ tracker_pattern = /// ^
     md_source   = MKTS.MACRO_ESCAPER.escape S, md_source
     # debug '©ΘΩΓΛΛ', md_source
     # process.exit 1
+    debug '©69651', md_source
     tokens      = md_parser.parse md_source, S.environment
     for token in tokens
       input.write token

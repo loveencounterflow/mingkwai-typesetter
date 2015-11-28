@@ -385,7 +385,7 @@ after it, thereby inhibiting any processing of those portions. ###
     @$expand_raw_macros                 S
     @$expand_html_comments              S
     @$expand_escape_chrs                S
-    @$expand_escape_illegals            S
+    # @$expand_escape_illegals            S
     ]
   #.......................................................................................................
   settings =
