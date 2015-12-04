@@ -151,7 +151,7 @@ esc_re = ( text ) -> text.replace /[.*+?^${}()|[\]\\]/g, "\\$&"
   _mcp_backslash     = ///
     #{esc_re _oc_backslash}
     ( (?: [  \ud800-\udbff ] [ \udc00-\udfff ] ) | . ) ///g
-  _tsp_backslash     = /// #{esc_re start_chr} ( [ 0-9 a-f ]+ ) #{esc_re stop_chr} ///g
+  _tsp_backslash     = /// #{esc_re start_chr} ( [ 0-9 a-z ]+ ) #{esc_re stop_chr} ///g
   ### `rm`: 'remove' ###
   _rm_backslash      = /// #{esc_re _oc_backslash} ( . ) ///g
   #---------------------------------------------------------------------------------------------------------
@@ -180,21 +180,13 @@ esc_re = ( text ) -> text.replace /[.*+?^${}()|[\]\\]/g, "\\$&"
 unless module.parent?
   CLOAK           = @
   DIFF            = require 'coffeenode-diff'
-  cloak           = CLOAK.new_cloak '()LTX', 2
-  cloak           = CLOAK.new_cloak '*+?^$', 2
-  # { cloak
-  #   reveal
-  #   cloaked
-  #   master
-  #   esc_re }      = cloak
+  cloak           = CLOAK.new_cloak '()LTX'
+  cloak           = CLOAK.new_cloak '*+?^$'
   help cloak
-  [ start_chr
-    stop_chr  ] = cloak[ 'cloaked' ]
-
 
   text = """
     % & ! ;
-    some <<unlicensed>> (stuff here). \\𠄨 &%!%A&123;
+    some <<unlicensed>> (stuff here). \\𠄨 *20128+? &%!%A&123;
     some more \\\\<<unlicensed\\\\>> (stuff here).
     some \\<<licensed\\>> stuff here, and <\\<
     The <<<\\LaTeX{}>>> Logo: `<<<\\LaTeX{}>>>`
