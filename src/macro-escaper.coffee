@@ -30,6 +30,7 @@ $                         = D.remit.bind D
 #...........................................................................................................
 # misfit                    = Symbol 'misfit'
 MKTS                      = require './main'
+@CLOAK                    = require './cloak'
 # hide                      = MKTS.hide.bind        MKTS
 # copy                      = MKTS.MD_READER.copy.bind        MKTS
 # stamp                     = MKTS.stamp.bind       MKTS
