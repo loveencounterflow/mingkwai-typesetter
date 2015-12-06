@@ -101,7 +101,7 @@ CLOAK.new '012345678'
 esc_re = ( text ) -> text.replace /[.*+?^${}()|[\]\\]/g, "\\$&"
 
 #-----------------------------------------------------------------------------------------------------------
-@new_cloak = ( chrs, base = 16 ) ->
+@new = ( chrs ) ->
   #.........................................................................................................
   unless chrs?
     chrs = [ '\x10', '\x11', '\x12', '\x13', '\x14', ]
@@ -136,14 +136,15 @@ esc_re = ( text ) -> text.replace /[.*+?^${}()|[\]\\]/g, "\\$&"
     return R_
   #---------------------------------------------------------------------------------------------------------
   R = { '~isa': 'CLOAK/cloak', hide, reveal, cloaked, master, }
-  @_mixin_backslashed R, base
+  @_mixin_backslashed R
   return R
 
 #-----------------------------------------------------------------------------------------------------------
-@_mixin_backslashed = ( cloak, base = 16 ) ->
+@_mixin_backslashed = ( cloak ) ->
   { cloaked } = cloak
   if cloaked.length < 2 then    start_chr = stop_chr    = cloaked[ 0 ]
   else                        [ start_chr,  stop_chr, ] = cloaked
+  base = 10
   ### `oc`: 'original character' ###
   _oc_backslash      = '\\'
   ### `op`: 'original pattern' ###
@@ -180,8 +181,8 @@ esc_re = ( text ) -> text.replace /[.*+?^${}()|[\]\\]/g, "\\$&"
 unless module.parent?
   CLOAK           = @
   DIFF            = require 'coffeenode-diff'
-  cloak           = CLOAK.new_cloak '()LTX'
-  cloak           = CLOAK.new_cloak '*+?^$'
+  cloak           = CLOAK.new '()LTX'
+  cloak           = CLOAK.new '*+?^$'
   help cloak
 
   text = """

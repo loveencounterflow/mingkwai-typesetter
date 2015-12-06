@@ -45,6 +45,7 @@ stamp                     = MD_READER.stamp.bind       MD_READER
 select                    = MD_READER.select.bind      MD_READER
 is_hidden                 = MD_READER.is_hidden.bind   MD_READER
 is_stamped                = MD_READER.is_stamped.bind  MD_READER
+MACRO_ESCAPER             = require './macro-escaper'
 
 
 #===========================================================================================================
@@ -662,6 +663,9 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
       [ type, name, text, meta, ] = event
       send stamp hide event
       send remark 'convert', "raw to TeX", copy meta
+      debug '@2487', rpr text
+      debug '@2487', rpr MACRO_ESCAPER.escape.unescape_escape_chrs S, text
+      text = MACRO_ESCAPER.escape.unescape_escape_chrs S, text
       send [ 'tex', text, ]
       # send stamp event
     #.......................................................................................................
@@ -901,6 +905,7 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
   #   .pipe mktscript_out
   #.......................................................................................................
   readstream
+    .pipe MACRO_ESCAPER.$expand.$remove_backslashes       S
     .pipe @MKTX.TEX.$fix_typography_for_tex               S
     .pipe @MKTX.DOCUMENT.$begin                           S
     .pipe @MKTX.DOCUMENT.$end                             S

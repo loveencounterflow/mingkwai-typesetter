@@ -1,14 +1,16 @@
-The &#x3c;<<\LaTeX{}>>> Logo: `&#x3c;<<\LaTeX{}>>>`
+The <<<\LaTeX{}>>> Logo: `<<<\LaTeX{}>>>`
 
-The \&#x3c;<<\LaTeX{}>>> Logo: `\&#x3c;<<\LaTeX{}>>>`
+The <<<\\LaTeX{}>>> Logo: `<<<\\LaTeX{}>>>`
+
+The &#x3c;<<\\LaTeX{}>>> Logo: `&#x3c;<<\\LaTeX{}>>>`
+
+The \&#x3c;<<\\LaTeX{}>>> Logo: `\&#x3c;<<\\LaTeX{}>>>`
 
 &#x5c; &#x23; \ {} # $ % _ ^ ~ &
 
 `&#x5c; &#x23; \ {} # $ % _ ^ ~ &`
 
 The &lt;<<\LaTeX{}>>> Logo: `&lt;<<\LaTeX{}>>>`
-
-The <<<\LaTeX{}>>> Logo: `<<<\LaTeX{}>>>`
 
 The \<<<\LaTeX{}>>> Logo: `\<<<\LaTeX{}>>>`
 

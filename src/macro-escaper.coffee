@@ -30,7 +30,7 @@ $                         = D.remit.bind D
 #...........................................................................................................
 # misfit                    = Symbol 'misfit'
 MKTS                      = require './main'
-@CLOAK                    = require './cloak'
+@cloak                    = ( require './cloak' ).new()
 # hide                      = MKTS.hide.bind        MKTS
 # copy                      = MKTS.MD_READER.copy.bind        MKTS
 # stamp                     = MKTS.stamp.bind       MKTS
@@ -74,8 +74,7 @@ MKTS                      = require './main'
 #-----------------------------------------------------------------------------------------------------------
 @html_comment_patterns = [
   ///                           # HTML comments...
-    ( ^ | [^\\] )               # may be escaped with a backslash (NB: unlike as in HTML proper);
-    <!--                        # the start with less-than, exclamation mark, double hyphen;
+    <!--                        # start with less-than, exclamation mark, double hyphen;
     ( [ \s\S ]*? )              # then: anything, not-greedy, until we hit upon
     -->                         # a double-slash, then greater-than.
     ///g                        # (NB: end-of-comment cannot be escaped, because HTML).
@@ -270,39 +269,18 @@ after it, thereby inhibiting any processing of those portions. ###
   return [ R, text.length - R.length, ]
 
 #-----------------------------------------------------------------------------------------------------------
-@escape.escape_chrs = ( S, text ) =>
-  R = text
-  R = R.replace /// \x10 ///g, '\x10A' # ASCII DLE, Master escape
-  R = R.replace /// \x11 ///g, '\x10B' # ASCII DC1, Backslash Character escape
-  R = R.replace /// \x15 ///g, '\x10X' # ASCII NAK, Macro escape
-  R = R.replace /// \\ ( (?: [  \ud800-\udbff ] [ \udc00-\udfff ] ) | . ) ///g, ( _, $1 ) ->
-    cid = ( $1.codePointAt 0 ).toString 16
-    return "\x11#{cid};"
-  return R
-
-#-----------------------------------------------------------------------------------------------------------
-@escape.unescape_escape_chrs = ( S, text ) =>
-  R = text
-  R = R.replace /// \x11 ( [ 0-9 a-f ]+ ) ; ///g, ( _, $1 ) ->
-    chr = String.fromCodePoint parseInt $1, 16
-    return "\\#{chr}"
-  R = R.replace /// \x10X ///g, '\x15'
-  R = R.replace /// \x10B ///g, '\x11'
-  R = R.replace /// \x10A ///g, '\x10'
-  return R
-
-#-----------------------------------------------------------------------------------------------------------
-@escape.remove_escaping_backslashes = ( S, text ) =>
-  return text.replace /// \\ ( . ) ///g, '$1'
+@escape.escape_chrs                 = ( S, text ) => @cloak.backslashed.hide  @cloak.hide               text
+@escape.unescape_escape_chrs        = ( S, text ) => @cloak.reveal            @cloak.backslashed.reveal text
+@escape.remove_escaping_backslashes = ( S, text ) => @cloak.backslashed.remove text
 
 #-----------------------------------------------------------------------------------------------------------
 @escape.html_comments = ( S, text ) =>
   R = text
   #.........................................................................................................
   for pattern in @html_comment_patterns
-    R = R.replace pattern, ( _, previous_chr, content ) =>
+    R = R.replace pattern, ( _, content ) =>
       key = @_register_content S, 'comment', null, content, content.trim()
-      return "#{previous_chr}\x15#{key}\x13"
+      return "\x15#{key}\x13"
   #.........................................................................................................
   return R
 
@@ -392,13 +370,13 @@ after it, thereby inhibiting any processing of those portions. ###
 #-----------------------------------------------------------------------------------------------------------
 @$expand = ( S ) ->
   pipeline = [
-    @$expand_command_and_value_macros   S
-    @$expand_region_macros              S
-    @$expand_action_macros              S
-    @$expand_raw_macros                 S
-    @$expand_html_comments              S
-    @$expand_escape_chrs                S
-    # @$expand_escape_illegals            S
+    @$expand.$command_and_value_macros  S
+    @$expand.$region_macros             S
+    @$expand.$action_macros             S
+    @$expand.$raw_macros                S
+    @$expand.$html_comments             S
+    @$expand.$escape_chrs               S
+    # @$expand.$escape_illegals           S
     ]
   #.......................................................................................................
   settings =
@@ -411,19 +389,19 @@ after it, thereby inhibiting any processing of those portions. ###
   return D.TEE.from_pipeline pipeline, settings
 
 #-----------------------------------------------------------------------------------------------------------
-@$expand_html_comments = ( S ) =>
+@$expand.$html_comments = ( S ) =>
   return @_get_expander S, @html_comment_id_pattern, ( meta, entry ) =>
     content       = entry[ 'raw' ]
     return [ '.', 'comment', content, ( MKTS.MD_READER.copy meta ), ]
 
 #-----------------------------------------------------------------------------------------------------------
-@$expand_raw_macros  = ( S ) =>
+@$expand.$raw_macros  = ( S ) =>
   return @_get_expander S, @raw_id_pattern, ( meta, entry ) =>
     content       = entry[ 'raw' ]
     return [ '.', 'raw', content, ( MKTS.MD_READER.copy meta ), ]
 
 #-----------------------------------------------------------------------------------------------------------
-@$expand_action_macros  = ( S ) =>
+@$expand.$action_macros  = ( S ) =>
   return @_get_expander S, @action_id_pattern, ( meta, entry ) =>
     [ mode
       language ]  = entry[ 'markup' ]
@@ -431,14 +409,14 @@ after it, thereby inhibiting any processing of those portions. ###
     return [ '.', 'action', content, ( MKTS.MD_READER.copy meta, { mode, language, } ), ]
 
 #-----------------------------------------------------------------------------------------------------------
-@$expand_region_macros = ( S ) =>
+@$expand.$region_macros = ( S ) =>
   return @_get_expander S, @region_id_pattern, ( meta, entry ) =>
     { raw
       markup }    = entry
     return [ markup, raw, null, ( MKTS.MD_READER.copy meta ), ]
 
 #-----------------------------------------------------------------------------------------------------------
-@$expand_command_and_value_macros = ( S ) =>
+@$expand.$command_and_value_macros = ( S ) =>
   return @_get_expander S, @command_and_value_id_pattern, ( meta, entry ) =>
     { raw
       markup }    = entry
@@ -446,18 +424,33 @@ after it, thereby inhibiting any processing of those portions. ###
     return [ '.', macro_type, raw, ( MKTS.MD_READER.copy meta ), ]
 
 #-----------------------------------------------------------------------------------------------------------
-@$expand_escape_chrs = ( S ) =>
+@$expand.$escape_chrs = ( S ) =>
   return $ ( event, send ) =>
     #.......................................................................................................
     if MKTS.MD_READER.select event, '.', 'text'
       [ type, name, text, meta, ] = event
+      # debug '9573485', rpr text
+      # debug '9573485', rpr @escape.unescape_escape_chrs S, text
       send [ type, name, ( @escape.unescape_escape_chrs S, text ), meta, ]
     #.......................................................................................................
     else
       send event
 
 #-----------------------------------------------------------------------------------------------------------
-@$expand_escape_illegals = ( S ) =>
+@$expand.$remove_backslashes = ( S ) =>
+  return $ ( event, send ) =>
+    #.......................................................................................................
+    if MKTS.MD_READER.select event, '.', 'text'
+      [ type, name, text, meta, ] = event
+      debug '83457', rpr text
+      debug '83457', rpr @escape.remove_escaping_backslashes S, text
+      send [ type, name, ( @escape.remove_escaping_backslashes S, text ), meta, ]
+    #.......................................................................................................
+    else
+      send event
+
+#-----------------------------------------------------------------------------------------------------------
+@$expand.$escape_illegals = ( S ) =>
   return $ ( event, send ) =>
     #.......................................................................................................
     if MKTS.MD_READER.select event, '.', 'text'
