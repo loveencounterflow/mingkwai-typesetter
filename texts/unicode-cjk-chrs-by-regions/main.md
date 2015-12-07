@@ -4,17 +4,10 @@
 而我在上網我在博覽。
 <<keep-lines)>>
 
+
 “比如，要想找带‘门’字旁的汉字，在我的数据库里一搜，就能找到，这是电子化的好处。”—Richard Sears, [美国“汉字叔叔”自费创建汉字网 为此穷困潦倒](http://news.qq.com/a/20150415/011681.htm)
 
-<<{multi-column>>
-xxx
-
-
-`<<(\$>>eval block<<\$)>>`
-
-`<<($>>eval block<<$)>>`
-
-
+<<(multi-column>>
 
 ### xxx
 
@@ -35,6 +28,8 @@ xxx 这们说时 **xxx**
 ```
 xxx 这们说时 **xxx**
 ```
+
+<<!end>>
 
 MingKwai TypeScript uses three layers of markup:
 

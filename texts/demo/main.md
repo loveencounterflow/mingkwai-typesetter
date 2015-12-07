@@ -1,4 +1,4 @@
-The <<<\LaTeX{}>>> Logo: `<<<\LaTeX{}>>>`
+<<The <<<\LaTeX{}>>> Logo: `<<<\LaTeX{}>>>`
 
 The <<<\\LaTeX{}>>> Logo: `<<<\\LaTeX{}>>>`
 

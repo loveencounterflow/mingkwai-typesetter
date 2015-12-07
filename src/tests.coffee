@@ -807,6 +807,29 @@ nice_text_rpr = ( text ) ->
     done()
 
 #-----------------------------------------------------------------------------------------------------------
+@[ "MKTS.MKTSCRIPT_WRITER.mkts_events_from_md (6a) auto-close dangling tags" ] = ( T, done ) ->
+  settings  = bare: yes
+  probe     = """
+    aaa
+    <<(multi-column>>
+    bbb
+    """
+  warn "missing `.p` inside `(multi-column)`"
+  matcher   = [
+    [".","text","aaa\n",{"line_nr":1,"col_nr":4,"markup":""}]
+    ["(","multi-column",null,{"line_nr":1,"col_nr":4,"markup":""}]
+    [".","text","\nbbb",{"line_nr":1,"col_nr":4,"markup":""}]
+    [".","p",null,{"line_nr":1,"col_nr":4,"markup":""}]
+    ["#","resend","`multi-column)`",{"badge":"$close_dangling_open_tags","stamped":true}]
+    [")","multi-column",null,{"line_nr":1,"col_nr":4,"markup":""}]
+    ]
+  step ( resume ) =>
+    result = yield MKTS.MKTSCRIPT_WRITER.mkts_events_from_md probe, settings, resume
+    show_events probe, result
+    T.eq matcher, result
+    done()
+
+#-----------------------------------------------------------------------------------------------------------
 @[ "MKTS.MKTSCRIPT_WRITER.mkts_events_from_md (7)" ] = ( T, done ) ->
   settings  = bare: yes
   probe     = """
@@ -970,7 +993,7 @@ nice_text_rpr = ( text ) ->
     done()
 
 #-----------------------------------------------------------------------------------------------------------
-@[ "MKTS.MKTSCRIPT_WRITER.mktscript_from_md (2)" ] = ( T, done ) ->
+@[ "MKTS.MKTSCRIPT_WRITER.mktscript_from_md (2) auto-close dangling tags" ] = ( T, done ) ->
   settings  = bare: yes
   probe     = """
     <<(multi-column>>

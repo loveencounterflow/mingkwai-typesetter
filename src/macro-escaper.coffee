@@ -427,8 +427,8 @@ after it, thereby inhibiting any processing of those portions. ###
     #.......................................................................................................
     if MKTS.MD_READER.select event, '.', 'text'
       [ type, name, text, meta, ] = event
-      debug '83457', rpr text
-      debug '83457', rpr @escape.remove_escaping_backslashes S, text
+      # debug '83457', rpr text
+      # debug '83457', rpr @escape.remove_escaping_backslashes S, text
       send [ type, name, ( @escape.remove_escaping_backslashes S, text ), meta, ]
     #.......................................................................................................
     else
@@ -440,7 +440,7 @@ after it, thereby inhibiting any processing of those portions. ###
     #.......................................................................................................
     if MKTS.MD_READER.select event, '.', 'text'
       [ type, name, text, meta, ] = event
-      debug '©38889', rpr text
+      # debug '©38889', rpr text
       #.....................................................................................................
       for pattern in @illegal_patterns
         stretches = []
@@ -449,11 +449,11 @@ after it, thereby inhibiting any processing of those portions. ###
           if ( idx % 3 ) is 1 then  stretches[ stretches.length - 1 ] += raw_stretch
           else                      stretches.push raw_stretch
         #...................................................................................................
-        is_plain  = no
+        is_plain  = yes
         for stretch in stretches
           is_plain = not is_plain
+          debug '©10012', ( if is_plain then CND.green else CND.red ) rpr stretch
           unless is_plain
-            # debug '©10012', stretch
             { line_nr }   = meta
             error_message = "illegal macro pattern on line #{line_nr}: #{rpr stretch}"
             send [ '.', 'warning', error_message, ( MKTS.MD_READER.copy meta ), ]

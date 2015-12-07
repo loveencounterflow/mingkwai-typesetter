@@ -398,11 +398,11 @@ MACRO_ESCAPER             = require './macro-escaper'
 
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.REGION.$multi_column = ( S ) =>
-  track   = MD_READER.TRACKER.new_tracker '{multi-column}'
+  track   = MD_READER.TRACKER.new_tracker '(multi-column)'
   remark  = MD_READER._get_remark()
   #.........................................................................................................
   return $ ( event, send ) =>
-    within_multi_column = track.within '{multi-column}'
+    within_multi_column = track.within '(multi-column)'
     track event
     if select event, [ '(', ')', ], 'multi-column'
       send stamp event
@@ -428,11 +428,11 @@ MACRO_ESCAPER             = require './macro-escaper'
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.REGION.$single_column = ( S ) =>
   ### TAINT consider to implement command `change_column_count = ( send, n )` ###
-  track   = MD_READER.TRACKER.new_tracker '{multi-column}'
+  track   = MD_READER.TRACKER.new_tracker '(multi-column)'
   remark  = MD_READER._get_remark()
   #.........................................................................................................
   return $ ( event, send ) =>
-    within_multi_column = track.within '{multi-column}'
+    within_multi_column = track.within '(multi-column)'
     track event
     #.......................................................................................................
     if select event, [ '(', ')', ], 'single-column'
@@ -445,7 +445,7 @@ MACRO_ESCAPER             = require './macro-escaper'
           send stamp event
         else
           # send stamp event
-          send remark 'drop', "`single-column` because not within `{multi-column}`", copy meta
+          send remark 'drop', "`single-column` because not within `(multi-column)`", copy meta
       #.....................................................................................................
       else
         if within_multi_column
@@ -453,7 +453,7 @@ MACRO_ESCAPER             = require './macro-escaper'
           send remark 'insert', "`{multi-column`", copy meta
           send track @MKTX.REGION._begin_multi_column()
         else
-          send remark 'drop', "`single-column` because not within `{multi-column}`", copy meta
+          send remark 'drop', "`single-column` because not within `(multi-column)`", copy meta
     #.......................................................................................................
     else
       send event
@@ -519,10 +519,10 @@ MACRO_ESCAPER             = require './macro-escaper'
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.BLOCK.$heading = ( S ) =>
   restart_multicols = no
-  track             = MD_READER.TRACKER.new_tracker '{multi-column}'
+  track             = MD_READER.TRACKER.new_tracker '(multi-column)'
   #.........................................................................................................
   return $ ( event, send ) =>
-    within_multi_column = track.within '{multi-column}'
+    within_multi_column = track.within '(multi-column)'
     track event
     #.......................................................................................................
     if select event, [ '(', ')', ], [ 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', ]
@@ -850,7 +850,8 @@ MACRO_ESCAPER             = require './macro-escaper'
             text = rpr text
       else
         text = ''
-      if type in [ '.', '!', ] or type in MKTS.FENCES.left
+      debug '©37434', MKTS.MD_READER.FENCES
+      if type in [ '.', '!', ] or type in MKTS.MD_READER.FENCES.left
         first             = type
         last              = name
       else
