@@ -86,12 +86,10 @@ MKTS                      = require './main'
                                 #
                                 # Start Tag
                                 # =========
-  ( ^ | [^ \\ ] )               # starts either at the first chr or a chr other than backslash
-  <<\(                          # then: two left pointy brackets, then: left round bracket,
+  <<\(                          # starts with two left pointy brackets, then: left round bracket,
     ( [ . : ] )                 # then: a dot or a colon;
     (
       (?:                       # then:
-        \\>                |    #   or: an escaped right pointy bracket (RPB)
         [^ > ]             |    #   or: anything but a RPB
         > (?! > )               #   or: a RPB not followed by yet another RPB
       )*                        # repeated any number of times
@@ -105,7 +103,7 @@ MKTS                      = require './main'
                                 # Stop Tag
                                 # =========
   () <<                         # (then: an empty group; see below), then: two left pointy brackets,
-    ( (?: \2 \3 )? )            # then: optionally, whatever appeared in the start tag,
+    ( (?: \1 \2 )? )            # then: optionally, whatever appeared in the start tag,
     \)>>                        # then: right round bracket, then: two RPBs.
   ///g
   ,                             #...........................................................................
@@ -113,12 +111,10 @@ MKTS                      = require './main'
                                 #
                                 # Start Tag
                                 # =========
-  ( ^ | [^ \\ ] )               # starts either at the first chr or a chr other than backslash
-  <<\(                          # then: two left pointy brackets, then: left round bracket,
+  <<\(                          # starts with two left pointy brackets, then: left round bracket,
     ( [ . : ] )                 # then: a dot or a colon;
     (
       (?:                       # then:
-        \\>                |    #   or: an escaped right pointy bracket (RPB)
         [^ > ]             |    #   or: anything but a RPB
         > (?! > )               #   or: a RPB not followed by yet another RPB
       )*                        # repeated any number of times
@@ -129,17 +125,15 @@ MKTS                      = require './main'
                                 # =========
     (
       (?:                       # ...followed by content, which is:
-        \\<                |    #   or: an escaped left pointy bracket (LPB)
         [^ < ]             |    #   or: anything but a LPB
         < (?! < )               #   or: a LPB not followed by yet another LPB
         )*                      # repeated any number of times
-      [^ \\ ]                   # then: a character other than a backslash,
       )
                                 #
                                 # Stop Tag
                                 # =========
   <<                            # then: two left pointy brackets,
-    ( (?: \2 \3 )? )            # then: optionally, whatever appeared in the start tag,
+    ( (?: \1 \2 )? )            # then: optionally, whatever appeared in the start tag,
     \)>>                        # then: right round bracket, then: two RPBs.
   ///g
   ]
@@ -150,12 +144,10 @@ MKTS                      = require './main'
                                 #
                                 # Start Tag
                                 # =========
-  ( ^ | [^ \\ ] )               # starts either at the first chr or a chr other than backslash
-  <<                            # then: two left pointy brackets
+  <<                            # starts with two left pointy brackets
   ( \( )                        # then: left round bracket,
     (                           #
       (?:                       # then:
-        \\>                |    #   or: an escaped right pointy bracket (RPB)
         [^ > ]             |    #   or: anything but a RPB
         > (?! > )               #   or: a RPB not followed by yet another RPB
       )*                        # repeated any number of times
@@ -167,13 +159,11 @@ MKTS                      = require './main'
   ///                           # Stop Tag
                                 # ========
                                 #
-  ( ^ | [^ \\ ] )               # starts either at the first chr or a chr other than backslash
-  <<                            # then: two left pointy brackets
+  <<                            # starts with two left pointy brackets
     ()                          # then: empty group for no markup here
     ( |                         #
-      [^ . : \\ ]
+      [^ . : ]
       (?:                       # then:
-        \\>                |    #   or: an escaped right pointy bracket (RPB)
         [^ > ]             |    #   or: anything but a RPB
         > (?! > )               #   or: a RPB not followed by yet another RPB
       )*                        # repeated any number of times
@@ -190,11 +180,9 @@ MKTS                      = require './main'
 #-----------------------------------------------------------------------------------------------------------
 @bracketed_raw_patterns = [
   ///                           # A bracketed raw macro
-  ( ^ | [^ \\ ] )               # starts either at the first chr or a chr other than backslash
-  <<(<)                         # then: three left pointy brackets,
+  <<(<)                         # starts with three left pointy brackets,
     (
       (?:                       # then:
-        \\>                |    #   or: an escaped right pointy bracket (RPB)
         [^ > ]             |    #   or: anything but a RPB
         >{1,2} (?! > )          #   or: one or two RPBs not followed by yet another RPB
       )*                        # repeated any number of times
@@ -211,12 +199,10 @@ MKTS                      = require './main'
 #-----------------------------------------------------------------------------------------------------------
 @command_and_value_patterns = [
   ///                           # A command macro
-  ( ^ | [^ \\ ] )               # starts either at the first chr or a chr other than backslash
-  <<                            # then: two left pointy brackets,
+  <<                            # starts with two left pointy brackets,
     ( [ ! $ ] )                 # then: an exclamation mark or a dollar sign,
     (
       (?:                       # then:
-        \\>                |    #   or: an escaped right pointy bracket (RPB)
         [^ > ]             |    #   or: anything but a RPB
         > (?! > )               #   or: a RPB not followed by yet another RPB
       )*                        # repeated any number of times
@@ -239,9 +225,8 @@ after it, thereby inhibiting any processing of those portions. ###
 
 #-----------------------------------------------------------------------------------------------------------
 @illegal_patterns = [
-  ///                           # After applying all other macro patterns, treat as error: pattern that
-  ( ^ | [^ \\ ] )               # starts either at the first chr or a chr other than backslash
-  ( << | >> )                   # then: either two left or two right pointy brackets.
+  ///                           # After applying all other macro patterns, treat as error
+  ( << | >> )                   # any occurrances of two left or two right pointy brackets.
   ///g
   ]
 
@@ -289,9 +274,9 @@ after it, thereby inhibiting any processing of those portions. ###
   R = text
   #.........................................................................................................
   for pattern in @bracketed_raw_patterns
-    R = R.replace pattern, ( _, previous_chr, markup, content ) =>
+    R = R.replace pattern, ( _, markup, content ) =>
       id = @_register_content S, 'raw', markup, content
-      return "#{previous_chr}\x15#{id}\x13"
+      return "\x15#{id}\x13"
   #.........................................................................................................
   return R
 
@@ -300,14 +285,14 @@ after it, thereby inhibiting any processing of those portions. ###
   R = text
   #.........................................................................................................
   for pattern in @action_patterns
-    R = R.replace pattern, ( _, previous_chr, markup, identifier, content, stopper ) =>
-      # debug '©ΛΨ actions', ( rpr text ), [ previous_chr, markup, identifier, content, stopper, ]
+    R = R.replace pattern, ( _, markup, identifier, content, stopper ) =>
+      debug '37458', [markup, identifier, content, stopper]
       mode      = if markup is '.' then 'silent' else 'vocal'
       language  = identifier
       language  = 'coffee' if language is ''
       ### TAINT not using arguments peoperly ###
       id        = @_register_content S, 'action', [ mode, language, ], content
-      return "#{previous_chr}\x15#{id}\x13"
+      return "\x15#{id}\x13"
   #.........................................................................................................
   return R
 
@@ -316,11 +301,11 @@ after it, thereby inhibiting any processing of those portions. ###
   R = text
   #.........................................................................................................
   for pattern in @region_patterns
-    R = R.replace pattern, ( _, previous_chr, start_markup, identifier, stop_markup ) =>
+    R = R.replace pattern, ( _, start_markup, identifier, stop_markup ) =>
       # debug '©ΛΨ regions', ( rpr text ), [ previous_chr, markup, identifier, content, stopper, ]
       markup  = if start_markup.length is 0 then stop_markup else start_markup
       id      = @_register_content S, 'region', markup, identifier
-      return "#{previous_chr}\x15#{id}\x13"
+      return "\x15#{id}\x13"
   #.........................................................................................................
   return R
 
@@ -329,10 +314,10 @@ after it, thereby inhibiting any processing of those portions. ###
   R = text
   #.........................................................................................................
   for pattern in @command_and_value_patterns
-    R = R.replace pattern, ( _, previous_chr, markup, content ) =>
+    R = R.replace pattern, ( _, markup, content ) =>
       kind            = if markup is '!' then 'command' else 'value'
       key             = @_register_content S, kind, markup, content, null
-      return "#{previous_chr}\x15#{key}\x13"
+      return "\x15#{key}\x13"
   #.........................................................................................................
   return R
 

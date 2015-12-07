@@ -91,20 +91,20 @@ nice_text_rpr = ( text ) ->
 #-----------------------------------------------------------------------------------------------------------
 @[ "MKTS.MACRO_ESCAPER.action_patterns match action macros" ] = ( T, done ) ->
   probes_and_matchers = [
-    ["<<(.>><<)>>",["",".","","",""]]
-    ["<<(.>>xxx<<)>>",["",".","","xxx",""]]
-    ["<<(.>>some code<<)>>",["",".","","some code",""]]
-    ["abc<<(.>>4 + 3<<)>>def",["c",".","","4 + 3",""]]
-    ["<<(:>><<)>>",["",":","","",""]]
-    ["<<(:>>xxx<<)>>",["",":","","xxx",""]]
-    ["<<(:>>some code<<)>>",["",":","","some code",""]]
-    ["abc<<(:>>4 + 3<<)>>def",["c",":","","4 + 3",""]]
-    ["abc<<(:>>bitfield \\>> 1 <<)>>def",["c",":","","bitfield \\>> 1 ",""]]
-    ["abc<<(:>>bitfield >\\> 1 <<)>>def",["c",":","","bitfield >\\> 1 ",""]]
-    ["abc<<(:js>>4 + 3<<)>>def",["c",":","js","4 + 3",""]]
-    ["abc<<(.js>>4 + 3<<)>>def",["c",".","js","4 + 3",""]]
-    ["abc<<(:js>>4 + 3<<:js)>>def",["c",":","js","4 + 3",":js"]]
-    ["abc<<(.js>>4 + 3<<.js)>>def",["c",".","js","4 + 3",".js"]]
+    ["<<(.>><<)>>",[".","","",""]]
+    ["<<(.>>xxx<<)>>",[".","","xxx",""]]
+    ["<<(.>>some code<<)>>",[".","","some code",""]]
+    ["abc<<(.>>4 + 3<<)>>def",[".","","4 + 3",""]]
+    ["<<(:>><<)>>",[":","","",""]]
+    ["<<(:>>xxx<<)>>",[":","","xxx",""]]
+    ["<<(:>>some code<<)>>",[":","","some code",""]]
+    ["abc<<(:>>4 + 3<<)>>def",[":","","4 + 3",""]]
+    ["abc<<(:>>bitfield \\>> 1 <<)>>def",[":","","bitfield \\>> 1 ",""]]
+    ["abc<<(:>>bitfield >\\> 1 <<)>>def",[":","","bitfield >\\> 1 ",""]]
+    ["abc<<(:js>>4 + 3<<)>>def",[":","js","4 + 3",""]]
+    ["abc<<(.js>>4 + 3<<)>>def",[".","js","4 + 3",""]]
+    ["abc<<(:js>>4 + 3<<:js)>>def",[":","js","4 + 3",":js"]]
+    ["abc<<(.js>>4 + 3<<.js)>>def",[".","js","4 + 3",".js"]]
     ["abc<<(:js>>4 + 3<<:)>>def",null]
     ["abc<<(.js>>4 + 3<<.)>>def",null]
     ]
@@ -118,12 +118,12 @@ nice_text_rpr = ( text ) ->
 #-----------------------------------------------------------------------------------------------------------
 @[ "MKTS.MACRO_ESCAPER.region_patterns match region macros" ] = ( T, done ) ->
   probes_and_matchers = [
-    ["<<(>><<)>>",["","(","",""]]
-    ["<<(bold>><<)>>",["","(","bold",""]]
-    ["<<(bold>><<bold)>>",["","(","bold",""]]
-    ["<<(foo>><<bar)>>",["","(","foo",""]]
-    ["yadda <<(foo>>grom<<bar)>> blah <<)>>",[" ","(","foo",""]]
-    ["yadda <<bar)>> blah <<)>>",[" ","","bar",")"]]
+    ["<<(>><<)>>",["(","",""]]
+    ["<<(bold>><<)>>",["(","bold",""]]
+    ["<<(bold>><<bold)>>",["(","bold",""]]
+    ["<<(foo>><<bar)>>",["(","foo",""]]
+    ["yadda <<(foo>>grom<<bar)>> blah <<)>>",["(","foo",""]]
+    ["yadda <<bar)>> blah <<)>>",["","bar",")"]]
     ]
   patterns = ( copy_regex_non_global pattern for pattern in MKTS.MACRO_ESCAPER.region_patterns )
   for [ probe, matcher, ] in probes_and_matchers
@@ -135,11 +135,11 @@ nice_text_rpr = ( text ) ->
 #-----------------------------------------------------------------------------------------------------------
 @[ "MKTS.MACRO_ESCAPER.bracketed_raw_patterns matches raw macro" ] = ( T, done ) ->
   probes_and_matchers = [
-    ["<<<...raw material...>>>",["","<","...raw material..."]]
+    ["<<<...raw material...>>>",["<","...raw material..."]]
     ["<<(.>>some code<<)>>",null]
-    ["<<<>>>",["","<",""]]
-    ["abcdef<<<\\XeLaTeX{}>>>ghijklm",["f","<","\\XeLaTeX{}"]]
-    ["abcdef<<<123\\>>>0>>>ghijklm",["f","<","123\\>>>0"]]
+    ["<<<>>>",["<",""]]
+    ["abcdef<<<\\XeLaTeX{}>>>ghijklm",[ '<', '\u001088\u0011eLaTeX{}' ]]
+    ["abcdef<<<123\\>>>0>>>ghijklm",[ '<', '123\u001062\u0011>>0' ]]
     ["abcdef\\<<<123>>>ghijklm",null]
     ["abcdef<\\<<123>>>ghijklm",null]
     ["abcdef<<\\<123>>>ghijklm",null]
@@ -147,7 +147,9 @@ nice_text_rpr = ( text ) ->
     ]
   patterns = ( copy_regex_non_global pattern for pattern in MKTS.MACRO_ESCAPER.bracketed_raw_patterns )
   for [ probe, matcher, ] in probes_and_matchers
-    result = list_from_match match_first patterns, probe
+    S       = MKTS.MACRO_ESCAPER.initialize_state {}
+    probe   = MKTS.MACRO_ESCAPER.escape.escape_chrs S, probe
+    result  = list_from_match match_first patterns, probe
     help JSON.stringify [ probe, result, ]
     T.eq result, matcher
   done()
@@ -155,24 +157,26 @@ nice_text_rpr = ( text ) ->
 #-----------------------------------------------------------------------------------------------------------
 @[ "MKTS.MACRO_ESCAPER.command_and_value_patterns matches command macro" ] = ( T, done ) ->
   probes_and_matchers = [
-    ["<<!>>",["","!",""]]
-    ["<<!name>>",["","!","name"]]
-    ["abc<<!name>>def",["c","!","name"]]
-    ["abc<<!n>me>>def",["c","!","n>me"]]
-    ["abc<<!n>\\>me>>def",["c","!","n>\\>me"]]
-    ["abc<<!n\\>me>>def",["c","!","n\\>me"]]
+    ["<<!>>",["!",""]]
+    ["<<!name>>",["!","name"]]
+    ["abc<<!name>>def",["!","name"]]
+    ["abc<<!n>me>>def",["!","n>me"]]
+    ["abc<<!n>\\>me>>def",[ '!', 'n>\u001062\u0011me' ]]
+    ["abc<<!n\\>me>>def",[ '!', 'n\u001062\u0011me' ]]
     ["abc\\<<!nme>>def",null]
-    ["<<$>>",["","$",""]]
-    ["<<$name>>",["","$","name"]]
-    ["abc<<$name>>def",["c","$","name"]]
-    ["abc<<$n>me>>def",["c","$","n>me"]]
-    ["abc<<$n>\\>me>>def",["c","$","n>\\>me"]]
-    ["abc<<$n\\>me>>def",["c","$","n\\>me"]]
+    ["<<$>>",["$",""]]
+    ["<<$name>>",["$","name"]]
+    ["abc<<$name>>def",["$","name"]]
+    ["abc<<$n>me>>def",["$","n>me"]]
+    ["abc<<$n>\\>me>>def",[ '$', 'n>\u001062\u0011me' ]]
+    ["abc<<$n\\>me>>def",[ '$', 'n\u001062\u0011me' ]]
     ["abc\\<<$nme>>def",null]
     ]
   patterns = ( copy_regex_non_global pattern for pattern in MKTS.MACRO_ESCAPER.command_and_value_patterns )
   for [ probe, matcher, ] in probes_and_matchers
-    result = list_from_match match_first patterns, probe
+    S           = MKTS.MACRO_ESCAPER.initialize_state {}
+    probe       = MKTS.MACRO_ESCAPER.escape.escape_chrs S, probe
+    result      = list_from_match match_first patterns, probe
     help JSON.stringify [ probe, result, ]
     T.eq result, matcher
   done()
@@ -183,11 +187,14 @@ nice_text_rpr = ( text ) ->
     ["helo world",null]
     ["helo \\<< world",null]
     ["helo <\\< world",null]
-    ["helo << world",[" ","<<"]]
+    ["helo << world",["<<"]]
+    ["helo >> world",[">>"]]
     ]
   patterns = ( copy_regex_non_global pattern for pattern in MKTS.MACRO_ESCAPER.illegal_patterns )
   for [ probe, matcher, ] in probes_and_matchers
-    result = list_from_match match_first patterns, probe
+    S           = MKTS.MACRO_ESCAPER.initialize_state {}
+    probe       = MKTS.MACRO_ESCAPER.escape.escape_chrs S, probe
+    result      = list_from_match match_first patterns, probe
     help JSON.stringify [ probe, result, ]
     T.eq result, matcher
   done()
@@ -254,10 +261,11 @@ nice_text_rpr = ( text ) ->
   probes_and_matchers = [
     ["some text here<<!foo>>and some there","some text here<<!foo>>and some there",[]]
     ["abcd<<<some raw content>>>efg","abcd\u0015raw0\u0013efg",[{"key":"raw0","markup":"<","raw":"some raw content","parsed":null}]]
-    ["abcd\\<<<some raw content>>>efg","abcd\\<<<some raw content>>>efg",[]]
+    ["abcd\\<<<some raw content>>>efg",'abcd\u001060\u0011<<some raw content>>>efg',[]]
     ]
   for [ probe, text_matcher, registry_matcher, ] in probes_and_matchers
-    S = MKTS.MACRO_ESCAPER.initialize_state {}
+    S           = MKTS.MACRO_ESCAPER.initialize_state {}
+    probe       = MKTS.MACRO_ESCAPER.escape.escape_chrs S, probe
     text_result = MKTS.MACRO_ESCAPER.escape.bracketed_raw_macros S, probe
     help JSON.stringify [ probe, text_result, S.MACRO_ESCAPER[ 'registry' ], ]
     T.eq text_result, text_matcher
@@ -324,13 +332,14 @@ nice_text_rpr = ( text ) ->
   probes_and_matchers = [
     ["some text here <<!foo>> and some there","some text here \u0015command0\u0013 and some there",[{"key":"command0","markup":"!","raw":"foo","parsed":null}]]
     ["some text here <<$foo>> and some there","some text here \u0015value0\u0013 and some there",[{"key":"value0","markup":"$","raw":"foo","parsed":null}]]
-    ["some text here \\<<!foo>> and some there","some text here \\<<!foo>> and some there",[]]
-    ["some text here \\<<$foo>> and some there","some text here \\<<$foo>> and some there",[]]
+    ["some text here \\<<!foo>> and some there",'some text here \u001060\u0011<!foo>> and some there',[]]
+    ["some text here \\<<$foo>> and some there",'some text here \u001060\u0011<$foo>> and some there',[]]
     ["some text here<!-- omit this --> and some there","some text here<!-- omit this --> and some there",[]]
     ["abcd<<<some raw content>>>efg","abcd<<<some raw content>>>efg",[]]
     ]
   for [ probe, text_matcher, registry_matcher, ] in probes_and_matchers
-    S = MKTS.MACRO_ESCAPER.initialize_state {}
+    S           = MKTS.MACRO_ESCAPER.initialize_state {}
+    probe       = MKTS.MACRO_ESCAPER.escape.escape_chrs S, probe
     text_result = MKTS.MACRO_ESCAPER.escape.command_and_value_macros S, probe
     help JSON.stringify [ probe, text_result, S.MACRO_ESCAPER[ 'registry' ], ]
     T.eq text_result, text_matcher
