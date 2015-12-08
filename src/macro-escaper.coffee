@@ -405,8 +405,8 @@ after it, thereby inhibiting any processing of those portions. ###
   return @_get_expander S, @command_and_value_id_pattern, ( meta, entry ) =>
     { raw
       markup }    = entry
-    macro_type    = if markup is '!' then 'command' else 'value'
-    return [ '.', macro_type, raw, ( MKTS.MD_READER.copy meta ), ]
+    # macro_type    = if markup is '!' then 'command' else 'value'
+    return [ markup, raw, null, ( MKTS.MD_READER.copy meta ), ]
 
 #-----------------------------------------------------------------------------------------------------------
 @$expand.$escape_chrs = ( S ) =>

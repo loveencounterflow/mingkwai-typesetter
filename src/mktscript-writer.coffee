@@ -120,10 +120,17 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
 @$show_mktsmd_events = ( S ) ->
   return D.$observe ( event, has_ended ) =>
     if event?
+      [ type, name, text, meta, ] = event
       if select event, 'tex', null, yes
         null
+      else if select event, '#'
+        switch name
+          when 'warn'
+            line_color = CND.red
+          else
+            line_color = CND.brown
+        log line_color type, name, text
       else
-        [ type, name, text, meta, ] = event
         if is_hidden event
           line_color = CND.grey
         else if select event, '.', 'warning'
