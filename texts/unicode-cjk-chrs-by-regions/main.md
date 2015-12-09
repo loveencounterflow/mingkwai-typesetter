@@ -1,129 +1,37 @@
 
-<<(keep-lines>>
-我不住上海不住柏林
-而我在上網我在博覽。
-<<keep-lines)>>
 
+three regions 的人一中上要大在出以
 
-“比如，要想找带‘门’字旁的汉字，在我的数据库里一搜，就能找到，这是电子化的好处。”—Richard Sears, [美国“汉字叔叔”自费创建汉字网 为此穷困潦倒](http://news.qq.com/a/20150415/011681.htm)
+* around ≈2,500 character forms (25%) are common to all three regions (marked as 'cjt'; examples: 的人一中上要大在出以);
+<<!end>>
+
+<!--
+關关関闗𨶹
+
+ -->
+
+<!-- <<<\listoffigures>>> -->
+
+![CJK Characters by Region](euler-venn-diagram-cjk-usage-by-region.png)
 
 <<(multi-column>>
 
-### xxx
-
-这们说时为过她說：「你好。」对还发开经现样动从间长话实头问进车业两给电关见门语
-这们说时为过对还发开经现样动从间长话实头问进车业两给电关见门语
-这们说时为过对还发开经现样动从间长她說：「你好。」话实头问进车业两给电关见门语
-这们说时为过对还发开经现样动从间长话实头问进车业两给电关见门语
-这们说时为过对还发开经现样动从间长话实头问进车业两给电关见门语
-这们说时为过对还发开经现样动从间长话实头问进车业两给电关见门语
-这们说时为过对还发开经现样动从间长话实头问进车业两给电关见门语
-
-xxx `这们说时` xxx
-
-```
-xxx 这们说时 **xxx**
-```
-
-```
-xxx 这们说时 **xxx**
-```
-
-<<!end>>
-
-MingKwai TypeScript uses three layers of markup:
-
-(1) A macro language which uses double pointy brackets—so called
-  macro brackets—to escape into a meta-language;
-(3) MarkDown as parsed by [`markdown-it`](https://github.com/markdown-it)
-  (which basically means it should be quite close to the
-  [CommonMark](http://commonmark.org/)) specification); and
-(3) HTML markup.
-
-The ordering in the list above reflects the precedence of the layers:
-the macro language takes the highest precedence and HTML constructs
-the lowest. Because MarkDown proper takes higher precedence than
-HTML, its constructs are parsed even if they appear between a pair
-of HTML tags. Likewise, because the macro language takes the highest
-priority, it is not possible to inhibit its interpretation by
-putting a macro inside HTML tags or inside a MarkDown fenced code
-block.
-
-* MKTS allows to use **HTML** in the markup.
-
-* **Regions** are used to markup stretches within a document,
-  be it inline spans, blocks of text or longer portions like
-  sections and chapters. Regions use parentheses to indicate
-  the start and end points:
-  * Full Notation: `<<(name>>...<<name)>>`
-  * Short Notation: `<<(name>>...<<)>>`
-    When used in the long form,
-    the name used in the start tag must match the one in the end tag.
-    As with HTML tags, regions must be properly nested and must
-    not overlap.
-
-<!-- <<(.myclass>>text<<)>>
-<<(#myid>>text<<)>>
-<span id='myid'>text</span> -->
-
-* **Actions** allow to execute code snippets inside the document. They
-  come in two flavors: 'silent' and 'vocal'.
-
-  Silent actions do not
-  leave a direct trace in the document unless their code calls an
-  API function to do that; vocal actions are replaced by their
-  evaluated value (i.e. whatever `eval( "some code" )` returns).
-  <!-- ### TAINT unclear how to derive value in case it is not already a string ### -->
-
-  * **Silent Actions**
-  * Full Notation: `<<(.>>some code<<.)>>`, `<<(.js>>some code<<.js)>>`
-  * Short Notation: `<<(.>>some code<<)>>`, `<<(.js>>some code<<)>>`
-
-  * **Vocal Actions**
-  * Full Notation: `<<(:>>some code<<:)>>`, `<<(:js>>some code<<:js)>>`
-  * Short Notation: `<<(:>>some code<<)>>`, `<<(:js>>some code<<)>>`
-
-  As with regions, the rule is that wherever the more explicit long form
-  is used, the action type marker (`.` (dot) or `:` (colon)) and the action
-  name of the start and end tags must match.
-
-* To execute an action without further logic code (i.e. a simple function call)  
-  in the manuscript, either a silent action `<<(.>>makeitso 42<<.)>>` or the
-  short **Command** notation `<<!makeitso 42>>` can be used. Observe that
-  commands do not allow for a language annotation; whatever is inside
-  the macro tag will be parsed as CoffeeScript.
-
-* To interpolate the value of a variable into the document,
-  either a vocal action `<<(:>>foo<<)>>` or the shorter **Value**
-  notation `<<$foo>>` can be used.
-  <!-- ### TAINT unclear how to derive value in case it is not already a string ### -->
-
-* Finally, there are **Raw** regions that give authors an opportunity
-  to talk directly to the <<<\LaTeX>>> typesetting system. Raw regions are
-  surrounded by triple pointy brackets, e.g. `<<<...raw material...>>>`.
-
-
-
-**原**: 最初的，开始的. 本来.
-**源**: 水流所从出的地方. 事物的根由.
-**元**: 头、首、始、大. 基本.
-
-
-
-<<!end>>
-
-
-Here’s a so-called Euler-Venn-Diagram that shows (1) how many CJK character (a.k.a. ideograph, sinograph, tetragraph, …) codepoints in Unicode are considered ‘important for daily use’ (just under 10,000); (2) how many of those are used in each of the three important usage areas (i.e. Ⓒ for Mainland China (PRC without the Hong Kong and Macau SARs), Ⓙ for Japan, and Ⓣ for Taiwan, Hong Kong, and Macau); and (3) how much overlap there is for each of these regions. The bars made up from sample characters in the lower part visualize the same data, but this time with bar heights instead of circle areas being proportional to numbers.
+The diagram above shows
+(1) how many CJK characters in Unicode are considered ‘important for daily use’ (just under 10,000);
+(2) how many of those are used in each of the three important usage areas (i.e. Ⓒ for Mainland China (PRC without the Hong Kong and Macau SARs), Ⓙ for Japan, and Ⓣ for Taiwan, Hong Kong, and Macau); and
+(3) how much overlap there is for each of these regions. The bars made up from sample characters in the lower part visualize the same data, but this time with bar heights instead of circle areas being proportional to numbers.
 
 Just in order to stress it, a 'character’ in this chart is equivalent to 'a Unicode codepoint’, so for example 馬 and 马 count as two characters, and 關, 关, 関, 闗, 𨶹 count as five characters. Dictionaries will list 馬马 as 'one character with two variants’ and 關关関闗𨶹 as 'one character with five variants’, but that’s not what we’re counting here.
 
-You can see at a glance that
+* around ≈2,500 character forms (25%) are common to all three regions (marked as 'cjt'; examples: 的人一中上要大在出以);
+* around ≈1,700 character forms (17%) are uniquely used in to the PRC (marked as 'c'; ex.: 这们说时为过对还发开);
+* another ≈1,700 character forms (17%) are reported to be uniquely used in Taiwan, Korea, Hong Kong, and/or Macau (marked 't'; ex.: 說沒麼嗎點樣關兩聽灣);
+* only ≈300 character forms (3%) are unique to Japan (marked 'j'; ex.: 関気読経済説対悪実歳)
+* less than 150 character forms (1%) are shared by the PRC and Japan, but not used in
+  other regions (marked 'cj', ex.: 会来国学当内数声写将).
 
-* around 25%—one out of four—of all characters are common to all three regions;
-* around 17%—one out of six—of all characters are unique to the PRC and Taiwan,
-  respectively, while only 3% are unique to Japan;
-* only 1% of all characters are uniquely shared by the PRC and Japan, the most frequent ones being 会来国学当内数声写将号参区. But observe that usage frequencies usually follow Zipf’s Law (quote: “the frequency of any word is inversely proportional to its rank in the frequency table”); because of this, any one character near the top of a frequency ranking will appear vastly more often than any one near the bottom of the same list. As a result, although the outcomes of the PRC’s and Japan’s post-war efforts to simplify characters share but one out of a hundred character shapes, those shapes are still exceedingly often seen in daily life.
 Of the three regions—Ⓒ, Ⓙ, Ⓣ—the Ⓣ region is the one with the most balanced shared usages, the other two regions showing greater relative differences between their subsets shared with zero, one or two of the other regions. In a sense, therefore, the Ⓣ region may be considered to be the 'most representative’ or 'most average’ one in terms of character usage.
+
 
 
 这们说时为过对还发开经现样动从间长话实头问进车业两给电关见门语让场东别题书记觉师爱应报员边论张总处产认结风带乐难该亲马华资钱许务吗妈变请专计单办费传欢习广图转军视连尔远满读联红达导设术战队运买试选观识节讲义证轻级决统调刚线评领热权类历课组饭较兴脸则备阳飞谁约标终诉议谈规岁际错词谢众园团续罗馆虽质紧够济亚显绝脑简创户闻剧纪击举细责汉龙农刘钟陈丽营仅
@@ -151,6 +59,8 @@ Of the three regions—Ⓒ, Ⓙ, Ⓣ—the Ⓣ region is the one with the most b
 ⒸⒿⓉ
 ❶❻❽
 
+<<(multi-column>>
+<<!end>>
 
 c   1743 这们说时为过对还发开经现样动从间长话实头问进车业两给电关见门语让场东别题书记觉师爱应报员边论张总处产认结风带乐难该亲马华资钱许务吗妈变请专计单办费传欢习广图转军视连尔远满读联红达导设术战队运买试选观识节讲义证轻级决统调刚线评领热权类历课组饭较兴脸则备阳飞谁约标终诉议谈规岁际错词谢众园团续罗馆虽质紧够济亚显绝脑简创户闻剧纪击举细责汉龙农刘钟陈丽营仅
 cj   134 会来国学当内数声写将号参区

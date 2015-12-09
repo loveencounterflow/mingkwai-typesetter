@@ -8,7 +8,7 @@ njs_fs                    = require 'fs'
 #...........................................................................................................
 CND                       = require 'cnd'
 rpr                       = CND.rpr
-badge                     = 'mkts/tex-adapter'
+badge                     = 'mkts/tex-writer'
 log                       = CND.get_logger 'plain',     badge
 info                      = CND.get_logger 'info',      badge
 whisper                   = CND.get_logger 'whisper',   badge
@@ -275,52 +275,54 @@ MACRO_ESCAPER             = require './macro-escaper'
     return null
   #.........................................................................................................
   for chr in XNCHR.chrs_from_text text
-    ### Treat whitespace specially ###
-    ### TAINT better to check against /^\s$/ ??? ###
-    if ( is_latin_whitespace = chr in [ '\x20', '\n', '\r', '\t', ] )
-      command = last_command
-    else
-      { chr
-        uchr
-        fncr
-        rsg   }   = XNCHR.analyze chr
-      #.......................................................................................................
-      switch rsg
-        when 'jzr-fig'  then chr = uchr
-        when 'u-pua'    then rsg = 'jzr-fig'
-        when 'u-latn'   then chr = @MKTX.TEX.escape_for_tex chr
-      #.......................................................................................................
-      this_is_cjk = @MKTX.TEX.is_cjk_rsg rsg, options
-      if last_was_cjk and this_is_cjk
-        ### Avoid to put second glue between glue and CJK character: ###
-        chunk.push cjk_interchr_glue unless chr is cjk_interchr_glue
-      last_was_cjk = this_is_cjk
-      #.......................................................................................................
-      ### TAINT if chr is a TeX active ASCII chr like `$`, `#`, then it will be escaped at this point
-      and no more match entries in `glyph_styles` ###
-      if ( replacement = glyph_styles[ chr ] )?
-        advance()
-        R.push replacement
-        last_command = null
-        continue
-      #.......................................................................................................
-      unless ( command = tex_command_by_rsgs[ rsg ] )?
-        command = tex_command_by_rsgs[ 'fallback' ] ? null
-        message = "unknown RSG #{rpr rsg}: #{fncr} #{chr} (using fallback #{rpr command})"
-        if send? then send remark 'warn', message, {}
-        else          warn message
+    # ### Treat whitespace specially ###
+    # ### TAINT better to check against /^\s$/ ??? ###
+    # if false # ( is_latin_whitespace = chr in [ '\x20', '\n', '\r', '\t', ] )
+    #   command = last_command
+    # else
+    { chr
+      uchr
+      fncr
+      rsg   }   = XNCHR.analyze chr
+    #.......................................................................................................
+    switch rsg
+      when 'jzr-fig'  then chr = uchr
+      when 'u-pua'    then rsg = 'jzr-fig'
+      when 'u-latn'   then chr = @MKTX.TEX.escape_for_tex chr
+    #.......................................................................................................
+    this_is_cjk = @MKTX.TEX.is_cjk_rsg rsg, options
+    if last_was_cjk and this_is_cjk
+      ### Avoid to put second glue between glue and CJK character: ###
+      chunk.push cjk_interchr_glue unless chr is cjk_interchr_glue
+    last_was_cjk = this_is_cjk
+    #.......................................................................................................
+    ### TAINT if chr is a TeX active ASCII chr like `$`, `#`, then it will be escaped at this point
+    and no more match entries in `glyph_styles` ###
+    # debug '©53938-1', chr, rsg, tex_command_by_rsgs[ rsg ]
+    if ( replacement = glyph_styles[ chr ] )?
+      advance()
+      R.push replacement
+      last_command = null
+      continue
+    #.......................................................................................................
+    unless ( command = tex_command_by_rsgs[ rsg ] )?
+      command = tex_command_by_rsgs[ 'fallback' ] ? null
+      message = "unknown RSG #{rpr rsg}: #{fncr} #{chr} (using fallback #{rpr command})"
+      if send? then send remark 'warn', message, {}
+      else          warn message
     #.......................................................................................................
     unless command?
       advance()
       chunk.push chr
       continue
     #.......................................................................................................
+    # debug '©53938-2', chr, rsg, tex_command_by_rsgs[ rsg ]
     if advance_each_chr or last_command isnt command
       advance()
       last_command = command
       ### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ###
       unless command is 'latin'
-        command = 'cn'
+        # command = 'cn'
         chunk.push "{\\#{command}{}"
       # chunk.push "{\\#{command}{}" unless command is 'latin'
       ### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ###
@@ -462,10 +464,10 @@ MACRO_ESCAPER             = require './macro-escaper'
 
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.REGION.$keep_lines = ( S ) =>
-  track = MD_READER.TRACKER.new_tracker '{keep-lines}'
+  track = MD_READER.TRACKER.new_tracker '(keep-lines)'
   #.........................................................................................................
   return $ ( event, send ) =>
-    within_keep_lines = track.within '{keep-lines}'
+    within_keep_lines = track.within '(keep-lines)'
     track event
     #.......................................................................................................
     if select event, '.', 'text'
@@ -480,11 +482,11 @@ MACRO_ESCAPER             = require './macro-escaper'
       [ type, name, text, meta, ] = event
       #.....................................................................................................
       if type is '('
-        track.enter '{keep-lines}'
+        track.enter '(keep-lines)'
         send [ 'tex', "\\begingroup\\mktsObeyAllLines{}", ]
       else
         send [ 'tex', "\\endgroup{}", ]
-        track.leave '{keep-lines}'
+        track.leave '(keep-lines)'
     #.......................................................................................................
     else
       send event
@@ -492,10 +494,10 @@ MACRO_ESCAPER             = require './macro-escaper'
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.REGION.$code = ( S ) =>
   ### TAINT code duplication with `REGION.$keep_lines` possible ###
-  track = MD_READER.TRACKER.new_tracker '{code}'
+  track = MD_READER.TRACKER.new_tracker '(code)'
   #.........................................................................................................
   return $ ( event, send ) =>
-    within_code = track.within '{code}'
+    within_code = track.within '(code)'
     track event
     #.......................................................................................................
     if select event, '.', 'text'
@@ -562,11 +564,11 @@ MACRO_ESCAPER             = require './macro-escaper'
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.BLOCK.$paragraph = ( S ) =>
   ### TAINT should unify the two observers ###
-  track = MD_READER.TRACKER.new_tracker '{code}', '{keep-lines}'
+  track = MD_READER.TRACKER.new_tracker '(code)', '(keep-lines)'
   #.........................................................................................................
   return $ ( event, send ) =>
-    within_code       = track.within '{code}'
-    within_keep_lines = track.within '{keep-lines}'
+    within_code       = track.within '(code)'
+    within_keep_lines = track.within '(keep-lines)'
     track event
     #.......................................................................................................
     if select event, '.', 'p'
@@ -654,6 +656,42 @@ MACRO_ESCAPER             = require './macro-escaper'
       send event
 
 #-----------------------------------------------------------------------------------------------------------
+@MKTX.INLINE.$image = ( S ) =>
+  track       = MD_READER.TRACKER.new_tracker '(image)'
+  event_cache = []
+  alt_cache   = []
+  src         = null
+  alt         = null
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    within_image = track.within '(image)'
+    track event
+    [ type, name, text, meta, ] = event
+    #.......................................................................................................
+    if select event, '(', 'image'
+      send stamp event
+      src                         = njs_path.resolve S.layout_info[ 'source-home' ], meta[ 'src' ]
+    #.......................................................................................................
+    else if select event, ')', 'image'
+      alt = alt_cache.join ''
+      send [ 'tex', '\\begin{figure}%\n', ]
+      ### TAINT escape `src`? ###
+      send [ 'tex', "\\includegraphics[width=0.5\\textwidth]{#{src}}%\n", ]
+      send [ 'tex', "\\caption[#{alt}]{%\n", ]
+      send cached_event for cached_event in event_cache
+      send [ 'tex', '}%\n', ]
+      send [ 'tex', '\\end{figure}%\n', ]
+      src               = null
+      alt_cache.length  = 0
+    #.......................................................................................................
+    else if within_image
+      event_cache.push event
+      alt_cache.push text if select event, '.', 'text'
+    #.......................................................................................................
+    else
+      send event
+
+#-----------------------------------------------------------------------------------------------------------
 @MKTX.MIXED.$raw = ( S ) =>
   remark = MD_READER._get_remark()
   #.........................................................................................................
@@ -663,8 +701,6 @@ MACRO_ESCAPER             = require './macro-escaper'
       [ type, name, text, meta, ] = event
       send stamp hide event
       send remark 'convert', "raw to TeX", copy meta
-      debug '@2487', rpr text
-      debug '@2487', rpr MACRO_ESCAPER.escape.unescape_escape_chrs S, text
       text = MACRO_ESCAPER.escape.unescape_escape_chrs S, text
       send [ 'tex', text, ]
       # send stamp event
@@ -695,11 +731,11 @@ MACRO_ESCAPER             = require './macro-escaper'
   #.........................................................................................................
   return $ ( event, send, end ) =>
     if event?
-      #.......................................................................................................
+      #.....................................................................................................
       if select event, ')', 'footnote'
         send last_event if last_event? and not select last_event, '.', 'p'
         last_event = event
-      #.......................................................................................................
+      #.....................................................................................................
       else
         send last_event if last_event?
         last_event = event
@@ -743,6 +779,24 @@ MACRO_ESCAPER             = require './macro-escaper'
     else
       send event
 
+#-----------------------------------------------------------------------------------------------------------
+@MKTX.INLINE.$link = ( S ) =>
+  ### TAINT make configurable how link is handled (clickable, footnote, inline...) ###
+  ### TAINT consider to re-send footnote event ###
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    #.......................................................................................................
+    if select event, '(', 'link'
+      null
+    else if select event, ')', 'link'
+      send stamp event
+      [ type, name, text, meta, ] = event
+      message                     = @MKTX.TEX.fix_typography_for_tex text, S.options
+      send [ 'tex', "\\footnote{#{message}}", ]
+    #.......................................................................................................
+    else
+      send event
+
 
 #===========================================================================================================
 # CLEANUP
@@ -755,7 +809,7 @@ MACRO_ESCAPER             = require './macro-escaper'
       if text is ''
         ### remain silent to make output an easier read ###
         null
-        # send remark 'drop', "empty text", copy meta
+        send remark 'drop', "empty text", copy meta
       else
         send event
     else
@@ -763,6 +817,8 @@ MACRO_ESCAPER             = require './macro-escaper'
 
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.CLEANUP.$remove_empty_p_tags = ( S ) =>
+  ### TAINT emptyness of  `p` tags ist tested for by counting intermittend `text` events; however, a
+  paragraph could conceivably also consist of e.g. a single image. ###
   text_count  = 0
   remark      = MD_READER._get_remark()
   #.........................................................................................................
@@ -781,7 +837,7 @@ MACRO_ESCAPER             = require './macro-escaper'
         send event
       else
         [ _, _, _, meta, ] = event
-        send remark 'drop', "`.p` because it's empty", copy meta
+        send remark 'drop', "empty `.p`", copy meta
       text_count = 0
     #.......................................................................................................
     else
@@ -831,42 +887,43 @@ MACRO_ESCAPER             = require './macro-escaper'
       send event
 
 
-
 #===========================================================================================================
 #
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.$show_unhandled_tags = ( S ) =>
   return $ ( event, send ) =>
     ### TAINT selection could be simpler, less repetitive ###
-    if ( event[ 0 ] in [ 'tex', 'text', ] ) or select event, '.', 'text'
+    if ( event[ 0 ] in [ 'tex', 'text', ] ) or select event, '.', [ 'text', 'raw', ]
       send event
     else unless is_stamped event
+      debug '©04210', JSON.stringify event
       [ type, name, text, meta, ] = event
-      if text?
-        if ( CND.isa_pod text )
-          if ( Object.keys text ).length is 0
-            text = ''
-          else
-            text = rpr text
-      else
-        text = ''
-      debug '©37434', MKTS.MD_READER.FENCES
-      if type in [ '.', '!', ] or type in MKTS.MD_READER.FENCES.left
-        first             = type
-        last              = name
-      else
-        first             = name
-        last              = type
-      event_txt         = first + last + ' ' + text
+      # if text?
+      #   if ( CND.isa_pod text )
+      #     if ( Object.keys text ).length is 0
+      #       text = ''
+      #     else
+      #       text = rpr text
+      # else
+      #   text = ''
+      # if type in [ '.', '!', ] or type in MKTS.MD_READER.FENCES.left
+      #   first             = type
+      #   last              = name
+      # else
+      #   first             = name
+      #   last              = type
+      # event_txt         = first + last + ' ' + text
+      event_txt = "unhandled event: #{JSON.stringify event, null, ' '}"
+      warn event_txt
       send [ '.', 'warning', event_txt, ( copy meta ), ]
-      send hide stamp event
+      # send hide stamp event
     else
       send event
 
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.$show_warnings = ( S ) =>
-  pre               = '█'
-  post              = '█'
+  # pre               = '█'
+  # post              = '█'
   return $ ( event, send ) =>
     ### TAINT this makes clear why we should not use '.' as type here; `warning` is a meta-event, not
     primarily a formatting instruction ###
@@ -883,10 +940,15 @@ MACRO_ESCAPER             = require './macro-escaper'
 #
 #-----------------------------------------------------------------------------------------------------------
 @$filter_tex = ( S ) ->
+  ### TAINT reduce number of event types, shapes to simplify this ###
   return $ ( event, send ) =>
-    if select event, 'tex'                        then send event[ 1 ]
-    else if select event, '.', [ 'text', 'raw', ] then send event[ 2 ]
-    else warn "unhandled event: #{JSON.stringify event}" unless is_stamped event
+    if select event, 'tex'
+      send event[ 1 ]
+    else if select event, '.', [ 'text', 'raw', ]
+      send event[ 2 ]
+    else unless is_stamped event
+      warn "unhandled event: #{JSON.stringify event}"
+      send.error new Error "unhandled events not allowed at this point; got #{JSON.stringify event}"
 
 
 #===========================================================================================================
@@ -927,14 +989,17 @@ MACRO_ESCAPER             = require './macro-escaper'
     .pipe @MKTX.BLOCK.$hr                                 S
     .pipe @MKTX.BLOCK.$unordered_list                     S
     .pipe @MKTX.INLINE.$code_span                         S
+    .pipe @MKTX.INLINE.$link                              S
     .pipe @MKTX.INLINE.$translate_i_and_b                 S
     .pipe @MKTX.INLINE.$em_and_strong                     S
+    .pipe @MKTX.INLINE.$image                             S
+    .pipe @MKTX.CLEANUP.$remove_empty_p_tags              S
     .pipe @MKTX.BLOCK.$paragraph                          S
     .pipe @MKTX.CLEANUP.$remove_empty_texts               S
     .pipe MKTSCRIPT_WRITER.$show_mktsmd_events            S
     # .pipe mktscript_in
-    .pipe @MKTX.$show_warnings                            S
     .pipe @MKTX.$show_unhandled_tags                      S
+    .pipe @MKTX.$show_warnings                            S
     .pipe @$filter_tex                                    S
     .pipe MD_READER.$show_illegal_chrs                    S
     .pipe writestream

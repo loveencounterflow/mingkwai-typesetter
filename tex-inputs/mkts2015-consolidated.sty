@@ -235,6 +235,8 @@
 % \XeTeXlinebreaklocale "ja"% for Japanese
 % \XeTeXlinebreakskip 0pt plus 0.1pt% sets the skip
 % }
+\newcommand{\mktsAdjustJzrCjk}{%
+}
 \newcommand{\mktsAdjustCjk}{%
   % \cjkInterchrSpacing%
   % Should fix CJK linebreaks as per http://tex.stackexchange.com/a/38276/28067
@@ -244,27 +246,26 @@
   % \XeTeXlinebreakskip 0pt plus 0.1pt% sets the skip
   }
 \newcommand{\cn}{\mktsAdjustCjk\mktsFontfileSunexta}
-\newcommand{\cnxa}[1]{{\adjustCjkIdeograph{\mktsFontfileSunexta#1}}}
-\newcommand{\cnxb}[1]{{\adjustCjkIdeograph{\mktsFontfileSunflowerucjkxb#1}}}
-\newcommand{\cnxc}[1]{{\adjustCjkIdeograph{\mktsFontfileHanaminb#1}}}
-\newcommand{\cnxd}[1]{{\adjustCjkIdeograph{\mktsFontfileBabelstonehan#1}}}
-\newcommand{\cncone}[1]{{\adjustCjkIdeograph{\mktsFontfileSunexta#1}}}      	% CJK Compatibility 1
-\newcommand{\cnctwo}[1]{{\adjustCjkIdeograph{\mktsFontfileHanamina#1}}}   				% CJK Compatibility 2
-\newcommand{\cnrone}[1]{{\adjustCjkIdeograph{\mktsFontfileSunexta#1}}}      	% CJK Radicals 1
-\newcommand{\cnrtwo}[1]{{\adjustCjkIdeograph{\mktsFontfileSunexta#1}}}      	% CJK Radicals 2
-\newcommand{\cnsym}[1]{{\adjustCjkIdeograph{\mktsFontfileHanamina#1}}}
-\newcommand{\cnstrk}[1]{{\adjustCjkIdeograph{\mktsFontfileSunexta#1}}}
-% \newcommand{\cnjzr}[1]{{\cn{#1}}}       													% Jizura Font handled by CJK Block Declaration, above
-\newcommand{\cnjzr}[1]{{\adjustJzrCjkIdeograph{\mktsFontfileJizurathreeb#1}}}
-\newcommand{\ka}[1]{\adjustKatakana{\mktsFontfileNanummyeongjo#1}}
-\newcommand{\hi}[1]{\adjustHiragana{\mktsFontfileNanummyeongjo#1}}
-\newcommand{\hg}[1]{\adjustHangeul{\mktsFontfileNanummyeongjo#1}}
+\newcommand{\cnxa}{\mktsAdjustCjk\mktsFontfileSunexta}
+\newcommand{\cnxb}{\mktsAdjustCjk\mktsFontfileSunflowerucjkxb}
+\newcommand{\cnxc}{\mktsAdjustCjk\mktsFontfileHanaminb}
+\newcommand{\cnxd}{\mktsAdjustCjk\mktsFontfileBabelstonehan}
+\newcommand{\cncone}{\mktsAdjustCjk\mktsFontfileSunexta}      	% CJK Compatibility 1
+\newcommand{\cnctwo}{\mktsAdjustCjk\mktsFontfileHanamina}   				% CJK Compatibility 2
+\newcommand{\cnrone}{\mktsAdjustCjk\mktsFontfileSunexta}      	% CJK Radicals 1
+\newcommand{\cnrtwo}{\mktsAdjustCjk\mktsFontfileSunexta}      	% CJK Radicals 2
+\newcommand{\cnsym}{\mktsAdjustCjk\mktsFontfileHanamina}
+\newcommand{\cnstrk}{\mktsAdjustCjk\mktsFontfileSunexta}
+\newcommand{\cnjzr}{\mktsAdjustJzrCjk\mktsFontfileJizurathreeb}
+\newcommand{\ka}{\mktsAdjustKatakana\mktsFontfileNanummyeongjo}
+\newcommand{\hi}{\mktsAdjustHiragana\mktsFontfileNanummyeongjo}
+\newcommand{\hg}{\mktsAdjustHangeul\mktsFontfileNanummyeongjo}
 % ..........................................................................................................
-\newcommand{\cnxBabel}[1]{{\adjustCjkIdeograph{\mktsFontfileBabelstonehan#1}}}
-\newcommand{\cnxHanaA}[1]{{\adjustCjkIdeograph{\mktsFontfileHanamina#1}}}
-\newcommand{\cnxHanaB}[1]{{\adjustCjkIdeograph{\mktsFontfileHanaminb#1}}}
-\newcommand{\cnxSunXA}[1]{{\adjustCjkIdeograph{\mktsFontfileSunexta#1}}}
-\newcommand{\cnxJzr}[1]{{\adjustJzrCjkIdeograph{\mktsFontfileJizurathreeb#1}}}
+\newcommand{\cnxBabel}{\mktsAdjustCjk\mktsFontfileBabelstonehan}
+\newcommand{\cnxHanaA}{\mktsAdjustCjk\mktsFontfileHanamina}
+\newcommand{\cnxHanaB}{\mktsAdjustCjk\mktsFontfileHanaminb}
+\newcommand{\cnxSunXA}{\mktsAdjustCjk\mktsFontfileSunexta}
+\newcommand{\cnxJzr}{\mktsAdjustJzrCjk\mktsFontfileJizurathreeb}
 % \newcommand{\missing}[1]{{\missingFont#1}}
 % ..........................................................................................................
 \newcommand{\jzrStrokeclassZZWBF}{\prPushRaise{-0.1}{-0.1}{{\mktsFontfileJizurathreeb{}}}}

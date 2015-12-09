@@ -293,11 +293,27 @@ tracker_pattern = /// ^
 @_PRE = {}
 
 #-----------------------------------------------------------------------------------------------------------
-@_PRE.$flatten_tokens = ( S ) =>
+@_PRE.$flatten_inline_tokens = ( S ) =>
   return $ ( token, send ) ->
-    switch ( type = token[ 'type' ] )
-      when 'inline' then send sub_token for sub_token in token[ 'children' ]
-      else send token
+    if ( type = token[ 'type' ] ) is 'inline'
+      send sub_token for sub_token in token[ 'children' ]
+    else
+      send token
+
+#-----------------------------------------------------------------------------------------------------------
+@_PRE.$flatten_image_tokens = ( S ) =>
+  return $ ( token, send ) ->
+    if ( type = token[ 'type' ] ) is 'image'
+      src = null
+      for [ attribute_name, attribute_value, ] in token[ 'attrs' ]
+        if attribute_name is 'src'
+          src = attribute_value
+          break
+      send { type: 'image_open',  src, map: token[ 'map' ], }
+      send sub_token for sub_token in token[ 'children' ]
+      send { type: 'image_close', src, map: token[ 'map' ], }
+    else
+      send token
 
 #-----------------------------------------------------------------------------------------------------------
 @_PRE.$reinject_html_blocks = ( S ) =>
@@ -317,7 +333,7 @@ tracker_pattern = /// ^
       ### remove extraneous text content: ###
       removed     = tokens[ 1 ]?[ 'children' ]?.splice 0, 1
       unless removed[ 0 ]?[ 'content' ] is "XXX"
-        throw new Error "should never happen"
+        throw new Error "should never happen (1)"
       S.confluence.write token for token in tokens
     else
       send token
@@ -331,6 +347,7 @@ tracker_pattern = /// ^
   remark                = @_get_remark()
   within_footnote_block = false
   end_token             = Symbol.for 'end'
+  last_link_href        = null
   #.........................................................................................................
   send_unknown = ( token, meta ) =>
     { type, } = token
@@ -349,6 +366,7 @@ tracker_pattern = /// ^
         is_first = no
         send [ '(', 'document', null, {}, ]
         send [ '.', 'command', 'empty-document', {}, ]
+      debug '©76885', [ ')', 'document', null, {}, ]
       send [ ')', 'document', null, {}, ]
       setImmediate =>
         # whisper "ending input stream"
@@ -389,24 +407,46 @@ tracker_pattern = /// ^
         # urge '@a20g', token[ 'type' ], within_footnote_block
         switch type
           # blocks
-          when 'heading_open'       then send [ '(', token[ 'tag' ],  null,               meta, ]
-          when 'heading_close'      then send [ ')', token[ 'tag' ],  null,               meta, ]
+          when 'heading_open'       then send [ '(', token[ 'tag' ],  null,                         meta, ]
+          when 'heading_close'      then send [ ')', token[ 'tag' ],  null,                         meta, ]
           when 'paragraph_open'     then null
-          when 'paragraph_close'    then send [ '.', 'p',             null,               meta, ]
-          when 'bullet_list_open'   then send [ '(', 'ul',            null,               meta, ]
-          when 'bullet_list_close'  then send [ ')', 'ul',            null,               meta, ]
-          when 'list_item_open'     then send [ '(', 'li',            null,               meta, ]
-          when 'list_item_close'    then send [ ')', 'li',            null,               meta, ]
+          when 'paragraph_close'    then send [ '.', 'p',             null,                         meta, ]
+          when 'bullet_list_open'   then send [ '(', 'ul',            null,                         meta, ]
+          when 'bullet_list_close'  then send [ ')', 'ul',            null,                         meta, ]
+          when 'list_item_open'     then send [ '(', 'li',            null,                         meta, ]
+          when 'list_item_close'    then send [ ')', 'li',            null,                         meta, ]
           # inlines
-          when 'strong_open'        then send [ '(', 'strong',        null,               meta, ]
-          when 'strong_close'       then send [ ')', 'strong',        null,               meta, ]
-          when 'em_open'            then send [ '(', 'em',            null,               meta, ]
-          when 'em_close'           then send [ ')', 'em',            null,               meta, ]
+          when 'strong_open'        then send [ '(', 'strong',        null,                         meta, ]
+          when 'strong_close'       then send [ ')', 'strong',        null,                         meta, ]
+          when 'em_open'            then send [ '(', 'em',            null,                         meta, ]
+          when 'em_close'           then send [ ')', 'em',            null,                         meta, ]
           # singles
-          when 'text'               then send [ '.', 'text',          token[ 'content' ], meta, ]
-          when 'hr'                 then send [ '.', 'hr',            token[ 'markup' ],  meta, ]
+          when 'text'               then send [ '.', 'text',          token[ 'content' ],           meta, ]
+          when 'hr'                 then send [ '.', 'hr',            token[ 'markup' ],            meta, ]
           #.................................................................................................
           # specials
+          #.................................................................................................
+          when 'link_open'
+            ### NB markdown-it does not support nested link markup a la `xxx [333 [444](555) 666](777)`;
+            as such, we have only to recall the most recent link target when the linking span is closed. ###
+            for [ attribute_name, attribute_value, ] in token[ 'attrs' ]
+              if attribute_name is 'href'
+                last_link_href = attribute_value
+                break
+              send [ '(', 'link', last_link_href, meta, ]
+          #  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+          when 'link_close'
+            send [ ')', 'link', last_link_href, meta, ]
+            last_link_href = null
+          #.................................................................................................
+          when 'image_open'
+            meta[ 'src' ] = token[ 'src' ]
+            send [ '(', 'image', null, meta, ]
+          #  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+          when 'image_close'
+            meta[ 'src' ] = token[ 'src' ]
+            send [ ')', 'image', null, meta, ]
+          #.................................................................................................
           when 'code_inline'
             text_meta             = ( @copy meta )
             text_meta[ 'markup' ] = ''
@@ -434,14 +474,14 @@ tracker_pattern = /// ^
             # send remark 'drop', "footnote block processed", ( @copy meta )
           #.................................................................................................
           when 'html_block'
-            throw new Error "should never happen"
+            throw new Error "should never happen (2)"
           #.................................................................................................
           when 'fence'
             switch token[ 'tag' ]
               when 'code'
                 language_name = token[ 'info' ]
                 language_name = 'text' if language_name.length is 0
-                send [ '(', 'code', language_name,               meta,    ]
+                send [ '(', 'code', language_name,              meta,    ]
                 send [ '.', 'text', token[ 'content' ], ( @copy meta ),  ]
                 send [ ')', 'code', language_name,      ( @copy meta ),  ]
               else send_unknown token, meta
@@ -460,7 +500,7 @@ tracker_pattern = /// ^
               else throw new Error "unknown HTML tag position #{rpr position}"
           #.................................................................................................
           else
-            debug '@26.05', token
+            # debug '@26.05', token
             send_unknown token, meta
         #...................................................................................................
         last_map = map
@@ -546,20 +586,22 @@ tracker_pattern = /// ^
   #.........................................................................................................
   return $ ( event, send ) =>
     [ type, name, text, meta, ] = event
-    # debug '©nLnB5', event
-    if name is 'document'
-      if type is ')'
-        while tag_stack.length > 0
-          sub_event                                   = tag_stack.pop()
-          [ sub_type, sub_name, sub_text, sub_meta, ] = sub_event
-          switch sub_type
-            when '(' then sub_type = ')'
-            when '(' then sub_type = ')'
-            when '(' then sub_type = ')'
-          send remark 'resend', "`#{sub_name}#{sub_type}`", @copy meta
-          S.resend [ sub_type, sub_name, sub_text, ( @copy sub_meta ), ]
+    #.......................................................................................................
+    if @select event, '(', 'document'
+      null
+    #.......................................................................................................
+    else if @select event, ')', 'document'
+      debug '©18623', tag_stack
+      while tag_stack.length > 0
+        sub_event                                   = tag_stack.pop()
+        [ sub_type, sub_name, sub_text, sub_meta, ] = sub_event
+        sub_type = ')'
+        send remark 'resend', "`#{sub_name}#{sub_type}`", @copy meta
+        S.resend [ sub_type, sub_name, sub_text, ( @copy sub_meta ), ]
+    #.......................................................................................................
     else if @select event, '('
       tag_stack.push [ type, name, null, meta, ]
+    #.......................................................................................................
     else if @select event, ')'
       ### TAINT should check matching pairs ###
       tag_stack.pop()
@@ -711,7 +753,8 @@ tracker_pattern = /// ^
   # S.confluence = input
   #.........................................................................................................
   readstream
-    .pipe @_PRE.$flatten_tokens                       S
+    .pipe @_PRE.$flatten_inline_tokens                S
+    .pipe @_PRE.$flatten_image_tokens                 S
     .pipe @_PRE.$reinject_html_blocks                 S
     # .pipe D.$observe ( event ) => debug '©1', rpr event
     .pipe @_PRE.$rewrite_markdownit_tokens            S
@@ -734,13 +777,9 @@ tracker_pattern = /// ^
     md_parser   = @_new_markdown_parser()
     MKTS.MACRO_ESCAPER.initialize_state S
     md_source   = MKTS.MACRO_ESCAPER.escape S, md_source
-    # debug '©ΘΩΓΛΛ', md_source
-    # process.exit 1
-    # debug '©69651', md_source
     tokens      = md_parser.parse md_source, S.environment
     for token in tokens
       input.write token
-    # whisper "sending `end` token"
     input.write Symbol.for 'end'
   #.........................................................................................................
   return R

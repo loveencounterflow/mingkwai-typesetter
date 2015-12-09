@@ -169,4 +169,6 @@ INPUT /usr/local/texlive/2014/texmf-dist/tex/latex/microtype/mt-LatinModernRoman
 INPUT /usr/local/texlive/2014/texmf-dist/tex/latex/microtype/mt-LatinModernRoman.cfg
 INPUT /Volumes/Storage/io/mingkwai-typesetter/texts/unicode-cjk-chrs-by-regions/.content.tex
 INPUT /Volumes/Storage/io/mingkwai-typesetter/texts/unicode-cjk-chrs-by-regions/.content.tex
+INPUT /usr/local/texlive/2014/texmf-dist/tex/latex/microtype/mt-cmr.cfg
+INPUT /usr/local/texlive/2014/texmf-dist/tex/latex/microtype/mt-cmr.cfg
 INPUT /Volumes/Storage/io/mingkwai-typesetter/texts/unicode-cjk-chrs-by-regions/unicode-cjk-chrs-by-regions.aux
