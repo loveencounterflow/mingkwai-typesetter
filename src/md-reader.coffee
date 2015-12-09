@@ -333,7 +333,7 @@ tracker_pattern = /// ^
       ### remove extraneous text content: ###
       removed     = tokens[ 1 ]?[ 'children' ]?.splice 0, 1
       unless removed[ 0 ]?[ 'content' ] is "XXX"
-        throw new Error "should never happen"
+        throw new Error "should never happen (1)"
       S.confluence.write token for token in tokens
     else
       send token
@@ -474,7 +474,7 @@ tracker_pattern = /// ^
             # send remark 'drop', "footnote block processed", ( @copy meta )
           #.................................................................................................
           when 'html_block'
-            throw new Error "should never happen"
+            throw new Error "should never happen (2)"
           #.................................................................................................
           when 'fence'
             switch token[ 'tag' ]

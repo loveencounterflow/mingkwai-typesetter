@@ -275,52 +275,54 @@ MACRO_ESCAPER             = require './macro-escaper'
     return null
   #.........................................................................................................
   for chr in XNCHR.chrs_from_text text
-    ### Treat whitespace specially ###
-    ### TAINT better to check against /^\s$/ ??? ###
-    if false # ( is_latin_whitespace = chr in [ '\x20', '\n', '\r', '\t', ] )
-      command = last_command
-    else
-      { chr
-        uchr
-        fncr
-        rsg   }   = XNCHR.analyze chr
-      #.......................................................................................................
-      switch rsg
-        when 'jzr-fig'  then chr = uchr
-        when 'u-pua'    then rsg = 'jzr-fig'
-        when 'u-latn'   then chr = @MKTX.TEX.escape_for_tex chr
-      #.......................................................................................................
-      this_is_cjk = @MKTX.TEX.is_cjk_rsg rsg, options
-      if last_was_cjk and this_is_cjk
-        ### Avoid to put second glue between glue and CJK character: ###
-        chunk.push cjk_interchr_glue unless chr is cjk_interchr_glue
-      last_was_cjk = this_is_cjk
-      #.......................................................................................................
-      ### TAINT if chr is a TeX active ASCII chr like `$`, `#`, then it will be escaped at this point
-      and no more match entries in `glyph_styles` ###
-      if ( replacement = glyph_styles[ chr ] )?
-        advance()
-        R.push replacement
-        last_command = null
-        continue
-      #.......................................................................................................
-      unless ( command = tex_command_by_rsgs[ rsg ] )?
-        command = tex_command_by_rsgs[ 'fallback' ] ? null
-        message = "unknown RSG #{rpr rsg}: #{fncr} #{chr} (using fallback #{rpr command})"
-        if send? then send remark 'warn', message, {}
-        else          warn message
+    # ### Treat whitespace specially ###
+    # ### TAINT better to check against /^\s$/ ??? ###
+    # if false # ( is_latin_whitespace = chr in [ '\x20', '\n', '\r', '\t', ] )
+    #   command = last_command
+    # else
+    { chr
+      uchr
+      fncr
+      rsg   }   = XNCHR.analyze chr
+    #.......................................................................................................
+    switch rsg
+      when 'jzr-fig'  then chr = uchr
+      when 'u-pua'    then rsg = 'jzr-fig'
+      when 'u-latn'   then chr = @MKTX.TEX.escape_for_tex chr
+    #.......................................................................................................
+    this_is_cjk = @MKTX.TEX.is_cjk_rsg rsg, options
+    if last_was_cjk and this_is_cjk
+      ### Avoid to put second glue between glue and CJK character: ###
+      chunk.push cjk_interchr_glue unless chr is cjk_interchr_glue
+    last_was_cjk = this_is_cjk
+    #.......................................................................................................
+    ### TAINT if chr is a TeX active ASCII chr like `$`, `#`, then it will be escaped at this point
+    and no more match entries in `glyph_styles` ###
+    # debug '©53938-1', chr, rsg, tex_command_by_rsgs[ rsg ]
+    if ( replacement = glyph_styles[ chr ] )?
+      advance()
+      R.push replacement
+      last_command = null
+      continue
+    #.......................................................................................................
+    unless ( command = tex_command_by_rsgs[ rsg ] )?
+      command = tex_command_by_rsgs[ 'fallback' ] ? null
+      message = "unknown RSG #{rpr rsg}: #{fncr} #{chr} (using fallback #{rpr command})"
+      if send? then send remark 'warn', message, {}
+      else          warn message
     #.......................................................................................................
     unless command?
       advance()
       chunk.push chr
       continue
     #.......................................................................................................
+    # debug '©53938-2', chr, rsg, tex_command_by_rsgs[ rsg ]
     if advance_each_chr or last_command isnt command
       advance()
       last_command = command
       ### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ###
       unless command is 'latin'
-        command = 'cn'
+        # command = 'cn'
         chunk.push "{\\#{command}{}"
       # chunk.push "{\\#{command}{}" unless command is 'latin'
       ### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ###
