@@ -235,14 +235,37 @@
 % \XeTeXlinebreaklocale "ja"% for Japanese
 % \XeTeXlinebreakskip 0pt plus 0.1pt% sets the skip
 % }
-\newcommand{\mktsAdjustJzrCjk}{%
-}
-\newcommand{\mktsDown}{%
-\special{pdf:literal 1 0  0 1 0 -20 cm}%
-}
-\newcommand{\mktsUp}{%
-\special{pdf:literal 1 0  0 1 0 20 cm}%
-}
+\newcommand{\mktsAdjustJzrCjk}{}
+
+
+\usepackage{fifo-stack}
+\FSCreate{mktsPushRaiseXStack}{0}%
+\FSCreate{mktsPushRaiseYStack}{0}%
+
+\usepackage{fp}
+\FPmul\mktsPushRaiseXFactor{1}{5}%
+\FPmul\mktsPushRaiseYFactor{1}{10}%
+\FPmul\mktsPushRaiseX{0}{0}
+\FPmul\mktsPushRaiseY{0}{0}
+\newcommand{\mktsPush}[1]{%
+  \FPmul\mktsPushRaiseX{#1}{\mktsPushRaiseXFactor}%
+  \FPmul\mktsPushRaiseY{0}{\mktsPushRaiseYFactor}%
+  \mktsTransform{\mktsPushRaiseX}{\mktsPushRaiseY}}
+\newcommand{\mktsRaise}[1]{%
+  \FPmul\mktsPushRaiseX{0}{\mktsPushRaiseXFactor}%
+  \FPmul\mktsPushRaiseY{#1}{\mktsPushRaiseYFactor}%
+  \mktsTransform{\mktsPushRaiseX}{\mktsPushRaiseY}}
+\newcommand{\mktsPushRaise}[2]{%
+  \FPmul\mktsPushRaiseX{#1}{\mktsPushRaiseXFactor}%
+  \FPmul\mktsPushRaiseY{#2}{\mktsPushRaiseYFactor}%
+  \mktsTransform{\mktsPushRaiseX}{\mktsPushRaiseY}}
+\newcommand{\mktsPushRaiseBack}{%
+  \FPmul\mktsPushRaiseX{-1}{\mktsPushRaiseX}%
+  \FPmul\mktsPushRaiseY{-1}{\mktsPushRaiseY}%
+  \mktsTransform{\mktsPushRaiseX}{\mktsPushRaiseY}}
+\newcommand{\mktsTransform}[2]{%
+  \special{pdf:literal 1 0 0 1 #1 #2 cm}}
+
 \newcommand{\mktsAdjustCjk}{%
   % \pdfliteral{ 1 0  0 1 0 -2 cm}%
   % \special{pdf:literal 1 0  0 1 0 -2 cm}%

@@ -1,5 +1,80 @@
 
 
+<<<
+
+
+% begin of MD document
+
+uvw\special{pdf:literal 1 0  0 1 0 -2 cm}xyz\special{pdf:literal 1 0  0 1 0 2 cm}abc\mktsShowpar\par
+
+{\cn{}國}{\cn{}國}{\cn{}國}{\cn{}國}{\cn{}國}{\cn{}國}
+
+{\cn{}國}%
+{\cn{}罓}%
+\prRaise{-0.2}{\cn{}罓}%
+{\cn{}國}%
+{\cn{}\special{pdf:literal 1 0  0 1 0 -2 cm}罓\special{pdf:literal 1 0  0 1 0 2 cm}}%
+{\cn{}罓}%
+
+{\cn{}國}{\cn{}國}{\cn{}國}{\cn{}國}{\cn{}國}{\cn{}國}
+
+{\cn{}國}%
+{\cn{}罓}%
+\prRaise{-0.2}{\cn{}罓}%
+{\cn{}國}%
+{\cn{}\mktsRaise{-0.2}罓\mktsPushRaiseBack}%
+{\cn{}罓}%
+
+{\cn{}國}{\cn{}國}{\cn{}國}{\cn{}國}{\cn{}國}{\cn{}國}
+
+{\cn{}國}{\cn{}國}{\cn{}國}{\cn{}國}{\cn{}國}{\cn{}國}
+
+{\cn{}國}%
+{\cn{}\mktsPush{0.4}纟\mktsPushRaiseBack}%
+{\cn{}國}%
+\prPush{0.4}{\cn{纟}}%
+{\cn{}國}%
+
+{\cn{}國}{\cn{}國}{\cn{}國}{\cn{}國}{\cn{}國}{\cn{}國}
+
+{\cn{}國}%
+\prPushRaise{0.5}{-0.2}{\cnxJzr{}}%
+{\cn{}國}
+
+{\cn{}國}%
+\mktsPushRaise{0.5}{-0.2}{\cnxJzr{}\mktsPushRaiseBack}%
+{\cn{}國}
+
+{\cn{}國}{\cn{}國}{\cn{}國}{\cn{}國}{\cn{}國}{\cn{}國}
+
+\FSPush{mktsPushRaiseXStack}{1}%
+\FSPush{mktsPushRaiseXStack}{2}%
+\FSPush{mktsPushRaiseXStack}{3}%
+% \FSPop{mktsPushRaiseXStack},
+% \FSPop{mktsPushRaiseXStack},
+\FSTop{mktsPushRaiseXStack}.
+\FSShowTop{mktsPushRaiseXStack}
+% \def\z{\FSPop{mktsPushRaiseXStack}}
+x\mktsPush{\FSTop{mktsPushRaiseXStack}}y%
+\FSPop{mktsPushRaiseXStack}%
+x\mktsPush{\FSTop{mktsPushRaiseXStack}}z
+
+%
+% {\cn{}\mktsPush{2}纟\mktsPush{-2}}%
+% {\cn{}國}%
+% \prPush{0.4}{\cn{纟}}
+% {\cn{}國}%
+%
+% {\cn{}國}{\cn{}國}{\cn{}國}{\cn{}國}{\cn{}國}{\cn{}國}
+
+x\prPush{10}{x}\\
+x\mktsPush{10}x\mktsPush{-10}\\
+x\special{pdf:literal 1 0  0 1 10 0 cm}x\special{pdf:literal 1 0  0 1 -10 0 cm}
+% end of MD document
+
+
+>>>
+
 <!-- <<<$\pi = \directlua{ tex.print(math.pi)}$>>> -->
 
 <!-- xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx
@@ -11,6 +86,8 @@ xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx
 uvw<<<\special{pdf:literal 1 0  0 1 0 -2 cm}>>>xyz<<<\special{pdf:literal 1 0  0 1 0 2 cm}>>>abc
 
 uvw<<<\mktsUp{}>>>12345678<<<\mktsDown{}>>>abc
+
+<<!end>>
 
 <<(multi-column>>
 
