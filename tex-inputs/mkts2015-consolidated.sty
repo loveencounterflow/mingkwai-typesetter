@@ -237,7 +237,15 @@
 % }
 \newcommand{\mktsAdjustJzrCjk}{%
 }
+\newcommand{\mktsDown}{%
+\special{pdf:literal 1 0  0 1 0 -20 cm}%
+}
+\newcommand{\mktsUp}{%
+\special{pdf:literal 1 0  0 1 0 20 cm}%
+}
 \newcommand{\mktsAdjustCjk}{%
+  % \pdfliteral{ 1 0  0 1 0 -2 cm}%
+  % \special{pdf:literal 1 0  0 1 0 -2 cm}%
   % \cjkInterchrSpacing%
   % Should fix CJK linebreaks as per http://tex.stackexchange.com/a/38276/28067
   % ### TAINT this setting should be made only available inside CJK text regions ###

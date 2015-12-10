@@ -174,11 +174,4 @@ INPUT /home/flow/io/mingkwai-typesetter/texts/demo/.content.tex
 INPUT /home/flow/io/mingkwai-typesetter/texts/demo/.content.tex
 INPUT /usr/local/texlive/2015/texmf-dist/tex/latex/microtype/mt-cmr.cfg
 INPUT /usr/local/texlive/2015/texmf-dist/tex/latex/microtype/mt-cmr.cfg
-INPUT /usr/local/texlive/2015/texmf-dist/fonts/map/fontname/texfonts.map
-INPUT /usr/local/texlive/2015/texmf-dist/fonts/tfm/public/cm/cmmi9.tfm
-INPUT /usr/local/texlive/2015/texmf-dist/fonts/tfm/public/cm/cmmi6.tfm
-INPUT /usr/local/texlive/2015/texmf-dist/fonts/tfm/public/cm/cmsy9.tfm
-INPUT /usr/local/texlive/2015/texmf-dist/fonts/tfm/public/cm/cmsy6.tfm
-INPUT /usr/local/texlive/2015/texmf-dist/fonts/tfm/public/cm/cmr9.tfm
-INPUT /usr/local/texlive/2015/texmf-dist/fonts/tfm/public/cm/cmr6.tfm
 INPUT /home/flow/io/mingkwai-typesetter/texts/demo/demo.aux

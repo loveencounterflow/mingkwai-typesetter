@@ -1,4 +1,17 @@
 
+
+<!-- <<<$\pi = \directlua{ tex.print(math.pi)}$>>> -->
+
+<!-- xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx
+xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx
+abc<<<{\pdfliteral{ 1 0  0 1 0 -2 cm}>>>def<<<{\pdfliteral{ 1 0  0 1 0 2 cm}>>>ghi
+xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx
+xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx
+ -->
+uvw<<<\special{pdf:literal 1 0  0 1 0 -2 cm}>>>xyz<<<\special{pdf:literal 1 0  0 1 0 2 cm}>>>abc
+
+uvw<<<\mktsUp{}>>>12345678<<<\mktsDown{}>>>abc
+
 <<(multi-column>>
 
 ### MKTS Markup: Three Layers
