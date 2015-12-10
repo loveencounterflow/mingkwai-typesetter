@@ -238,15 +238,15 @@
 \newcommand{\mktsAdjustJzrCjk}{}
 
 
+\usepackage{fp}
 \usepackage{fifo-stack}
 \FSCreate{mktsPushRaiseXStack}{0}%
 \FSCreate{mktsPushRaiseYStack}{0}%
-
-\usepackage{fp}
 \FPmul\mktsPushRaiseXFactor{1}{5}%
 \FPmul\mktsPushRaiseYFactor{1}{10}%
-\FPmul\mktsPushRaiseX{0}{0}
-\FPmul\mktsPushRaiseY{0}{0}
+\FPmul\mktsPushRaiseX{0}{0}%
+\FPmul\mktsPushRaiseY{0}{0}%
+% \FSPush{mktsPushRaiseXStack}{1}%
 \newcommand{\mktsPush}[1]{%
   \FPmul\mktsPushRaiseX{#1}{\mktsPushRaiseXFactor}%
   \FPmul\mktsPushRaiseY{0}{\mktsPushRaiseYFactor}%
@@ -255,6 +255,8 @@
   \FPmul\mktsPushRaiseX{0}{\mktsPushRaiseXFactor}%
   \FPmul\mktsPushRaiseY{#1}{\mktsPushRaiseYFactor}%
   \mktsTransform{\mktsPushRaiseX}{\mktsPushRaiseY}}
+% \newcommand{\mktsPush}[1]{\mktsPushRaise{#1}{0}}
+% \newcommand{\mktsRaise}[1]{\mktsPushRaise{0}{#1}}
 \newcommand{\mktsPushRaise}[2]{%
   \FPmul\mktsPushRaiseX{#1}{\mktsPushRaiseXFactor}%
   \FPmul\mktsPushRaiseY{#2}{\mktsPushRaiseYFactor}%

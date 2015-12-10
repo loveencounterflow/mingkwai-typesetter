@@ -43,16 +43,21 @@ uvw\special{pdf:literal 1 0  0 1 0 -2 cm}xyz\special{pdf:literal 1 0  0 1 0 2 cm
 
 {\cn{}國}{\cn{}國}{\cn{}國}{\cn{}國}{\cn{}國}{\cn{}國}
 
-\FSPush{mktsPushRaiseXStack}{1}%
-\FSPush{mktsPushRaiseXStack}{2}%
-\FSPush{mktsPushRaiseXStack}{3}%
+\FPmul\mktsPushRaiseXFactor{1}{5}%
+\FSPush{mktsPushRaiseXStack}{\mktsPushRaiseXFactor}%
+\FPmul\mktsPushRaiseXFactor{\mktsPushRaiseXFactor}{5}%
+\FSPush{mktsPushRaiseXStack}{\mktsPushRaiseXFactor}%
+\FPmul\mktsPushRaiseXFactor{\mktsPushRaiseXFactor}{5}%
+\FSPush{mktsPushRaiseXStack}{\mktsPushRaiseXFactor}%
 % \FSPop{mktsPushRaiseXStack},
 % \FSPop{mktsPushRaiseXStack},
-\FSTop{mktsPushRaiseXStack}.
-\FSShowTop{mktsPushRaiseXStack}
+\FSTop{mktsPushRaiseXStack}\FSPop{mktsPushRaiseXStack}.
+\FSTop{mktsPushRaiseXStack}\FSPop{mktsPushRaiseXStack}.
+\FSTop{mktsPushRaiseXStack}\FSPop{mktsPushRaiseXStack}.
+\FSTop{mktsPushRaiseXStack}\FSPop{mktsPushRaiseXStack}.
+% \FSShowTop{mktsPushRaiseXStack}
 % \def\z{\FSPop{mktsPushRaiseXStack}}
 x\mktsPush{\FSTop{mktsPushRaiseXStack}}y%
-\FSPop{mktsPushRaiseXStack}%
 x\mktsPush{\FSTop{mktsPushRaiseXStack}}z
 
 %
