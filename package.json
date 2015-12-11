@@ -29,15 +29,15 @@
   },
   "homepage": "https://github.com/loveencounterflow/mingkwai-typesetter",
   "dependencies": {
-    "async": "^1.4.2",
-    "cnd": "^1.0.8",
+    "async": "^1.5.0",
+    "cnd": "^1.0.9",
     "coffee-script": "^1.10.0",
     "coffeenode-chr": "^1.0.2",
     "coffeenode-suspend": "^0.1.11",
     "coffeenode-text": "^0.1.9",
     "commander": "^2.9.0",
-    "cxltx-styles": "^1.0.0",
-    "htmlparser2": "^3.8.3",
+    "cxltx-styles": "^1.1.1",
+    "htmlparser2": "^3.9.0",
     "markdown-it": "^5.0.2",
     "markdown-it-container": "^2.0.0",
     "markdown-it-footnote": "^2.0.0",
@@ -46,7 +46,7 @@
     "markdown-it-sub": "^1.0.0",
     "markdown-it-sup": "^1.0.0",
     "parse5": "^1.5.0",
-    "pipedreams": "^3.0.1"
+    "pipedreams": "^3.0.4"
   },
   "devDependencies": {
     "gulp": "^3.9.0",

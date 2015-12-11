@@ -31,6 +31,7 @@
 \usepackage{cxltx-style-oddeven}
 \usepackage{cxltx-style-position-absolute}
 \usepackage{cxltx-style-pushraise}
+\usepackage{cxltx-style-pushraisestacked}
 \usepackage{cxltx-style-smashbox}
 
 % ==========================================================================================================
@@ -215,6 +216,7 @@
 \newcommand{\cjkInterchrSpacing}{\hskip -0.4pt plus 3pt minus 1pt}
 \catcode`\=\active%
 \def {\hskip -0.4pt plus 3pt minus 1pt}%
+\def\hallospace{\hskip -0.4pt plus 3pt minus 1pt} % say, 0.3em
 % definition from p3 of http://texdoc.net/texmf-dist/doc/xelatex/xecjk/xeCJK.pdf
 % \newcommand{\cjkInterchrSpacing}{\hskip 0pt plus 0.08\baselineskip}
 % \newcommand{\cjkInterchrSpacingA}{\hskip -0.4pt plus 3pt minus 1pt}
@@ -237,38 +239,15 @@
 % }
 \newcommand{\mktsAdjustJzrCjk}{}
 
-
-\usepackage{fp}
-\usepackage{fifo-stack}
-\FSCreate{mktsPushRaiseXStack}{0}%
-\FSCreate{mktsPushRaiseYStack}{0}%
-\FPmul\mktsPushRaiseXFactor{1}{5}%
-\FPmul\mktsPushRaiseYFactor{1}{10}%
-\FPmul\mktsPushRaiseX{0}{0}%
-\FPmul\mktsPushRaiseY{0}{0}%
-% \FSPush{mktsPushRaiseXStack}{1}%
-\newcommand{\mktsPush}[1]{%
-  \FPmul\mktsPushRaiseX{#1}{\mktsPushRaiseXFactor}%
-  \FPmul\mktsPushRaiseY{0}{\mktsPushRaiseYFactor}%
-  \mktsTransform{\mktsPushRaiseX}{\mktsPushRaiseY}}
-\newcommand{\mktsRaise}[1]{%
-  \FPmul\mktsPushRaiseX{0}{\mktsPushRaiseXFactor}%
-  \FPmul\mktsPushRaiseY{#1}{\mktsPushRaiseYFactor}%
-  \mktsTransform{\mktsPushRaiseX}{\mktsPushRaiseY}}
-% \newcommand{\mktsPush}[1]{\mktsPushRaise{#1}{0}}
-% \newcommand{\mktsRaise}[1]{\mktsPushRaise{0}{#1}}
-\newcommand{\mktsPushRaise}[2]{%
-  \FPmul\mktsPushRaiseX{#1}{\mktsPushRaiseXFactor}%
-  \FPmul\mktsPushRaiseY{#2}{\mktsPushRaiseYFactor}%
-  \mktsTransform{\mktsPushRaiseX}{\mktsPushRaiseY}}
-\newcommand{\mktsPushRaiseBack}{%
-  \FPmul\mktsPushRaiseX{-1}{\mktsPushRaiseX}%
-  \FPmul\mktsPushRaiseY{-1}{\mktsPushRaiseY}%
-  \mktsTransform{\mktsPushRaiseX}{\mktsPushRaiseY}}
-\newcommand{\mktsTransform}[2]{%
-  \special{pdf:literal 1 0 0 1 #1 #2 cm}}
-
-\newcommand{\mktsAdjustCjk}{%
+\usepackage{relsize}
+\newcommand{\mktsStartCjk}{%
+  % \let\oldspace=\ %
+  \catcode`\ =\active%
+  \def""20{\hskip -0.4pt plus 3pt minus 1pt}%
+  % \let`\ =\hallospace%
+  \relscale{1.05}%
+  \prsRaise{-0.1}%
+  \aftergroup\mktsStopCjk}
   % \pdfliteral{ 1 0  0 1 0 -2 cm}%
   % \special{pdf:literal 1 0  0 1 0 -2 cm}%
   % \cjkInterchrSpacing%
@@ -277,27 +256,29 @@
   % \XeTeXlinebreaklocale "ja"% for Japanese
   % \XeTeXlinebreaklocale "zh"% for Chinese
   % \XeTeXlinebreakskip 0pt plus 0.1pt% sets the skip
-  }
-\newcommand{\cn}{\mktsAdjustCjk\mktsFontfileSunexta}
-\newcommand{\cnxa}{\mktsAdjustCjk\mktsFontfileSunexta}
-\newcommand{\cnxb}{\mktsAdjustCjk\mktsFontfileSunflowerucjkxb}
-\newcommand{\cnxc}{\mktsAdjustCjk\mktsFontfileHanaminb}
-\newcommand{\cnxd}{\mktsAdjustCjk\mktsFontfileBabelstonehan}
-\newcommand{\cncone}{\mktsAdjustCjk\mktsFontfileSunexta}      	% CJK Compatibility 1
-\newcommand{\cnctwo}{\mktsAdjustCjk\mktsFontfileHanamina}   				% CJK Compatibility 2
-\newcommand{\cnrone}{\mktsAdjustCjk\mktsFontfileSunexta}      	% CJK Radicals 1
-\newcommand{\cnrtwo}{\mktsAdjustCjk\mktsFontfileSunexta}      	% CJK Radicals 2
-\newcommand{\cnsym}{\mktsAdjustCjk\mktsFontfileHanamina}
-\newcommand{\cnstrk}{\mktsAdjustCjk\mktsFontfileSunexta}
+\newcommand{\mktsStopCjk}{%
+  \prsBack%
+}%
+\newcommand{\cn}{\mktsStartCjk\mktsFontfileSunexta}
+\newcommand{\cnxa}{\mktsStartCjk\mktsFontfileSunexta}
+\newcommand{\cnxb}{\mktsStartCjk\mktsFontfileSunflowerucjkxb}
+\newcommand{\cnxc}{\mktsStartCjk\mktsFontfileHanaminb}
+\newcommand{\cnxd}{\mktsStartCjk\mktsFontfileBabelstonehan}
+\newcommand{\cncone}{\mktsStartCjk\mktsFontfileSunexta}      	% CJK Compatibility 1
+\newcommand{\cnctwo}{\mktsStartCjk\mktsFontfileHanamina}   				% CJK Compatibility 2
+\newcommand{\cnrone}{\mktsStartCjk\mktsFontfileSunexta}      	% CJK Radicals 1
+\newcommand{\cnrtwo}{\mktsStartCjk\mktsFontfileSunexta}      	% CJK Radicals 2
+\newcommand{\cnsym}{\mktsStartCjk\mktsFontfileHanamina}
+\newcommand{\cnstrk}{\mktsStartCjk\mktsFontfileSunexta}
 \newcommand{\cnjzr}{\mktsAdjustJzrCjk\mktsFontfileJizurathreeb}
 \newcommand{\ka}{\mktsAdjustKatakana\mktsFontfileNanummyeongjo}
 \newcommand{\hi}{\mktsAdjustHiragana\mktsFontfileNanummyeongjo}
 \newcommand{\hg}{\mktsAdjustHangeul\mktsFontfileNanummyeongjo}
 % ..........................................................................................................
-\newcommand{\cnxBabel}{\mktsAdjustCjk\mktsFontfileBabelstonehan}
-\newcommand{\cnxHanaA}{\mktsAdjustCjk\mktsFontfileHanamina}
-\newcommand{\cnxHanaB}{\mktsAdjustCjk\mktsFontfileHanaminb}
-\newcommand{\cnxSunXA}{\mktsAdjustCjk\mktsFontfileSunexta}
+\newcommand{\cnxBabel}{\mktsStartCjk\mktsFontfileBabelstonehan}
+\newcommand{\cnxHanaA}{\mktsStartCjk\mktsFontfileHanamina}
+\newcommand{\cnxHanaB}{\mktsStartCjk\mktsFontfileHanaminb}
+\newcommand{\cnxSunXA}{\mktsStartCjk\mktsFontfileSunexta}
 \newcommand{\cnxJzr}{\mktsAdjustJzrCjk\mktsFontfileJizurathreeb}
 % \newcommand{\missing}[1]{{\missingFont#1}}
 % ..........................................................................................................

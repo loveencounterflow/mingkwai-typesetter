@@ -144,6 +144,12 @@ INPUT /usr/local/texlive/2014/texmf-dist/tex/latex/fp/fp-eval.sty
 INPUT /usr/local/texlive/2014/texmf-dist/tex/latex/fp/fp-eval.sty
 INPUT /Volumes/Storage/io/mingkwai-typesetter/node_modules/cxltx-styles/styles/cxltx-style-equals.sty
 INPUT /Volumes/Storage/io/mingkwai-typesetter/node_modules/cxltx-styles/styles/cxltx-style-equals.sty
+INPUT /Volumes/Storage/io/mingkwai-typesetter/node_modules/cxltx-styles/styles/cxltx-style-pushraisestacked.sty
+INPUT /Volumes/Storage/io/mingkwai-typesetter/node_modules/cxltx-styles/styles/cxltx-style-pushraisestacked.sty
+INPUT /usr/local/texlive/2014/texmf-dist/tex/latex/fifo-stack/fifo-stack.sty
+INPUT /usr/local/texlive/2014/texmf-dist/tex/latex/fifo-stack/fifo-stack.sty
+INPUT /usr/local/texlive/2014/texmf-dist/tex/latex/base/ifthen.sty
+INPUT /usr/local/texlive/2014/texmf-dist/tex/latex/base/ifthen.sty
 INPUT /Volumes/Storage/io/mingkwai-typesetter/node_modules/cxltx-styles/styles/cxltx-style-smashbox.sty
 INPUT /Volumes/Storage/io/mingkwai-typesetter/node_modules/cxltx-styles/styles/cxltx-style-smashbox.sty
 INPUT /usr/local/texlive/2014/texmf-dist/tex/latex/geometry/geometry.sty
@@ -160,10 +166,8 @@ INPUT /usr/local/texlive/2014/texmf-dist/tex/latex/fix2col/fix2col.sty
 INPUT /usr/local/texlive/2014/texmf-dist/tex/latex/fix2col/fix2col.sty
 INPUT /usr/local/texlive/2014/texmf-dist/tex/latex/tools/multicol.sty
 INPUT /usr/local/texlive/2014/texmf-dist/tex/latex/tools/multicol.sty
-INPUT /usr/local/texlive/2014/texmf-dist/tex/latex/fifo-stack/fifo-stack.sty
-INPUT /usr/local/texlive/2014/texmf-dist/tex/latex/fifo-stack/fifo-stack.sty
-INPUT /usr/local/texlive/2014/texmf-dist/tex/latex/base/ifthen.sty
-INPUT /usr/local/texlive/2014/texmf-dist/tex/latex/base/ifthen.sty
+INPUT /usr/local/texlive/2014/texmf-dist/tex/latex/relsize/relsize.sty
+INPUT /usr/local/texlive/2014/texmf-dist/tex/latex/relsize/relsize.sty
 INPUT /Volumes/Storage/io/mingkwai-typesetter/texts/demo/demo.aux
 INPUT /Volumes/Storage/io/mingkwai-typesetter/texts/demo/demo.aux
 OUTPUT /Volumes/Storage/io/mingkwai-typesetter/texts/demo/demo.aux
@@ -173,4 +177,3 @@ INPUT /usr/local/texlive/2014/texmf-dist/tex/latex/microtype/mt-LatinModernRoman
 INPUT /usr/local/texlive/2014/texmf-dist/tex/latex/microtype/mt-LatinModernRoman.cfg
 INPUT /Volumes/Storage/io/mingkwai-typesetter/texts/demo/.content.tex
 INPUT /Volumes/Storage/io/mingkwai-typesetter/texts/demo/.content.tex
-INPUT /Volumes/Storage/io/mingkwai-typesetter/texts/demo/demo.aux
