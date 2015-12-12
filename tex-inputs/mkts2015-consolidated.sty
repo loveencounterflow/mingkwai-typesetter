@@ -241,10 +241,7 @@
 
 \usepackage{relsize}
 \newcommand{\mktsStartCjk}{%
-  % \let\oldspace=\ %
-  \catcode`\ =\active%
-  \def""20{\hskip -0.4pt plus 3pt minus 1pt}%
-  % \let`\ =\hallospace%
+  \let =\hallospace%
   \relscale{1.05}%
   \prsRaise{-0.1}%
   \aftergroup\mktsStopCjk}

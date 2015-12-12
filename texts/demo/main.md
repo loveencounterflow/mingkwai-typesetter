@@ -2,78 +2,16 @@
 
 <<<
 
+\begin{multicols}{3}
+Xpq{\cn{}國國國國}pqX
 
-% begin of MD document
-
-uvw\special{pdf:literal 1 0  0 1 0 -2 cm}xyz\special{pdf:literal 1 0  0 1 0 2 cm}abc\mktsShowpar\par
-
-{\cn{}國}{\cn{}國}{\cn{}國}{\cn{}國}{\cn{}國}{\cn{}國}
-
-{\cn{}國}%
-{\cn{}罓}%
-\prRaise{-0.2}{\cn{}罓}%
-{\cn{}國}%
-{\cn{}\special{pdf:literal 1 0  0 1 0 -2 cm}罓\special{pdf:literal 1 0  0 1 0 2 cm}}%
-{\cn{}罓}%
-
-{\cn{}國}{\cn{}國}{\cn{}國}{\cn{}國}{\cn{}國}{\cn{}國}
-
-{\cn{}國}%
-{\cn{}罓}%
-\prRaise{-0.2}{\cn{}罓}%
-{\cn{}國}%
-{\cn{}\mktsRaise{-0.2}罓\mktsPushRaiseBack}%
-{\cn{}罓}%
-
-{\cn{}國}{\cn{}國}{\cn{}國}{\cn{}國}{\cn{}國}{\cn{}國}
-
-{\cn{}國}{\cn{}國}{\cn{}國}{\cn{}國}{\cn{}國}{\cn{}國}
-
-{\cn{}國}%
-{\cn{}\mktsPush{0.4}纟\mktsPushRaiseBack}%
-{\cn{}國}%
-\prPush{0.4}{\cn{纟}}%
-{\cn{}國}%
-
-{\cn{}國}{\cn{}國}{\cn{}國}{\cn{}國}{\cn{}國}{\cn{}國}
-
-{\cn{}國}%
-\prPushRaise{0.5}{-0.2}{\cnxJzr{}}%
-{\cn{}國}
-
-{\cn{}國}%
-\mktsPushRaise{0.5}{-0.2}{\cnxJzr{}\mktsPushRaiseBack}%
-{\cn{}國}
-
-{\cn{}國}{\cn{}國}{\cn{}國}{\cn{}國}{\cn{}國}{\cn{}國}
-
-\FSPush{mktsPushRaiseXStack}{1}%
-\FSPush{mktsPushRaiseXStack}{2}%
-\FSPush{mktsPushRaiseXStack}{3}%
-% \FSPop{mktsPushRaiseXStack},
-% \FSPop{mktsPushRaiseXStack},
-\FSTop{mktsPushRaiseXStack}.
-\FSShowTop{mktsPushRaiseXStack}
-% \def\z{\FSPop{mktsPushRaiseXStack}}
-x\mktsPush{\FSTop{mktsPushRaiseXStack}}y%
-\FSPop{mktsPushRaiseXStack}%
-x\mktsPush{\FSTop{mktsPushRaiseXStack}}z
-
-%
-% {\cn{}\mktsPush{2}纟\mktsPush{-2}}%
-% {\cn{}國}%
-% \prPush{0.4}{\cn{纟}}
-% {\cn{}國}%
-%
-% {\cn{}國}{\cn{}國}{\cn{}國}{\cn{}國}{\cn{}國}{\cn{}國}
-
-x\prPush{10}{x}\\
-x\mktsPush{10}x\mktsPush{-10}\\
-x\special{pdf:literal 1 0  0 1 10 0 cm}x\special{pdf:literal 1 0  0 1 -10 0 cm}
-% end of MD document
-
+Brick Tea{\cn{}紧    压 茶 是 为 了 长 途 运 输 和 长 时 间 保 存 方 便 ， 将 茶 压 缩 干 燥 ， 压 成 方 砖 状 或 块 状 ， 为 了 防 止 途 中 变 质 ， 一 般 紧 压 茶 都 是 用 红 茶 或 黑 茶 制 作 。
+}Brick Tea
+\end{multicols}
 
 >>>
+<<!end>>
+
 
 <!-- <<<$\pi = \directlua{ tex.print(math.pi)}$>>> -->
 
