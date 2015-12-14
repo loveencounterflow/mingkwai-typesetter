@@ -240,8 +240,8 @@ MACRO_ESCAPER             = require './macro-escaper'
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.TEX.is_cjk_rsg = ( rsg, options ) => rsg in options[ 'tex' ][ 'cjk-rsgs' ]
 
-#-----------------------------------------------------------------------------------------------------------
-@MKTX.TEX._get_cjk_interchr_glue = ( options ) => options[ 'tex' ]?[ 'cjk-interchr-glue' ] ? '\ue080'
+# #-----------------------------------------------------------------------------------------------------------
+# @MKTX.TEX._get_cjk_interchr_glue = ( options ) => options[ 'tex' ]?[ 'cjk-interchr-glue' ] ? '\ue080'
 
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.TEX.fix_typography_for_tex = ( text, options, send = null ) =>
@@ -253,7 +253,6 @@ MACRO_ESCAPER             = require './macro-escaper'
   `\cn{}` will be rewritten to make this setting superfluous. ###
   advance_each_chr      = options[ 'tex' ]?[ 'advance-each-chr'         ] ? no
   tex_command_by_rsgs   = options[ 'tex' ]?[ 'tex-command-by-rsgs'      ]
-  cjk_interchr_glue     = @MKTX.TEX._get_cjk_interchr_glue options
   last_command          = null
   R                     = []
   chunk                 = []
@@ -291,9 +290,9 @@ MACRO_ESCAPER             = require './macro-escaper'
       when 'u-latn'   then chr = @MKTX.TEX.escape_for_tex chr
     #.......................................................................................................
     this_is_cjk = @MKTX.TEX.is_cjk_rsg rsg, options
-    if last_was_cjk and this_is_cjk
-      ### Avoid to put second glue between glue and CJK character: ###
-      chunk.push cjk_interchr_glue unless chr is cjk_interchr_glue
+    # if last_was_cjk and this_is_cjk
+    #   ### Avoid to put second glue between glue and CJK character: ###
+    #   chunk.push cjk_interchr_glue unless chr is cjk_interchr_glue
     last_was_cjk = this_is_cjk
     #.......................................................................................................
     ### TAINT if chr is a TeX active ASCII chr like `$`, `#`, then it will be escaped at this point
