@@ -123,20 +123,19 @@ MKTS                      = require './main'
 
 #-----------------------------------------------------------------------------------------------------------
 get_parse_html_methods = ->
-  Parser      = ( require 'parse5' ).Parser
-  parser      = new Parser()
+  PARSE5      = require 'parse5'
   get_message = ( source ) -> "expected single opening node, got #{rpr source}"
   R           = {}
   #.........................................................................................................
   R[ '_parse_html_open_tag' ] = ( source ) ->
-    tree    = parser.parseFragment source
+    tree    = PARSE5.parseFragment source
     throw new Error get_message source unless ( cns = tree[ 'childNodes' ] ).length is 1
     cn = cns[ 0 ]
     throw new Error get_message source unless cn[ 'childNodes' ]?.length is 0
     return [ 'begin', cn[ 'tagName' ], cn[ 'attrs' ][ 0 ] ? {}, ]
   #.........................................................................................................
   R[ '_parse_html_block' ] = ( source ) ->
-    tree    = parser.parseFragment source
+    tree    = PARSE5.parseFragment source
     debug '@88817', tree
     return null
   #.........................................................................................................
