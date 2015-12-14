@@ -31,7 +31,8 @@
 \usepackage{cxltx-style-oddeven}
 \usepackage{cxltx-style-position-absolute}
 \usepackage{cxltx-style-pushraise}
-\usepackage{cxltx-style-pushraisestacked}
+\usepackage{cxltx-style-transform}
+\usepackage{cxltx-style-cjkglue}
 \usepackage{cxltx-style-smashbox}
 
 % ==========================================================================================================
@@ -241,10 +242,9 @@
 
 \usepackage{relsize}
 \newcommand{\mktsStartCjk}{%
-  \let =\hallospace%
+  \cjkgUseCjkGlue%
   \relscale{1.05}%
-  \prsRaise{-0.1}%
-  \aftergroup\mktsStopCjk}
+  \tfRaise{-0.1}}%
   % \pdfliteral{ 1 0  0 1 0 -2 cm}%
   % \special{pdf:literal 1 0  0 1 0 -2 cm}%
   % \cjkInterchrSpacing%
@@ -253,9 +253,7 @@
   % \XeTeXlinebreaklocale "ja"% for Japanese
   % \XeTeXlinebreaklocale "zh"% for Chinese
   % \XeTeXlinebreakskip 0pt plus 0.1pt% sets the skip
-\newcommand{\mktsStopCjk}{%
-  \prsBack%
-}%
+
 \newcommand{\cn}{\mktsStartCjk\mktsFontfileSunexta}
 \newcommand{\cnxa}{\mktsStartCjk\mktsFontfileSunexta}
 \newcommand{\cnxb}{\mktsStartCjk\mktsFontfileSunflowerucjkxb}
