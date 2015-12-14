@@ -248,6 +248,7 @@ MACRO_ESCAPER             = require './macro-escaper'
   ### An improved version of `XELATEX.tag_from_chr` ###
   ### TAINT should accept settings, fall back to `require`d `options.coffee` ###
   glyph_styles          = options[ 'tex' ]?[ 'glyph-styles'             ] ? {}
+  glyph_styles_v2       = options[ 'tex' ]?[ 'glyph-styles-v2'          ] ? {}
   ### Legacy mode: force one command per non-latin character. This is OK for Chinese texts,
   but a bad idea for all other scripts; in the future, MKTS's TeX formatting commands like
   `\cn{}` will be rewritten to make this setting superfluous. ###
@@ -261,6 +262,7 @@ MACRO_ESCAPER             = require './macro-escaper'
   this_is_cjk           = no
   last_was_cjk          = no
   is_latin_whitespace   = null
+  replacement           = null
   #.........................................................................................................
   unless tex_command_by_rsgs?
     throw new Error "need setting 'tex-command-by-rsgs'"
@@ -298,7 +300,24 @@ MACRO_ESCAPER             = require './macro-escaper'
     ### TAINT if chr is a TeX active ASCII chr like `$`, `#`, then it will be escaped at this point
     and no more match entries in `glyph_styles` ###
     # debug '©53938-1', chr, rsg, tex_command_by_rsgs[ rsg ]
-    if ( replacement = glyph_styles[ chr ] )?
+    if ( replacement = glyph_styles_v2[ chr ] )?
+      advance()
+      rpl       = [ '{', ]
+      rpl_push  = replacement[ 'push'   ] ? null
+      rpl_raise = replacement[ 'raise'  ] ? null
+      rpl_chr   = replacement[ 'glyph'  ] ? chr
+      rpl_cmd   = replacement[ 'cmd'    ] ? null
+      if      rpl_push? and rpl_raise?  then rpl.push "\\tfPushRaise{#{rpl_push}}{#{rpl_raise}}"
+      else if rpl_push?                 then rpl.push "\\tfPush{#{rpl_push}}"
+      else if               rpl_raise?  then rpl.push "\\tfRaise{#{rpl_raise}}"
+      if rpl_cmd?                       then rpl.push "\\#{rpl_cmd}{}"
+      rpl.push rpl_chr
+      rpl.push '}'
+      R.push rpl.join ''
+      last_command = null
+      continue
+    else if ( replacement = glyph_styles[ chr ] )?
+      ### TAINT this is the legacy branch; new stuff uses glyph_styles_v2, above ###
       advance()
       R.push replacement
       last_command = null
