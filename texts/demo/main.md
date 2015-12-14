@@ -1,15 +1,17 @@
 
 
-<<<
+<<(multi-column>>
+Some adjusted characters:
+卩
+癶
+
+
+乛
+
+國卩國癶國國國乛國 Brick Tea 紧压茶是为了长途运输和长时间保存方便，将茶压缩干燥，压成方砖
+状或块状，为了防止途中变质，一般紧压茶都是用红茶或黑茶制作。 Brick Tea
+<<multi-column)>>
 
-\begin{multicols}{3}
-Xpq{\cn{}國國國國}pqX
-
-Brick Tea{\cn{}紧    压 茶 是 为 了 长 途 运 输 和 长 时 间 保 存 方 便 ， 将 茶 压 缩 干 燥 ， 压 成 方 砖 状 或 块 状 ， 为 了 防 止 途 中 变 质 ， 一 般 紧 压 茶 都 是 用 红 茶 或 黑 茶 制 作 。
-}Brick Tea
-\end{multicols}
-
->>>
 <<!end>>
 
 
