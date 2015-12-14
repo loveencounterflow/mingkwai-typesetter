@@ -506,9 +506,9 @@ nice_text_rpr = ( text ) ->
   ,
     [
       [".","text","\u0015region0\u0013\na command ",{}]
-      [".","command","LATEX",{}]
+      ["!","LATEX",null,{}]
       [".","text"," and a value ",{}]
-      [".","value","pagenr",{}]
+      ["$","pagenr",null,{}]
       [".","text",".\n\u0015region1\u0013",{}]
       ]
     ]]
@@ -772,7 +772,7 @@ nice_text_rpr = ( text ) ->
   probe     = """<<!multi-column>>"""
   warn "should not contain `.p`"
   matcher   = [
-    [".","command","multi-column",{"line_nr":1,"col_nr":2,"markup":""}]
+    ["!","multi-column",null,{"line_nr":1,"col_nr":2,"markup":""}]
     [".","p",null,{"line_nr":1,"col_nr":2,"markup":""}]
     ]
   step ( resume ) =>
@@ -945,7 +945,8 @@ nice_text_rpr = ( text ) ->
   step ( resume ) =>
     result = yield MKTS.TEX_WRITER.tex_from_md probe, settings, resume
     echo result
-    T.eq matcher.trim(), result.trim()
+    # T.eq matcher.trim(), result.trim()
+    T.fail "review `CLEANUP.$remove_empty_p_tags` in tex-writer; can't work w/ present event structure"
     done()
 
 #-----------------------------------------------------------------------------------------------------------
