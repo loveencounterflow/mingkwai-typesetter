@@ -101,7 +101,7 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
     throw new Error "need setting 'tex-command-by-rsgs'"
   #.........................................................................................................
   advance_whitespace = =>
-    chunk.splice chunk.length, 0, whitespace_cache
+    chunk.splice chunk.length, 0, whitespace_cache...
     whitespace_cache.length = 0
   #.........................................................................................................
   advance = =>
@@ -130,16 +130,13 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
     #.......................................................................................................
     this_is_cjk = @is_cjk_rsg rsg, options
     if ( not last_was_cjk ) and ( this_is_cjk )
-      debug '©324-1', ( rpr chr ), whitespace_cache
       advance_whitespace()
       # advance()
       chunk.push "{\\cjk{}"
     else if ( last_was_cjk ) and ( not this_is_cjk )
       chunk.push "}"
-      debug '©324-2', ( rpr chr ), whitespace_cache
       advance_whitespace()
     else if whitespace_cache.length > 0
-      debug '©324-3', ( rpr chr ), whitespace_cache
       advance_whitespace()
     last_was_cjk = this_is_cjk
     #.......................................................................................................
@@ -195,7 +192,6 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
     chunk.push chr
   #.........................................................................................................
   chunk.push "}" if this_is_cjk
-  debug '©324-4', ( rpr chr ), whitespace_cache if whitespace_cache.length > 0
   advance_whitespace() if whitespace_cache.length > 0
   advance()
   return R.join ''
