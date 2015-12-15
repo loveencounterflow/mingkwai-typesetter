@@ -78,25 +78,31 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
 @fix_typography_for_tex = ( text, options, send = null ) =>
   ### An improved version of `XELATEX.tag_from_chr` ###
   ### TAINT should accept settings, fall back to `require`d `options.coffee` ###
-  glyph_styles          = options[ 'tex' ]?[ 'glyph-styles'             ] ? {}
-  glyph_styles_v2       = options[ 'tex' ]?[ 'glyph-styles-v2'          ] ? {}
+  glyph_styles                  = options[ 'tex' ]?[ 'glyph-styles'             ] ? {}
+  glyph_styles_v2               = options[ 'tex' ]?[ 'glyph-styles-v2'          ] ? {}
   ### Legacy mode: force one command per non-latin character. This is OK for Chinese texts,
   but a bad idea for all other scripts; in the future, MKTS's TeX formatting commands like
   `\cn{}` will be rewritten to make this setting superfluous. ###
-  advance_each_chr      = options[ 'tex' ]?[ 'advance-each-chr'         ] ? no
-  tex_command_by_rsgs   = options[ 'tex' ]?[ 'tex-command-by-rsgs'      ]
-  last_command          = null
-  R                     = []
-  chunk                 = []
-  last_rsg              = null
-  remark                = if send? then @_get_remark() else null
-  this_is_cjk           = no
-  last_was_cjk          = no
-  is_latin_whitespace   = null
-  replacement           = null
+  advance_each_chr              = options[ 'tex' ]?[ 'advance-each-chr'         ] ? no
+  tex_command_by_rsgs           = options[ 'tex' ]?[ 'tex-command-by-rsgs'      ]
+  last_command                  = null
+  R                             = []
+  chunk                         = []
+  last_rsg                      = null
+  remark                        = if send? then @_get_remark() else null
+  this_is_cjk                   = no
+  last_was_cjk                  = no
+  this_is_whitespace            = no
+  last_was_whitespace           = no
+  whitespace_cache              = []
+  replacement                   = null
   #.........................................................................................................
   unless tex_command_by_rsgs?
     throw new Error "need setting 'tex-command-by-rsgs'"
+  #.........................................................................................................
+  advance_whitespace = =>
+    chunk.splice chunk.length, 0, whitespace_cache
+    whitespace_cache.length = 0
   #.........................................................................................................
   advance = =>
     if chunk.length > 0
@@ -107,11 +113,11 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
     return null
   #.........................................................................................................
   for chr in XNCHR.chrs_from_text text
-    # ### Treat whitespace specially ###
-    # ### TAINT better to check against /^\s$/ ??? ###
-    # if false # ( is_latin_whitespace = chr in [ '\x20', '\n', '\r', '\t', ] )
-    #   command = last_command
-    # else
+    ### Treat whitespace specially ###
+    if ( this_is_whitespace = chr in [ '\x20', '\n', '\r', '\t', ] )
+      whitespace_cache.push chr
+      continue
+    #.......................................................................................................
     { chr
       uchr
       fncr
@@ -124,9 +130,17 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
     #.......................................................................................................
     this_is_cjk = @is_cjk_rsg rsg, options
     if ( not last_was_cjk ) and ( this_is_cjk )
+      debug '©324-1', ( rpr chr ), whitespace_cache
+      advance_whitespace()
+      # advance()
       chunk.push "{\\cjk{}"
     else if ( last_was_cjk ) and ( not this_is_cjk )
       chunk.push "}"
+      debug '©324-2', ( rpr chr ), whitespace_cache
+      advance_whitespace()
+    else if whitespace_cache.length > 0
+      debug '©324-3', ( rpr chr ), whitespace_cache
+      advance_whitespace()
     last_was_cjk = this_is_cjk
     #.......................................................................................................
     ### TAINT if chr is a TeX active ASCII chr like `$`, `#`, then it will be escaped at this point
@@ -181,6 +195,8 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
     chunk.push chr
   #.........................................................................................................
   chunk.push "}" if this_is_cjk
+  debug '©324-4', ( rpr chr ), whitespace_cache if whitespace_cache.length > 0
+  advance_whitespace() if whitespace_cache.length > 0
   advance()
   return R.join ''
 
