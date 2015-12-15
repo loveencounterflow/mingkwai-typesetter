@@ -247,18 +247,24 @@
   % \XeTeXlinebreaklocale "zh"% for Chinese
   % \XeTeXlinebreakskip 0pt plus 0.1pt% sets the skip
 
-\newcommand{\cn}{\mktsStartCjk\mktsFontfileSunexta}
-\newcommand{\cnxa}{\mktsStartCjk\mktsFontfileSunexta}
-\newcommand{\cnxb}{\mktsStartCjk\mktsFontfileSunflowerucjkxb}
-\newcommand{\cnxc}{\mktsStartCjk\mktsFontfileHanaminb}
-\newcommand{\cnxd}{\mktsStartCjk\mktsFontfileBabelstonehan}
-\newcommand{\cncone}{\mktsStartCjk\mktsFontfileSunexta}      	% CJK Compatibility 1
-\newcommand{\cnctwo}{\mktsStartCjk\mktsFontfileHanamina}   				% CJK Compatibility 2
-\newcommand{\cnrone}{\mktsStartCjk\mktsFontfileSunexta}      	% CJK Radicals 1
-\newcommand{\cnrtwo}{\mktsStartCjk\mktsFontfileSunexta}      	% CJK Radicals 2
-\newcommand{\cnsym}{\mktsStartCjk\mktsFontfileHanamina}
-\newcommand{\cnstrk}{\mktsStartCjk\mktsFontfileSunexta}
-\newcommand{\cnjzr}{\mktsStartCjk\mktsFontfileJizurathreeb}
+\newcommand{\cjk}{%
+  \cjkgUseCjkGlue%
+  \relscale{1.05}%
+  \tfRaise{-0.1}%
+  \mktsFontfileSunexta}
+% \newcommand{\cn}{\mktsStartCjk\mktsFontfileSunexta}
+\newcommand{\cn}{}
+\newcommand{\cnxa}{\mktsFontfileSunexta}
+\newcommand{\cnxb}{\mktsFontfileSunflowerucjkxb}
+\newcommand{\cnxc}{\mktsFontfileHanaminb}
+\newcommand{\cnxd}{\mktsFontfileBabelstonehan}
+\newcommand{\cncone}{\mktsFontfileSunexta}      	% CJK Compatibility 1
+\newcommand{\cnctwo}{\mktsFontfileHanamina}   				% CJK Compatibility 2
+\newcommand{\cnrone}{\mktsFontfileSunexta}      	% CJK Radicals 1
+\newcommand{\cnrtwo}{\mktsFontfileSunexta}      	% CJK Radicals 2
+\newcommand{\cnsym}{\mktsFontfileHanamina}
+\newcommand{\cnstrk}{\mktsFontfileSunexta}
+\newcommand{\cnjzr}{\mktsFontfileJizurathreeb}
 \newcommand{\ka}{\mktsAdjustKatakana\mktsFontfileNanummyeongjo}
 \newcommand{\hi}{\mktsAdjustHiragana\mktsFontfileNanummyeongjo}
 \newcommand{\hg}{\mktsAdjustHangeul\mktsFontfileNanummyeongjo}
