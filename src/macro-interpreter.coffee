@@ -103,7 +103,7 @@ MKTS                      = require './main'
             null
           when 'vocal'
             ### TAINT send `tex` or `text`??? ###
-            action_value_rpr = rpr action_value unless CND.isa_text action_value
+            action_value_rpr = if CND.isa_text action_value then action_value else rpr action_value
             send [ '.', 'text', action_value_rpr, ( copy meta ), ]
     #.......................................................................................................
     else
