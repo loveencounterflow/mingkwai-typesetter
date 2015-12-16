@@ -179,7 +179,7 @@ module.exports = options =
       'u-hang-syl'
       ]
     #.......................................................................................................
-    'glyph-styles-v2':
+    'glyph-styles':
       ### Other stuff: ###
       '‰':          '{\\mktsFontfileOptima‰}'
       ### Ideographic description characters: ###
