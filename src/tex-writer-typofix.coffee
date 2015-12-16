@@ -145,13 +145,15 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
     # debug '©53938-1', chr, rsg, tex_command_by_rsgs[ rsg ]
     if ( replacement = glyph_styles[ chr ] )?
       advance()
+      ### TAINT duplication from below: ###
+      command   = tex_command_by_rsgs[ 'fallback' ] ? null
       rpl       = []
       rpl.push '\\cjkgGlue' unless has_cjk_glue
       rpl.push '{'
       rpl_push  = replacement[ 'push'   ] ? null
       rpl_raise = replacement[ 'raise'  ] ? null
       rpl_chr   = replacement[ 'glyph'  ] ? chr
-      rpl_cmd   = replacement[ 'cmd'    ] ? null
+      rpl_cmd   = replacement[ 'cmd'    ] ? command
       rpl_cmd   = null if rpl_cmd is 'cn'
       if      rpl_push? and rpl_raise?  then rpl.push "\\tfPushRaise{#{rpl_push}}{#{rpl_raise}}"
       else if rpl_push?                 then rpl.push "\\tfPush{#{rpl_push}}"
