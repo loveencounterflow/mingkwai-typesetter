@@ -230,7 +230,7 @@ module.exports = options =
       '《':             raise: -0.2
       '》':             raise: -0.2
       '囗':                                cmd: 'cnjzr',       glyph: ''
-      '。':  push: 0.5, raise: 0.25
+      '。':  push: 0.5, raise: 0.25,       cmd: 'cn'
       '亻':  push: 0.4
       '冫':  push: 0.5
       '灬':             raise: 0.25

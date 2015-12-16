@@ -146,7 +146,7 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
     if ( replacement = glyph_styles[ chr ] )?
       advance()
       ### TAINT duplication from below: ###
-      command   = tex_command_by_rsgs[ 'fallback' ] ? null
+      command   = tex_command_by_rsgs[ rsg ] ? null
       rpl       = []
       rpl.push '\\cjkgGlue' unless has_cjk_glue
       rpl.push '{'
