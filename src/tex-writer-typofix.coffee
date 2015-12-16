@@ -96,6 +96,7 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
   last_was_whitespace           = no
   whitespace_cache              = []
   replacement                   = null
+  has_cjk_glue                  = no
   #.........................................................................................................
   unless tex_command_by_rsgs?
     throw new Error "need setting 'tex-command-by-rsgs'"
@@ -145,7 +146,9 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
     # debug '©53938-1', chr, rsg, tex_command_by_rsgs[ rsg ]
     if ( replacement = glyph_styles_v2[ chr ] )?
       advance()
-      rpl       = [ '\\cjkgGlue{', ]
+      rpl       = []
+      rpl.push '\\cjkgGlue' unless has_cjk_glue
+      rpl.push '{'
       rpl_push  = replacement[ 'push'   ] ? null
       rpl_raise = replacement[ 'raise'  ] ? null
       rpl_chr   = replacement[ 'glyph'  ] ? chr
@@ -158,14 +161,20 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
       rpl.push rpl_chr
       rpl.push '\\cjkgGlue}'
       R.push rpl.join ''
-      last_command = null
+      has_cjk_glue  = yes
+      last_command  = null
       continue
+    #.......................................................................................................
     else if ( replacement = glyph_styles[ chr ] )?
       ### TAINT this is the legacy branch; new stuff uses glyph_styles_v2, above ###
       advance()
       R.push replacement
       last_command = null
+      has_cjk_glue = no
       continue
+    #.......................................................................................................
+    else
+      has_cjk_glue = no
     #.......................................................................................................
     unless ( command = tex_command_by_rsgs[ rsg ] )?
       command = tex_command_by_rsgs[ 'fallback' ] ? null
