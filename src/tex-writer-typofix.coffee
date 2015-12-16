@@ -145,7 +145,7 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
     # debug '©53938-1', chr, rsg, tex_command_by_rsgs[ rsg ]
     if ( replacement = glyph_styles_v2[ chr ] )?
       advance()
-      rpl       = [ '{', ]
+      rpl       = [ '\\cjkgGlue{', ]
       rpl_push  = replacement[ 'push'   ] ? null
       rpl_raise = replacement[ 'raise'  ] ? null
       rpl_chr   = replacement[ 'glyph'  ] ? chr
@@ -156,7 +156,7 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
       else if               rpl_raise?  then rpl.push "\\tfRaise{#{rpl_raise}}"
       if rpl_cmd?                       then rpl.push "\\#{rpl_cmd}{}"
       rpl.push rpl_chr
-      rpl.push '}'
+      rpl.push '\\cjkgGlue}'
       R.push rpl.join ''
       last_command = null
       continue

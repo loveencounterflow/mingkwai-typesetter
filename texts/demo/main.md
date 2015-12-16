@@ -1,5 +1,8 @@
 
 
+<<<\FPmul\tfFactorMoveX{1}{5}%
+\FPmul\tfFactorMoveY{1}{7}>>>
+
 <<(multi-column>>
 Some adjusted characters:
 卩
@@ -9,6 +12,23 @@ Some adjusted characters:
 乛
 
 國卩國癶國國國乛國 Brick Tea 紧压茶是为了长途运输和长时间保存方便，将茶压缩干燥，压成方砖
+状或块状，为了防止途中变质，一般紧压茶都是用红茶或黑茶制作。 Brick Tea
+<<multi-column)>>
+
+<<(multi-column>>
+Some adjusted characters:
+國
+國
+國
+國
+國
+國
+國國國國國國國國國國國 Brick Tea 紧压茶是为了长途运输和长时间保存方便，将茶压缩干燥，压成方砖
+状或块状，为了防止途中变质，一般紧压茶都是用红茶或黑茶制作。 Brick Tea
+<<multi-column)>>
+
+<<(multi-column>>
+國國國<<<\\>>>國國國國國國國國 Brick Tea 紧压茶是为了长途运输和长时间保存方便，将茶压缩干燥，压成方砖
 状或块状，为了防止途中变质，一般紧压茶都是用红茶或黑茶制作。 Brick Tea
 <<multi-column)>>
 
