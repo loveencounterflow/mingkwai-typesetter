@@ -839,6 +839,10 @@ MACRO_ESCAPER             = require './macro-escaper'
   #.......................................................................................................
   readstream
     .pipe MACRO_ESCAPER.$expand.$remove_backslashes       S
+    .pipe $async ( event, done ) =>
+      debug '©31847', event
+      # done event
+      setImmediate ( -> done event )
     .pipe @MKTX.TEX.$fix_typography_for_tex               S
     .pipe @MKTX.DOCUMENT.$begin                           S
     .pipe @MKTX.DOCUMENT.$end                             S

@@ -37,6 +37,7 @@ MKTS                      = require './main'
 #
 #-----------------------------------------------------------------------------------------------------------
 @$process_actions = ( S ) =>
+  ### TAINT this is an essentially synchronous solution that will not work for async code ###
   copy  = MKTS.MD_READER.copy.bind  MKTS.MD_READER
   stamp = MKTS.MD_READER.stamp.bind MKTS.MD_READER
   hide  = MKTS.MD_READER.hide.bind  MKTS.MD_READER
@@ -44,6 +45,7 @@ MKTS                      = require './main'
   CS                        = require 'coffee-script'
   VM                        = require 'vm'
   local_filename            = 'XXXXXXXXXXXXX'
+  macro_output              = []
   #.........................................................................................................
   do =>
     S.compiled          = {}
@@ -52,7 +54,10 @@ MKTS                      = require './main'
       'rpr':            CND.rpr
       urge:             CND.get_logger 'urge', local_filename
       help:             CND.get_logger 'help', local_filename
+      setImmediate:     setImmediate
+      echo:             ( P... ) -> macro_output.push CND.pen P...
       mkts:
+        output:           macro_output
         reserved_names:   []
         __filename:       local_filename
     S.sandbox[ 'here' ] = S.sandbox
@@ -97,6 +102,11 @@ MKTS                      = require './main'
         send [ '.', 'warning', error_message, ( copy meta ), ]
       #.....................................................................................................
       else
+        ### TAINT join using empty string? spaces? newlines? ###
+        if macro_output.length > 0
+          macro_output_rpr    = macro_output.join ''
+          macro_output.length = 0
+          send [ '.', 'text', macro_output_rpr, ( copy meta ), ]
         #.....................................................................................................
         switch mode
           when 'silent'
