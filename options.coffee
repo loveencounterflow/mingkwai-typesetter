@@ -180,212 +180,164 @@ module.exports = options =
       ]
     #.......................................................................................................
     'glyph-styles-v2':
-      '卩':  push:  -0.4,                  cmd: 'cn'         # glyph: '卩'
-      '癶':                raise: -0.2,    cmd: 'cnxBabel'   # glyph: '癶'
-      '':                raise:  0.1,    cmd: 'cnxJzr'     # glyph: ''
-      '乛':                raise: -0.2,    cmd: 'cn'         # glyph: '乛'
-      '':  push:   0.5, raise: -0.2,     cmd: 'cnxJzr',    glyph: ''
-      # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-    #.......................................................................................................
-    'glyph-styles':
       ### Other stuff: ###
       '‰':          '{\\mktsFontfileOptima‰}'
       ### Ideographic description characters: ###
-      '↻':          '\\cnxJzr{}'
-      '↔':          '\\cnxJzr{}'
-      '↕':          '\\cnxJzr{}'
-      '●':          '\\cnxJzr{}'
-      '◰':          '\\cnxJzr{}'
-      '≈':          '\\cnxJzr{}'
-      '⿰':          '\\cnxJzr{}'
-      '⿱':          '\\cnxJzr{}'
-      '⿺':          '\\cnxJzr{}'
-      '⿸':          '\\cnxJzr{}'
-      '⿹':          '\\cnxJzr{}'
-      '⿶':          '\\cnxJzr{}'
-      '⿷':          '\\cnxJzr{}'
-      '⿵':          '\\cnxJzr{}'
-      '⿴':          '\\cnxJzr{}'
-      '⿻':          '\\cnxJzr{}'
-      # 
-      # 
-      # 
-      # 
-      # 
-      # 
-      # 
-      # 
-      # 
-      # 
-      # 
-      # 
-      # 
-      # 
-      # 
-      # 
-      # 
-      # 
-      # 
-      # 
-      # 
-      # 
-      # 
-      # 
-      # 
-      # 
+      '↻':                                cmd: 'cnxJzr',      glyph: ''
+      '↔':                                cmd: 'cnxJzr',      glyph: ''
+      '↕':                                cmd: 'cnxJzr',      glyph: ''
+      '●':                                cmd: 'cnxJzr',      glyph: ''
+      '◰':                                cmd: 'cnxJzr',      glyph: ''
+      '≈':                                cmd: 'cnxJzr',      glyph: ''
+      '⿰':                                cmd: 'cnxJzr',      glyph: ''
+      '⿱':                                cmd: 'cnxJzr',      glyph: ''
+      '⿺':                                cmd: 'cnxJzr',      glyph: ''
+      '⿸':                                cmd: 'cnxJzr',      glyph: ''
+      '⿹':                                cmd: 'cnxJzr',      glyph: ''
+      '⿶':                                cmd: 'cnxJzr',      glyph: ''
+      '⿷':                                cmd: 'cnxJzr',      glyph: ''
+      '⿵':                                cmd: 'cnxJzr',      glyph: ''
+      '⿴':                                cmd: 'cnxJzr',      glyph: ''
+      '⿻':                                cmd: 'cnxJzr',      glyph: ''
 
       ### 'Late Additions' in upper part of CJK unified ideographs (Unicode v5.2); glyphs are missing
         from Sun-ExtA but are included in BabelstoneHan: ###
-      '龺':            "\\cnxBabel{龺}"
-      '龻':            "\\cnxBabel{龻}"
-      '龼':            "\\cnxBabel{龼}"
-      '龽':            "\\cnxBabel{龽}"
-      '龾':            "\\cnxBabel{龾}"
-      '龿':            "\\cnxBabel{龿}"
-      '鿀':            "\\cnxBabel{鿀}"
-      '鿁':            "\\cnxBabel{鿁}"
-      '鿂':            "\\cnxBabel{鿂}"
-      '鿃':            "\\cnxBabel{鿃}"
-      '鿄':            "\\cnxBabel{鿄}"
-      '鿅':            "\\cnxBabel{鿅}"
-      '鿆':            "\\cnxBabel{鿆}"
-      '鿇':            "\\cnxBabel{鿇}"
-      '鿈':            "\\cnxBabel{鿈}"
-      '鿉':            "\\cnxBabel{鿉}"
-      '鿊':            "\\cnxBabel{鿊}"
-      '鿋':            "\\cnxBabel{鿋}"
-      '鿌':            "\\cnxBabel{鿌}"
+      '龺':                                cmd: 'cnxBabel'
+      '龻':                                cmd: 'cnxBabel'
+      '龼':                                cmd: 'cnxBabel'
+      '龽':                                cmd: 'cnxBabel'
+      '龾':                                cmd: 'cnxBabel'
+      '龿':                                cmd: 'cnxBabel'
+      '鿀':                                cmd: 'cnxBabel'
+      '鿁':                                cmd: 'cnxBabel'
+      '鿂':                                cmd: 'cnxBabel'
+      '鿃':                                cmd: 'cnxBabel'
+      '鿄':                                cmd: 'cnxBabel'
+      '鿅':                                cmd: 'cnxBabel'
+      '鿆':                                cmd: 'cnxBabel'
+      '鿇':                                cmd: 'cnxBabel'
+      '鿈':                                cmd: 'cnxBabel'
+      '鿉':                                cmd: 'cnxBabel'
+      '鿊':                                cmd: 'cnxBabel'
+      '鿋':                                cmd: 'cnxBabel'
+      '鿌':                                cmd: 'cnxBabel'
       #.....................................................................................................
       ### This glyph is damaged in Sun-ExtA; it happens to be included in HanaMinA: ###
-      '䗍':            "\\cnxHanaA{䗍}"
+      '䗍':                                cmd: 'cnxHanaA'
       #.....................................................................................................
       ### Shifted glyphs: ###
-      '&#x3000;':      "\\cnjzr{}"
-      '《':            "\\prPushRaise{0}{-0.2}{\\mktsFontSunexta{《}}"
-      '》':            "\\prPushRaise{0}{-0.2}{\\mktsFontSunexta{》}}"
-      # '':   "\\cnjzr{}"
-      # '&jzr#xe352;':   "\\cnjzr{}"
-      '囗':            "\\cnjzr{}"
-      '。':            "\\prPushRaise{0.5}{0.25}{\\cn{。}}"
-      '亻':            "\\prPush{0.4}{\\cn{亻}}"
-      '冫':            "\\prPush{0.5}{\\cn{冫}}"
-      '灬':            "\\prRaise{0.25}{\\cn{灬}}"
-      '爫':            "\\prRaise{-0.125}{\\cn{爫}}"
-      '牜':            "\\prPush{0.4}{\\cn{牜}}"
-      '飠':            "\\prPush{0.4}{\\cn{飠}}"
-      '扌':            "\\prPush{0.05}{\\cn{扌}}"
-      '犭':            "\\prPush{0.3}{\\cn{犭}}"
-      '忄':            "\\prPush{0.4}{\\cn{忄}}"
-      '礻':            "\\prPush{0.2}{\\cn{礻}}"
-      '衤':            "\\prPush{0.1}{\\cn{衤}}"
-      '覀':            "\\prRaise{-0.125}{\\cn{覀}}"
-      '讠':            "\\prPush{0.4}{\\cn{讠}}"
-      '𧾷':            "\\prPush{0.4}{\\cnxb{𧾷}}"
-      '卩':            "\\prPush{-0.4}{\\cn{卩}}"
-      '癶':            "\\prRaise{-0.2}{\\cnxBabel{癶}}"
-      '':            "\\prRaise{0.1}{\\cnxJzr{}}"
-      '':            "\\prPushRaise{0.5}{-0.2}{\\cnxJzr{}}"
-      '乛':            "\\prRaise{-0.2}{\\cn{乛}}"
-      '糹':            "\\prPush{0.4}{\\cn{糹}}"
-      '纟':            "\\prPush{0.4}{\\cn{纟}}"
-      '𥫗':            "\\prRaise{-0.2}{\\cnxb{𥫗}}"
-      '罓':            "\\prRaise{-0.2}{\\cn{罓}}"
-      '钅':            "\\prPush{0.3}{\\cn{钅}}"
-      '阝':            "\\prPush{0.4}{\\cn{阝}}"
-      '龵':            "\\prRaise{-0.1}{\\cnxBabel{龵}}"
-      '𩰊':            "\\prPush{-0.15}{\\cnxb{𩰊}}"
-      '𩰋':            "\\prPush{0.15}{\\cnxb{𩰋}}"
-      '彳':            "\\prPush{0.15}{\\cn{彳}}"
-      '龹':            "\\prRaise{-0.12}{\\cn{龹}}"
-      '龸':            "\\prRaise{-0.15}{\\cn{龸}}"
-      '䒑':            "\\prRaise{-0.15}{\\cnxa{䒑}}"
-      '宀':            "\\prRaise{-0.15}{\\cn{宀}}"
-      '〇':            "\\prRaise{-0.05}{\\cnxBabel{〇}}"
+      '&#x3000;':                         cmd: 'cnjzr',       glyph: ''
+      '《':             raise: -0.2
+      '》':             raise: -0.2
+      '囗':                                cmd: 'cnjzr',       glyph: ''
+      '。':  push: 0.5, raise: 0.25
+      '亻':  push: 0.4
+      '冫':  push: 0.5
+      '灬':             raise: 0.25
+      '爫':             raise: -0.125
+      '牜':  push: 0.4
+      '飠':  push: 0.4
+      '扌':  push: 0.05
+      '犭':  push: 0.3
+      '忄':  push: 0.4
+      '礻':  push: 0.2
+      '衤':  push: 0.1
+      '覀':             raise: -0.125
+      '讠':  push: 0.4
+      '𧾷':  push: 0.4,                    cmd: 'cnxb'
+      '卩':  push: -0.4
+      '癶':             raise: -0.2,       cmd: 'cnxBabel'
+      '':             raise: 0.1,        cmd: 'cnxJzr'
+      '':  push: 0.5, raise: -0.2
+      '乛':             raise: -0.2
+      '糹':  push: 0.4
+      '纟':  push: 0.4
+      '𥫗':             raise: -0.2,       cmd: 'cnxb'
+      '罓':             raise: -0.2
+      '钅':  push: 0.3
+      '阝':  push: 0.4
+      '龵':             raise: -0.1,       cmd: 'cnxBabel'
+      '𩰊':  push: -0.15,                  cmd: 'cnxb'
+      '𩰋':  push: 0.15,                   cmd: 'cnxb'
+      '彳':  push: 0.15
+      '龹':             raise: -0.12
+      '龸':             raise: -0.15
+      '䒑':             raise: -0.15,      cmd: 'cnxa'
+      '宀':             raise: -0.15
+      '〇':             raise: -0.05,      cmd: 'cnxBabel'
       #.....................................................................................................
       ### Glyphs represented by other codepoints and/or with other than the standard fonts: ###
-      # '⺊':            "\\cnxHanaA{⺊}"
-      # '⺑':            "\\cnxHanaA{⺑}"
-      # '⺕':            "\\cnxHanaA{⺕}"
-      # '⺴':            "\\cnxHanaA{⺴}"
-      # '⺿':            "\\cnxHanaA{⺿}"
-      # '〆':            "\\cnxHanaA{〆}"
-      # '〻':            "\\cnxHanaA{〻}"
-      # '㇀':            "\\cnxHanaA{㇀}"
-      # '㇊':            "\\cnxHanaA{㇊}"
-      # '㇎':            "\\cnxHanaA{㇎}"
-      # '㇏':            "\\cnxHanaA{㇏}"
-      # '丷':            "\\cnxHanaA{丷}"
-      # '饣':            "\\cnxHanaA{饣}"
-      '⺀':            "\\cnxHanaA{⺀}"
-      '⺀':            "\\cnxHanaA{⺀}"
-      '⺄':            "\\cnxHanaA{⺄}"
-      '⺆':            "\\cnxBabel{⺆}"
-      '⺌':            "\\cnxHanaA{⺌}"
-      '⺍':            "\\cnxHanaA{⺍}"
-      '⺍':            "\\cnxHanaA{⺍}"
-      '⺗':            "\\cnxHanaA{⺗}"
-      '⺝':            "\\cnxBabel{⺝}"
-      '⺝':            "\\cnxHanaA{⺝}"
-      '⺥':            "\\cnxHanaA{⺥}"
-      '⺳':            "\\cnxHanaA{⺳}"
-      '⺶':            "\\cnxBabel{⺶}"
-      '⺻':            "\\cnxHanaA{⺻}"
-      '⺼':            "\\cnxBabel{⺼}"
-      '覀':            "\\cnxJzr{}"
-      '⻗':            "\\cnxJzr{}"
-      '𡗗':            "\\cnxJzr{}"
-      '〓':            "\\cnxBabel{〓}"
-      '〓':            "\\cnxBabel{〓}"
-      '〢':            "\\cnxSunXA{〢}"
-      '〣':            "\\cnxSunXA{〣}"
-      '〥':            "\\cnxBabel{〥}"
-      '〥':            "\\cnxSunXA{〥}"
-      '〧':            "\\cnxBabel{〧}"
-      '〨':            "\\cnxBabel{〨}"
-      '〽':            "\\cnxSunXA{〽}"
-      '丿':            "\\cnxJzr{}"
-      '㇁':            "\\cnxBabel{㇁}"
-      '㇂':            "\\cnxHanaA{㇂}"
-      '㇃':            "\\cnxBabel{㇃}"
-      '㇄':            "\\cnxBabel{㇄}"
-      '㇅':            "\\cnxBabel{㇅}"
-      '㇈':            "\\cnxBabel{㇈}"
-      '㇉':            "\\cnxHanaA{㇉}"
-      '㇋':            "\\cnxBabel{㇋}"
-      '㇌':            "\\cnxHanaA{㇌}"
-      '㇢':            "\\cnxHanaA{㇢}"
-      '㓁':            "\\cnxBabel{㓁}"
-      '冖':            "\\cnxHanaA{冖}"
-      '刂':            "\\cnxHanaA{刂}"
-      '氵':            "\\cnxHanaA{氵}"
-      '罒':            "\\cnxHanaA{罒}"
-      '龴':            "\\cnxHanaA{龴}"
-      '𠂉':            "\\cnxHanaA{𠂉}"
-      '帯':            "\\cnxHanaA{帯}"
-      '齒':            "\\cnxBabel{齒}"
-      '龰':            "\\cnxBabel{龰}"
-      '𤴔':            "\\cnxBabel{𤴔}"
-      '㐃':            "\\cnxBabel{㐃}"
-      '𠥓':            "\\cnxJzr{}"
-      '𠚜':            "\\cnxHanaB{𠚜}"
-      '𠚡':            "\\cnxHanaB{𠚡}"
-      '𠥧':            "\\cnxHanaB{𠥧}"
-      '𠥩':            "\\cnxHanaB{𠥩}"
-      '𠥪':            "\\cnxHanaB{𠥪}"
-      '𠥫':            "\\cnxHanaB{𠥫}"
-      '𠥬':            "\\cnxHanaB{𠥬}"
-      '𧀍':            "\\cnxHanaB{𧀍}"
-      '龷':            "\\cnxJzr{}"
-      '龶':            "\\cnxJzr{}"
-
-
-
-
-
-
-
-
-
-
-
-
+      # '⺊':                                cmd: 'cnxHanaA'
+      # '⺑':                                cmd: 'cnxHanaA'
+      # '⺕':                                cmd: 'cnxHanaA'
+      # '⺴':                                cmd: 'cnxHanaA'
+      # '⺿':                                cmd: 'cnxHanaA'
+      # '〆':                                cmd: 'cnxHanaA'
+      # '〻':                                cmd: 'cnxHanaA'
+      # '㇀':                                cmd: 'cnxHanaA'
+      # '㇊':                                cmd: 'cnxHanaA'
+      # '㇎':                                cmd: 'cnxHanaA'
+      # '㇏':                                cmd: 'cnxHanaA'
+      # '丷':                                cmd: 'cnxHanaA'
+      # '饣':                                cmd: 'cnxHanaA'
+      # '⺀':                                cmd: 'cnxHanaA'
+      '⺀':                                cmd: 'cnxHanaA'
+      '⺄':                                cmd: 'cnxHanaA'
+      '⺆':                                cmd: 'cnxBabel'
+      '⺌':                                cmd: 'cnxHanaA'
+      # '⺍':                                cmd: 'cnxHanaA'
+      '⺍':                                cmd: 'cnxHanaA'
+      '⺗':                                cmd: 'cnxHanaA'
+      # '⺝':                                cmd: 'cnxBabel'
+      '⺝':                                cmd: 'cnxHanaA'
+      '⺥':                                cmd: 'cnxHanaA'
+      '⺳':                                cmd: 'cnxHanaA'
+      '⺶':                                cmd: 'cnxBabel'
+      '⺻':                                cmd: 'cnxHanaA'
+      '⺼':                                cmd: 'cnxBabel'
+      # '〓':                                cmd: 'cnxBabel'
+      '〓':                                cmd: 'cnxBabel'
+      '〢':                                cmd: 'cnxSunXA'
+      '〣':                                cmd: 'cnxSunXA'
+      # '〥':                                cmd: 'cnxBabel'
+      '〥':                                cmd: 'cnxSunXA'
+      '〧':                                cmd: 'cnxBabel'
+      '〨':                                cmd: 'cnxBabel'
+      '〽':                                cmd: 'cnxSunXA'
+      '㇁':                                cmd: 'cnxBabel'
+      '㇂':                                cmd: 'cnxHanaA'
+      '㇃':                                cmd: 'cnxBabel'
+      '㇄':                                cmd: 'cnxBabel'
+      '㇅':                                cmd: 'cnxBabel'
+      '㇈':                                cmd: 'cnxBabel'
+      '㇉':                                cmd: 'cnxHanaA'
+      '㇋':                                cmd: 'cnxBabel'
+      '㇌':                                cmd: 'cnxHanaA'
+      '㇢':                                cmd: 'cnxHanaA'
+      '㓁':                                cmd: 'cnxBabel'
+      '冖':                                cmd: 'cnxHanaA'
+      '刂':                                cmd: 'cnxHanaA'
+      '氵':                                cmd: 'cnxHanaA'
+      '罒':                                cmd: 'cnxHanaA'
+      '龴':                                cmd: 'cnxHanaA'
+      '𠂉':                                cmd: 'cnxHanaA'
+      '帯':                                cmd: 'cnxHanaA'
+      '齒':                                cmd: 'cnxBabel'
+      '龰':                                cmd: 'cnxBabel'
+      '𤴔':                                cmd: 'cnxBabel'
+      '㐃':                                cmd: 'cnxBabel'
+      '𠚜':                                cmd: 'cnxHanaB'
+      '𠚡':                                cmd: 'cnxHanaB'
+      '𠥧':                                cmd: 'cnxHanaB'
+      '𠥩':                                cmd: 'cnxHanaB'
+      '𠥪':                                cmd: 'cnxHanaB'
+      '𠥫':                                cmd: 'cnxHanaB'
+      '𠥬':                                cmd: 'cnxHanaB'
+      '𧀍':                                cmd: 'cnxHanaB'
+      '覀':                                cmd: 'cnxJzr',      glyph: ''
+      '⻗':                                cmd: 'cnxJzr',      glyph: ''
+      '𡗗':                                cmd: 'cnxJzr',      glyph: ''
+      '丿':                                cmd: 'cnxJzr',      glyph: ''
+      '𠥓':                                cmd: 'cnxJzr',      glyph: ''
+      '龷':                                cmd: 'cnxJzr',      glyph: ''
+      '龶':                                cmd: 'cnxJzr',      glyph: ''

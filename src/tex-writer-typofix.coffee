@@ -79,7 +79,6 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
   ### An improved version of `XELATEX.tag_from_chr` ###
   ### TAINT should accept settings, fall back to `require`d `options.coffee` ###
   glyph_styles                  = options[ 'tex' ]?[ 'glyph-styles'             ] ? {}
-  glyph_styles_v2               = options[ 'tex' ]?[ 'glyph-styles-v2'          ] ? {}
   ### Legacy mode: force one command per non-latin character. This is OK for Chinese texts,
   but a bad idea for all other scripts; in the future, MKTS's TeX formatting commands like
   `\cn{}` will be rewritten to make this setting superfluous. ###
@@ -144,7 +143,7 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
     ### TAINT if chr is a TeX active ASCII chr like `$`, `#`, then it will be escaped at this point
     and no more match entries in `glyph_styles` ###
     # debug '©53938-1', chr, rsg, tex_command_by_rsgs[ rsg ]
-    if ( replacement = glyph_styles_v2[ chr ] )?
+    if ( replacement = glyph_styles[ chr ] )?
       advance()
       rpl       = []
       rpl.push '\\cjkgGlue' unless has_cjk_glue
@@ -163,14 +162,6 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
       R.push rpl.join ''
       has_cjk_glue  = yes
       last_command  = null
-      continue
-    #.......................................................................................................
-    else if ( replacement = glyph_styles[ chr ] )?
-      ### TAINT this is the legacy branch; new stuff uses glyph_styles_v2, above ###
-      advance()
-      R.push replacement
-      last_command = null
-      has_cjk_glue = no
       continue
     #.......................................................................................................
     else
