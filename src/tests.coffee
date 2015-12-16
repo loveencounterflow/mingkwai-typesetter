@@ -1040,9 +1040,10 @@ nice_text_rpr = ( text ) ->
     ["國","{\\cjk{}國}"]
     ["Brick tea 紧压茶都是用红茶 is delicious","Brick tea {\\cjk{}紧压茶都是用红茶} is delicious"]
     ["Brick tea\n紧压茶都 是\t\n用红茶 is\ndelicious","Brick tea\n{\\cjk{}紧压茶都 是\t\n用红茶} is\ndelicious"]
-    ["Brick tea 紧压茶卩癶都是用红茶 is delicious","Brick tea {\\cjk{}紧压茶{\\tfPush{-0.4}卩}{\\tfRaise{-0.2}\\cnxBabel{}癶}{\\tfRaise{0.1}\\cnxJzr{}}都是用红茶} is delicious"]
-    ["压茶卩红茶","{\\cjk{}压茶{\\tfPush{-0.4}卩}红茶}"]
-    ["压茶𠇋卩红茶","{\\cjk{}压茶{\\cnxb{}𠇋}{\\tfPush{-0.4}卩}红茶}"]
+    ["Brick tea 紧压茶卩癶都是用红茶 is delicious","Brick tea {\\cjk{}紧压茶\\cjkgGlue{\\tfPush{-0.4}卩\\cjkgGlue}{\\tfRaise{-0.2}\\cnxBabel{}癶\\cjkgGlue}{\\tfRaise{0.1}\\cnxJzr{}\\cjkgGlue}都是用红茶} is delicious"]
+    ["压茶卩红茶","{\\cjk{}压茶\\cjkgGlue{\\tfPush{-0.4}卩\\cjkgGlue}红茶}"]
+    ["压茶𠇋卩红茶","{\\cjk{}压茶{\\cnxb{}𠇋}\\cjkgGlue{\\tfPush{-0.4}卩\\cjkgGlue}红茶}"]
+    ["压茶𠇋卩","{\\cjk{}压茶{\\cnxb{}𠇋}\\cjkgGlue{\\tfPush{-0.4}卩\\cjkgGlue}}"]
     ]
   # warn "missing `.p` inside `(multi-column)`"
   for [ probe, matcher, ] in probes_and_matchers
