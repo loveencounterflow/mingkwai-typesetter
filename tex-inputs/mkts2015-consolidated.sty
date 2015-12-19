@@ -146,10 +146,11 @@
 % mkts Styles
 % consider to put these into `.master.tex`
 \newcommand{\mktsStyleBold}{%
-  \renewcommand{\cn}[1]{{\adjustCjkIdeograph{\mktsFontfileCwtexqheibold##1}}}%
-  \renewcommand{\ka}[1]{\adjustKatakana{\mktsFontfileCwtexqheibold##1}}%
-  \renewcommand{\hi}[1]{\adjustHiragana{\mktsFontfileCwtexqheibold##1}}%
-  \renewcommand{\hg}[1]{\adjustHangeul{\mktsFontfileCwtexqheibold##1}}%
+  \renewcommand{\mktsFontCjkDefault}{\mktsFontfileCwtexqheibold}
+  % \renewcommand{\cn}[1]{{\adjustCjkIdeograph{\mktsFontfileCwtexqheibold##1}}}%
+  % \renewcommand{\ka}[1]{\adjustKatakana{\mktsFontfileCwtexqheibold##1}}%
+  % \renewcommand{\hi}[1]{\adjustHiragana{\mktsFontfileCwtexqheibold##1}}%
+  % \renewcommand{\hg}[1]{\adjustHangeul{\mktsFontfileCwtexqheibold##1}}%
   \fontsize{0.8\myFontsize}{0.8\myFontsize}\mktsFontfileUbuntub}
 
 \newcommand{\mktsStyleItalic}{%
@@ -231,27 +232,13 @@
 % \XeTeXlinebreaklocale "ja"% for Japanese
 % \XeTeXlinebreakskip 0pt plus 0.1pt% sets the skip
 % }
-\newcommand{\mktsAdjustJzrCjk}{}
-
 \usepackage{relsize}
-\newcommand{\mktsStartCjk}{%
-  \cjkgUseCjkGlue%
-  \relscale{1.05}%
-  \tfRaise{-0.1}}%
-  % \pdfliteral{ 1 0  0 1 0 -2 cm}%
-  % \special{pdf:literal 1 0  0 1 0 -2 cm}%
-  % \cjkInterchrSpacing%
-  % Should fix CJK linebreaks as per http://tex.stackexchange.com/a/38276/28067
-  % ### TAINT this setting should be made only available inside CJK text regions ###
-  % \XeTeXlinebreaklocale "ja"% for Japanese
-  % \XeTeXlinebreaklocale "zh"% for Chinese
-  % \XeTeXlinebreakskip 0pt plus 0.1pt% sets the skip
-
+\newcommand{\mktsFontCjkDefault}{\mktsFontfileSunexta}
 \newcommand{\cjk}{%
   \cjkgUseCjkGlue%
   \relscale{1.05}%
   \tfRaise{-0.1}%
-  \mktsFontfileSunexta}
+  \mktsFontCjkDefault}
 % \newcommand{\cn}{\mktsStartCjk\mktsFontfileSunexta}
 \newcommand{\cn}{}
 \newcommand{\cnxa}{\mktsFontfileSunexta}
@@ -269,11 +256,11 @@
 \newcommand{\hi}{\mktsAdjustHiragana\mktsFontfileNanummyeongjo}
 \newcommand{\hg}{\mktsAdjustHangeul\mktsFontfileNanummyeongjo}
 % ..........................................................................................................
-\newcommand{\cnxBabel}{\mktsStartCjk\mktsFontfileBabelstonehan}
-\newcommand{\cnxHanaA}{\mktsStartCjk\mktsFontfileHanamina}
-\newcommand{\cnxHanaB}{\mktsStartCjk\mktsFontfileHanaminb}
-\newcommand{\cnxSunXA}{\mktsStartCjk\mktsFontfileSunexta}
-\newcommand{\cnxJzr}{\mktsStartCjk\mktsFontfileJizurathreeb}
+\newcommand{\cnxBabel}{\mktsFontfileBabelstonehan}
+\newcommand{\cnxHanaA}{\mktsFontfileHanamina}
+\newcommand{\cnxHanaB}{\mktsFontfileHanaminb}
+\newcommand{\cnxSunXA}{\mktsFontfileSunexta}
+\newcommand{\cnxJzr}{\mktsFontfileJizurathreeb}
 % \newcommand{\missing}[1]{{\missingFont#1}}
 % ..........................................................................................................
 \newcommand{\jzrStrokeclassZZWBF}{\prPushRaise{-0.1}{-0.1}{{\mktsFontfileJizurathreeb{}}}}
