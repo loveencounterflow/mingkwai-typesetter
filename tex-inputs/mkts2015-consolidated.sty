@@ -170,6 +170,20 @@
   {\mktsStyleSymbol{}█}}%
   {{\mktsStyleSymbol{}█}}
 
+\renewcommand{\chapter}[1]{{%
+  \vspace{1em}%
+  \centering\mktsStyleBold{}* #1 *\\%
+  \vspace{1em}%
+  % \nopagebreak% ???
+  \par}}
+\renewcommand{\section}[1]{{%
+  \vspace{1em}%
+  \centering\mktsStyleBold{}** #1 **\\%
+  \vspace{1em}%
+  % \nopagebreak% ???
+  \par}}
+\renewcommand{\subsection}[1]{{\mktsStyleBold{}*** #1 ***}\par}
+
 % \newenvironment{mktsEnvWarning}[2]%
 %   {\newcommand{\mktsEnvWarningStopChr}{#2}
 %   \mktsStyleBold%

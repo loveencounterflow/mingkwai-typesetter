@@ -121,14 +121,14 @@ module.exports = options =
       ]
 
   #.........................................................................................................
-  styles: {}
-    # mktsStyleTitleChapter: """
-    #   \\Huge%
-    #   \\mktsFontfileUbuntub%
-    #   \\protect\\renewcommand{\\cn}[1]{{\\adjustCjkIdeograph{\\mktsFontfileCwtexqheibold{}##1}}}%"""
-    # mktsStyleTitleSection: """
-    #   \\mktsFontfileUbuntub%
-    #   \\protect\\renewcommand{\\cn}[1]{{\\adjustCjkIdeograph{\\mktsFontfileCwtexqheibold{}##1}}}%"""
+  styles:
+    mktsStyleTitleChapter: """
+      \\Huge%
+      \\mktsFontfileUbuntub%
+      \\protect\\renewcommand{\\cn}[1]{{\\adjustCjkIdeograph{\\mktsFontfileCwtexqheibold{}##1}}}%"""
+    mktsStyleTitleSection: """
+      \\mktsFontfileUbuntub%
+      \\protect\\renewcommand{\\cn}[1]{{\\adjustCjkIdeograph{\\mktsFontfileCwtexqheibold{}##1}}}%"""
   #.........................................................................................................
   'tex':
     'ignore-latin':             yes

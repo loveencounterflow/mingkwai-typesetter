@@ -332,6 +332,36 @@ MACRO_ESCAPER             = require './macro-escaper'
     return null
 
 #-----------------------------------------------------------------------------------------------------------
+@MKTX.REGION.$code = ( S ) =>
+  ### TAINT code duplication with `REGION.$keep_lines` possible ###
+  track = MD_READER.TRACKER.new_tracker '(code)'
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    within_code = track.within '(code)'
+    track event
+    #.......................................................................................................
+    if select event, '.', 'text'
+      [ type, name, text, meta, ] = event
+      if within_code
+        text = text.replace /\u0020/g, '\u00a0'
+      send [ type, name, text, meta, ]
+    #.......................................................................................................
+    else if select event, [ '(', ')', ], 'code'
+      send stamp event
+      [ type, name, text, meta, ] = event
+      #.....................................................................................................
+      if type is '('
+        # send [ 'tex', "\\begingroup\\mktsObeyAllLines\\mktsStyleCode{}", ]
+        send [ 'tex', "\\begingroup\\mktsStyleCode{}", ]
+        send [ '(', 'keep-lines', null, ( copy meta ), ]
+      else
+        send [ 'tex', "\\endgroup{}", ]
+        send [ ')', 'keep-lines', null, ( copy meta ), ]
+    #.......................................................................................................
+    else
+      send event
+
+#-----------------------------------------------------------------------------------------------------------
 @MKTX.REGION.$keep_lines = ( S ) =>
   track = MD_READER.TRACKER.new_tracker '(keep-lines)'
   #.........................................................................................................
@@ -356,33 +386,6 @@ MACRO_ESCAPER             = require './macro-escaper'
       else
         send [ 'tex', "\\endgroup{}", ]
         track.leave '(keep-lines)'
-    #.......................................................................................................
-    else
-      send event
-
-#-----------------------------------------------------------------------------------------------------------
-@MKTX.REGION.$code = ( S ) =>
-  ### TAINT code duplication with `REGION.$keep_lines` possible ###
-  track = MD_READER.TRACKER.new_tracker '(code)'
-  #.........................................................................................................
-  return $ ( event, send ) =>
-    within_code = track.within '(code)'
-    track event
-    #.......................................................................................................
-    if select event, '.', 'text'
-      [ type, name, text, meta, ] = event
-      if within_code
-        text = text.replace /\u0020/g, '\u00a0'
-      send [ type, name, text, meta, ]
-    #.......................................................................................................
-    else if select event, [ '(', ')', ], 'code'
-      send stamp event
-      [ type, name, text, meta, ] = event
-      #.....................................................................................................
-      if type is '('
-        send [ 'tex', "\\begingroup\\mktsObeyAllLines\\mktsStyleCode{}", ]
-      else
-        send [ 'tex', "\\endgroup{}", ]
     #.......................................................................................................
     else
       send event
@@ -857,8 +860,8 @@ MACRO_ESCAPER             = require './macro-escaper'
     .pipe @MKTX.COMMAND.$multi_column                     S
     .pipe @MKTX.REGION.$multi_column                      S
     .pipe @MKTX.REGION.$single_column                     S
-    .pipe @MKTX.REGION.$keep_lines                        S
     .pipe @MKTX.REGION.$code                              S
+    .pipe @MKTX.REGION.$keep_lines                        S
     .pipe @MKTX.BLOCK.$heading                            S
     .pipe @MKTX.BLOCK.$hr                                 S
     .pipe @MKTX.BLOCK.$unordered_list                     S
