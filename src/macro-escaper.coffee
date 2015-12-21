@@ -395,9 +395,23 @@ after it, thereby inhibiting any processing of those portions. ###
 
 #-----------------------------------------------------------------------------------------------------------
 @$expand.$region_macros = ( S ) =>
+  tag_stack = []
   return @_get_expander S, @region_id_pattern, ( meta, entry ) =>
     { raw
       markup }    = entry
+    switch markup
+      when '('
+        tag_stack.push raw
+      when ')'
+        if tag_stack.length < 1
+          return [ '.', 'warning', "too many closing regions", ( copy meta ), ]
+        expected = tag_stack.pop()
+        if ( raw.length > 0 ) and expected isnt raw
+          message = "expected closing region #{rpr expected}, got #{rpr raw}"
+          return [ '.', 'warning', message, ( copy meta ), ]
+        raw = expected
+      else
+        throw new Error "expected '(' or ')' as region markup, got #{rpr markup}"
     return [ markup, raw, null, ( MKTS.MD_READER.copy meta ), ]
 
 #-----------------------------------------------------------------------------------------------------------
