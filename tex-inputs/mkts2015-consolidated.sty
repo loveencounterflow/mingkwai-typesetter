@@ -112,6 +112,7 @@
 % \usepackage[protrusion=true,final]{microtype} % doesn't work yet
 \newcommand{\mktsShowpar}{%
   \makebox[0mm]{\color{red!25}¶}}
+\renewcommand{\mktsShowpar}{}
 
 \newcommand{\mktsInsertblankpage}{\thispagestyle{empty}\mbox{}\newpage}
 
@@ -136,6 +137,7 @@
 % \myLineheight=3.8mm % reduced to fontsize
 \setlength{\baselineskip}{\myLineheight}
 \setlength{\parskip}{0mm}
+\setlength{\parskip}{\myLineheight}
 \setlength{\parindent}{0mm}
 % thx to http://www.tug.org/TUGboat/tb28-1/tb88bazargan.pdf for the next:
 \lineskiplimit=-10pt%
@@ -232,9 +234,9 @@
 \newcommand{\adjustCjkIdeograph}[1]{\prRaise{-0.125}{#1}} % !!!
 % \newcommand{\adjustJzrCjkIdeograph}[1]{\prRaise{-0.125}{#1}} % !!!
 \newcommand{\adjustJzrCjkIdeograph}[1]{\prRaise{-0.125}{\makebox[1.1053\myFontsize]{#1}}} % !!!
-\newcommand{\adjustKatakana}[1]{\cjkInterchrSpacing\prRaise{-0.125}{#1}}
-\newcommand{\adjustHiragana}[1]{\cjkInterchrSpacing\prRaise{-0.125}{#1}}
-\newcommand{\adjustHangeul}[1]{\cjkInterchrSpacing\prRaise{-0.125}{#1}}
+\newcommand{\mktsAdjustKatakana}{}
+\newcommand{\mktsAdjustHiragana}{}
+\newcommand{\mktsAdjustHangeul}{}
 % ..........................................................................................................
 \newcommand{\latin}[1]{{\mktsFontfileEbgaramondtwelveregular#1}}
 % \newcommand{\setPlainLatin}{\renewcommand{\latin}[1]{{\mktsFontfileEbgaramondtwelveregular#1}}}
@@ -266,8 +268,8 @@
 \newcommand{\cnsym}{\mktsFontfileHanamina}
 \newcommand{\cnstrk}{\mktsFontfileSunexta}
 \newcommand{\cnjzr}{\mktsFontfileJizurathreeb}
-\newcommand{\ka}{\mktsAdjustKatakana\mktsFontfileNanummyeongjo}
-\newcommand{\hi}{\mktsAdjustHiragana\mktsFontfileNanummyeongjo}
+\newcommand{\ka}{\mktsAdjustKatakana}% \mktsFontfileNanummyeongjo
+\newcommand{\hi}{\mktsAdjustHiragana}% \mktsFontfileNanummyeongjo
 \newcommand{\hg}{\mktsAdjustHangeul\mktsFontfileNanummyeongjo}
 % ..........................................................................................................
 \newcommand{\cnxBabel}{\mktsFontfileBabelstonehan}

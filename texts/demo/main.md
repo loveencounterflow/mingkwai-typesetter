@@ -485,10 +485,16 @@ As far as CJK Ideographs are concerned, the two biggest single sources
 for duplicate codepoints are Compatibility Codepoints and the (I believe
 misguided) attempt to treat well-known 'radicals' (字典部首) and some characters
 explicitly labeled as 'symbols' apart from the 'ideographs proper'. To do
-so, the Unicode Blocks <<(ublock>><<ublock)>>
+so, the Unicode Blocks
+u-cjk-rad1/2f00 .. u-cjk-rad1/2fdf <<(ublock>>Kangxi Radicals<<)>>,
+u-cjk-rad2/2e80 .. u-cjk-rad2/2eff <<(ublock>>CJK Radicals Supplement<<)>> and
+u-cjk-sym/3000 .. u-cjk-sym/303f 	<<(ublock>>CJK Symbols and Punctuation<<)>>
+have been set up; the latter contains, inter alia,
+u-cjk-sym/3007 〇 'zero' (to me undoubtely a 'character', just as
+一, 二, 三, 萬 are characters, not symbols), duplicated as
+u-cjk-strk/31e3 ㇣ '(circular stroke, used for some ideographs created
+in Korea)'.
 
-u-cjk-rad2/2e80 .. u-cjk-rad2/2eff <<CJK Radicals Supplement 	128 	115 	Han
-U+2F00..U+2FDF 	Kangxi Radicals
 
 
 ```
@@ -517,7 +523,6 @@ u-cjk/4ea0	亠	u-cjk-rad1/2f07	⼇<<< >>>
 u-cjk/4ea0	亠	u-cjk-sym/3026	〦<<< >>>
 u-cjk/5341	十	u-cjk-rad1/2f17	⼗<<< >>>
 u-cjk/5341	十	u-cjk-sym/3038	〸<<< >>>
-# u-cjk/5344 and u-cjk/5efe should get unified for components<<< >>>
 u-cjk/535d	卝	u-cjk-cmpi1/fa5d	艹<<< >>>
 u-cjk/535d	卝	u-cjk-rad2/2ec0	⻀<<< >>>
 u-cjk-rad2/2ebf	⺿	u-cjk-cmpi1/fa5e	艹<<< >>>
@@ -560,6 +565,12 @@ u-cjk-xb/24fb8	𤾸	u-cjk-cmpi2/2f93c	𤾸<<< >>>
 u-cjk-xb/25249	𥉉	u-cjk-cmpi1/fad5	𥉉<<< >>>
 u-cjk/9091	邑	u-cjk-rad1/2fa2	⾢<<< >>>
 u-cjk/9149	酉	u-cjk-rad1/2fa3	⾣<<< >>>
+```
+
+漢字データベース
+
+
+```
 jzr/e1ef	&jzr#xe1ef;	cdp/896a	&#x26;cdp#x896a;<<< >>>
 jzr/e1f0	&jzr#xe1f0;	cdp/88c8	&#x26;cdp#x88c8;<<< >>>
 jzr/e1f1	&jzr#xe1f1;	cdp/85fd	&#x26;cdp#x85fd;<<< >>>

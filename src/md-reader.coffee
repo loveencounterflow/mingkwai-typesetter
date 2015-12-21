@@ -365,7 +365,7 @@ tracker_pattern = /// ^
         is_first = no
         send [ '(', 'document', null, {}, ]
         send [ '.', 'command', 'empty-document', {}, ]
-      debug '©76885', [ ')', 'document', null, {}, ]
+      # debug '©76885', [ ')', 'document', null, {}, ]
       send [ ')', 'document', null, {}, ]
       setImmediate =>
         # whisper "ending input stream"
@@ -590,7 +590,7 @@ tracker_pattern = /// ^
       null
     #.......................................................................................................
     else if @select event, ')', 'document'
-      debug '©18623', tag_stack
+      # debug '©18623', tag_stack
       while tag_stack.length > 0
         sub_event                                   = tag_stack.pop()
         [ sub_type, sub_name, sub_text, sub_meta, ] = sub_event

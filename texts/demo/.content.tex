@@ -453,7 +453,23 @@ u-cjk/4e8c	{\cjk{}二}	u-cjk-rad1/2f06	{\cjk{}{\cnrone{}⼆}}
 u-cjk/4e8c	{\cjk{}二}	u-cjk-xb/2011e	{\cjk{}{\cnxb{}𠄞}} 
 u-cjk/4e8c	{\cjk{}二}	u-cjk-xb/2011f	{\cjk{}{\cnxb{}𠄟}}!components 
 u-cjk/4e8c	{\cjk{}二}	u-cjk-xb/20120	{\cjk{}{\cnxb{}𠄠}}!components 
-\endgroup{}\endgroup{}\begingroup\mktsStyleCode{}\begingroup\mktsObeyAllLines{}u-cjk-xb/2967f	{\cjk{}{\cnxb{}𩙿}	}u-cjk-rad2/2ede	{\cjk{}{\cnrtwo{}⻞}} 
+\endgroup{}\endgroup{}The amount of duplication in Unicode is certainly surprising to the
+layman; some of this is due to Unicode’s ‘roundtrip encoding compatibility
+with legacy encodings’, some is deliberate, and some is due to oversight.\mktsShowpar\par
+As far as CJK Ideographs are concerned, the two biggest single sources
+for duplicate codepoints are Compatibility Codepoints and the (I believe
+misguided) attempt to treat well-known ‘radicals’ ({\cjk{}字典部首}) and some characters
+explicitly labeled as ‘symbols’ apart from the ‘ideographs proper’. To do
+so, the Unicode Blocks
+u-cjk-rad1/2f00 … u-cjk-rad1/2fdf {\mktsStyleItalic{}Kangxi Radicals},
+u-cjk-rad2/2e80 … u-cjk-rad2/2eff {\mktsStyleItalic{}CJK Radicals Supplement} and
+u-cjk-sym/3000 … u-cjk-sym/303f 	{\mktsStyleItalic{}CJK Symbols and Punctuation}
+have been set up; the latter contains, inter alia,
+u-cjk-sym/3007 {\cjk{}\cjkgGlue{\tfRaise{-0.05}\cnxBabel{}〇\cjkgGlue}} ‘zero’ (to me undoubtely a ‘character’, just as
+{\cjk{}一}, {\cjk{}二}, {\cjk{}三}, {\cjk{}萬} are characters, not symbols), duplicated as
+u-cjk-strk/31e3 {\cjk{}{\cnstrk{}㇣} }‘(circular stroke, used for some ideographs created
+in Korea)’.\mktsShowpar\par
+\begingroup\mktsStyleCode{}\begingroup\mktsObeyAllLines{}u-cjk-xb/2967f	{\cjk{}{\cnxb{}𩙿}	}u-cjk-rad2/2ede	{\cjk{}{\cnrtwo{}⻞}} 
 u-cjk/98df	{\cjk{}食}	u-cjk-rad1/2fb7	{\cjk{}{\cnrone{}⾷}} 
 u-cjk/98df	{\cjk{}食}	u-cjk-rad2/2edd	{\cjk{}{\cnrtwo{}⻝}} 
 u-cjk/98e0	{\cjk{}\cjkgGlue{\tfPush{0.4}飠\cjkgGlue}}	u-cjk-rad2/2edf	{\cjk{}{\cnrtwo{}⻟}} 
@@ -478,7 +494,6 @@ u-cjk/4ea0	{\cjk{}亠}	u-cjk-rad1/2f07	{\cjk{}{\cnrone{}⼇}}
 u-cjk/4ea0	{\cjk{}亠}	u-cjk-sym/3026	{\cjk{}{\cnsym{}〦}} 
 u-cjk/5341	{\cjk{}十}	u-cjk-rad1/2f17	{\cjk{}{\cnrone{}⼗}} 
 u-cjk/5341	{\cjk{}十}	u-cjk-sym/3038	{\cjk{}{\cnsym{}〸}} 
-\# u-cjk/5344 and u-cjk/5efe should get unified for components 
 u-cjk/535d	{\cjk{}卝}	u-cjk-cmpi1/fa5d	{\cjk{}{\cncone{}艹}} 
 u-cjk/535d	{\cjk{}卝}	u-cjk-rad2/2ec0	{\cjk{}{\cnrtwo{}⻀}} 
 u-cjk-rad2/2ebf	{\cjk{}{\cnrtwo{}⺿}	}u-cjk-cmpi1/fa5e	{\cjk{}{\cncone{}艹}} 
@@ -521,7 +536,8 @@ u-cjk-xb/24fb8	{\cjk{}{\cnxb{}𤾸}	}u-cjk-cmpi2/2f93c	{\cjk{}{\cnctwo{}𤾸}}
 u-cjk-xb/25249	{\cjk{}{\cnxb{}𥉉}	}u-cjk-cmpi1/fad5	{\cjk{}{\cncone{}𥉉}} 
 u-cjk/9091	{\cjk{}邑}	u-cjk-rad1/2fa2	{\cjk{}{\cnrone{}⾢}} 
 u-cjk/9149	{\cjk{}酉}	u-cjk-rad1/2fa3	{\cjk{}{\cnrone{}⾣}} 
-jzr/e1ef	{\cjk{}{\cnjzr{}}	}cdp/896a	\&cdp\#x896a; 
+\endgroup{}\endgroup{}{\cjk{}漢字{\ka{}データベース}}\mktsShowpar\par
+\begingroup\mktsStyleCode{}\begingroup\mktsObeyAllLines{}jzr/e1ef	{\cjk{}{\cnjzr{}}	}cdp/896a	\&cdp\#x896a; 
 jzr/e1f0	{\cjk{}{\cnjzr{}}	}cdp/88c8	\&cdp\#x88c8; 
 jzr/e1f1	{\cjk{}{\cnjzr{}}	}cdp/85fd	\&cdp\#x85fd; 
 jzr/e1f8	{\cjk{}{\cnjzr{}}	}cdp/8569	\&cdp\#x8569; 

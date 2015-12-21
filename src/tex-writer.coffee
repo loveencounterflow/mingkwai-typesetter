@@ -769,7 +769,7 @@ MACRO_ESCAPER             = require './macro-escaper'
     if ( event[ 0 ] in [ 'tex', 'text', ] ) or select event, '.', [ 'text', 'raw', ]
       send event
     else unless is_stamped event
-      debug '©04210', JSON.stringify event
+      # debug '©04210', JSON.stringify event
       [ type, name, text, meta, ] = event
       # if text?
       #   if ( CND.isa_pod text )
@@ -827,6 +827,24 @@ MACRO_ESCAPER             = require './macro-escaper'
 #===========================================================================================================
 #
 #-----------------------------------------------------------------------------------------------------------
+@$custom_stuff = ( S ) ->
+  ### TAINT should be defined by document ###
+  return $ ( event, send ) =>
+    if select event, [ '(', ')', ], 'ublock'
+      [ type, name, text, meta, ] = event
+      send stamp event
+      if type is '('
+        # debug '©64856', event
+        send [ 'tex', "{\\mktsStyleItalic{}", ]
+      else
+        send [ 'tex', "}", ]
+    else
+      send event
+
+
+#===========================================================================================================
+#
+#-----------------------------------------------------------------------------------------------------------
 @create_tex_write_tee = ( S ) ->
   ### TAINT get state via return value of MKTS.create_mdreadstream ###
   ### TAINT make execution of `$produce_mktscript` a matter of settings ###
@@ -842,10 +860,10 @@ MACRO_ESCAPER             = require './macro-escaper'
   #.......................................................................................................
   readstream
     .pipe MACRO_ESCAPER.$expand.$remove_backslashes       S
-    .pipe $async ( event, done ) =>
-      debug '©31847', event
-      # done event
-      setImmediate ( -> done event )
+    # .pipe $async ( event, done ) =>
+    #   debug '©31847', event
+    #   # done event
+    #   setImmediate ( -> done event )
     .pipe @MKTX.TEX.$fix_typography_for_tex               S
     .pipe @MKTX.DOCUMENT.$begin                           S
     .pipe @MKTX.DOCUMENT.$end                             S
@@ -870,6 +888,7 @@ MACRO_ESCAPER             = require './macro-escaper'
     .pipe @MKTX.INLINE.$translate_i_and_b                 S
     .pipe @MKTX.INLINE.$em_and_strong                     S
     .pipe @MKTX.INLINE.$image                             S
+    .pipe @$custom_stuff                                  S
     .pipe @MKTX.CLEANUP.$remove_empty_p_tags              S
     .pipe @MKTX.BLOCK.$paragraph                          S
     .pipe @MKTX.CLEANUP.$remove_empty_texts               S
