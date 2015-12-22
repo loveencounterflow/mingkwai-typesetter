@@ -2,13 +2,23 @@
 
 
 
-
 <<<\FPmul\tfFactorMoveX{1}{5}%
 \FPmul\tfFactorMoveY{1}{7}>>>
 
 <<(multi-column>>
 
 ## Formulas
+
+The compositional character formulas represent the core of the Jizura project.
+I became aware of the 漢字データベース project sometime around 2007 or
+2008; at the time, being able to download thousands upon thousands
+of formulas under the GPL license was what really jumpstarted my project.
+
+The first years I spent mainly with sorting out the data, trying to make
+sense of it, correcting it where I found it to be faulty or problematic,
+and writing first attempts at software that would help me to handle
+the data, compile collections of derivative data, make it searchable
+and so on. 
 
 ```
 u-cjk/4e00	一	●<<< >>>
@@ -590,47 +600,71 @@ u-cjk/7380	玀	c1/7b66	&#x26;c1#x7b66;
 
 ```
 
-Yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda
-yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda
-yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda
-yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda.
+yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda
+yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda
+yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda
+yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda
 
-Yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda
-yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda
-yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda
-yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda.
+<<!new-page>>
+## Variants and Usage
 
-Yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda
-yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda
-yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda
-yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda.
+This file contains around 8,400 records that connect 'variant characters'
+and 'regions of usage'.
 
-## Yadda
+The regions as used here are `C` for the PRC,
+`J` for Japan, `T` for Taiwan, `H` for Hong Kong, `M` for Macau, and
+`K` for North and South Korea; this reflects both how these countries
+and territories are represented in the Unicode Consortium, and, in
+particular, in the data presented as a result of the Unicode
+IICore (International Ideographs Core, 國際表意文字核心,
+東アジアの諸国で一般に使用される漢字集合)^[https://zh.wikipedia.org/wiki/國際表意文字核心]
+effort.
 
-Yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda
-yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda
-yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda
-yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda.
+The term 'variant character' is understood as an umbrella term
+for what is variously called 俗字, 古字, 略字, 異體字, 簡/繁體字, 新字体
+and so on in the traditional literature; no effort has been made
+to differentiate beyond making simple statements like 'glyph A
+[which is used in regions X...] is a variant of glyph B [which is used
+in regions Y...]'. In the software, variant relationships are
+modeled as both symmetric and
+transitive^[that is, when 'A is a variant of B' holds, then
+'B is a variant of A' also holds, and when additionally 'B is a variant of C'
+is true, then 'A is a variant of C' is also true.]; further, there
+is no temporal aspect whatsoever encoded. All of these assumptions
+make the display and the handling of the data simpler, but they
+also oversimplify somewhat.
 
-Yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda
-yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda
-yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda
-yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda.
+Here are some samples:
 
-Yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda
-yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda
-yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda
-yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda.
+```
+01 也CJKTHM　𦫴　𠔄　𦬀<<< >>>
+02 鷗JKTHm　鸥C　鴎J<<< >>>
+03 飢JKTHm　饑KTHm　饥C<<< >>>
+04 個JKTHM　箇JKTm　个CJ　亇　㐃<<< >>>
+05 團JKTHM　糰T　团C　団J　䊜<<< >>>
+06 䌶　䊷<<< >>>
+07 龜KTHM　龟C　亀J　𠁴　𠃾　𤕣　𪚧　𥤠　𪚺　𪚾<<< >>>
+　𪚿　𪛃　𥣨　𪔁　𪚴　𪚨<<< >>>
+08 亞JKTHM　亚C　亜J<<< >>>
+09 畝JKTHM　亩C　畆　畒　畮　畂　畞<<< >>>
+10 偎cTHm　隈cJt　渨<<< >>>
+11 台CJKTHM　颱JKTHM　臺KThM　檯TM　枱th　儓　𡌫<<< >>>
+　㣍　𠘭　㙜　㙵　䑓　坮　𡋛　𡌬　𡎲　𡐉　𡔼　𦤼<<< >>>
+12 元CJKTHM　圓JKTHM　円JK　圆C　圎<<< >>>
+```
 
-Yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda
-yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda
-yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda
-yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda.
+Line `01` tells us that 𦫴, 𠔄 and 𦬀 are variants of 也. Of
+these, only 也 has a 'usagecode'—`CJKTHM` in this case—attached to it
+from which we can immediately see that the IICore team did not
+include any of 𦫴, 𠔄, 𦬀 in their listing of important characters;
+in other words, these glyphs are presumably of minor importance
+for everyday communication. Conversely, `CJKTHM` implies that the glyph 也
+is used in all six regions under consideration.
 
-Yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda
-yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda
-yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda
-yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda.
+In line `02`, 鸥 is marked as used in the PRC and 鴎 as used in Japan;
+the other regions use 鷗, as it is marked `JKTHm`. Both
+鴎 and 鷗 show up with `J`, the implication being that both are
+current in Japan, possibly for different usages (I guess 鷗 is used in names).
 
 <<multi-column)>>
 

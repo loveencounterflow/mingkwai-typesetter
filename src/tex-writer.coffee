@@ -352,10 +352,10 @@ MACRO_ESCAPER             = require './macro-escaper'
       #.....................................................................................................
       if type is '('
         # send [ 'tex', "\\begingroup\\mktsObeyAllLines\\mktsStyleCode{}", ]
-        send [ 'tex', "\\begingroup\\mktsStyleCode{}", ]
         send [ '(', 'keep-lines', null, ( copy meta ), ]
+        send [ 'tex', "\n\n\\begingroup\\mktsStyleCode{}", ]
       else
-        send [ 'tex', "\\endgroup{}", ]
+        send [ 'tex', "\\endgroup{}{}\n\n", ]
         send [ ')', 'keep-lines', null, ( copy meta ), ]
     #.......................................................................................................
     else
