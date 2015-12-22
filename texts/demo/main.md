@@ -1,24 +1,87 @@
 
-
-
-
 <<<\FPmul\tfFactorMoveX{1}{5}%
 \FPmul\tfFactorMoveY{1}{7}>>>
 
 <<(multi-column>>
 
+* a list of compositional formulas of glyphs;
+* a catalogue of 'factors', i.e. basic building blocks;
+* a way of ordering factors (using strokeorders);
+* an algorithm to derive XXXXXXXXXX
+
+## KWIC
+
+<<(single-column>>
+
+```
+       version 1                        version 2                        version 3
+
+　　　　　　|占　　　　　　　占　　║　　　　　　　|占　　　　　　　占　║　　　　　　　　|占　　　　　　　占<<< >>>
+　　　　　　|占戈　　　　　　战　＜║　　　　　　貝|占　　　　　　　貼　║＞　　　　禾人氺|占　　　　　　　黏<<< >>>
+　　　　　　|占乂　　　　　　卤　＜║　　　　　　巾|占　　　　　　　帖　║＞　　　　　　貝|占　　　　　　　貼<<< >>>
+　　　　　　|占𠂭戌口　　　　鹹　＜║　　　　　　贝|占　　　　　　　贴　║＞　　　　　　巾|占　　　　　　　帖<<< >>>
+　　　　　　|占𠂭㑒　　　　　鹸　＜║　　　　　　黑|占　　　　　　　點　║＞　　　　　　贝|占　　　　　　　贴<<< >>>
+　　　　　　|占灬　　　　　　点　＜║　　　　　　钅|占　　　　　　　钻　║＞　　　　　　黑|占　　　　　　　點<<< >>>
+　　　　　貝|占　　　　　　　貼　＜║　　　　　　亻|占　　　　　　　佔　║＞　　　　　　钅|占　　　　　　　钻<<< >>>
+　　　　　巾|占　　　　　　　帖　＜║　　　　　　魚|占　　　　　　　鮎　║＞　　　　　　亻|占　　　　　　　佔<<< >>>
+　　　　　贝|占　　　　　　　贴　＜║　　　　　　广|占　　　　　　　店　║＞　　　　　　魚|占　　　　　　　鮎<<< >>>
+　　　　　黑|占　　　　　　　點　＜║　　　　　　立|占　　　　　　　站　║＞　　　　　　广|占　　　　　　　店<<< >>>
+　　　　　钅|占　　　　　　　钻　＜║　　　　　　米|占　　　　　　　粘　║＞　　　　　　立|占　　　　　　　站<<< >>>
+　　　　　亻|占　　　　　　　佔　＜║　　　　　　氵|占　　　　　　　沾　║＞　　　　　　米|占　　　　　　　粘<<< >>>
+　　　　　魚|占　　　　　　　鮎　＜║　　　　禾人氺|占　　　　　　　黏　║＞　　　　　　氵|占　　　　　　　沾<<< >>>
+　　　　　广|占　　　　　　　店　＜║　　　　　　　|占戈　　　　　　战　║　　　　　　　　|占戈　　　　　　战<<< >>>
+　　　　　立|占　　　　　　　站　＜║　　　　　　　|占乂　　　　　　卤　║　　　　　　　　|占乂　　　　　　卤<<< >>>
+　　　　　米|占　　　　　　　粘　＜║　　　　　　氵|占𠂭　　　　　　滷　║　　　　　　　氵|占𠂭　　　　　　滷<<< >>>
+　　　　　氵|占　　　　　　　沾　＜║　　　　　　　|占𠂭戌口　　　　鹹　║　　　　　　　　|占𠂭戌口　　　　鹹<<< >>>
+　　　　　氵|占𠂭　　　　　　滷　＜║　　　　　臣𠂉|占𠂭皿　　　　　鹽　║　　　　　　臣𠂉|占𠂭皿　　　　　鹽<<< >>>
+　　　　臣𠂉|占𠂭皿　　　　　鹽　＜║　　　　　　　|占𠂭㑒　　　　　鹸　║　　　　　　　　|占𠂭㑒　　　　　鹸<<< >>>
+　　　禾人氺|占　　　　　　　黏　＜║　　　　　　　|占灬　　　　　　点　║　　　　　　　　|占灬　　　　　　点<<< >>>
+
+　　　　　𡗗|氺　　　　　　　泰　　║　　　　　　𡗗|氺　　　　　　　泰　║　　　　　　　𡗗|氺　　　　　　　泰<<< >>>
+　　　　　彐|氺　　　　　　　录　　║　　　　　　彐|氺　　　　　　　录　║＞　　　　　日共|氺　　　　　　　暴<<< >>>
+　　　　　彐|氺刂　　　　　　剥　＜║　　　　　石彐|氺　　　　　　　碌　║＞　　　　日日共|氺　　　　　　　曝<<< >>>
+　　　　　彑|氺刂　　　　　　剝　＜║　　　　　日共|氺　　　　　　　暴　║＞　　　　火日共|氺　　　　　　　爆<<< >>>
+　　　　　尸|氺罒勹虫　　　　屬　＜║　　　　　金彐|氺　　　　　　　録　║＞　　　　氵日共|氺　　　　　　　瀑<<< >>>
+　　　　　尸|氺牛　　　　　　犀　＜║　　　　　金彑|氺　　　　　　　錄　║＞　　　　月木人|氺　　　　　　　膝<<< >>>
+　　　　　尸|氺牛辶　　　　　遲　＜║　　　　　礻彐|氺　　　　　　　禄　║＞　　　　氵木人|氺　　　　　　　漆<<< >>>
+　　　　石彐|氺　　　　　　　碌　＜║　　　　　礻彑|氺　　　　　　　祿　║＞　　　　禾人|氺　　　　　　　黎<<< >>>
+　　　　日共|氺　　　　　　　暴　＜║　　　　　纟彐|氺　　　　　　　绿　║＞　　　　卄月龹|氺　　　　　　　藤<<< >>>
+　　　　金彐|氺　　　　　　　録　＜║　　　　　糹彐|氺　　　　　　　緑　║＞　　　　　　彐|氺　　　　　　　录<<< >>>
+　　　　金彑|氺　　　　　　　錄　＜║　　　　　糹彑|氺　　　　　　　綠　║＞　　　　　石彐|氺　　　　　　　碌<<< >>>
+　　　　礻彐|氺　　　　　　　禄　＜║　　　　卄月龹|氺　　　　　　　藤　║＞　　　　　金彐|氺　　　　　　　録<<< >>>
+　　　　礻彑|氺　　　　　　　祿　＜║　　　　日日共|氺　　　　　　　曝　║＞　　　　　礻彐|氺　　　　　　　禄<<< >>>
+　　　　纟彐|氺　　　　　　　绿　＜║　　　　禾人|氺　　　　　　　黎　║＞　　　　　纟彐|氺　　　　　　　绿<<< >>>
+　　　　糹彐|氺　　　　　　　緑　＜║　　　　月木人|氺　　　　　　　膝　║＞　　　　　糹彐|氺　　　　　　　緑<<< >>>
+　　　　糹彑|氺　　　　　　　綠　＜║　　　　火日共|氺　　　　　　　爆　║＞　　　　　金彑|氺　　　　　　　錄<<< >>>
+　　　　禾人|氺占　　　　　　黏　＜║　　　　氵木人|氺　　　　　　　漆　║＞　　　　　礻彑|氺　　　　　　　祿<<< >>>
+　　　卄月龹|氺　　　　　　　藤　＜║　　　　氵日共|氺　　　　　　　瀑　║＞　　　　　糹彑|氺　　　　　　　綠<<< >>>
+　　　日日共|氺　　　　　　　曝　＜║　　　　　禾人|氺占　　　　　　黏　║　　　　　　禾人|氺占　　　　　　黏<<< >>>
+　　　禾人|氺　　　　　　　黎　＜║　　　　　　彐|氺刂　　　　　　剥　║　　　　　　　彐|氺刂　　　　　　剥<<< >>>
+　　　月木人|氺　　　　　　　膝　＜║　　　　　　彑|氺刂　　　　　　剝　║　　　　　　　彑|氺刂　　　　　　剝<<< >>>
+　　　火日共|氺　　　　　　　爆　＜║　　　　　　尸|氺罒勹虫　　　　屬　║　　　　　　　尸|氺罒勹虫　　　　屬<<< >>>
+　　　氵木人|氺　　　　　　　漆　＜║　　　　　　尸|氺牛　　　　　　犀　║　　　　　　　尸|氺牛　　　　　　犀<<< >>>
+　　　氵日共|氺　　　　　　　瀑　＜║　　　　　　尸|氺牛辶　　　　　遲　║　　　　　　　尸|氺牛辶　　　　　遲<<< >>>
+```
+<<single-column)>>
+
+<<!end>>
+
+<<!new-page>>
 ## Formulas
 
 The compositional character formulas represent the core of the Jizura project.
 I became aware of the 漢字データベース project sometime around 2007 or
 2008; at the time, being able to download thousands upon thousands
-of formulas under the GPL license was what really jumpstarted my project.
+of formulas under the GPL license was what really jumpstarted this.
 
-The first years I spent mainly with sorting out the data, trying to make
-sense of it, correcting it where I found it to be faulty or problematic,
-and writing first attempts at software that would help me to handle
-the data, compile collections of derivative data, make it searchable
-and so on. 
+The formula language used here is based on the Ideographic
+Description Language (IDL) as proposed by the Unicode Consortium,^[Unicode Specification V6.0, Ch. 12 http://www.unicode.org/versions/Unicode6.0.0/ch12.pdf]
+with a few extensions; compared to other
+approaches,^[https://en.wikipedia.org/wiki/Chinese_character_description_languages]
+IDL has the advantage of being at the right level of abstraction
+for our purposes and being both human-readable and syntactically
+straightforward.
+
 
 ```
 u-cjk/4e00	一	●<<< >>>
@@ -168,6 +231,7 @@ hzk1/d2ea	&#x26;hzk1#xd2ea;	⿰亻黃<<< >>>
 [...]<<< >>>
 ```
 
+<<!new-page>>
 ## Strokeorders (札字五筆法)
 
 ```
@@ -198,6 +262,7 @@ u-cjk-xb/24ad2 𤫒 <111211121344345412121>
 u-cjk-xb/21689 𡚉 <1112111213445434>
 ```
 
+<<!new-page>>
 ## Factors
 
 <<(single-column>>
@@ -365,6 +430,7 @@ u-cjk-xb/21689 𡚉 <1112111213445434>
 ```
 <<single-column)>>
 
+<<!new-page>>
 ## Figural Themes
 
 (over 4,000 lines)
@@ -458,6 +524,7 @@ u-cjk-xb/21689 𡚉 <1112111213445434>
 𥭯䇭<<< >>>
 ```
 
+<<!new-page>>
 ## Shape Identity Mappings (SIMs)
 
 (22,000 lines)
@@ -621,7 +688,7 @@ IICore (International Ideographs Core, 國際表意文字核心,
 effort.
 
 The term 'variant character' is understood as an umbrella term
-for what is variously called 俗字, 古字, 略字, 異體字, 簡/繁體字, 新字体
+for what is variously called 俗字, 古字, 本字, 略字, 異體字, 簡/繁體字, 新字体
 and so on in the traditional literature; no effort has been made
 to differentiate beyond making simple statements like 'glyph A
 [which is used in regions X...] is a variant of glyph B [which is used

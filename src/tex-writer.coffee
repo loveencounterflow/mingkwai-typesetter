@@ -208,7 +208,10 @@ MACRO_ESCAPER             = require './macro-escaper'
   return $ ( event, send ) =>
     return send event unless select event, '!', 'new-page'
     send stamp event
+    [ type, name, text, meta, ] = event
+    send [ ')', 'multi-column', text, ( copy meta ), ]
     send [ 'tex', "\\null\\newpage{}", ]
+    send [ '(', 'multi-column', text, ( copy meta ), ]
 
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.COMMAND.$comment = ( S ) =>
@@ -829,15 +832,58 @@ MACRO_ESCAPER             = require './macro-escaper'
 #-----------------------------------------------------------------------------------------------------------
 @$custom_stuff = ( S ) ->
   ### TAINT should be defined by document ###
+  return $async ( event, done ) =>
+    input = S[ 'tees' ][ 'tex-writer' ][ 'tee' ][ 'input' ]
+    #.......................................................................................................
+    if select event, [ '(', ')', ], 'ublock'
+      [ type, name, text, meta, ] = event
+      debug '©06327'
+      setImmediate =>
+        input.write [ '.', 'text', "222", ( copy meta ), ]
+        done()
+      # send stamp event
+      # if type is '('
+      #   send [ 'tex', "{\\mktsStyleItalic{}", ]
+      # else
+      #   send [ 'tex', "}", ]
+    #.......................................................................................................
+    else
+      done event
+
+#-----------------------------------------------------------------------------------------------------------
+@$custom_stuff_early = ( S ) ->
+  ### TAINT should be defined by document ###
   return $ ( event, send ) =>
+    send event
+    # # input = S[ 'tees' ][ 'tex-writer' ][ 'tee' ][ 'input' ]
+    # #.......................................................................................................
+    # if select event, [ '(', ')', ], 'h2'
+    #   [ type, name, text, meta, ] = event
+    #   if type is '('
+    #     # send []
+    #     send event
+    #     # send [ 'tex', "{\\mktsStyleItalic{}", ]
+    #   else
+    #     send event
+    #     # send [ 'tex', "}", ]
+    # #.......................................................................................................
+    # else
+    #   send event
+
+#-----------------------------------------------------------------------------------------------------------
+@$custom_stuff_late = ( S ) ->
+  ### TAINT should be defined by document ###
+  return $ ( event, send ) =>
+    # input = S[ 'tees' ][ 'tex-writer' ][ 'tee' ][ 'input' ]
+    #.......................................................................................................
     if select event, [ '(', ')', ], 'ublock'
       [ type, name, text, meta, ] = event
       send stamp event
       if type is '('
-        # debug '©64856', event
         send [ 'tex', "{\\mktsStyleItalic{}", ]
       else
         send [ 'tex', "}", ]
+    #.......................................................................................................
     else
       send event
 
@@ -859,6 +905,7 @@ MACRO_ESCAPER             = require './macro-escaper'
   #   .pipe mktscript_out
   #.......................................................................................................
   readstream
+    .pipe @$custom_stuff_early                            S
     .pipe MACRO_ESCAPER.$expand.$remove_backslashes       S
     # .pipe $async ( event, done ) =>
     #   debug '©31847', event
@@ -888,7 +935,7 @@ MACRO_ESCAPER             = require './macro-escaper'
     .pipe @MKTX.INLINE.$translate_i_and_b                 S
     .pipe @MKTX.INLINE.$em_and_strong                     S
     .pipe @MKTX.INLINE.$image                             S
-    .pipe @$custom_stuff                                  S
+    .pipe @$custom_stuff_late                             S
     .pipe @MKTX.CLEANUP.$remove_empty_p_tags              S
     .pipe @MKTX.BLOCK.$paragraph                          S
     .pipe @MKTX.CLEANUP.$remove_empty_texts               S
@@ -907,7 +954,10 @@ MACRO_ESCAPER             = require './macro-escaper'
     #   mktscript:        mktscript_out
     S:                S
   #.......................................................................................................
-  return D.TEE.from_readwritestreams readstream, writestream, settings
+  R                           = D.TEE.from_readwritestreams readstream, writestream, settings
+  S[ 'tees' ]                ?= {}
+  S[ 'tees' ][ 'tex-writer' ] = R
+  return R
 
 #-----------------------------------------------------------------------------------------------------------
 @_handle_error = ( error ) =>
