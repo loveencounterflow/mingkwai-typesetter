@@ -271,6 +271,30 @@ MACRO_ESCAPER             = require './macro-escaper'
     return null
 
 #-----------------------------------------------------------------------------------------------------------
+@MKTX.COMMAND.$slash = ( S ) =>
+  track   = MD_READER.TRACKER.new_tracker '(multi-column)'
+  remark  = MD_READER._get_remark()
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    within_multi_column = track.within '(multi-column)'
+    track event
+    if select event, '!', 'slash'
+      [ type, name, text, meta, ] = event
+      send stamp event
+      if within_multi_column
+        send [ ')', 'multi-column', null, ( copy meta ), ]
+        ### TAINT consider to send MKTS macro ###
+        send [ 'tex', "\\mktsEmptyLine\n" ]
+        send [ '(', 'multi-column', null, ( copy meta ), ]
+      else
+        send remark 'drop', "`!slash` because not within `(multi-column)`", ( copy meta )
+    #.......................................................................................................
+    else
+      send event
+    #.......................................................................................................
+    return null
+
+#-----------------------------------------------------------------------------------------------------------
 @MKTX.REGION.$multi_column = ( S ) =>
   track   = MD_READER.TRACKER.new_tracker '(multi-column)'
   remark  = MD_READER._get_remark()
@@ -672,6 +696,24 @@ MACRO_ESCAPER             = require './macro-escaper'
     else
       send event
 
+#-----------------------------------------------------------------------------------------------------------
+@MKTX.INLINE.$url = ( S ) =>
+  track = MD_READER.TRACKER.new_tracker '(url)'
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    within_url = track.within '(url)'
+    track event
+    [ type, name, text, meta, ] = event
+    #.......................................................................................................
+    if select event, [ '(', ')', ], 'url'
+      send stamp event
+    else if within_url and select event, '.', 'text'
+      # send stamp event
+      send [ 'tex', "\\url{#{text}}", ]
+    #.......................................................................................................
+    else
+      send event
+
 
 #===========================================================================================================
 # CLEANUP
@@ -923,6 +965,7 @@ MACRO_ESCAPER             = require './macro-escaper'
     .pipe @MKTX.COMMAND.$comment                          S
     # .pipe @MKTX.REGION.$correct_p_tags_before_regions     S
     .pipe @MKTX.COMMAND.$multi_column                     S
+    .pipe @MKTX.COMMAND.$slash                            S
     .pipe @MKTX.REGION.$multi_column                      S
     .pipe @MKTX.REGION.$single_column                     S
     .pipe @MKTX.REGION.$code                              S
@@ -932,6 +975,7 @@ MACRO_ESCAPER             = require './macro-escaper'
     .pipe @MKTX.BLOCK.$unordered_list                     S
     .pipe @MKTX.INLINE.$code_span                         S
     .pipe @MKTX.INLINE.$link                              S
+    .pipe @MKTX.INLINE.$url                               S
     .pipe @MKTX.INLINE.$translate_i_and_b                 S
     .pipe @MKTX.INLINE.$em_and_strong                     S
     .pipe @MKTX.INLINE.$image                             S

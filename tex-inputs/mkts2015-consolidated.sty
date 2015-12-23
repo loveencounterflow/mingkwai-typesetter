@@ -34,6 +34,7 @@
 \usepackage{cxltx-style-transform}
 \usepackage{cxltx-style-cjkglue}
 \usepackage{cxltx-style-smashbox}
+\usepackage{hyperref}
 
 % ==========================================================================================================
 % Page Layout
@@ -166,7 +167,7 @@
 % ### TAINT need to add space before and after code ###
 \newcommand{\mktsStyleCode}{%
   \fontsize{0.8\myFontsize}{0.8\myFontsize}%%
-  \setlength{\baselineskip}{2\myLineheight}
+  % \setlength{\baselineskip}{2\myLineheight}
   \mktsFontfileSourcecodeproregular}
 
 \newenvironment{mktsEnvWarning}%
@@ -199,13 +200,19 @@
 % ----------------------------------------------------------------------------------------------------------
 % https://groups.google.com/d/msg/comp.text.tex/J2qcZxgcR5M/3HyPquEDkcgJ
 % obeyalllines is like obeylines, excepts it also keeps blank lines
+% TAINT it would probably be simpler to encode <<(keep-lines)>> and
+% <<(code-block)>> separately, with the latter implying the first.
+% Right now we rely on nesting the two for code blocks which actually
+% makes it more difficult to keep consistent metrics.
 \def\mktsMakeActive#1{\catcode`#113\relax}
 
 \def\mktsAdjustedPar{\par\mbox{}}
 \newdimen\mktsAdjustedParIndent
 \mktsAdjustedParIndent=0em
 \newskip\mktsAdjustedParSkip
-\mktsAdjustedParSkip=0pt plus 1pt
+% \mktsAdjustedParSkip=0pt plus 1pt
+% TAINT ad-goc, breaks baseline register
+\mktsAdjustedParSkip=1mm
 
 {\mktsMakeActive\^^M
   \gdef\mktsObeyAllLines{%
