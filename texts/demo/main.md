@@ -7,12 +7,75 @@
 * a list of compositional formulas of glyphs;
 * a catalogue of 'factors', i.e. basic building blocks;
 * a way of ordering factors (using strokeorders);
-* an algorithm to derive XXXXXXXXXX
+* an algorithm to recursively resolving glyph formulas
+  to obtain an exhaustive formulas in terms of factors
+  only.
 
+
+```
+儽:⿰亻纍<<< >>>
+亻:⿱丿丨<<< >>>
+纍:⿱畾糸<<< >>>
+畾:⿱田⿰田田<<< >>>
+田:⿴口十<<< >>>
+田:⿻日丨<<< >>>
+日:⿰丨彐<<< >>>
+日:⿴口一<<< >>>
+口:⿱冂一<<< >>>
+冂:⿰丨𠃌<<< >>>
+彐:⿻&jzr#xe139;一<<< >>>
+糸:⿱幺小<<< >>>
+幺:⿱𠃋⿰𠃋丶<<< >>>
+小:⿻亅八<<< >>>
+八:⿰丿㇏<<< >>>
+```
+
+xxx
+
+```
+儽:(亻:丿丨)(纍:畾糸)<<< >>>
+儽:(亻:丿丨)(纍:(畾:田田田)糸)<<< >>>
+儽:(亻:丿丨)(纍:(畾:田田田)(糸:幺小))<<< >>>
+儽:(亻:丿丨)(纍:(畾:(田:口十)<<< >>>
+  (田:口十)(田:口十))(糸:幺小))<<< >>>
+```
+
+xxx
+
+```
+田:日丨<<< >>>
+日:丨彐<<< >>>
+日:口一<<< >>>
+口:冂一<<< >>>
+冂:丨𠃌<<< >>>
+彐:&jzr#xe139;一<<< >>>
+糸:幺小<<< >>>
+幺:𠃋𠃋丶<<< >>>
+小:亅八<<< >>>
+八:丿㇏<<< >>>
+```
+
+```
+儽:⿰亻(纍:⿱畾糸)
+儽:⿰亻(纍:⿱畾糸)
+```
+```
+儾:⿰亻囊
+```
+```
+侧:⿰亻则
+```
+```
+𡏾:⿰土寄
+```
+```
+𡐒:⿰土毫
+```
+
+<<!slash>>
 ## KWIC
 
 <<(single-column>>
-
 ```
        version 1                        version 2                        version 3
 
@@ -81,6 +144,9 @@ approaches,^[https://en.wikipedia.org/wiki/Chinese_character_description_languag
 IDL has the advantage of being at the right level of abstraction
 for our purposes and being both human-readable and syntactically
 straightforward.
+
+<<!slash>>
+
 
 
 ```
