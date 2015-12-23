@@ -1,4 +1,5 @@
 
+
 <<<\FPmul\tfFactorMoveX{1}{5}%
 \FPmul\tfFactorMoveY{1}{7}>>>
 
@@ -99,7 +100,14 @@ xxx
 　　　　　氵|占𠂭　　　　　　滷　＜║　　　　　臣𠂉|占𠂭皿　　　　　鹽　║　　　　　　臣𠂉|占𠂭皿　　　　　鹽<<< >>>
 　　　　臣𠂉|占𠂭皿　　　　　鹽　＜║　　　　　　　|占𠂭㑒　　　　　鹸　║　　　　　　　　|占𠂭㑒　　　　　鹸<<< >>>
 　　　禾人氺|占　　　　　　　黏　＜║　　　　　　　|占灬　　　　　　点　║　　　　　　　　|占灬　　　　　　点<<< >>>
+```
+<<single-column)>>
 
+<<(single-column>>
+```
+       version 1                        version 2                        version 3
+
+　　　　　　|氺　　　　　　　氺　　║　　　　　　　|氺　　　　　　　氺　║　　　　　　　　|氺　　　　　　　氺<<< >>>
 　　　　　𡗗|氺　　　　　　　泰　　║　　　　　　𡗗|氺　　　　　　　泰　║　　　　　　　𡗗|氺　　　　　　　泰<<< >>>
 　　　　　彐|氺　　　　　　　录　　║　　　　　　彐|氺　　　　　　　录　║＞　　　　　日共|氺　　　　　　　暴<<< >>>
 　　　　　彐|氺刂　　　　　　剥　＜║　　　　　石彐|氺　　　　　　　碌　║＞　　　　日日共|氺　　　　　　　曝<<< >>>
@@ -127,7 +135,86 @@ xxx
 ```
 <<single-column)>>
 
-<<!end>>
+<<(single-column>>
+```
+       version 1                        version 2                        version 3
+
+　　　　　　|方　　　　　　　方　　║　　　　　　　|方　　　　　　　方　║　　　　　　　　|方　　　　　　　方<<< >>>
+　　　　　　|方𠂉其　　　　　旗　＜║　　　　　　土|方　　　　　　　坊　║　　　　　　　土|方　　　　　　　坊<<< >>>
+　　　　　　|方𠂉矢　　　　　族　＜║　　　　　　卄|方　　　　　　　芳　║　　　　　　　卄|方　　　　　　　芳<<< >>>
+　　　　　　|方𠂉　　　　　旅　＜║　　　　　　亻|方　　　　　　　仿　║＞　　　　　木罒|方　　　　　　　楞<<< >>>
+　　　　　　|方𠂉也　　　　　施　＜║　　　　　　彳|方　　　　　　　彷　║＞　　　　　忄罒|方　　　　　　　愣<<< >>>
+　　　　　　|方𠂉疋　　　　　旋　＜║　　　　　　月|方　　　　　　　肪　║＞　　　　　　亻|方　　　　　　　仿<<< >>>
+　　　　　　|方𠂉子辶　　　　遊　＜║　　　　　　言|方　　　　　　　訪　║＞　　　　　　彳|方　　　　　　　彷<<< >>>
+　　　　　　|方仒　　　　　　於　＜║　　　　　　|方　　　　　　　旁　║＞　　　　　　月|方　　　　　　　肪<<< >>>
+　　　　　　|方夊　　　　　　放　＜║　　　　　　讠|方　　　　　　　访　║＞　　　　　　言|方　　　　　　　訪<<< >>>
+　　　　　土|方　　　　　　　坊　＜║　　　　　　户|方　　　　　　　房　║＞　　　　　　|方　　　　　　　旁<<< >>>
+　　　　　卄|方　　　　　　　芳　＜║　　　　　　阝|方　　　　　　　防　║＞　　　　　木|方　　　　　　　榜<<< >>>
+　　　　　亻|方　　　　　　　仿　＜║　　　　　　纟|方　　　　　　　纺　║＞　　　　　石|方　　　　　　　磅<<< >>>
+　　　　　彳|方　　　　　　　彷　＜║　　　　　　女|方　　　　　　　妨　║＞　　　　　虫|方　　　　　　　螃<<< >>>
+　　　　　月|方　　　　　　　肪　＜║　　　　　木罒|方　　　　　　　楞　║＞　　　　　钅|方　　　　　　　镑<<< >>>
+　　　　　言|方　　　　　　　訪　＜║　　　　　木|方　　　　　　　榜　║＞　　　　　亻|方　　　　　　　傍<<< >>>
+　　　　　|方　　　　　　　旁　＜║　　　　　石|方　　　　　　　磅　║＞　　　　　彳|方　　　　　　　徬<<< >>>
+　　　　　讠|方　　　　　　　访　＜║　　　　　虫|方　　　　　　　螃　║＞　　　　　月|方　　　　　　　膀<<< >>>
+　　　　　户|方　　　　　　　房　＜║　　　　　钅|方　　　　　　　镑　║＞　　　　　言|方　　　　　　　謗<<< >>>
+　　　　　阝|方　　　　　　　防　＜║　　　　　亻|方　　　　　　　傍　║＞　　　　　讠|方　　　　　　　谤<<< >>>
+　　　　　纟|方　　　　　　　纺　＜║　　　　　彳|方　　　　　　　徬　║＞　　　　　　讠|方　　　　　　　访<<< >>>
+　　　　　女|方　　　　　　　妨　＜║　　　　　月|方　　　　　　　膀　║＞　　　　　　户|方　　　　　　　房<<< >>>
+　　　　　钅|方𠂉矢　　　　　镞　＜║　　　　　言|方　　　　　　　謗　║＞　　　　　　阝|方　　　　　　　防<<< >>>
+　　　　　王|方𠂉疋　　　　　璇　＜║　　　　　忄罒|方　　　　　　　愣　║＞　　　　　　纟|方　　　　　　　纺<<< >>>
+　　　　　氵|方𠂉子　　　　　游　＜║　　　　　讠|方　　　　　　　谤　║＞　　　　　　女|方　　　　　　　妨<<< >>>
+　　　　　甫|方夊　　　　　　敷　＜║　　　　　　　|方𠂉其　　　　　旗　║　　　　　　　　|方𠂉其　　　　　旗<<< >>>
+　　　　　亻|方夊　　　　　　倣　＜║　　　　　　　|方𠂉矢　　　　　族　║　　　　　　　　|方𠂉矢　　　　　族<<< >>>
+　　　　　白|方夊辶　　　　　邀　＜║　　　　　　钅|方𠂉矢　　　　　镞　║　　　　　　　钅|方𠂉矢　　　　　镞<<< >>>
+　　　　木罒|方　　　　　　　楞　＜║　　　　　　　|方𠂉　　　　　旅　║　　　　　　　　|方𠂉　　　　　旅<<< >>>
+　　　　木|方　　　　　　　榜　＜║　　　　　　　|方𠂉也　　　　　施　║　　　　　　　　|方𠂉也　　　　　施<<< >>>
+　　　　石|方　　　　　　　磅　＜║　　　　　　　|方𠂉疋　　　　　旋　║　　　　　　　　|方𠂉疋　　　　　旋<<< >>>
+　　　　虫|方　　　　　　　螃　＜║　　　　　　王|方𠂉疋　　　　　璇　║　　　　　　　王|方𠂉疋　　　　　璇<<< >>>
+　　　　钅|方　　　　　　　镑　＜║　　　　　　氵|方𠂉子　　　　　游　║　　　　　　　氵|方𠂉子　　　　　游<<< >>>
+　　　　亻|方　　　　　　　傍　＜║　　　　　　　|方𠂉子辶　　　　遊　║　　　　　　　　|方𠂉子辶　　　　遊<<< >>>
+　　　　彳|方　　　　　　　徬　＜║　　　　　　　|方仒　　　　　　於　║　　　　　　　　|方仒　　　　　　於<<< >>>
+　　　　月|方　　　　　　　膀　＜║　　　　　　　|方夊　　　　　　放　║　　　　　　　　|方夊　　　　　　放<<< >>>
+　　　　言|方　　　　　　　謗　＜║　　　　　　甫|方夊　　　　　　敷　║　　　　　　　甫|方夊　　　　　　敷<<< >>>
+　　　　忄罒|方　　　　　　　愣　＜║　　　　　　亻|方夊　　　　　　倣　║＞　　　　　氵白|方夊　　　　　　激<<< >>>
+　　　　讠|方　　　　　　　谤　＜║　　　　　氵白|方夊　　　　　　激　║＞　　　　　穴白|方夊　　　　　　竅<<< >>>
+　　　　氵白|方夊　　　　　　激　＜║　　　　　穴白|方夊　　　　　　竅　║＞　　　　　纟白|方夊　　　　　　缴<<< >>>
+　　　　穴白|方夊　　　　　　竅　＜║　　　　　纟白|方夊　　　　　　缴　║＞　　　　　糹白|方夊　　　　　　繳<<< >>>
+　　　　纟白|方夊　　　　　　缴　＜║　　　　　糹白|方夊　　　　　　繳　║＞　　　　　　亻|方夊　　　　　　倣<<< >>>
+　　　　糹白|方夊　　　　　　繳　＜║　　　　　　白|方夊辶　　　　　邀　║　　　　　　　白|方夊辶　　　　　邀<<< >>>
+　　　　自穴|方辶　　　　　　邊　　║　　　　　自穴|方辶　　　　　　邊　║　　　　　　自穴|方辶　　　　　　邊<<< >>>
+```
+<<single-column)>>
+
+True to the original ideas of the KWIC principle, each glyph appears
+as many times in the index as it has factors. Within the 15,000 or so most
+common characters, the maximum number of factors per glyph is 6, while the
+average is a little under 3.
+
+```
+　　　　　　|方𠂉子辶　　　　遊<<< >>>
+　　　　　方|𠂉子辶　　　　　遊<<< >>>
+　　　　方𠂉|子辶　　　　　　遊<<< >>>
+　　　方𠂉子|辶　　　　　　　遊<<< >>>
+```
+
+```
+　　　　　　|尸氺罒勹虫　　　屬<<< >>>
+　　　　　尸|氺罒勹虫　　　　屬<<< >>>
+　　　　尸氺|罒勹虫　　　　　屬<<< >>>
+　　　尸氺罒|勹虫　　　　　　屬<<< >>>
+　　尸氺罒勹|虫　　　　　　　屬<<< >>>
+```
+
+```
+　　　　　　|木缶木冖鬯彡　　鬱<<< >>>
+　　　　　木|缶木冖鬯彡　　　鬱<<< >>>
+　　　　木缶|木冖鬯彡　　　　鬱<<< >>>
+　　　木缶木|冖鬯彡　　　　　鬱<<< >>>
+　　木缶木冖|鬯彡　　　　　　鬱<<< >>>
+　木缶木冖鬯|彡　　　　　　　鬱<<< >>>
+```
+
+
 
 <<!new-page>>
 ## Formulas
@@ -138,16 +225,16 @@ I became aware of the 漢字データベース project sometime around 2007 or
 of formulas under the GPL license was what really jumpstarted this.
 
 The formula language used here is based on the Ideographic
-Description Language (IDL) as proposed by the Unicode Consortium,^[Unicode Specification V6.0, Ch. 12 http://www.unicode.org/versions/Unicode6.0.0/ch12.pdf]
+Description Language (IDL) as proposed by the Unicode
+Consortium,^[Unicode Specification V6.0,
+Ch. 12 <<(url>>http://www.unicode.org/versions/Unicode6.0.0/ch12.pdf<<)>>]
 with a few extensions; compared to other
-approaches,^[https://en.wikipedia.org/wiki/Chinese_character_description_languages]
+approaches,^[<<(url>>https://en.wikipedia.org/wiki/Chinese_character_description_languages<<)>>]
 IDL has the advantage of being at the right level of abstraction
 for our purposes and being both human-readable and syntactically
 straightforward.
 
 <<!slash>>
-
-
 
 ```
 u-cjk/4e00	一	●<<< >>>
@@ -739,6 +826,54 @@ yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda
 yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda
 
 <<!new-page>>
+## Dictionary Data
+
+The relatively little dictionary data I have comes largely
+from Unicode's `UniHan.txt` data and Jim Breene's EDICT
+project^[<<(url>>http://www.edrdg.org/wwwjdic/wwwjdicinf.html#dicfil_tag<<)>>].
+Overall, it is of very mixed quality and would be in need of a
+thorough overhaul.
+
+```
+@glyphs	冰氷<<< >>>
+u-cjk/51b0	冰	py:bīng<<< >>>
+u-cjk/51b0	冰	ka:ヒョウ<<< >>>
+u-cjk/51b0	冰	hi:こおり, ひ, こお·る<<< >>>
+u-cjk/51b0	冰	hg:빙<<< >>>
+u-cjk/51b0	冰	gloss:ice; ice-cold<<< >>>
+<<< >>>
+@glyphs	氫氢<<< >>>
+u-cjk/6c2b	氫	py:qīng<<< >>>
+u-cjk/6c2b	氫	gloss:amonia; hydrogen nitride<<< >>>
+<<< >>>
+@glyphs	況况<<< >>>
+u-cjk/6cc1	況	py:kuàng<<< >>>
+u-cjk/6cc1	況	ka:キョウ<<< >>>
+u-cjk/6cc1	況	hi:まし·て, いわ·んや, おもむき<<< >>>
+u-cjk/6cc1	況	hg:황<<< >>>
+u-cjk/6cc1	況	gloss:condition, situation;
+  furthermore<<< >>>
+<<< >>>
+@glyphs	渾浑<<< >>>
+u-cjk/6d51	浑	py:hún<<< >>>
+u-cjk/6e3e	渾	ka:コン<<< >>>
+u-cjk/6e3e	渾	hi:すべ·て, にご·る<<< >>>
+u-cjk/6e3e	渾	hg:혼<<< >>>
+u-cjk/6e3e	渾	gloss:muddy, turbid; blend,
+  merge, mix<<< >>>
+<<< >>>
+@glyphs	游遊<<< >>>
+u-cjk/6e38	游	py:yóu<<< >>>
+u-cjk/6e38	游	ka:ユウ, リュウ<<< >>>
+u-cjk/904a	遊	ka:ユウ, ユ<<< >>>
+u-cjk/6e38	游	hi:あそ·(び|ぶ), およ·ぐ<<< >>>
+u-cjk/904a	遊	hi:あそ·(ぶ|ばす)<<< >>>
+u-cjk/6e38	游	hg:유<<< >>>
+u-cjk/6e38	游	gloss:to swim; float, drift;
+  wander, roam<<< >>>
+```
+
+<<!new-page>>
 ## Variants and Usage
 
 This file contains around 8,400 records that connect 'variant characters'
@@ -750,8 +885,13 @@ The regions as used here are `C` for the PRC,
 and territories are represented in the Unicode Consortium, and, in
 particular, in the data presented as a result of the Unicode
 IICore (International Ideographs Core, 國際表意文字核心,
-東アジアの諸国で一般に使用される漢字集合)^[https://zh.wikipedia.org/wiki/國際表意文字核心]
+東アジアの諸国で一般に使用される漢字集合)^[`https://zh.wikipedia.org/wiki/國際表意文字核心`]
 effort.
+
+<!-- ### TAINT The above URL with CJK glyphs does work with copy-&-paste,
+but caused errors both when entirely and partially marked up using
+`<<(url>>https://zh.wikipedia.org/wiki/國際表意文字核心<<)>>` and
+`<<(url>>https://zh.wikipedia.org/wiki/<<)>>國際表意文字核心` ### -->
 
 The term 'variant character' is understood as an umbrella term
 for what is variously called 俗字, 古字, 本字, 略字, 異體字, 簡/繁體字, 新字体
@@ -799,8 +939,122 @@ the other regions use 鷗, as it is marked `JKTHm`. Both
 鴎 and 鷗 show up with `J`, the implication being that both are
 current in Japan, possibly for different usages (I guess 鷗 is used in names).
 
-<<multi-column)>>
 
+
+<<!new-page>>
+## Frequency and Rankings
+
+Using data from the Leeds Corpus^[<<(url>>http://corpus.leeds.ac.uk/list.html<<)>>]
+for Chinese (PRC) and Japanese character usages, a frequency list
+compiled by Chih-Hao Tsai^[<<(url>>http://technology.chtsai.org/charfreq/<<)>>]
+and a NodeJS module^[<<(url>>https://github.com/mumme/smart-ranking<<)>>]
+that promises to perform a reasonable ranking using Bayesian statistics,
+a little over 15,600
+characters mentioned in at least one of the above sources were given a
+ranking index, starting from #00,001 for the most frequent character, 的, to
+#15,677 for the least common one, 氕.
+
+It must be said that the procedure as outlined above is probably not
+very scientific; it does not take the IICore selection of characters
+into account and neglects potentially useful material such as counts derived
+from Wikipedia articles, the lists published in connection with language
+proficiency tests such as the JLPT^[<<(url>>http://www.jlpt.jp/e/<<)>>] or
+the HSK^[<<(url>>http://www.chinesetest.cn/index.do<<)>>]. On the other hand,
+there is no way to make any meaningful usage statistic without handling
+huge corpuses and making decisions about which texts to in- and exclude from
+the counts.
+
+As it stands, our listing does seem to make some intuitive sense,
+and has been a valuable tool to facilitate the sifting out of tens of
+thousands of Unicode CJK code points describing characters which
+virtually never appear in modern written material.
+
+```
+00,001 的
+00,002 人
+00,003 一
+00,004 中
+00,005 上
+00,006 要
+00,007 大
+00,008 在
+00,009 出
+00,010 以
+00,011 自
+00,012 他
+00,013 年
+00,014 可
+00,015 多
+00,016 家
+00,017 能
+00,018 生
+00,019 好
+00,020 本
+00,021 得
+00,022 日
+00,023 前
+00,024 子
+00,025 用
+00,026 方
+[...]
+01,008 漂
+01,009 爸
+01,010 実
+01,011 陳
+01,012 电
+01,013 融
+01,014 飲
+01,015 架
+01,016 歳
+01,017 預
+01,018 籍
+01,019 陣
+01,020 关
+01,021 憲
+01,022 県
+01,023 貼
+01,024 狗
+01,025 続
+01,026 妙
+01,027 漢
+01,028 減
+01,029 査
+01,030 藏
+01,031 搞
+01,032 変
+01,033 见
+01,034 緊
+01,035 棒
+01,036 発
+01,037 楽
+[...]
+15,664 洚
+15,665 檑
+15,666 搋
+15,667 憝
+15,668 芤
+15,669 艴
+15,670 耖
+15,671 痄
+15,672 鼢
+15,673 糈
+15,674 稃
+15,675 塥
+15,676 螵
+15,677 氕
+```
+
+<!--  
+#############################################################################
+#############################################################################
+#############################################################################
+#############################################################################
+#############################################################################
+#############################################################################
+#############################################################################
+-->
+
+<<multi-column)>>
 <<!end>>
 
 <<(multi-column>>
@@ -811,9 +1065,9 @@ MingKwai TypeScript uses three layers of markup:
 
 (1) A macro language which uses double pointy brackets—so called
   macro brackets—to escape into a meta-language;
-(3) MarkDown as parsed by [`markdown-it`](https://github.com/markdown-it)
+(3) MarkDown as parsed by [`markdown-it`](<<(url>>https://github.com/markdown-it<<)>>)
   (which basically means it should be quite close to the
-  [CommonMark](http://commonmark.org/)) specification); and
+  [CommonMark](<<(url>>http://commonmark.org/<<)>>)) specification); and
 (3) HTML markup.
 
 The ordering in the list above reflects the precedence of the layers:
