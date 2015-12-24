@@ -1,4 +1,5 @@
 
+<<!end>>
 
 <<<\FPmul\tfFactorMoveX{1}{5}%
 \FPmul\tfFactorMoveY{1}{7}>>>
@@ -12,11 +13,20 @@
   to obtain an exhaustive formulas in terms of factors
   only.
 
+To demonstrate the procedure, consider the character 儽.
+It is on record as `儽:⿰亻纍`, a formula that is both
+analytically minimal and synthetically maximal—in other
+words, it is trivially not possible to find a formula with fewer
+components
+`儡:⿰亻畾`
+`儽:⿸儡糸`
 
 ```
-儽:⿰亻纍<<< >>>
 亻:⿱丿丨<<< >>>
 纍:⿱畾糸<<< >>>
+```
+
+```
 畾:⿱田⿰田田<<< >>>
 田:⿴口十<<< >>>
 田:⿻日丨<<< >>>
