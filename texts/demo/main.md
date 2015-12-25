@@ -1,89 +1,11 @@
 
-<<!end>>
 
 <<<\FPmul\tfFactorMoveX{1}{5}%
 \FPmul\tfFactorMoveY{1}{7}>>>
 
+
 <<(multi-column>>
 
-* a list of compositional formulas of glyphs;
-* a catalogue of 'factors', i.e. basic building blocks;
-* a way of ordering factors (using strokeorders);
-* an algorithm to recursively resolving glyph formulas
-  to obtain an exhaustive formulas in terms of factors
-  only.
-
-To demonstrate the procedure, consider the character 儽.
-It is on record as `儽:⿰亻纍`, a formula that is both
-analytically minimal and synthetically maximal—in other
-words, it is trivially not possible to find a formula with fewer
-components
-`儡:⿰亻畾`
-`儽:⿸儡糸`
-
-```
-亻:⿱丿丨<<< >>>
-纍:⿱畾糸<<< >>>
-```
-
-```
-畾:⿱田⿰田田<<< >>>
-田:⿴口十<<< >>>
-田:⿻日丨<<< >>>
-日:⿰丨彐<<< >>>
-日:⿴口一<<< >>>
-口:⿱冂一<<< >>>
-冂:⿰丨𠃌<<< >>>
-彐:⿻&jzr#xe139;一<<< >>>
-糸:⿱幺小<<< >>>
-幺:⿱𠃋⿰𠃋丶<<< >>>
-小:⿻亅八<<< >>>
-八:⿰丿㇏<<< >>>
-```
-
-xxx
-
-```
-儽:(亻:丿丨)(纍:畾糸)<<< >>>
-儽:(亻:丿丨)(纍:(畾:田田田)糸)<<< >>>
-儽:(亻:丿丨)(纍:(畾:田田田)(糸:幺小))<<< >>>
-儽:(亻:丿丨)(纍:(畾:(田:口十)<<< >>>
-  (田:口十)(田:口十))(糸:幺小))<<< >>>
-```
-
-xxx
-
-```
-田:日丨<<< >>>
-日:丨彐<<< >>>
-日:口一<<< >>>
-口:冂一<<< >>>
-冂:丨𠃌<<< >>>
-彐:&jzr#xe139;一<<< >>>
-糸:幺小<<< >>>
-幺:𠃋𠃋丶<<< >>>
-小:亅八<<< >>>
-八:丿㇏<<< >>>
-```
-
-```
-儽:⿰亻(纍:⿱畾糸)
-儽:⿰亻(纍:⿱畾糸)
-```
-```
-儾:⿰亻囊
-```
-```
-侧:⿰亻则
-```
-```
-𡏾:⿰土寄
-```
-```
-𡐒:⿰土毫
-```
-
-<<!slash>>
 ## KWIC
 
 <<(single-column>>
@@ -195,10 +117,13 @@ xxx
 ```
 <<single-column)>>
 
+<<!new-page>>
 True to the original ideas of the KWIC principle, each glyph appears
 as many times in the index as it has factors. Within the 15,000 or so most
 common characters, the maximum number of factors per glyph is 6, while the
 average is a little under 3.
+
+<<(single-column>>
 
 ```
 　　　　　　|方𠂉子辶　　　　遊<<< >>>
@@ -225,7 +150,108 @@ average is a little under 3.
 ```
 
 
+<<single-column)>>
+<<(multi-column>>
 
+<<!end>>
+
+
+* a list of compositional formulas of glyphs;
+* a catalogue of 'factors', i.e. basic building blocks;
+* a way of ordering factors (using strokeorders);
+* an algorithm to recursively resolving glyph formulas
+  to obtain an exhaustive formulas in terms of factors
+  only.
+
+To demonstrate the procedure, consider the character 儽.
+It is on record as `儽:⿰亻纍`. As such, `儽:⿸儡糸` is
+another valid description of 儽; it is also exhaustive,
+but not as intuitive and, moreover, does lack the important geometric
+property of providing a single straight line through the
+components that make up the shape of 儽. We could also
+analyze 儽 as `儽:⿰亻⿱畾糸`, but then we'd loose the
+information that 儽 is made up from 亻 and 纍; sometimes,
+however, such non-minimal formulas are inevitable when a given
+compound is not encoded in the gamut of characters
+that we're dealing with.
+
+Once we have `儽:⿰亻纍`, we can then go and retrieve all
+the formulas of its constituent parts:
+
+```
+亻:⿱丿丨<<< >>>
+纍:⿱畾糸<<< >>>
+```
+
+Substituing these into `儽:⿰亻纍` gives us
+
+```
+儽:(亻:⿱丿丨)(纍:⿱畾糸)
+```
+
+or, simplifying by omitting the operators,
+`儽:亻丿丨纍畾糸`. We now know that 儽 has at least
+the constituents 亻丿丨纍畾糸. This process can be carried
+further using the formulas
+
+```
+畾:⿱田⿰田田<<< >>>
+田:⿴口十<<< >>>
+田:⿻日丨<<< >>>
+日:⿰丨彐<<< >>>
+日:⿴口一<<< >>>
+口:⿱冂一<<< >>>
+冂:⿰丨𠃌<<< >>>
+彐:⿻&jzr#xe139;一<<< >>>
+糸:⿱幺小<<< >>>
+幺:⿱𠃋⿰𠃋丶<<< >>>
+小:⿻亅八<<< >>>
+八:⿰丿㇏<<< >>>
+```
+
+at which point we obtain `儽:亻丿丨纍畾田田田日丨...糸幺𠃋𠃋丶小亅八丿㇏`.
+
+```
+儽:(亻:丿丨)(纍:畾糸)<<< >>>
+儽:(亻:丿丨)(纍:(畾:田田田)糸)<<< >>>
+儽:(亻:丿丨)(纍:(畾:田田田)(糸:幺小))<<< >>>
+儽:(亻:丿丨)(纍:(畾:(田:口十)<<< >>>
+  (田:口十)(田:口十))(糸:幺小))<<< >>>
+```
+
+xxx
+
+```
+田:日丨<<< >>>
+日:丨彐<<< >>>
+日:口一<<< >>>
+口:冂一<<< >>>
+冂:丨𠃌<<< >>>
+彐:&jzr#xe139;一<<< >>>
+糸:幺小<<< >>>
+幺:𠃋𠃋丶<<< >>>
+小:亅八<<< >>>
+八:丿㇏<<< >>>
+```
+
+```
+儽:⿰亻(纍:⿱畾糸)
+儽:⿰亻(纍:⿱畾糸)
+```
+```
+儾:⿰亻囊
+```
+```
+侧:⿰亻则
+```
+```
+𡏾:⿰土寄
+```
+```
+𡐒:⿰土毫
+```
+
+<<!slash>>
 <<!new-page>>
 ## Formulas
 

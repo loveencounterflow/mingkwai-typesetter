@@ -566,7 +566,9 @@ tracker_pattern = /// ^
         if within_footnote_def
           target_idx = idx_by_ids.get current_footnote_id
           unless target_idx
-            send.error new Error "unknown footnote ID #{rpr current_footnote_id}"
+            message = "unknown footnote ID #{rpr current_footnote_id}"
+            # send.error new Error message
+            send [ '.', 'warning', message, ( @copy meta ? {} ), ]
           else
             collector[ target_idx ].push event
         else
