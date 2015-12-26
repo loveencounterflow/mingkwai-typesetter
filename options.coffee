@@ -137,6 +137,7 @@ module.exports = options =
       'u-latn':                 'latin'
       'u-latn-1':               'latin'
       'u-punct':                'latin'
+      'u-grek':                 'latin'
       'u-cjk':                  'cn'
       'u-halfull':              'cn'
       'u-dingb':                'cn'
