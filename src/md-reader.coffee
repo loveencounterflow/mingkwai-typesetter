@@ -474,7 +474,12 @@ tracker_pattern = /// ^
           #.................................................................................................
           when 'table_open', 'table_close', 'tbody_open', 'tbody_close', 'td_open', 'td_close', 'th_open', \
             'th_close', 'thead_open', 'thead_close', 'tr_open', 'tr_close'
-              debug '982342', token
+              # debug '982342', token
+              if type is 'th_open' and token[ 'attrs' ]?
+                for [ attribute_name, attribute_value, ] in token[ 'attrs' ]
+                  if attribute_name is 'style'
+                    ( meta[ 'table' ]?= {} )[ 'style' ] = attribute_value
+                    break
               [ tag, position, ] = type.split '_'
               send [ ( if position is 'open' then '(' else ')' ), tag, null, meta, ]
           #.................................................................................................
@@ -541,14 +546,14 @@ tracker_pattern = /// ^
     return null
 
 #-----------------------------------------------------------------------------------------------------------
-@_PRE.$amend_tables  = ( S ) =>
+@_PRE.$consolidate_tables  = ( S ) =>
   ### TAINT assumes unnested tables without merged cells ###
   track                   = @TRACKER.new_tracker '(table)'
   collector               = []
   collecting              = no
-  description             = {}
   col_count               = 0
   alignments              = []
+  description             = { alignments, col_count, }
   #.........................................................................................................
   return $ ( event, send ) =>
     [ type, name, text, meta, ] = event
@@ -558,12 +563,21 @@ tracker_pattern = /// ^
     if @select event, '(', 'table'
       return send [ '.', 'warning', "detected nested tables", ( @copy meta ), ] if collecting
       collecting                  = yes
-      event[ 3 ][ 'table' ]       = description
+      meta[ 'table' ]            ?= description
       collector.push event
     #.......................................................................................................
     else if collecting
-      #.......................................................................................................
-      if @select event, ')', 'tr'
+      #.....................................................................................................
+      if @select event, '(', [ 'td', 'th', ]
+        collector.push event
+        col_count += +1
+        ### TAINT relying on very specific format detail here; need `{ style: 'text-align:xxx' }` ###
+        style = meta[ 'table' ]?[ 'style' ] ? 'text-align:left'
+        [ style_name, style_value, ] = style.split ':'
+        if style_name is 'text-align' then  alignments.push style_value
+        else                                alignments.push 'left'
+      #.....................................................................................................
+      else if @select event, ')', 'tr'
         description[ 'col_count' ]  = col_count
         send past_event for past_event in collector
         send event
@@ -571,9 +585,7 @@ tracker_pattern = /// ^
         col_count                   = 0
         collecting                  = no
         table_meta                  = null
-      else if @select event, '(', [ 'td', 'th', ]
-        collector.push event
-        col_count += +1
+      #.....................................................................................................
       else
         collector.push event
     #.......................................................................................................
@@ -810,7 +822,7 @@ tracker_pattern = /// ^
     # .pipe D.$show '47594-B'
     .pipe @_PRE.$process_end_command                  S
     .pipe @_PRE.$close_dangling_open_tags             S
-    .pipe @_PRE.$amend_tables                         S
+    .pipe @_PRE.$consolidate_tables                   S
     .pipe @_PRE.$consolidate_footnotes                S
     .pipe MKTS.MACRO_INTERPRETER.$process_actions     S
     .pipe MKTS.MACRO_INTERPRETER.$process_values      S

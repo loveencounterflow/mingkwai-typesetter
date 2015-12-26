@@ -634,15 +634,22 @@ MACRO_ESCAPER             = require './macro-escaper'
       buffer = null
       #.....................................................................................................
       if select event, '(', 'table'
+        # debug '©36643', event
         send stamp hide event
-        col_styles  = Array.from 'c'.repeat meta.table.col_count
+        col_styles  = []
+        for alignment in meta[ 'table' ][ 'alignments' ]
+          switch alignment
+            when 'left'   then col_styles.push 'l'
+            when 'center' then col_styles.push 'c'
+            when 'right'  then col_styles.push 'r'
+            else               col_styles.push 'l'
         col_styles  = '| ' + ( col_styles.join ' | ' ) + ' |'
         # send [ 'tex', "\\begin{tabular}[pos]{table spec}", ]
         send [ 'tex', "\\begin{tabular}[pos]{ #{col_styles} }\n", ]
       #.....................................................................................................
       else if select event, ')', 'table'
         send stamp hide event
-        send [ 'tex', "\\end{tabular}\n", ]
+        send [ 'tex', "\\end{tabular}\n\n", ]
       #.....................................................................................................
       else if select event, '(', 'tbody'
         send stamp hide event
