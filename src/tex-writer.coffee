@@ -608,6 +608,78 @@ MACRO_ESCAPER             = require './macro-escaper'
       send event
 
 #-----------------------------------------------------------------------------------------------------------
+@MKTX.MIXED.$table = ( S ) =>
+  track   = MD_READER.TRACKER.new_tracker '(table)', '(th)'
+  remark  = MD_READER._get_remark()
+  buffer  = null
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    [ type, name, text, meta, ] = event
+    within_table                = track.within '(table)'
+    within_th                   = track.within '(th)'
+    track event
+    #.......................................................................................................
+    if within_th and select event, '.', 'text'
+      send [ '(', 'strong', null, ( copy meta ), ]
+      send stamp event
+      send [ ')', 'strong', null, ( copy meta ), ]
+    #.......................................................................................................
+    else if select event, ')', 'tr'
+      buffer = null
+      send stamp hide event
+      send [ 'tex', "\\\\\n", ]
+    #.......................................................................................................
+    else
+      send buffer if buffer
+      buffer = null
+      #.....................................................................................................
+      if select event, '(', 'table'
+        send stamp hide event
+        col_styles  = Array.from 'c'.repeat meta.table.col_count
+        col_styles  = '| ' + ( col_styles.join ' | ' ) + ' |'
+        # send [ 'tex', "\\begin{tabular}[pos]{table spec}", ]
+        send [ 'tex', "\\begin{tabular}[pos]{ #{col_styles} }\n", ]
+      #.....................................................................................................
+      else if select event, ')', 'table'
+        send stamp hide event
+        send [ 'tex', "\\end{tabular}\n", ]
+      #.....................................................................................................
+      else if select event, '(', 'tbody'
+        send stamp hide event
+      #.....................................................................................................
+      else if select event, ')', 'tbody'
+        send [ 'tex', "\\hline\n", ]
+        send stamp hide event
+      #.....................................................................................................
+      else if select event, '(', 'td'
+        send stamp hide event
+      #.....................................................................................................
+      else if select event, ')', 'td'
+        send stamp hide event
+        buffer = [ 'tex', " & ", ]
+      #.....................................................................................................
+      else if select event, '(', 'th'
+        send stamp hide event
+      #.....................................................................................................
+      else if select event, ')', 'th'
+        send stamp hide event
+        buffer = [ 'tex', " & ", ]
+      #.....................................................................................................
+      else if select event, '(', 'thead'
+        send [ 'tex', "\\hline\n", ]
+        send stamp hide event
+      #.....................................................................................................
+      else if select event, ')', 'thead'
+        send stamp hide event
+        send [ 'tex', "\n\\hline\n", ]
+      #.....................................................................................................
+      else if select event, '(', 'tr'
+        send stamp hide event
+      #.....................................................................................................
+      else
+        send event
+
+#-----------------------------------------------------------------------------------------------------------
 @MKTX.MIXED.$footnote = ( S ) =>
   #.........................................................................................................
   return $ ( event, send ) =>
@@ -831,7 +903,7 @@ MACRO_ESCAPER             = require './macro-escaper'
       #   first             = name
       #   last              = type
       # event_txt         = first + last + ' ' + text
-      event_txt = "unhandled event: #{JSON.stringify event, null, ' '}"
+      event_txt = "unhandled event: #{JSON.stringify event}"
       warn event_txt
       send [ '.', 'warning', event_txt, ( copy meta ), ]
       # send hide stamp event
@@ -966,6 +1038,7 @@ MACRO_ESCAPER             = require './macro-escaper'
     # .pipe @MKTX.REGION.$correct_p_tags_before_regions     S
     .pipe @MKTX.COMMAND.$multi_column                     S
     .pipe @MKTX.COMMAND.$slash                            S
+    .pipe @MKTX.MIXED.$table                              S
     .pipe @MKTX.REGION.$multi_column                      S
     .pipe @MKTX.REGION.$single_column                     S
     .pipe @MKTX.REGION.$code                              S

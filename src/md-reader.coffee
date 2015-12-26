@@ -7,7 +7,7 @@ njs_fs                    = require 'fs'
 #...........................................................................................................
 CND                       = require 'cnd'
 rpr                       = CND.rpr
-badge                     = 'MKTS/main'
+badge                     = 'MKTS/MD-READER'
 log                       = CND.get_logger 'plain',     badge
 info                      = CND.get_logger 'info',      badge
 whisper                   = CND.get_logger 'whisper',   badge
@@ -472,6 +472,12 @@ tracker_pattern = /// ^
             null
             # send remark 'drop', "footnote block processed", ( @copy meta )
           #.................................................................................................
+          when 'table_open', 'table_close', 'tbody_open', 'tbody_close', 'td_open', 'td_close', 'th_open', \
+            'th_close', 'thead_open', 'thead_close', 'tr_open', 'tr_close'
+              debug '982342', token
+              [ tag, position, ] = type.split '_'
+              send [ ( if position is 'open' then '(' else ')' ), tag, null, meta, ]
+          #.................................................................................................
           when 'html_block'
             throw new Error "should never happen (2)"
           #.................................................................................................
@@ -533,6 +539,46 @@ tracker_pattern = /// ^
       send event
     #.......................................................................................................
     return null
+
+#-----------------------------------------------------------------------------------------------------------
+@_PRE.$amend_tables  = ( S ) =>
+  ### TAINT assumes unnested tables without merged cells ###
+  track                   = @TRACKER.new_tracker '(table)'
+  collector               = []
+  collecting              = no
+  description             = {}
+  col_count               = 0
+  alignments              = []
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    [ type, name, text, meta, ] = event
+    within_table                = track.within '(table)'
+    track event
+    #.......................................................................................................
+    if @select event, '(', 'table'
+      return send [ '.', 'warning', "detected nested tables", ( @copy meta ), ] if collecting
+      collecting                  = yes
+      event[ 3 ][ 'table' ]       = description
+      collector.push event
+    #.......................................................................................................
+    else if collecting
+      #.......................................................................................................
+      if @select event, ')', 'tr'
+        description[ 'col_count' ]  = col_count
+        send past_event for past_event in collector
+        send event
+        collector.length            = 0
+        col_count                   = 0
+        collecting                  = no
+        table_meta                  = null
+      else if @select event, '(', [ 'td', 'th', ]
+        collector.push event
+        col_count += +1
+      else
+        collector.push event
+    #.......................................................................................................
+    else
+      send event
 
 #-----------------------------------------------------------------------------------------------------------
 @_PRE.$consolidate_footnotes  = ( S ) =>
@@ -764,6 +810,7 @@ tracker_pattern = /// ^
     # .pipe D.$show '47594-B'
     .pipe @_PRE.$process_end_command                  S
     .pipe @_PRE.$close_dangling_open_tags             S
+    .pipe @_PRE.$amend_tables                         S
     .pipe @_PRE.$consolidate_footnotes                S
     .pipe MKTS.MACRO_INTERPRETER.$process_actions     S
     .pipe MKTS.MACRO_INTERPRETER.$process_values      S
