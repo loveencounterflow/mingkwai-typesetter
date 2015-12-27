@@ -174,7 +174,7 @@ MACRO_ESCAPER             = require './macro-escaper'
     throw new Error "need entry options/fonts/name" unless main_font_name?
     write ""
     write "% CONTENT"
-    write "\\begin{document}#{main_font_name}"
+    write "\\begin{document}#{main_font_name}\\fontsize{\\myFontsize}{\\myLineheight}\\selectfont"
     #-------------------------------------------------------------------------------------------------------
     # INCLUDES
     #.......................................................................................................
@@ -249,11 +249,12 @@ MACRO_ESCAPER             = require './macro-escaper'
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.REGION._begin_multi_column = =>
   ### TAINT Column count must come from layout / options / MKTS-MD command ###
-  return [ 'tex', '\\begin{multicols}{2}' ]
+  ### TAINT make `\raggedcolumns` optional? ###
+  return [ 'tex', "\n\n\\vspace{\\myLineheight}\\begin{multicols}{2}\\raggedcolumns{}" ]
 
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.REGION._end_multi_column = =>
-  return [ 'tex', '\\end{multicols}' ]
+  return [ 'tex', "\\end{multicols}\n\n" ]
 
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.COMMAND.$multi_column = ( S ) =>
@@ -486,7 +487,8 @@ MACRO_ESCAPER             = require './macro-escaper'
 @MKTX.BLOCK._end_paragraph = =>
   ### TAINT use command from sty ###
   ### TAINT make configurable ###
-  return [ 'tex', '\\mktsShowpar\\par\n' ]
+  # return [ 'tex', '\\mktsShowpar\\par\n' ]
+  return [ 'tex', '\n\n' ]
 
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.BLOCK.$unordered_list = ( S ) =>
@@ -645,7 +647,7 @@ MACRO_ESCAPER             = require './macro-escaper'
             else               col_styles.push 'l'
         col_styles  = '| ' + ( col_styles.join ' | ' ) + ' |'
         # send [ 'tex', "\\begin{tabular}[pos]{table spec}", ]
-        send [ 'tex', "\\begin{tabular}[pos]{ #{col_styles} }\n", ]
+        send [ 'tex', "\n\n\\begin{tabular}[pos]{ #{col_styles} }\n", ]
       #.....................................................................................................
       else if select event, ')', 'table'
         send stamp hide event

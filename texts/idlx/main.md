@@ -1,22 +1,24 @@
 
 
-<!--
+between ⿺ and  depends
 
-| Caesar    | Arcane              | Brome                |
-| -----:    | :-----------------: | :---------------     |
-| xxxxxxxxx | long entry          | 2                    |
-| foo       | short               | foo bar baz gnu dazz |
+between ⿺⿺⿺ and  depends
 
-<\<!end>>
--->
+between ⿺ and ⿺⿺ depends
+<<!end>>
 
 
+<<(multi-column>>
+
+## The Extended Ideographic Description Language (IDLx)
+
+<<(single-column>>
 |          | Unicode Name                 | A                  | Name                         | B     | B          | Examples                    |
 | ---:     | ---------------------------: | :----------------: | ---------------------------: | :---: | :-------:  | --------------              |
 | **a-1**  | left to right                | <<<{\cjk{}⿰}>>>   | left/right                   |      |           | 𪷈:⿰氵貫                    |
 | **a-2**  | above to below               | <<<{\cjk{}⿱}>>>   | top/down                     |      |           | 𪲪:⿱㐭木                    |
 | **a-3**  | surround from bottom left    | <<<{\cjk{}⿺}>>>   | L-shaped                     |      |           | 毯:⿺毛炎                   |
-| **a-4**  |                              |                    |                              |      |           | 廷:廴壬                    |
+| **a-4**  |                              |                    |                              |      |           | 廷:壬廴                    |
 | **a-5**  | surround from upper left     | <<<{\cjk{}⿸}>>>   | Γ-shaped                     |      |           | 慮:⿸虍思                   |
 | **a-6**  | surround from upper right    | <<<{\cjk{}⿹}>>>   | package                      |      |           | 截:⿹𢦏隹                    |
 | **a-7**  | ／                           | ／                 | surround from bottom right   |      |           | &jzr#xe232;:◰一弋           |
@@ -32,22 +34,28 @@
 | **a-17** | ／                           | ／                 | horizontal flip              |       |           | 𣥄:正                       |
 | **a-18** | ／                           | ／                 | similar                      |       |           | 𠉒:⿱从≈电                   |
 | **a-19** | ／                           | ／                 | parentheses; group           |       | (&#x3000;) | 亴:(⿱亠口冖土九)           |
+<<single-column)>>
 
 *Remarks*:
 
 **a-3**: The L-shape, , is the only binary relationship that occurs in both of
 its realizations, ⿺ and ; this case is well known to learners of Kanji, as
-there are many common glyphs with either operator. The choice between ⿺ and 
-depends on the element that occupies the left and bottom of the character in
-question: of all the components there are, only 廴 and 辶 (⻍, ⻎) are written
-*after* the top right and hence need ; all other elements with the L-shaped
-operator are written *first* and hence call for .—Also see remark **b-10**,
-below.
+there are many common glyphs with either operator.
 
-**a-11**: the reversed C-shape: lowest frequence, missing in Unicode IDCs,
+The choice between ⿺ and  depends on the element that occupies the left and bottom of the character in
+question: of all the components there are, only 廴 and 辶 (⻍, ⻎) are written *after* the top right and hence
+need , as in 這:言辶 (observe that using standard Unicode IDL, we are forced to write 這:⿺辶言, which,
+crucially, does not preserve the order in which the factors are normally written).^[see
+<<(url>>https://raw.githubusercontent.com/cjkvi/cjkvi-ids/master/ids.txt<<)>> for actual examples]
+
+All other elements (i.e. except for 廴 and 辶) that enclose another one from the left and
+from below in an L-shape take precedence; hence, in e.g. 赲, 走 comes first and 力
+comes second, so its formula is 赲:⿺走力.
+
+**a-11**: XXXXX XXXXX XXXXX XXXXX XXXXX the reversed C-shape: lowest frequency, missing from Unicode IDCs,
 erroneously replaced by ⿴ in formula 𢏚:⿷⿴弓工工 for which we write 𢏚:⿷弓工工.
 
-
+<<(single-column>>
 |          | Name                         | B        | E   |
 | ---:     | ---------------------------: | :------: | :-: |
 | **b-1**  | left/right                   |         |    |
@@ -63,15 +71,17 @@ erroneously replaced by ⿴ in formula 𢏚:⿷⿴弓工工 for which we write �
 | **b-11** | surround                     |         |    |
 | **b-12** | any operator                 |          |    |
 | **b-13** | vertical flip                |          |    |
+<<single-column)>>
 
 
 
+<<(single-column>>
 |      | Unicode Name                 | A                  | Name                         | C   | E   | Examples                    |
 | ---: | ---------------------------: | :----------------: | ---------------------------: | :-: | :-: | --------------              |
 | 1    | left to right                | <<<{\cjk{}⿰}>>>   | left/right                   |    |    | 𪷈:⿰氵貫                    |
 | 2    | above to below               | <<<{\cjk{}⿱}>>>   | top/down                     |    |    | 𪲪:⿱㐭木                    |
 | 3    | surround from bottom left    | <<<{\cjk{}⿺}>>>   | surround from bottom left    |   |     | 毯:⿺毛炎                   |
-| 4    |                              |                    |                              |     |     | 廷:廴壬                    |
+| 4    |                              |                    |                              |     |     | 廷:壬廴                    |
 | 5    | surround from upper left     | <<<{\cjk{}⿸}>>>   | surround from upper left     |    |    | 慮:⿸虍思                   |
 | 6    | surround from upper right    | <<<{\cjk{}⿹}>>>   | surround from upper right    |    |    | 截:⿹𢦏隹                    |
 | 7    | ／                           | ／                 | surround from bottom right   |    |    | &jzr#xe232;:◰一弋           |
@@ -91,17 +101,19 @@ erroneously replaced by ⿴ in formula 𢏚:⿷⿴弓工工 for which we write �
 | 21   | ／                           | ／                 | parentheses; group           |     |     | 亴:(⿱亠口冖土九)           |
 | 22   | left to middle and right     | <<<{\cjk{}⿲}>>>   | ／                           |     |     | 衍:(⿰彳氵亍)               |
 | 23   | above to middle and below    | <<<{\cjk{}⿳}>>>   | ／                           |     |     | 衰:(⿱亠&jzr#xe206;𧘇)       |
+<<single-column)>>
 
 
 xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx
 xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx
 
+<<(single-column>>
 |      | Unicode Name                 | A                  | Name                         | B          | C   | E   | Examples                    |
 | ---: | ---------------------------: | :----------------: | ---------------------------: | :------:   | :-: | :-: | --------------              |
 | 1    | left to right                | <<<{\cjk{}⿰}>>>   | left/right                   |           |    |    | 𪷈:⿰氵貫                    |
 | 2    | above to below               | <<<{\cjk{}⿱}>>>   | top/down                     |           |    |    | 𪲪:⿱㐭木                    |
 | 3    | surround from bottom left    | <<<{\cjk{}⿺}>>>   | surround from bottom left    |           |   |     | 毯:⿺毛炎                   |
-|      |                              |                    |                              |            |     |     | 廷:廴壬                    |
+|      |                              |                    |                              |            |     |     | 廷:壬廴                    |
 | 4    | surround from upper left     | <<<{\cjk{}⿸}>>>   | surround from upper left     |           |    |    | 慮:⿸虍思                   |
 | 5    | surround from upper right    | <<<{\cjk{}⿹}>>>   | surround from upper right    |           |    |    | 截:⿹𢦏隹                    |
 | 6    | ／                           | ／                 | surround from bottom right   |           |    |    | &jzr#xe232;:◰一弋           |
@@ -121,6 +133,7 @@ xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx
 | 13   | ／                           | ／                 | parentheses; group           | (&#x3000;) |     |     | 亴:(⿱亠口冖土九)        |
 | 13   | left to middle and right     | <<<{\cjk{}⿲}>>>   | ／                           | ／         |     |     | 衍:(⿰彳氵亍)               |
 | 14   | above to middle and below    | <<<{\cjk{}⿳}>>>   | ／                           | ／         |     |     | 衰:(⿱亠&jzr#xe206;𧘇)       |
+<<single-column)>>
 
 <!--
 |      |                              |                    |                              |            |     |     | 弋:⿺&jzr#xe1af;丶          |
@@ -130,3 +143,4 @@ xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx
 
 <!--  -->
 
+<<multi-column)>>

@@ -548,12 +548,12 @@ tracker_pattern = /// ^
 #-----------------------------------------------------------------------------------------------------------
 @_PRE.$consolidate_tables  = ( S ) =>
   ### TAINT assumes unnested tables without merged cells ###
-  track                   = @TRACKER.new_tracker '(table)'
-  collector               = []
-  collecting              = no
-  col_count               = 0
-  alignments              = []
-  description             = { alignments, col_count, }
+  track         = @TRACKER.new_tracker '(table)'
+  collector     = []
+  collecting    = no
+  col_count     = 0
+  alignments    = null
+  description   = null
   #.........................................................................................................
   return $ ( event, send ) =>
     [ type, name, text, meta, ] = event
@@ -562,8 +562,10 @@ tracker_pattern = /// ^
     #.......................................................................................................
     if @select event, '(', 'table'
       return send [ '.', 'warning', "detected nested tables", ( @copy meta ), ] if collecting
-      collecting                  = yes
-      meta[ 'table' ]            ?= description
+      collecting        = yes
+      alignments        = []
+      description       = {}
+      meta[ 'table' ]  ?= description
       collector.push event
     #.......................................................................................................
     else if collecting
@@ -578,13 +580,15 @@ tracker_pattern = /// ^
         else                                alignments.push 'left'
       #.....................................................................................................
       else if @select event, ')', 'tr'
-        description[ 'col_count' ]  = col_count
+        description[ 'col_count'  ] = col_count
+        description[ 'alignments' ] = alignments
         send past_event for past_event in collector
         send event
-        collector.length            = 0
-        col_count                   = 0
-        collecting                  = no
-        table_meta                  = null
+        collector.length  = 0
+        col_count         = 0
+        collecting        = no
+        alignments        = null
+        table_meta        = null
       #.....................................................................................................
       else
         collector.push event
