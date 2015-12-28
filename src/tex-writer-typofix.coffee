@@ -102,6 +102,7 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
   #.........................................................................................................
   advance_whitespace = =>
     chunk.splice chunk.length, 0, whitespace_cache...
+    debug '©92451', 'advance_whitespace', chunk
     whitespace_cache.length = 0
   #.........................................................................................................
   advance = =>
@@ -129,14 +130,21 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
       when 'u-latn'   then chr = @escape_for_tex chr
     #.......................................................................................................
     this_is_cjk = @is_cjk_rsg rsg, options
+    debug '©24032', ( rpr chr ), this_is_cjk
     if ( not last_was_cjk ) and ( this_is_cjk )
+      debug '©1', 'advance_whitespace'
       advance_whitespace()
       # advance()
-      chunk.push "{\\cjk{}"
+      chunk.push "\\cjkgGlue{\\cjk{}"
+      has_cjk_glue = yes
     else if ( last_was_cjk ) and ( not this_is_cjk )
-      chunk.push "}"
+      if has_cjk_glue then  chunk.push "}"
+      else                  chunk.push "\\cjkgGlue}"
+      has_cjk_glue = yes
+      debug '©2', 'advance_whitespace', rpr chr
       advance_whitespace()
     else if whitespace_cache.length > 0
+      debug '©3', 'advance_whitespace'
       advance_whitespace()
     last_was_cjk = this_is_cjk
     #.......................................................................................................
@@ -144,6 +152,8 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
     and no more match entries in `glyph_styles` ###
     # debug '©53938-1', chr, rsg, tex_command_by_rsgs[ rsg ]
     if ( replacement = glyph_styles[ chr ] )?
+      # debug '©44340', rpr chr
+      # debug '©44340', chunk
       advance()
       ### TAINT duplication from below: ###
       command   = tex_command_by_rsgs[ rsg ] ? null
@@ -181,20 +191,91 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
       continue
     #.......................................................................................................
     # debug '©53938-2', chr, rsg, tex_command_by_rsgs[ rsg ]
+    debug '©46011', ( rpr chr ), command, R
     if advance_each_chr or last_command isnt command
       advance()
       last_command = command
       ### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ###
       unless command in [ 'latin', 'cn', ]
-        # command = 'cn'
         chunk.push "{\\#{command}{}"
-      # chunk.push "{\\#{command}{}" unless command is 'latin'
       ### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ###
     #.......................................................................................................
     chunk.push chr
   #.........................................................................................................
-  chunk.push "}" if this_is_cjk
   advance_whitespace() if whitespace_cache.length > 0
+  if this_is_cjk
+    if has_cjk_glue then  chunk.push "}"
+    else                  chunk.push "\\cjkgGlue}"
   advance()
   return R.join ''
+
+#-----------------------------------------------------------------------------------------------------------
+@_test_whitespace = ( S, chr ) -> chr in S.whitespace
+
+#-----------------------------------------------------------------------------------------------------------
+@_analyze_chr = ( S, chr ) ->
+    #.......................................................................................................
+    R = XNCHR.analyze chr
+    #.......................................................................................................
+    switch R.rsg
+      when 'jzr-fig'  then chr = uchr
+      when 'u-pua'    then rsg = 'jzr-fig'
+      when 'u-latn'   then chr = @escape_for_tex chr
+    #.......................................................................................................
+    R.is_cjk = R.rsg in S.cjk_rsgs
+    return R
+
+#-----------------------------------------------------------------------------------------------------------
+@_style_chr = ( S, chr ) -> S.glyph_styles[ chr ] ? null
+
+#-----------------------------------------------------------------------------------------------------------
+@fix_typography_for_tex_2 = ( text, options, send = null ) =>
+  # last_command                  = null
+  # R                             = []
+  # chunk                         = []
+  # last_rsg                      = null
+  # remark                        = if send? then @_get_remark() else null
+  # this_is_cjk                   = no
+  # last_was_cjk                  = no
+  # this_is_whitespace            = no
+  # last_was_whitespace           = no
+  # whitespace_cache              = []
+  # replacement                   = null
+  # has_cjk_glue                  = no
+  S =
+    cjk_rsgs:                     options[ 'tex' ]?[ 'cjk-rsgs' ] ? null
+    glyph_styles:                 options[ 'tex' ]?[ 'glyph-styles'             ] ? {}
+    tex_command_by_rsgs:          options[ 'tex' ]?[ 'tex-command-by-rsgs'      ]
+    collector:                    []
+    whitespace:                   '\x20\n\r\t'
+    R:                            null
+  #.........................................................................................................
+  throw new Error "need setting 'tex-command-by-rsgs'" unless S.tex_command_by_rsgs?
+  throw new Error "need setting 'cjk-rsgs'" unless S.cjk_rsgs?
+  #.........................................................................................................
+  for chr in XNCHR.chrs_from_text text
+    debug '©84762', rpr chr
+    #.......................................................................................................
+    if this_is_whitespace = @_test_whitespace S, chr
+      null
+    #.......................................................................................................
+    A = @_analyze_chr S, chr
+    unless ( chr_style = @_style_chr S, chr )?
+      chr = @escape_for_tex chr
+    #.......................................................................................................
+    else
+      null
+    debug '©78697', chr_style if chr_style?
+    #.......................................................................................................
+    S.collector.push chr
+  #.........................................................................................................
+  return S.collector.join ''
+
+
+
+
+
+
+
+
 

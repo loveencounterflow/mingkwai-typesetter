@@ -277,6 +277,8 @@
 \usepackage{relsize}
 \newcommand{\mktsFontCjkDefault}{\mktsFontfileSunexta}
 \newcommand{\cjk}{%
+  \cjkgGlue%
+  \aftergroup\cjkgGlue%
   \cjkgUseCjkGlue%
   \relscale{1.05}%
   \tfRaise{-0.1}%

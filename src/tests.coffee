@@ -1020,7 +1020,7 @@ nice_text_rpr = ( text ) ->
 #     input.resume()
 
 #-----------------------------------------------------------------------------------------------------------
-@[ "TEX_WRITER_TYPOFIX.fix_typography_for_tex" ] = ( T, done ) ->
+@[ "_TEX_WRITER_TYPOFIX.fix_typography_for_tex" ] = ( T, done ) ->
   S                                 = {}
   { CACHE, OPTIONS, }               = require './options'
   TEX_WRITER_TYPOFIX                = require './tex-writer-typofix'
@@ -1031,17 +1031,17 @@ nice_text_rpr = ( text ) ->
   #.........................................................................................................
   probes_and_matchers = [
     # ["& \\ #癶乛國","\\& \\textbackslash{} \\#{\\cjk{}{\\tfRaise{-0.2}\\cnxBabel{}癶}{\\tfPushRaise{0.5}{-0.2}\\cnxJzr{}}{\\tfRaise{-0.2}\\cn{}乛}{\\cn{}國}"]
-    ["Brick tea ! ","Brick tea ! "]
-    ["&\\#","\\&\\textbackslash{}\\#"]
-    ["國","\\cjkgGlue{\\cjk{}國\\cjkgGlue}"]
-    ["x國x","x\\cjkgGlue{\\cjk{}國\\cjkgGlue}x"]
-    ["x 國 x","x \\cjkgGlue{\\cjk{}國\\cjkgGlue} x"]
-    ["𠇋","\\cjkgGlue{\\cjk{}{\\cnxb{}𠇋}\\cjkgGlue}"]
-    ["x𠇋x","x\\cjkgGlue{\\cjk{}{\\cnxb{}𠇋}\\cjkgGlue}x"]
-    ["x 𠇋 x","x \\cjkgGlue{\\cjk{}{\\cnxb{}𠇋}\\cjkgGlue} x"]
-    ["卩","\\cjkgGlue{\\cjk{}{\\tfPush{-0.4}卩}\\cjkgGlue}"]
-    ["x卩x","x\\cjkgGlue{\\cjk{}{\\tfPush{-0.4}卩}\\cjkgGlue}x"]
-    ["x 卩 x","x \\cjkgGlue{\\cjk{}{\\tfPush{-0.4}卩}\\cjkgGlue} x"]
+    # ["Brick tea ! ","Brick tea ! "]
+    # ["&\\#","\\&\\textbackslash{}\\#"]
+    # ["國","\\cjkgGlue{\\cjk{}國\\cjkgGlue}"]
+    # ["x國x","x\\cjkgGlue{\\cjk{}國\\cjkgGlue}x"]
+    ["a 國 b","a \\cjkgGlue{\\cjk{}國\\cjkgGlue} b"]
+    # ["𠇋","\\cjkgGlue{\\cjk{}{\\cnxb{}𠇋\\cjkgGlue}}"]
+    # ["x𠇋x","x\\cjkgGlue{\\cjk{}{\\cnxb{}𠇋\\cjkgGlue}}x"]
+    ["a 𠇋 b","a \\cjkgGlue{\\cjk{}{\\cnxb{}𠇋\\cjkgGlue}} b"]
+    # ["卩","\\cjkgGlue{\\cjk{}{\\tfPush{-0.4}卩\\cjkgGlue}}"]
+    # ["x卩x","x\\cjkgGlue{\\cjk{}{\\tfPush{-0.4}卩\\cjkgGlue}}x"]
+    # ["x 卩 x","x \\cjkgGlue{\\cjk{}{\\tfPush{-0.4}卩\\cjkgGlue}} x"]
 
     # ["Brick tea 紧压茶都是用红茶 is delicious","Brick tea {\\cjk{}紧压茶都是用红茶} is delicious"]
     # ["Brick tea\n紧压茶都 是\t\n用红茶 is\ndelicious","Brick tea\n{\\cjk{}紧压茶都 是\t\n用红茶} is\ndelicious"]
@@ -1054,10 +1054,54 @@ nice_text_rpr = ( text ) ->
   for [ probe, matcher, ] in probes_and_matchers
     result = TEX_WRITER_TYPOFIX.fix_typography_for_tex probe, S.options
     echo '    ' + JSON.stringify [ probe, result, ]
-    # echo result
-  for [ probe, matcher, ] in probes_and_matchers
-    result = TEX_WRITER_TYPOFIX.fix_typography_for_tex probe, S.options
     T.eq ( matcher.trim().replace /\x20/g, '█' ), ( result.trim().replace /\x20/g, '█' )
+    # echo result
+  # for [ probe, matcher, ] in probes_and_matchers
+  #   result = TEX_WRITER_TYPOFIX.fix_typography_for_tex probe, S.options
+  #   T.eq ( matcher.trim().replace /\x20/g, '█' ), ( result.trim().replace /\x20/g, '█' )
+  # T.fail "not yet ready"
+  done()
+
+#-----------------------------------------------------------------------------------------------------------
+@[ "TEX_WRITER_TYPOFIX.fix_typography_for_tex_2" ] = ( T, done ) ->
+  S                                 = {}
+  { CACHE, OPTIONS, }               = require './options'
+  TEX_WRITER_TYPOFIX                = require './tex-writer-typofix'
+  options_route                     = '../options.coffee'
+  options_locator                   = require.resolve njs_path.resolve __dirname, options_route
+  options_home                      = njs_path.dirname options_locator
+  S.options                         = OPTIONS.from_locator options_locator
+  #.........................................................................................................
+  probes_and_matchers = [
+    # ["& \\ #癶乛國","\\& \\textbackslash{} \\#{\\cjk{}{\\tfRaise{-0.2}\\cnxBabel{}癶}{\\tfPushRaise{0.5}{-0.2}\\cnxJzr{}}{\\tfRaise{-0.2}\\cn{}乛}{\\cn{}國}"]
+    # ["Brick tea ! ","Brick tea ! "]
+    # ["&\\#","\\&\\textbackslash{}\\#"]
+    ["國","\\cjkgGlue{\\cjk{}國\\cjkgGlue}"]
+    # ["x國x","x\\cjkgGlue{\\cjk{}國\\cjkgGlue}x"]
+    # ["a 國 b","a \\cjkgGlue{\\cjk{}國\\cjkgGlue} b"]
+    # ["𠇋","\\cjkgGlue{\\cjk{}{\\cnxb{}𠇋\\cjkgGlue}}"]
+    # ["x𠇋x","x\\cjkgGlue{\\cjk{}{\\cnxb{}𠇋\\cjkgGlue}}x"]
+    # ["a 𠇋 b","a \\cjkgGlue{\\cjk{}{\\cnxb{}𠇋\\cjkgGlue}} b"]
+    # ["卩","\\cjkgGlue{\\cjk{}{\\tfPush{-0.4}卩\\cjkgGlue}}"]
+    # ["x卩x","x\\cjkgGlue{\\cjk{}{\\tfPush{-0.4}卩\\cjkgGlue}}x"]
+    # ["x 卩 x","x \\cjkgGlue{\\cjk{}{\\tfPush{-0.4}卩\\cjkgGlue}} x"]
+
+    # ["Brick tea 紧压茶都是用红茶 is delicious","Brick tea {\\cjk{}紧压茶都是用红茶} is delicious"]
+    # ["Brick tea\n紧压茶都 是\t\n用红茶 is\ndelicious","Brick tea\n{\\cjk{}紧压茶都 是\t\n用红茶} is\ndelicious"]
+    # ["Brick tea 紧压茶卩癶都是用红茶 is delicious","Brick tea {\\cjk{}紧压茶\\cjkgGlue{\\tfPush{-0.4}卩\\cjkgGlue}{\\tfRaise{-0.2}\\cnxBabel{}癶\\cjkgGlue}{\\tfRaise{0.1}\\cnxJzr{}\\cjkgGlue}都是用红茶} is delicious"]
+    # ["压茶卩红茶","{\\cjk{}压茶\\cjkgGlue{\\tfPush{-0.4}卩\\cjkgGlue}红茶}"]
+    # ["压茶𠇋卩红茶","{\\cjk{}压茶{\\cnxb{}𠇋}\\cjkgGlue{\\tfPush{-0.4}卩\\cjkgGlue}红茶}"]
+    # ["压茶𠇋卩","{\\cjk{}压茶{\\cnxb{}𠇋}\\cjkgGlue{\\tfPush{-0.4}卩\\cjkgGlue}}"]
+    ]
+  # warn "missing `.p` inside `(multi-column)`"
+  for [ probe, matcher, ] in probes_and_matchers
+    result = TEX_WRITER_TYPOFIX.fix_typography_for_tex_2 probe, S.options
+    echo '    ' + JSON.stringify [ probe, result, ]
+    T.eq ( matcher.trim().replace /\x20/g, '█' ), ( result.trim().replace /\x20/g, '█' )
+    # echo result
+  # for [ probe, matcher, ] in probes_and_matchers
+  #   result = TEX_WRITER_TYPOFIX.fix_typography_for_tex probe, S.options
+  #   T.eq ( matcher.trim().replace /\x20/g, '█' ), ( result.trim().replace /\x20/g, '█' )
   # T.fail "not yet ready"
   done()
 
