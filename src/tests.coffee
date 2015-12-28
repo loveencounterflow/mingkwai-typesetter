@@ -1033,15 +1033,25 @@ nice_text_rpr = ( text ) ->
     # ["& \\ #癶乛國","\\& \\textbackslash{} \\#{\\cjk{}{\\tfRaise{-0.2}\\cnxBabel{}癶}{\\tfPushRaise{0.5}{-0.2}\\cnxJzr{}}{\\tfRaise{-0.2}\\cn{}乛}{\\cn{}國}"]
     # ["Brick tea ! ","Brick tea ! "]
     # ["&\\#","\\&\\textbackslash{}\\#"]
-    # ["國","\\cjkgGlue{\\cjk{}國\\cjkgGlue}"]
-    # ["x國x","x\\cjkgGlue{\\cjk{}國\\cjkgGlue}x"]
-    ["a 國 b","a \\cjkgGlue{\\cjk{}國\\cjkgGlue} b"]
-    # ["𠇋","\\cjkgGlue{\\cjk{}{\\cnxb{}𠇋\\cjkgGlue}}"]
-    # ["x𠇋x","x\\cjkgGlue{\\cjk{}{\\cnxb{}𠇋\\cjkgGlue}}x"]
-    ["a 𠇋 b","a \\cjkgGlue{\\cjk{}{\\cnxb{}𠇋\\cjkgGlue}} b"]
-    # ["卩","\\cjkgGlue{\\cjk{}{\\tfPush{-0.4}卩\\cjkgGlue}}"]
-    # ["x卩x","x\\cjkgGlue{\\cjk{}{\\tfPush{-0.4}卩\\cjkgGlue}}x"]
-    # ["x 卩 x","x \\cjkgGlue{\\cjk{}{\\tfPush{-0.4}卩\\cjkgGlue}} x"]
+    ["國","{\\cjk{}國}"]
+    ["x國x","x{\\cjk{}國}x"]
+    ["a 國 b","a {\\cjk{}國} b"]
+    ["𠇋","{\\cjk{}{\\cnxb{}𠇋}}"]
+    ["x𠇋x","x{\\cjk{}{\\cnxb{}𠇋}}x"]
+    ["a 𠇋 b","a {\\cjk{}{\\cnxb{}𠇋}} b"]
+    ["卩","{\\cjk{}{\\tfPush{-0.4}卩}}"]
+    ["x卩x","x{\\cjk{}{\\tfPush{-0.4}卩}}x"]
+    ["x 卩 x","x {\\cjk{}{\\tfPush{-0.4}卩}} x"]
+
+    # ["國","{\\cjk{}國}"]
+    # ["x國x","x{\\cjk{}國}x"]
+    # ["a 國 b","a {\\cjk{}國} b"]
+    # ["𠇋","{\\cjk{}\\cjkgGlue{\\cnxb{}𠇋\\cjkgGlue}}"]
+    # ["x𠇋x","x{\\cjk{}\\cjkgGlue{\\cnxb{}𠇋\\cjkgGlue}}x"]
+    # ["a 𠇋 b","a {\\cjk{}\\cjkgGlue{\\cnxb{}𠇋\\cjkgGlue}} b"]
+    # ["卩","{\\cjk{}\\cjkgGlue{\\tfPush{-0.4}卩\\cjkgGlue}}"]
+    # ["x卩x","x{\\cjk{}\\cjkgGlue{\\tfPush{-0.4}卩\\cjkgGlue}}x"]
+    # ["x 卩 x","x {\\cjk{}\\cjkgGlue{\\tfPush{-0.4}卩\\cjkgGlue}} x"]
 
     # ["Brick tea 紧压茶都是用红茶 is delicious","Brick tea {\\cjk{}紧压茶都是用红茶} is delicious"]
     # ["Brick tea\n紧压茶都 是\t\n用红茶 is\ndelicious","Brick tea\n{\\cjk{}紧压茶都 是\t\n用红茶} is\ndelicious"]
@@ -1062,6 +1072,7 @@ nice_text_rpr = ( text ) ->
   # T.fail "not yet ready"
   done()
 
+
 #-----------------------------------------------------------------------------------------------------------
 @[ "TEX_WRITER_TYPOFIX.fix_typography_for_tex_2" ] = ( T, done ) ->
   S                                 = {}
@@ -1074,24 +1085,27 @@ nice_text_rpr = ( text ) ->
   #.........................................................................................................
   probes_and_matchers = [
     # ["& \\ #癶乛國","\\& \\textbackslash{} \\#{\\cjk{}{\\tfRaise{-0.2}\\cnxBabel{}癶}{\\tfPushRaise{0.5}{-0.2}\\cnxJzr{}}{\\tfRaise{-0.2}\\cn{}乛}{\\cn{}國}"]
-    # ["Brick tea ! ","Brick tea ! "]
-    # ["&\\#","\\&\\textbackslash{}\\#"]
-    ["國","\\cjkgGlue{\\cjk{}國\\cjkgGlue}"]
-    # ["x國x","x\\cjkgGlue{\\cjk{}國\\cjkgGlue}x"]
-    # ["a 國 b","a \\cjkgGlue{\\cjk{}國\\cjkgGlue} b"]
-    # ["𠇋","\\cjkgGlue{\\cjk{}{\\cnxb{}𠇋\\cjkgGlue}}"]
-    # ["x𠇋x","x\\cjkgGlue{\\cjk{}{\\cnxb{}𠇋\\cjkgGlue}}x"]
-    # ["a 𠇋 b","a \\cjkgGlue{\\cjk{}{\\cnxb{}𠇋\\cjkgGlue}} b"]
-    # ["卩","\\cjkgGlue{\\cjk{}{\\tfPush{-0.4}卩\\cjkgGlue}}"]
-    # ["x卩x","x\\cjkgGlue{\\cjk{}{\\tfPush{-0.4}卩\\cjkgGlue}}x"]
-    # ["x 卩 x","x \\cjkgGlue{\\cjk{}{\\tfPush{-0.4}卩\\cjkgGlue}} x"]
-
-    # ["Brick tea 紧压茶都是用红茶 is delicious","Brick tea {\\cjk{}紧压茶都是用红茶} is delicious"]
-    # ["Brick tea\n紧压茶都 是\t\n用红茶 is\ndelicious","Brick tea\n{\\cjk{}紧压茶都 是\t\n用红茶} is\ndelicious"]
-    # ["Brick tea 紧压茶卩癶都是用红茶 is delicious","Brick tea {\\cjk{}紧压茶\\cjkgGlue{\\tfPush{-0.4}卩\\cjkgGlue}{\\tfRaise{-0.2}\\cnxBabel{}癶\\cjkgGlue}{\\tfRaise{0.1}\\cnxJzr{}\\cjkgGlue}都是用红茶} is delicious"]
-    # ["压茶卩红茶","{\\cjk{}压茶\\cjkgGlue{\\tfPush{-0.4}卩\\cjkgGlue}红茶}"]
-    # ["压茶𠇋卩红茶","{\\cjk{}压茶{\\cnxb{}𠇋}\\cjkgGlue{\\tfPush{-0.4}卩\\cjkgGlue}红茶}"]
-    # ["压茶𠇋卩","{\\cjk{}压茶{\\cnxb{}𠇋}\\cjkgGlue{\\tfPush{-0.4}卩\\cjkgGlue}}"]
+    # ["x𠇋𠇋𠇋x","x{\\cjk{}{\\cnxb{}𠇋𠇋𠇋}}x"]
+    ["Brick tea ! ","Brick tea ! "]
+    ["&\\#","\\&\\textbackslash{}\\#"]
+    ["國","{\\cjk{}國}"]
+    ["x國x","x{\\cjk{}國}x"]
+    ["a 國 b","a {\\cjk{}國} b"]
+    ["國 國","{\\cjk{}國 國}"]
+    ["𠇋","{\\cjk{}{\\cnxb{}𠇋}}"]
+    ["x𠇋x","x{\\cjk{}{\\cnxb{}𠇋}}x"]
+    ["a 𠇋 b","a {\\cjk{}{\\cnxb{}𠇋}} b"]
+    ["卩","{\\cjk{}\\cjkgGlue{\\tfPush{-0.4}卩\\cjkgGlue}}"]
+    ["x卩x","x{\\cjk{}\\cjkgGlue{\\tfPush{-0.4}卩\\cjkgGlue}}x"]
+    ["x 卩 x","x {\\cjk{}\\cjkgGlue{\\tfPush{-0.4}卩\\cjkgGlue}} x"]
+    ["x 國卩國𠇋 x","x {\\cjk{}國\\cjkgGlue{\\tfPush{-0.4}卩\\cjkgGlue}國{\\cnxb{}𠇋}} x"]
+    ["x𠇋𠇋𠇋x","x{\\cjk{}{\\cnxb{}𠇋}{\\cnxb{}𠇋}{\\cnxb{}𠇋}}x"]
+    ["Brick tea 紧压茶都是用红茶 is delicious","Brick tea {\\cjk{}紧压茶都是用红茶} is delicious"]
+    ["Brick tea\n紧压茶都 是\t\n用红茶 is\ndelicious","Brick tea\n{\\cjk{}紧压茶都 是\t\n用红茶} is\ndelicious"]
+    ["Brick tea 紧压茶卩癶都是用红茶 is delicious","Brick tea {\\cjk{}紧压茶\\cjkgGlue{\\tfPush{-0.4}卩\\cjkgGlue}{\\tfRaise{-0.2}\\cnxBabel{}癶\\cjkgGlue}{\\tfRaise{0.1}\\cnxJzr{}\\cjkgGlue}都是用红茶} is delicious"]
+    ["压茶卩红茶","{\\cjk{}压茶\\cjkgGlue{\\tfPush{-0.4}卩\\cjkgGlue}红茶}"]
+    ["压茶𠇋卩红茶","{\\cjk{}压茶{\\cnxb{}𠇋}\\cjkgGlue{\\tfPush{-0.4}卩\\cjkgGlue}红茶}"]
+    ["压茶𠇋卩","{\\cjk{}压茶{\\cnxb{}𠇋}\\cjkgGlue{\\tfPush{-0.4}卩\\cjkgGlue}}"]
     ]
   # warn "missing `.p` inside `(multi-column)`"
   for [ probe, matcher, ] in probes_and_matchers

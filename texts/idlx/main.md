@@ -13,27 +13,27 @@ between ⿺ and ⿺⿺ depends
 ## The Extended Ideographic Description Language (IDLx)
 
 <<(single-column>>
-|          | Unicode Name                 | A                  | Name                         | B     | B          | Examples                    |
-| ---:     | ---------------------------: | :----------------: | ---------------------------: | :---: | :-------:  | --------------              |
-| **a-1**  | left to right                | <<<{\cjk{}⿰}>>>   | left/right                   |      |           | 𪷈:⿰氵貫                    |
-| **a-2**  | above to below               | <<<{\cjk{}⿱}>>>   | top/down                     |      |           | 𪲪:⿱㐭木                    |
-| **a-3**  | surround from bottom left    | <<<{\cjk{}⿺}>>>   | L-shaped                     |      |           | 毯:⿺毛炎                   |
-| **a-4**  |                              |                    |                              |      |           | 廷:壬廴                    |
-| **a-5**  | surround from upper left     | <<<{\cjk{}⿸}>>>   | Γ-shaped                     |      |           | 慮:⿸虍思                   |
-| **a-6**  | surround from upper right    | <<<{\cjk{}⿹}>>>   | package                      |      |           | 截:⿹𢦏隹                    |
-| **a-7**  | ／                           | ／                 | surround from bottom right   |      |           | &jzr#xe232;:◰一弋           |
-| **a-8**  | surround from below          | <<<{\cjk{}⿶}>>>   | plug                         |      |           | 𠚍:⿶𠂭凵                     |
-| **a-9**  | surround from left           | <<<{\cjk{}⿷}>>>   | C-shaped                     |      |           | 玉:⿷王丶                   |
-| **a-10** | surround from top            | <<<{\cjk{}⿵}>>>   | surround from top            |      |           | 閒:⿵門月                   |
-| **a-11** | ／                           | ／                 | reverse C-shaped             |      |           | 𢏚:⿷弓工工                 |
-| **a-12** | full surround                | <<<{\cjk{}⿴}>>>   | surround                     |      |           | 囪:⿴&jzr#xe105;&jzr#xe134; |
-| **a-13** | overlaid                     | <<<{\cjk{}⿻}>>>   | crossover                    |      |           | 夫:⿻二人                   |
-| **a-14** | ／                           | ／                 | no operator                  |       |           | 亅:                        |
-| **a-15** | ／                           | ／                 | unspecified element          |       | 〓         | 𠪕:⿸严〓                    |
-| **a-16** | ／                           | ／                 | rotate 180°                  |       |           | 𠄔:↻予                       |
-| **a-17** | ／                           | ／                 | horizontal flip              |       |           | 𣥄:正                       |
-| **a-18** | ／                           | ／                 | similar                      |       |           | 𠉒:⿱从≈电                   |
-| **a-19** | ／                           | ／                 | parentheses; group           |       | (&#x3000;) | 亴:(⿱亠口冖土九)           |
+|          |              Unicode Name |        A         |                       Name | B |     B      | Examples                    |
+|---------:|--------------------------:|:----------------:|---------------------------:|:-:|:----------:|:----------------------------|
+|  **a-1** |             left to right | <<<{\cjk{}⿰}>>> |                 left/right |  |           | 𪷈:⿰氵貫                   |
+|  **a-2** |            above to below | <<<{\cjk{}⿱}>>> |                   top/down |  |           | 𪲪:⿱㐭木                   |
+|  **a-3** | surround from bottom left | <<<{\cjk{}⿺}>>> |                   L-shaped |  |           | 毯:⿺毛炎                   |
+|  **a-4** |                           |                  |                            |  |           | 廷:壬廴                    |
+|  **a-5** |  surround from upper left | <<<{\cjk{}⿸}>>> |                   Γ-shaped |  |           | 慮:⿸虍思                   |
+|  **a-6** | surround from upper right | <<<{\cjk{}⿹}>>> |                    package |  |           | 截:⿹𢦏隹                   |
+|  **a-7** |                        ／ |        ／        | surround from bottom right |  |           | &jzr#xe232;:◰一弋           |
+|  **a-8** |       surround from below | <<<{\cjk{}⿶}>>> |                       plug |  |           | 𠚍:⿶𠂭凵                   |
+|  **a-9** |        surround from left | <<<{\cjk{}⿷}>>> |                   C-shaped |  |           | 玉:⿷王丶                   |
+| **a-10** |         surround from top | <<<{\cjk{}⿵}>>> |          surround from top |  |           | 閒:⿵門月                   |
+| **a-11** |                        ／ |        ／        |           reverse C-shaped |  |           | 𢏚:⿷弓工工                |
+| **a-12** |             full surround | <<<{\cjk{}⿴}>>> |                   surround |  |           | 囪:⿴&jzr#xe105;&jzr#xe134; |
+| **a-13** |                  overlaid | <<<{\cjk{}⿻}>>> |                  crossover |  |           | 夫:⿻二人                   |
+| **a-14** |                        ／ |        ／        |                no operator |   |           | 亅:                        |
+| **a-15** |                        ／ |        ／        |        unspecified element |   |     〓     | 𠪕:⿸严〓                   |
+| **a-16** |                        ／ |        ／        |                rotate 180° |   |           | 𠄔:↻予                      |
+| **a-17** |                        ／ |        ／        |            horizontal flip |   |           | 𣥄:正                      |
+| **a-18** |                        ／ |        ／        |                    similar |   |           | 𠉒:⿱从≈电                  |
+| **a-19** |                        ／ |        ／        |         parentheses; group |   | (&#x3000;) | 亴:(⿱亠口冖土九)           |
 <<single-column)>>
 
 *Remarks*:
@@ -56,51 +56,51 @@ comes second, so its formula is 赲:⿺走力.
 erroneously replaced by ⿴ in formula 𢏚:⿷⿴弓工工 for which we write 𢏚:⿷弓工工.
 
 <<(single-column>>
-|          | Name                         | B        | E   |
-| ---:     | ---------------------------: | :------: | :-: |
-| **b-1**  | left/right                   |         |    |
-| **b-2**  | top/down                     |         |    |
-| **b-3**  | surround from bottom left    |         | ／  |
-| **b-4**  | surround from upper left     |         |    |
-| **b-5**  | surround from upper right    |         |    |
-| **b-6**  | surround from bottom right   |         |    |
-| **b-7**  | surround from below          |         |    |
-| **b-8**  | surround from left           |         |    |
-| **b-9**  | surround from top            |         |    |
-| **b-10** | reverse C-shaped             |         |    |
-| **b-11** | surround                     |         |    |
-| **b-12** | any operator                 |          |    |
-| **b-13** | vertical flip                |          |    |
+|          |                       Name | B | E  |
+|---------:|---------------------------:|:-:|:--:|
+|  **b-1** |                 left/right |  |   |
+|  **b-2** |                   top/down |  |   |
+|  **b-3** |  surround from bottom left |  | ／ |
+|  **b-4** |   surround from upper left |  |   |
+|  **b-5** |  surround from upper right |  |   |
+|  **b-6** | surround from bottom right |  |   |
+|  **b-7** |        surround from below |  |   |
+|  **b-8** |         surround from left |  |   |
+|  **b-9** |          surround from top |  |   |
+| **b-10** |           reverse C-shaped |  |   |
+| **b-11** |                   surround |  |   |
+| **b-12** |               any operator |   |   |
+| **b-13** |              vertical flip |   |   |
 <<single-column)>>
 
 
 
 <<(single-column>>
-|      | Unicode Name                 | A                  | Name                         | C   | E   | Examples                    |
-| ---: | ---------------------------: | :----------------: | ---------------------------: | :-: | :-: | --------------              |
-| 1    | left to right                | <<<{\cjk{}⿰}>>>   | left/right                   |    |    | 𪷈:⿰氵貫                    |
-| 2    | above to below               | <<<{\cjk{}⿱}>>>   | top/down                     |    |    | 𪲪:⿱㐭木                    |
-| 3    | surround from bottom left    | <<<{\cjk{}⿺}>>>   | surround from bottom left    |   |     | 毯:⿺毛炎                   |
-| 4    |                              |                    |                              |     |     | 廷:壬廴                    |
-| 5    | surround from upper left     | <<<{\cjk{}⿸}>>>   | surround from upper left     |    |    | 慮:⿸虍思                   |
-| 6    | surround from upper right    | <<<{\cjk{}⿹}>>>   | surround from upper right    |    |    | 截:⿹𢦏隹                    |
-| 7    | ／                           | ／                 | surround from bottom right   |    |    | &jzr#xe232;:◰一弋           |
-| 8    | surround from below          | <<<{\cjk{}⿶}>>>   | surround from below          |    |    | 𠚍:⿶𠂭凵                     |
-| 9    | surround from left           | <<<{\cjk{}⿷}>>>   | surround from left           |    |    | 玉:⿷王丶                   |
-| 10   | surround from top            | <<<{\cjk{}⿵}>>>   | surround from top            |    |    | 閒:⿵門月                   |
-| 11   | ／                           | ／                 | surround from right          |     |   |                             |
-| 12   | full surround                | <<<{\cjk{}⿴}>>>   | surround                     |    |    | 囪:⿴&jzr#xe105;&jzr#xe134; |
-| 13   | overlaid                     | <<<{\cjk{}⿻}>>>   | crossover                    |    |     | 夫:⿻二人                   |
-| 14   | ／                           | ／                 | any operator                 |    |     |                             |
-| 15   | ／                           | ／                 | no operator                  |    |     | 亅:                        |
-| 16   | ／                           | ／                 | unspecified element          | 〓  |     | 𠪕:⿸严〓                    |
-| 17   | ／                           | ／                 | rotate 180°                  |    |     | 𠄔:↻予                       |
-| 18   | ／                           | ／                 | horizontal flip              |    |     | 𣥄:正                       |
-| 19   | ／                           | ／                 | vertical flip                |     |    |                             |
-| 20   | ／                           | ／                 | similar                      |    |     | 𠉒:⿱从≈电                   |
-| 21   | ／                           | ／                 | parentheses; group           |     |     | 亴:(⿱亠口冖土九)           |
-| 22   | left to middle and right     | <<<{\cjk{}⿲}>>>   | ／                           |     |     | 衍:(⿰彳氵亍)               |
-| 23   | above to middle and below    | <<<{\cjk{}⿳}>>>   | ／                           |     |     | 衰:(⿱亠&jzr#xe206;𧘇)       |
+|    |              Unicode Name |        A         |                       Name | C  | E  | Examples                    |
+|---:|--------------------------:|:----------------:|---------------------------:|:--:|:--:|:----------------------------|
+|  1 |             left to right | <<<{\cjk{}⿰}>>> |                 left/right |   |   | 𪷈:⿰氵貫                   |
+|  2 |            above to below | <<<{\cjk{}⿱}>>> |                   top/down |   |   | 𪲪:⿱㐭木                   |
+|  3 | surround from bottom left | <<<{\cjk{}⿺}>>> |  surround from bottom left |  |    | 毯:⿺毛炎                   |
+|  4 |                           |                  |                            |    |    | 廷:壬廴                    |
+|  5 |  surround from upper left | <<<{\cjk{}⿸}>>> |   surround from upper left |   |   | 慮:⿸虍思                   |
+|  6 | surround from upper right | <<<{\cjk{}⿹}>>> |  surround from upper right |   |   | 截:⿹𢦏隹                   |
+|  7 |                        ／ |        ／        | surround from bottom right |   |   | &jzr#xe232;:◰一弋           |
+|  8 |       surround from below | <<<{\cjk{}⿶}>>> |        surround from below |   |   | 𠚍:⿶𠂭凵                   |
+|  9 |        surround from left | <<<{\cjk{}⿷}>>> |         surround from left |   |   | 玉:⿷王丶                   |
+| 10 |         surround from top | <<<{\cjk{}⿵}>>> |          surround from top |   |   | 閒:⿵門月                   |
+| 11 |                        ／ |        ／        |        surround from right |    |  |                             |
+| 12 |             full surround | <<<{\cjk{}⿴}>>> |                   surround |   |   | 囪:⿴&jzr#xe105;&jzr#xe134; |
+| 13 |                  overlaid | <<<{\cjk{}⿻}>>> |                  crossover |   |    | 夫:⿻二人                   |
+| 14 |                        ／ |        ／        |               any operator |   |    |                             |
+| 15 |                        ／ |        ／        |                no operator |   |    | 亅:                        |
+| 16 |                        ／ |        ／        |        unspecified element | 〓 |    | 𠪕:⿸严〓                   |
+| 17 |                        ／ |        ／        |                rotate 180° |   |    | 𠄔:↻予                      |
+| 18 |                        ／ |        ／        |            horizontal flip |   |    | 𣥄:正                      |
+| 19 |                        ／ |        ／        |              vertical flip |    |   |                             |
+| 20 |                        ／ |        ／        |                    similar |   |    | 𠉒:⿱从≈电                  |
+| 21 |                        ／ |        ／        |         parentheses; group |    |    | 亴:(⿱亠口冖土九)           |
+| 22 |  left to middle and right | <<<{\cjk{}⿲}>>> |                         ／ |    |    | 衍:(⿰彳氵亍)               |
+| 23 | above to middle and below | <<<{\cjk{}⿳}>>> |                         ／ |    |    | 衰:(⿱亠&jzr#xe206;𧘇)      |
 <<single-column)>>
 
 
@@ -108,31 +108,31 @@ xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx
 xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx
 
 <<(single-column>>
-|      | Unicode Name                 | A                  | Name                         | B          | C   | E   | Examples                    |
-| ---: | ---------------------------: | :----------------: | ---------------------------: | :------:   | :-: | :-: | --------------              |
-| 1    | left to right                | <<<{\cjk{}⿰}>>>   | left/right                   |           |    |    | 𪷈:⿰氵貫                    |
-| 2    | above to below               | <<<{\cjk{}⿱}>>>   | top/down                     |           |    |    | 𪲪:⿱㐭木                    |
-| 3    | surround from bottom left    | <<<{\cjk{}⿺}>>>   | surround from bottom left    |           |   |     | 毯:⿺毛炎                   |
-|      |                              |                    |                              |            |     |     | 廷:壬廴                    |
-| 4    | surround from upper left     | <<<{\cjk{}⿸}>>>   | surround from upper left     |           |    |    | 慮:⿸虍思                   |
-| 5    | surround from upper right    | <<<{\cjk{}⿹}>>>   | surround from upper right    |           |    |    | 截:⿹𢦏隹                    |
-| 6    | ／                           | ／                 | surround from bottom right   |           |    |    | &jzr#xe232;:◰一弋           |
-| 7    | surround from below          | <<<{\cjk{}⿶}>>>   | surround from below          |           |    |    | 𠚍:⿶𠂭凵                     |
-| 8    | surround from left           | <<<{\cjk{}⿷}>>>   | surround from left           |           |    |    | 玉:⿷王丶                   |
-| 9    | surround from top            | <<<{\cjk{}⿵}>>>   | surround from top            |           |    |    | 閒:⿵門月                   |
-| 10   | ／                           | ／                 | surround from right          |           |     |   |                             |
-| 11   | full surround                | <<<{\cjk{}⿴}>>>   | surround                     |           |    |    | 囪:⿴&jzr#xe105;&jzr#xe134; |
-| 12   | overlaid                     | <<<{\cjk{}⿻}>>>   | crossover                    |            |    |     | 夫:⿻二人                   |
-| 15   | ／                           | ／                 | any operator                 |            |    |     |                             |
-| 16   | ／                           | ／                 | no operator                  |            |    |     | 亅:                        |
-| 15   | ／                           | ／                 | unspecified element          |            | 〓  |     | 𠪕:⿸严〓                    |
-| 17   | ／                           | ／                 | rotate 180°                  |            |    |     | 𠄔:↻予                       |
-| 18   | ／                           | ／                 | horizontal flip              |            |    |     | 𣥄:正                       |
-| 19   | ／                           | ／                 | vertical flip                |            |     |    |                             |
-| 20   | ／                           | ／                 | similar                      |            |    |     | 𠉒:⿱从≈电                   |
-| 13   | ／                           | ／                 | parentheses; group           | (&#x3000;) |     |     | 亴:(⿱亠口冖土九)        |
-| 13   | left to middle and right     | <<<{\cjk{}⿲}>>>   | ／                           | ／         |     |     | 衍:(⿰彳氵亍)               |
-| 14   | above to middle and below    | <<<{\cjk{}⿳}>>>   | ／                           | ／         |     |     | 衰:(⿱亠&jzr#xe206;𧘇)       |
+|    |              Unicode Name |        A         |                       Name |     B      | C  | E  | Examples                    |
+|---:|--------------------------:|:----------------:|---------------------------:|:----------:|:--:|:--:|:----------------------------|
+|  1 |             left to right | <<<{\cjk{}⿰}>>> |                 left/right |           |   |   | 𪷈:⿰氵貫                   |
+|  2 |            above to below | <<<{\cjk{}⿱}>>> |                   top/down |           |   |   | 𪲪:⿱㐭木                   |
+|  3 | surround from bottom left | <<<{\cjk{}⿺}>>> |  surround from bottom left |           |  |    | 毯:⿺毛炎                   |
+|    |                           |                  |                            |            |    |    | 廷:壬廴                    |
+|  4 |  surround from upper left | <<<{\cjk{}⿸}>>> |   surround from upper left |           |   |   | 慮:⿸虍思                   |
+|  5 | surround from upper right | <<<{\cjk{}⿹}>>> |  surround from upper right |           |   |   | 截:⿹𢦏隹                   |
+|  6 |                        ／ |        ／        | surround from bottom right |           |   |   | &jzr#xe232;:◰一弋           |
+|  7 |       surround from below | <<<{\cjk{}⿶}>>> |        surround from below |           |   |   | 𠚍:⿶𠂭凵                   |
+|  8 |        surround from left | <<<{\cjk{}⿷}>>> |         surround from left |           |   |   | 玉:⿷王丶                   |
+|  9 |         surround from top | <<<{\cjk{}⿵}>>> |          surround from top |           |   |   | 閒:⿵門月                   |
+| 10 |                        ／ |        ／        |        surround from right |           |    |  |                             |
+| 11 |             full surround | <<<{\cjk{}⿴}>>> |                   surround |           |   |   | 囪:⿴&jzr#xe105;&jzr#xe134; |
+| 12 |                  overlaid | <<<{\cjk{}⿻}>>> |                  crossover |            |   |    | 夫:⿻二人                   |
+| 15 |                        ／ |        ／        |               any operator |            |   |    |                             |
+| 16 |                        ／ |        ／        |                no operator |            |   |    | 亅:                        |
+| 15 |                        ／ |        ／        |        unspecified element |            | 〓 |    | 𠪕:⿸严〓                   |
+| 17 |                        ／ |        ／        |                rotate 180° |            |   |    | 𠄔:↻予                      |
+| 18 |                        ／ |        ／        |            horizontal flip |            |   |    | 𣥄:正                      |
+| 19 |                        ／ |        ／        |              vertical flip |            |    |   |                             |
+| 20 |                        ／ |        ／        |                    similar |            |   |    | 𠉒:⿱从≈电                  |
+| 13 |                        ／ |        ／        |         parentheses; group | (&#x3000;) |    |    | 亴:(⿱亠口冖土九)           |
+| 13 |  left to middle and right | <<<{\cjk{}⿲}>>> |                         ／ |     ／     |    |    | 衍:(⿰彳氵亍)               |
+| 14 | above to middle and below | <<<{\cjk{}⿳}>>> |                         ／ |     ／     |    |    | 衰:(⿱亠&jzr#xe206;𧘇)      |
 <<single-column)>>
 
 <!--
