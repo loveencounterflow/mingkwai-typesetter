@@ -276,9 +276,8 @@
 % }
 \usepackage{relsize}
 \newcommand{\mktsFontCjkDefault}{\mktsFontfileSunexta}
+\renewcommand{\cjkgGlue}{\hskip 0mm plus 0.7mm minus 0.0mm}
 \newcommand{\cjk}{%
-  \cjkgGlue%
-  \aftergroup\cjkgGlue%
   \cjkgUseCjkGlue%
   \relscale{1.05}%
   \tfRaise{-0.1}%
