@@ -29,9 +29,22 @@
 
 *Remarks*:
 
+**a-1**, **a-2**: The left-right operator  and the top-down operator 
+are the most basic analytical operators of IDLx.
+
+<<(keep-lines>>
+徵:(⿰彳(⿱山一𡈼)夊)
+毯:毛炎 as 毯:(∪)毛炎<<< >>>
+廷:壬廴 as 廷:(∩)壬廴<<< >>>
+玉:⿷王丶 as 玉:(∪)王丶<<< >>>
+國:⿴囗或 as 國:(∪)囗或<<< >>>
+<<keep-lines)>>
+
+
+
 **a-3**: The L-shape, , is the only binary relationship that occurs in both of
 its realizations, ⿺ and ; this case is well known to learners of Kanji, as
-there are many common glyphs with either operator.
+there are many common glyphs with either type of operator.
 
 The choice between ⿺ and  depends on the element that occupies the left and bottom of the character in
 question: only 廴 and 辶 (⻍, ⻎) are written *after* the top right and hence
@@ -61,7 +74,7 @@ but the lower right part is seemingly not encoded in Unicode, so we write
 out the formula 𠪕:⿸严〓; this is a syntactically valid way of stating what
 we can and what we cannot say about that glyph. In other words,
 〓 represents the unspecified element as much as an *x* in a mathematical
-formula represent the unknown quantity.
+formula represents the unknown quantity.
 
 **a-13**: The crossover operator  is to operators what the geta mark
 〓 is to elements; it represents an unspecified or underspecified operation. Most of

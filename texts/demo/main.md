@@ -984,7 +984,7 @@ Using data from the Leeds Corpus^[<<(url>>http://corpus.leeds.ac.uk/list.html<<)
 for Chinese (PRC) and Japanese character usages, a frequency list
 compiled by Chih-Hao Tsai^[<<(url>>http://technology.chtsai.org/charfreq/<<)>>]
 and a NodeJS module^[<<(url>>https://github.com/mumme/smart-ranking<<)>>]
-that promises to perform a reasonable ranking using Bayesian statistics,
+that promises to perform a reasonable ranking using a Bayesian approach,
 a little over 15,600
 characters mentioned in at least one of the above sources were given a
 ranking index, starting from #00,001 for the most frequent character, 的, to
@@ -1080,7 +1080,7 @@ virtually never appear in modern written material.
 15,677 氕
 ```
 
-<!--  
+<!--
 #############################################################################
 #############################################################################
 #############################################################################
@@ -1151,7 +1151,7 @@ block.
   is used, the action type marker (`.` (dot) or `:` (colon)) and the action
   name of the start and end tags must match.
 
-* To execute an action without further logic code (i.e. a simple function call)  
+* To execute an action without further logic code (i.e. a simple function call)
   in the manuscript, either a silent action `\<<(.>>makeitso 42<<.)>>` or the
   short **Command** notation `\<<!makeitso 42>>` can be used. Observe that
   commands do not allow for a language annotation; whatever is inside
