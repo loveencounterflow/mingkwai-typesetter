@@ -1030,15 +1030,15 @@ nice_text_rpr = ( text ) ->
   S.options                         = OPTIONS.from_locator options_locator
   #.........................................................................................................
   probes_and_matchers = [
-    # ["& \\ #癶乛國","\\& \\textbackslash{} \\#\\cjkgGlue{\\cjk{}{\\tfRaise{-0.2}\\cnxBabel{}癶}{\\tfPushRaise{0.5}{-0.2}\\cnxJzr{}}{\\tfRaise{-0.2}\\cn{}乛}{\\cn{}國}"]
-    # ["x𠇋𠇋𠇋x","x\\cjkgGlue{\\cjk{}{\\cnxb{}𠇋𠇋𠇋}}x"]
+    # # ["& \\ #癶乛國","\\& \\textbackslash{} \\#\\cjkgGlue{\\cjk{}{\\tfRaise{-0.2}\\cnxBabel{}癶}{\\tfPushRaise{0.5}{-0.2}\\cnxJzr{}}{\\tfRaise{-0.2}\\cn{}乛}{\\cn{}國}"]
+    ["x𠇋𠇋𠇋x","x\\cjkgGlue{\\cjk{}\\cjkgGlue{\\cnxb{}𠇋}\\cjkgGlue{}\\cjkgGlue{\\cnxb{}𠇋}\\cjkgGlue{}\\cjkgGlue{\\cnxb{}𠇋}\\cjkgGlue{}}\\cjkgGlue{}x"]
     ["Brick tea ! ","Brick tea ! "]
     ["&\\#","\\&\\textbackslash{}\\#"]
     ["國","\\cjkgGlue{\\cjk{}國}\\cjkgGlue{}"]
     ["x國x","x\\cjkgGlue{\\cjk{}國}\\cjkgGlue{}x"]
     ["a 國 b","a \\cjkgGlue{\\cjk{}國}\\cjkgGlue{} b"]
     ["國 國","\\cjkgGlue{\\cjk{}國 國}\\cjkgGlue{}"]
-    ["𠇋","\\cjkgGlue{\\cjk{}\\cjkgGlue{\\cnxb{}𠇋}\\cjkgGlue{}}\\cjkgGlue{}"]
+    ["𠇋𠇋","\\cjkgGlue{\\cjk{}\\cjkgGlue{\\cnxb{}𠇋}\\cjkgGlue{}\\cjkgGlue{\\cnxb{}𠇋}\\cjkgGlue{}}\\cjkgGlue{}"]
     ["x𠇋x","x\\cjkgGlue{\\cjk{}\\cjkgGlue{\\cnxb{}𠇋}\\cjkgGlue{}}\\cjkgGlue{}x"]
     ["a 𠇋 b","a \\cjkgGlue{\\cjk{}\\cjkgGlue{\\cnxb{}𠇋}\\cjkgGlue{}}\\cjkgGlue{} b"]
     ["卩","\\cjkgGlue{\\cjk{}\\cjkgGlue{\\tfPush{-0.4}卩}\\cjkgGlue{}}\\cjkgGlue{}"]
@@ -1054,16 +1054,17 @@ nice_text_rpr = ( text ) ->
     ["压茶𠇋卩红茶","\\cjkgGlue{\\cjk{}压茶\\cjkgGlue{\\cnxb{}𠇋}\\cjkgGlue{}\\cjkgGlue{\\tfPush{-0.4}卩}\\cjkgGlue{}红茶}\\cjkgGlue{}"]
     ["压茶𠇋卩","\\cjkgGlue{\\cjk{}压茶\\cjkgGlue{\\cnxb{}𠇋}\\cjkgGlue{}\\cjkgGlue{\\tfPush{-0.4}卩}\\cjkgGlue{}}\\cjkgGlue{}"]
     ["&jzr#xe232;","\\cjkgGlue{\\cjk{}\\cjkgGlue{\\cnjzr{}}\\cjkgGlue{}}\\cjkgGlue{}"]
+    ["ℂ∪ℚ","{\\mktsRsgFb{}ℂ}{\\mktsRsgFb{}∪}{\\mktsRsgFb{}ℚ}"]
     ]
   # warn "missing `.p` inside `(multi-column)`"
   for [ probe, matcher, ] in probes_and_matchers
     result = TEX_WRITER_TYPOFIX.fix_typography_for_tex probe, S.options
     echo '    ' + JSON.stringify [ probe, result, ]
-    # T.eq ( matcher.trim().replace /\x20/g, '█' ), ( result.trim().replace /\x20/g, '█' )
-    # echo result
-  for [ probe, matcher, ] in probes_and_matchers
-    result = TEX_WRITER_TYPOFIX.fix_typography_for_tex probe, S.options
     T.eq ( matcher.trim().replace /\x20/g, '█' ), ( result.trim().replace /\x20/g, '█' )
+    # echo result
+  # for [ probe, matcher, ] in probes_and_matchers
+  #   result = TEX_WRITER_TYPOFIX.fix_typography_for_tex probe, S.options
+  #   T.eq ( matcher.trim().replace /\x20/g, '█' ), ( result.trim().replace /\x20/g, '█' )
   done()
 
 

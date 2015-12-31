@@ -83,19 +83,29 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
     ### OBS `chr` has still the value this method was called with, so styling should work even for `u-latn`
     characters ###
     R.is_whitespace = chr   in S.whitespace
-    R.styled_chr    = @_style_chr S, R, chr
     R.is_cjk        = R.rsg in S.cjk_rsgs
+    R.styled_chr    = @_style_chr S, R, chr
     return R
 
 #-----------------------------------------------------------------------------------------------------------
 @_style_chr = ( S, chr_info, chr ) ->
-  rsg_command         = S.tex_command_by_rsgs[ chr_info[ 'rsg' ] ]
+  { rsg
+    fncr
+    is_cjk    }       = chr_info
+  rsg_command         = S.tex_command_by_rsgs[ rsg ]
+  # debug '©28708', chr, rsg_command
+  unless rsg_command?
+    rsg_command = S.tex_command_by_rsgs[ 'fallback' ] ? null
+    message     = "unknown RSG #{rpr rsg}: #{fncr} #{chr} (using fallback #{rpr rsg_command})"
+    if S.send? then S.send remark 'warn', message, {}
+    else            warn message
   rsg_command         = null if rsg_command in [ 'latin', 'cn', ]
   style               = S.glyph_styles[ chr ]
   #.........................................................................................................
   return null if ( not rsg_command? ) and ( not style? )
   #.........................................................................................................
   if style?
+    ### TAINT use `cjkgGlue` only if `is_cjk` ###
     R         = []
     R.push "\\cjkgGlue{"
     rpl_push  = style[ 'push'   ] ? null
@@ -113,16 +123,9 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
   #.........................................................................................................
   else
     ### TAINT does not collect glyphs with same RSG ###
-    ### TAINT glue necessary? ###
-    # R = "{\\#{rsg_command}{}#{chr}}"
-    R = "\\cjkgGlue{\\#{rsg_command}{}#{chr_info[ 'uchr' ]}}\\cjkgGlue{}"
-    # if S.last_rsg_command is rsg_command
-    #   R = chr
-    # else
-    #   if S.last_rsg_command?
-    #     R = "}{\\#{rsg_command}{}#{chr}}"
-    # else
-    #   R = chr
+    # debug '©95429', chr_info
+    R = "{\\#{rsg_command}{}#{chr_info[ 'uchr' ]}}"
+    R = "\\cjkgGlue#{R}\\cjkgGlue{}" if is_cjk
   #.........................................................................................................
   S.last_rsg_command = rsg_command
   return R
@@ -140,12 +143,6 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
   @_move_whitespace S if     postpone_ws
   S.has_cjk_glue = no
   return null
-
-# #-----------------------------------------------------------------------------------------------------------
-# @_push_cjk_glue = ( S, chr ) ->
-#   @_push S, "\\cjkGlue{}" unless S.has_cjk_glue
-#   S.has_cjk_glue = yes
-#   return null
 
 #-----------------------------------------------------------------------------------------------------------
 @_push_whitespace = ( S, chr ) ->
@@ -194,7 +191,7 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
       # @_push S, "}", yes
     #.......................................................................................................
     if A.styled_chr?
-      # @_push "\\cjkGlue" if S.this_is_cjk
+      # @_push "\\cjkgGlue" if S.this_is_cjk
       @_push S, A.styled_chr
     else
       @_push S, A.chr
