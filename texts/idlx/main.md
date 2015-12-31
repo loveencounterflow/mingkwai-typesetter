@@ -37,6 +37,7 @@ are the most basic analytical operators of IDLx.
 毯:毛炎 as 毯:(∪)毛炎<<< >>>
 廷:壬廴 as 廷:(∩)壬廴<<< >>>
 玉:⿷王丶 as 玉:(∪)王丶<<< >>>
+𠚍:⿶𠂭凵 as 𠚍:(∩)𠂭凵
 國:⿴囗或 as 國:(∪)囗或<<< >>>
 <<keep-lines)>>
 
