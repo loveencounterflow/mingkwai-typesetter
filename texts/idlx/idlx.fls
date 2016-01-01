@@ -220,9 +220,9 @@ INPUT /usr/local/texlive/2014/texmf-dist/fonts/tfm/public/cm/cmr10.tfm
 INPUT /usr/local/texlive/2014/texmf-dist/tex/latex/microtype/mt-cmr.cfg
 INPUT /usr/local/texlive/2014/texmf-dist/tex/latex/microtype/mt-cmr.cfg
 INPUT /usr/local/texlive/2014/texmf-dist/fonts/tfm/public/cm/cmr8.tfm
+INPUT /usr/local/texlive/2014/texmf-dist/tex/generic/oberdiek/se-ascii-print.def
+INPUT /usr/local/texlive/2014/texmf-dist/tex/generic/oberdiek/se-ascii-print.def
+INPUT /usr/local/texlive/2014/texmf-dist/tex/generic/oberdiek/se-ascii-print.def
 INPUT /usr/local/texlive/2014/texmf-dist/tex/latex/euenc/eu1lmtt.fd
 INPUT /usr/local/texlive/2014/texmf-dist/tex/latex/euenc/eu1lmtt.fd
-INPUT /usr/local/texlive/2014/texmf-dist/tex/generic/oberdiek/se-ascii-print.def
-INPUT /usr/local/texlive/2014/texmf-dist/tex/generic/oberdiek/se-ascii-print.def
-INPUT /usr/local/texlive/2014/texmf-dist/tex/generic/oberdiek/se-ascii-print.def
 INPUT /Volumes/Storage/io/mingkwai-typesetter/texts/idlx/idlx.aux
