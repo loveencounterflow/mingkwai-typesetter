@@ -71,14 +71,16 @@
 % ### TAINT this combination does increase font size and line spacing in
 % footnotes, but the notes are still not run together, and the spacing
 % between footnotes is too small. — Considering to use endnotes instead. ###
-\usepackage[para,bottom,multiple]{footmisc}
-\usepackage{setspace,etoolbox}% http://ctan.org/pkg/{setspace,etoolbox}
-\makeatletter
-\patchcmd{\@footnotetext}% <cmd>
-  {\footnotesize}% <search>
-  {\normalsize\setstretch{1}}% <replace>
-  {}{}% <success><failure>
-\makeatother
+\usepackage{enotez}
+\let\footnote=\endnote
+% \usepackage[para,bottom,multiple]{footmisc}
+% \usepackage{setspace,etoolbox}% http://ctan.org/pkg/{setspace,etoolbox}
+% \makeatletter
+% \patchcmd{\@footnotetext}% <cmd>
+%   {\footnotesize}% <search>
+%   {\normalsize\setstretch{1}}% <replace>
+%   {}{}% <success><failure>
+% \makeatother
 
 % ----------------------------------------------------------------------------------------------------------
 \let\footruleskip\undefined\usepackage{fancyhdr}

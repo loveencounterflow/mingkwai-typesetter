@@ -4,104 +4,33 @@
 ## The Extended Ideographic Description Language (IDLx)
 
 <<(single-column>>
-|            | Unicode Name                | A                  | Name                         | B   | B            | Examples                      |
-| ---------: | --------------------------: | :----------------: | ---------------------------: | :-: | :----------: | :---------------------------- |
-| **a-1**    | left to right               | <<<{\cjk{}⿰}>>>   | left-right                   |    |             | 𪷈:⿰氵貫                      |
-| **a-2**    | above to below              | <<<{\cjk{}⿱}>>>   | top-down                     |    |             | 𪲪:⿱㐭木                      |
-| **a-3**    | surround from bottom left   | <<<{\cjk{}⿺}>>>   | L-shaped, left first         |   |             | 毯:⿺毛炎                     |
-| **a-4**    | ...                         | ...                | L-shaped, top first          |   |             | 廷:壬廴                      |
-| **a-5**    | surround from upper left    | <<<{\cjk{}⿸}>>>   | Γ-shaped                     |    |             | 慮:⿸虍思                     |
-| **a-6**    | surround from upper right   | <<<{\cjk{}⿹}>>>   | package                      |    |             | 截:⿹𢦏隹                      |
-| **a-7**    | ／                          | ／                 | surround from bottom right   |    |             | &jzr#xe232;:◰一弋             |
-| **a-8**    | surround from below         | <<<{\cjk{}⿶}>>>   | plug                         |    |             | 𠚍:⿶𠂭凵                       |
-| **a-9**    | surround from left          | <<<{\cjk{}⿷}>>>   | C-shaped                     |    |             | 玉:⿷王丶                     |
-| **a-10**   | surround from top           | <<<{\cjk{}⿵}>>>   | surround from top            |    |             | 閒:⿵門月                     |
-| **a-11**   | ／                          | ／                 | reverse C-shaped             |    |             | 𢏚:⿷弓工工                   |
-| **a-12**   | full surround               | <<<{\cjk{}⿴}>>>   | surround                     |    |             | 囪:⿴&jzr#xe105;&jzr#xe134;   |
-| **a-13**   | overlaid                    | <<<{\cjk{}⿻}>>>   | crossover                    |    |             | 夫:⿻二人                     |
-| **a-14**   | ／                          | ／                 | no operator                  |     |             | 亅:                          |
-| **a-15**   | ／                          | ／                 | geta mark                    |     | 〓           | 𠪕:⿸严〓                      |
-| **a-16**   | ／                          | ／                 | rotate 180°                  |     |             | 𠄔:↻予                         |
-| **a-17**   | ／                          | ／                 | horizontal flip              |     |             | 𣥄:正                         |
-| **a-18**   | ／                          | ／                 | similar                      |     |             | 𠉒:⿱从≈电                     |
-| **a-19**   | ／                          | ／                 | parentheses; group           |     | (&#x3000;)   | 埊:(⿱山水土)                 |
+|          |              Unicode Name |        A         |                       Name | B  |     B      | Examples                    |
+|---------:|--------------------------:|:----------------:|---------------------------:|:--:|:----------:|:----------------------------|
+|  **a-1** |             left to right | <<<{\cjk{}⿰}>>> |                 left-right |   |           | 𪷈:⿰氵貫                   |
+|  **a-2** |            above to below | <<<{\cjk{}⿱}>>> |                   top-down |   |           | 𪲪:⿱㐭木                   |
+|  **a-3** | surround from bottom left | <<<{\cjk{}⿺}>>> |       L-shaped, left first |  |           | 毯:⿺毛炎                   |
+|  **a-4** |                       ... |       ...        |        L-shaped, top first |  |           | 廷:壬廴                    |
+|  **a-5** |  surround from upper left | <<<{\cjk{}⿸}>>> |                   Γ-shaped |   |           | 慮:⿸虍思                   |
+|  **a-6** | surround from upper right | <<<{\cjk{}⿹}>>> |                    package |   |           | 截:⿹𢦏隹                   |
+|  **a-7** |                        ／ |        ／        | surround from bottom right |   |           | &jzr#xe232;:◰一弋           |
+|  **a-8** |       surround from below | <<<{\cjk{}⿶}>>> |                       plug |   |           | 𠚍:⿶𠂭凵                   |
+|  **a-9** |        surround from left | <<<{\cjk{}⿷}>>> |                   C-shaped |   |           | 玉:⿷王丶                   |
+| **a-10** |         surround from top | <<<{\cjk{}⿵}>>> |          surround from top |   |           | 閒:⿵門月                   |
+| **a-11** |                        ／ |        ／        |           reverse C-shaped |   |           | 𢏚:⿷弓工工                |
+| **a-12** |             full surround | <<<{\cjk{}⿴}>>> |                   surround |   |           | 囪:⿴&jzr#xe105;&jzr#xe134; |
+| **a-13** |                  overlaid | <<<{\cjk{}⿻}>>> |                  crossover |   |           | 夫:⿻二人                   |
+| **a-14** |                        ／ |        ／        |                no operator |    |           | 亅:                        |
+| **a-15** |                        ／ |        ／        |                  geta mark |    |     〓     | 𠪕:⿸严〓                   |
+| **a-16** |                        ／ |        ／        |                rotate 180° |    |           | 𠄔:↻予                      |
+| **a-17** |                        ／ |        ／        |            horizontal flip |    |           | 𣥄:正                      |
+| **a-18** |                        ／ |        ／        |                    similar |    |           | 𠉒:⿱从≈电                  |
+| **a-19** |                        ／ |        ／        |         parentheses; group |    | (&#x3000;) | 埊:(⿱山水土)               |
 <<single-column)>>
 
-*Remarks*:
+*Notes*:
 
 **a-1**, **a-2**: The left-right operator  and the top-down operator 
 are the most basic analytical operators of IDLx.
-
-<<(keep-lines>>
-徵:(⿰彳(⿱山一𡈼)夊)
-毯:毛炎 as 毯:(∪)毛炎<<< >>>
-廷:壬廴 as 廷:(∩)壬廴<<< >>>
-玉:⿷王丶 as 玉:(∪)王丶<<< >>>
-𠚍:⿶𠂭凵 as 𠚍:(∩)𠂭凵<<< >>>
-國:⿴囗或 as 國:(∪)囗或<<< >>>
-<<keep-lines)>>
-
-
-<<(single-column>>
-|            | Name                         | B            | Examples                      | X                                |
-| ---------: | ---------------------------: | :----------: | :---------------------------- | -------------------------------  |
-| **a-1**    | left-right                   |             | 𪷈:⿰氵貫                      |                                  |
-| **a-2**    | top-down                     |             | 𪲪:⿱㐭木                      |                                  |
-| **a-3**    | L-shaped, left first         |             | 毯:⿺毛炎                     | 毯:(∪)毛炎                     |
-| **a-4**    | L-shaped, top first          |             | 廷:壬廴                      | 廷:(∩)壬廴                     |
-| **a-5**    | Γ-shaped                     |             | 慮:⿸虍思                     | 慮:(∪)虍思                     |
-| **a-6**    | package                      |             | 截:⿹𢦏隹                      | 截:(∪)𢦏隹                      |
-| **a-7**    | surround from bottom right   |             | &jzr#xe232;:◰一弋             | &jzr#xe232;:(∩)一弋            |
-| **a-8**    | plug                         |             | 𠚍:⿶𠂭凵                       | 𠚍:(∩)𠂭凵                      |
-| **a-9**    | C-shaped                     |             | 玉:⿷王丶                     | 玉:(∪)王丶                    |
-| **a-10**   | surround from top            |             | 閒:⿵門月                     | 閒:(∪)門月                    |
-| **a-11**   | reverse C-shaped             |             | 𢏚:⿷弓工工                   | 𢏚:⿷(∪)弓工工                 |
-| **a-12**   | surround                     |             | 囪:⿴&jzr#xe105;&jzr#xe134;   | 囪:(∪)&jzr#xe105;&jzr#xe134; |
-| **a-13**   | crossover                    |             | 夫:⿻二人                     |                                  |
-| **a-14**   | no operator                  |             | 亅:                          |                                  |
-| **a-15**   | geta mark                    | 〓           | 𠪕:⿸严〓                      |                                  |
-| **a-16**   | rotate 180°                  |             | 𠄔:↻予                         |                                  |
-| **a-17**   | horizontal flip              |             | 𣥄:正                         |                                  |
-| **a-18**   | similar                      |             | 𠉒:⿱从≈电                     |                                  |
-| **a-19**   | parentheses; group           | (&#x3000;)   | 亴:(⿱亠口冖土九)             |                                  |
-<<single-column)>>
-
-<<(single-column>>
-|            | Used | G    | B            | Op   | L   | T   | R        | B        | l     | t     | r     | b     |
-| ---------: | :--: | :--: | :----------: | :--: | :-: | :-: | :-:      | :-:      | :---: | :---: | :---: | :---: |
-| **c-1**    | Yes  |     |             |      |     |     | &#x3000; | &#x3000; |       |       |       |       |
-| **c-2**    | Yes  |     |             |      |     |     |          |          |       |       |       |       |
-| **c-15**   | No   |     |             | ¬    |    |     |          |          |       |       |       |       |
-| **c-16**   | No   |     |             | ¬    |     |    |          |          |       |       |       |       |
-
-|            | Used | G    |       | B            | Op   | L   | T   | R   | B   | l     | t     | r     | b     |
-| ---------: | :--: | :--: | :---: | :----------: | :--: | :-: | :-: | :-: | :-: | :---: | :---: | :---: | :---: |
-| **c-7**    | Yes  |     |       |             | ∩    |    |    |     |     | +     | +     |       |       |
-| **c-4**    | Yes  |     |     |             | ∩    |     |    |    |     | –     | +     | +     |       |
-| **c-3**    | Yes  |     |     |             | ∪    |    |     |     |    | +     | –     | +     | +     |
-| **c-5**    | Yes  |     |       |             | ∪    |    |    |     |     | +     | +     |       | +     |
-| **c-6**    | Yes  |     |       |             | ∪    |     |    |    |     | +     | +     | +     |       |
-| **c-19**   | No   |     |       |             | ∪    |     |     |    |    | –     | –     | +     | +     |
-| **c-17**   | No   |     |       |             | ∩    |     |     |    |    | –     | –     | +     | +     |
-| **c-18**   | No   |     |       |             | ∩    |    |     |     |    | +     | –     |       | +     |
-
-|            | Used | G    | B            | Op   | L   | T   | R   | B   | l     | t     | r     | b     |
-| ---------: | :--: | :--: | :----------: | :--: | :-: | :-: | :-: | :-: | :---: | :---: | :---: | :---: |
-| **c-12**   | Yes  |     |             | ∪    |     |    |    |    | –     | +     | +     | +     |
-| **c-8**    | Yes  |     |             | ∩    |    |    |    |     | +     | +     | +     |       |
-| **c-9**    | Yes  |     |             | ∪    |    |    |     |    | +     | +     |       | +     |
-| **c-10**   | Yes  |     |             | ∪    |    |    |    |     | +     | +     | +     |       |
-| **c-25**   | No   |     |             | ∩    |    |    |     |    | +     | +     |       | +     |
-| **c-20**   | No   |     |             | ∪    |    |     |    |    |       |       |       |       |
-| **c-22**   | No   |     |             | ∩    |     |    |    |    |       |       |       |       |
-| **c-24**   | No   |     |             | ∩    |    |     |    |    |       |       |       |       |
-
-|            | Used | G    | B            | Op   | L   | T   | R   | B   | l     | t     | r     | b     |
-| ---------: | :--: | :--: | :----------: | :--: | :-: | :-: | :-: | :-: | :---: | :---: | :---: | :---: |
-| **c-14**   | Yes  |     |             | ∪    |    |    |    |    |       |       |       |       |
-| **c-26**   | No   |     |             | ∩    |    |    |    |    |       |       |       |       |
-<<single-column)>>
-
 
 **a-3**: The L-shape, , is the only binary relationship that occurs in both of
 its realizations, ⿺ and ; this case is well known to learners of Kanji, as
@@ -117,7 +46,9 @@ crucially, does not preserve the order in which the factors are normally written
 
 All other elements (i.e. except for 廴 and 辶) that enclose another one from the left and
 from below in an L-shape take precedence; hence, in e.g. 赲, 走 comes first and 力
-comes second, so its formula is 赲:⿺走力.
+comes second, so its formula is 赲:⿺走力.^[see
+<<(url>>https://xxxxxxxxx.com/xxxxx/xxxxx/xxxxxx/ids.txt<<)>> xxxxx xxxxx xxxxx
+ xxxxx xxxxx xxxxx xxxxx]
 
 **a-11**: XXXXX XXXXX XXXXX XXXXX XXXXX the reversed C-shape: lowest frequency, missing from Unicode IDCs,
 erroneously replaced by ⿴ in formula
@@ -142,6 +73,77 @@ formula represents the unknown quantity.
 the time,  really represents an element being overlaid onto another
 one, as in 夫:⿻二人, but more generally, it may be used in any place
 where no other operator fits, as, for example, in 〓〓〓〓〓〓.
+
+<<(keep-lines>>
+徵:(⿰彳(⿱山一𡈼)夊)
+毯:毛炎 as 毯:(∪)毛炎<<< >>>
+廷:壬廴 as 廷:(∩)壬廴<<< >>>
+玉:⿷王丶 as 玉:(∪)王丶<<< >>>
+𠚍:⿶𠂭凵 as 𠚍:(∩)𠂭凵<<< >>>
+國:⿴囗或 as 國:(∪)囗或<<< >>>
+<<keep-lines)>>
+
+
+<<(single-column>>
+|          |                       Name |     B      | Examples                    | X                                |
+|---------:|---------------------------:|:----------:|:----------------------------|:---------------------------------|
+|  **a-1** |                 left-right |           | 𪷈:⿰氵貫                   |                                  |
+|  **a-2** |                   top-down |           | 𪲪:⿱㐭木                   |                                  |
+|  **a-3** |       L-shaped, left first |           | 毯:⿺毛炎                   | 毯:(∪)毛炎                     |
+|  **a-4** |        L-shaped, top first |           | 廷:壬廴                    | 廷:(∩)壬廴                     |
+|  **a-5** |                   Γ-shaped |           | 慮:⿸虍思                   | 慮:(∪)虍思                     |
+|  **a-6** |                    package |           | 截:⿹𢦏隹                   | 截:(∪)𢦏隹                     |
+|  **a-7** | surround from bottom right |           | &jzr#xe232;:◰一弋           | &jzr#xe232;:(∩)一弋            |
+|  **a-8** |                       plug |           | 𠚍:⿶𠂭凵                   | 𠚍:(∩)𠂭凵                    |
+|  **a-9** |                   C-shaped |           | 玉:⿷王丶                   | 玉:(∪)王丶                    |
+| **a-10** |          surround from top |           | 閒:⿵門月                   | 閒:(∪)門月                    |
+| **a-11** |           reverse C-shaped |           | 𢏚:⿷弓工工                | 𢏚:⿷(∪)弓工工                |
+| **a-12** |                   surround |           | 囪:⿴&jzr#xe105;&jzr#xe134; | 囪:(∪)&jzr#xe105;&jzr#xe134; |
+| **a-13** |                  crossover |           | 夫:⿻二人                   |                                  |
+| **a-14** |                no operator |           | 亅:                        |                                  |
+| **a-15** |                  geta mark |     〓     | 𠪕:⿸严〓                   |                                  |
+| **a-16** |                rotate 180° |           | 𠄔:↻予                      |                                  |
+| **a-17** |            horizontal flip |           | 𣥄:正                      |                                  |
+| **a-18** |                    similar |           | 𠉒:⿱从≈电                  |                                  |
+| **a-19** |         parentheses; group | (&#x3000;) | 亴:(⿱亠口冖土九)           |                                  |
+<<single-column)>>
+
+<<(single-column>>
+|          | Used | G | B | Op | L | T |    R     |    B     | l | t | r | b |
+|---------:|:----:|:-:|:-:|:--:|:-:|:-:|:--------:|:--------:|:-:|:-:|:-:|:-:|
+|  **c-1** | Yes  |  |  |    |   |   | &#x3000; | &#x3000; |   |   |   |   |
+|  **c-2** | Yes  |  |  |    |   |   |          |          |   |   |   |   |
+| **c-15** |  No  |  |  | ¬  |  |   |          |          |   |   |   |   |
+| **c-16** |  No  |  |  | ¬  |   |  |          |          |   |   |   |   |
+
+|          | Used | G |    | B | Op | L | T | R | B | l | t | r | b |
+|---------:|:----:|:-:|:--:|:-:|:--:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+|  **c-7** | Yes  |  |    |  | ∩  |  |  |   |   | + | + |   |   |
+|  **c-4** | Yes  |  |  |  | ∩  |   |  |  |   | – | + | + |   |
+|  **c-3** | Yes  |  |  |  | ∪  |  |   |   |  | + | – | + | + |
+|  **c-5** | Yes  |  |    |  | ∪  |  |  |   |   | + | + |   | + |
+|  **c-6** | Yes  |  |    |  | ∪  |   |  |  |   | + | + | + |   |
+| **c-19** |  No  |  |    |  | ∪  |   |   |  |  | – | – | + | + |
+| **c-17** |  No  |  |    |  | ∩  |   |   |  |  | – | – | + | + |
+| **c-18** |  No  |  |    |  | ∩  |  |   |   |  | + | – |   | + |
+
+|          | Used | G | B | Op | L | T | R | B | l | t | r | b |
+|---------:|:----:|:-:|:-:|:--:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| **c-12** | Yes  |  |  | ∪  |   |  |  |  | – | + | + | + |
+|  **c-8** | Yes  |  |  | ∩  |  |  |  |   | + | + | + |   |
+|  **c-9** | Yes  |  |  | ∪  |  |  |   |  | + | + |   | + |
+| **c-10** | Yes  |  |  | ∪  |  |  |  |   | + | + | + |   |
+| **c-25** |  No  |  |  | ∩  |  |  |   |  | + | + |   | + |
+| **c-20** |  No  |  |  | ∪  |  |   |  |  |   |   |   |   |
+| **c-22** |  No  |  |  | ∩  |   |  |  |  |   |   |   |   |
+| **c-24** |  No  |  |  | ∩  |  |   |  |  |   |   |   |   |
+
+|          | Used | G | B | Op | L | T | R | B | l | t | r | b |
+|---------:|:----:|:-:|:-:|:--:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| **c-14** | Yes  |  |  | ∪  |  |  |  |  |   |   |   |   |
+| **c-26** |  No  |  |  | ∩  |  |  |  |  |   |   |   |   |
+<<single-column)>>
+
 
 
 <<(single-column>>
@@ -230,5 +232,14 @@ xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx xxx
 
 
 <!--  -->
+<<<
+%\begingroup
+%\parindent 0pt
+%\parskip 2ex
+%\def\enotesize{\normalsize}
+\printendnotes
+%\endgroup
+>>>
+
 
 <<multi-column)>>
