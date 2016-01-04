@@ -71,8 +71,8 @@
 % ### TAINT this combination does increase font size and line spacing in
 % footnotes, but the notes are still not run together, and the spacing
 % between footnotes is too small. — Considering to use endnotes instead. ###
-\usepackage{enotez}
-\let\footnote=\endnote
+% \usepackage{enotez}
+% \let\footnote=\endnote
 % \usepackage[para,bottom,multiple]{footmisc}
 % \usepackage{setspace,etoolbox}% http://ctan.org/pkg/{setspace,etoolbox}
 % \makeatletter
@@ -96,6 +96,31 @@
 \fancyfoot[EL]{\pageNr{\thepage}}
 \fancyfoot[OC,EC]{}
 \fancyfoot[OL,ER]{}
+
+% ==========================================================================================================
+% MKTS ENDNOTES
+% ----------------------------------------------------------------------------------------------------------
+% Schematic of MKTS Endnotes:
+%
+%   MAIN{\mktsEnStyleMarkMain{}1}
+%
+%   \begin{mktsEnNotes}%
+%   {\mktsEnStyleMarkNotes\mktsEnMarkBefore1\mktsEnMarkAfter{}}ANNOTATION
+%
+%   \end{mktsEnNotes}
+%
+\newcommand{\mktsEnTitle}{{\mktsStyleBold Notes\par}}
+\newcommand{\mktsEnMarkBefore}{}
+\newcommand{\mktsEnMarkAfter}{)\,—\,}
+% \newcommand{\mktsEnStyleMark}[1]{\textsuperscript{#1}}
+\newcommand{\mktsEnStyleMarkMain}{\fontsize{0.8\myFontsize}{0.8\myFontsize}\tfRaise{0.3}}
+\newcommand{\mktsEnStyleMarkNotes}{\mktsStyleNormal}
+\newenvironment{mktsEnNotes}{%
+  \mktsEnTitle%
+  \mktsStyleItalic%
+  \setlength{\parskip}{0mm}%
+  }%
+  {}
 
 
 
@@ -176,6 +201,9 @@
   % \renewcommand{\hg}[1]{\adjustHangeul{\mktsFontfileCwtexqheibold##1}}%
   \fontsize{0.8\myFontsize}{0.8\myFontsize}\mktsFontfileUbuntub}
 
+
+\newcommand{\mktsStyleNormal}{\mktsFontfileEbgaramondtwelveregular\fontsize{\myFontsize}{\myLineheight}\selectfont}
+
 \newcommand{\mktsStyleItalic}{%
   \mktsFontfileEbgaramondtwelveitalic}
 
@@ -193,6 +221,14 @@
   \color{violet}%
   {\mktsStyleSymbol{}█}}%
   {{\mktsStyleSymbol{}█}}
+
+\newcommand{\mktsMark}[1]{%
+  {\mktsStyleBold%
+  \color{blue}%
+  {\mktsStyleSymbol{}█}%
+  #1%
+  {\mktsStyleSymbol{}█}}%
+  }
 
 \renewcommand{\chapter}[1]{{%
   % \vspace{\myLineheight}%

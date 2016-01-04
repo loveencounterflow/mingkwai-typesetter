@@ -690,12 +690,25 @@ MACRO_ESCAPER             = require './macro-escaper'
 
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.MIXED.$footnote = ( S ) =>
+  ### TAINT should move this to initialization ###
+  throw new Error "`S.footnotes` already defined" if S.footnotes?
+  S.footnotes =
+    # 'style':      'classic'
+    'style':      'on-demand'
+    'by-idx':     []
+  #.........................................................................................................
+  return switch style = S.footnotes[ 'style' ]
+    when 'classic'    then @MKTX.MIXED._$footnote_classic    S
+    when 'on-demand'  then @MKTX.MIXED._$footnote_on_demand  S
+    else throw new Error "unknown footnote style #{rpr style}"
+
+#-----------------------------------------------------------------------------------------------------------
+@MKTX.MIXED._$footnote_classic = ( S ) =>
   #.........................................................................................................
   return $ ( event, send ) =>
     #.......................................................................................................
     if select event, '(', 'footnote'
       send stamp event
-      [ type, name, id, meta, ] = event
       send [ 'tex', "\\footnote{", ]
     #.......................................................................................................
     else if select event, ')', 'footnote'
@@ -706,7 +719,73 @@ MACRO_ESCAPER             = require './macro-escaper'
       send event
 
 #-----------------------------------------------------------------------------------------------------------
-@MKTX.MIXED.$remove_footnote_extra_paragraphs = ( S ) =>
+@MKTX.MIXED._$footnote_on_demand = ( S ) =>
+  ### TAINT TeX codes used here should be made configurable ###
+  cache             = S.footnotes[ 'by-idx' ]
+  current_fn_idx    = -1
+  current_fn_cache  = -1
+  first_fn_idx      = 0
+  last_fn_idx       = -1
+  track             = MD_READER.TRACKER.new_tracker '(footnote)'
+  remark            = MD_READER._get_remark()
+  last_was_footnote = no
+  #.........................................................................................................
+  insert_footnotes = ( send, meta ) =>
+    if last_fn_idx >= first_fn_idx
+      # send [ '!', 'mark', '42', ( copy meta ), ]
+      # send [ '.', 'p', null, ( copy meta ), ]
+      send [ 'tex', "\n\n", ]
+      send [ 'tex', "\\begin{mktsEnNotes}", ]
+      for fn_idx in [ first_fn_idx .. last_fn_idx ]
+        fn_nr           = fn_idx + 1
+        fn_cache        = cache[ fn_idx ]
+        cache[ fn_idx ] = null
+        # send [ 'tex', "(#{fn_nr})\\,", ]
+        send [ 'tex', "{\\mktsEnStyleMarkNotes\\mktsEnMarkBefore#{fn_nr}\\mktsEnMarkAfter{}}", ]
+        send fn_event for fn_event in fn_cache
+      send [ 'tex', "\\end{mktsEnNotes}\n\n", ]
+      first_fn_idx  = last_fn_idx  + 1
+      last_fn_idx   = first_fn_idx - 1
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    [ type, name, text, meta, ] = event
+    within_footnote             = track.within '(footnote)'
+    track event
+    #.......................................................................................................
+    if select event, '(', 'footnote'
+      send stamp event
+      current_fn_cache        = []
+      current_fn_idx         += +1
+      last_fn_idx             = current_fn_idx
+      fn_nr                   = current_fn_idx + 1
+      cache[ current_fn_idx ] = current_fn_cache
+      fn_separator            = if last_was_footnote then ',' else ''
+      # send [ 'tex', "\\mktsEnStyleMark{#{fn_separator}#{fn_nr}}" ]
+      send [ 'tex', "{\\mktsEnStyleMarkMain{}#{fn_separator}#{fn_nr}}" ]
+    #.......................................................................................................
+    else if select event, ')', 'footnote'
+      send stamp event
+      current_fn_cache  = null
+      last_was_footnote = yes
+    #.......................................................................................................
+    else if within_footnote
+      current_fn_cache.push event
+      send remark 'caching', "event within footnote", event
+    #.......................................................................................................
+    else if select event, '!', 'footnotes'
+      send stamp event
+      insert_footnotes send, meta
+    #.......................................................................................................
+    else if select event, ')', 'document'
+      insert_footnotes send, meta
+      send event
+    #.......................................................................................................
+    else
+      last_was_footnote = no
+      send event
+
+#-----------------------------------------------------------------------------------------------------------
+@MKTX.MIXED.$footnote.$remove_extra_paragraphs = ( S ) =>
   last_event  = null
   #.........................................................................................................
   return $ ( event, send, end ) =>
@@ -733,6 +812,24 @@ MACRO_ESCAPER             = require './macro-escaper'
       [ type, name, text, meta, ] = event
       new_name = if name is 'i' then 'em' else 'strong'
       send [ type, new_name, text, meta, ]
+    #.......................................................................................................
+    else
+      send event
+
+#-----------------------------------------------------------------------------------------------------------
+@MKTX.INLINE.$mark = ( S ) =>
+  mark_idx = 0
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    #.......................................................................................................
+    if select event, '!', 'mark'
+      [ type, name, text, meta, ] = event
+      send stamp event
+      unless text?
+        mark_idx += +1
+        text      = "a-#{mark_idx}"
+      text = @MKTX.TEX.fix_typography_for_tex text, S.options
+      send [ 'tex', "\\mktsMark{#{text}}", ]
     #.......................................................................................................
     else
       send event
@@ -1039,7 +1136,7 @@ MACRO_ESCAPER             = require './macro-escaper'
     .pipe @MKTX.DOCUMENT.$end                             S
     .pipe @MKTX.MIXED.$raw                                S
     .pipe @MKTX.MIXED.$footnote                           S
-    .pipe @MKTX.MIXED.$remove_footnote_extra_paragraphs   S
+    .pipe @MKTX.MIXED.$footnote.$remove_extra_paragraphs  S
     # .pipe @MKTX.COMMAND.$do                               S
     # .pipe @MKTX.COMMAND.$expansion                        S
     .pipe @MKTX.COMMAND.$new_page                         S
@@ -1067,6 +1164,7 @@ MACRO_ESCAPER             = require './macro-escaper'
     .pipe @MKTX.CLEANUP.$remove_empty_texts               S
     .pipe MKTSCRIPT_WRITER.$show_mktsmd_events            S
     # .pipe mktscript_in
+    .pipe @MKTX.INLINE.$mark                              S
     .pipe @MKTX.$show_unhandled_tags                      S
     .pipe @MKTX.$show_warnings                            S
     .pipe @$filter_tex                                    S
