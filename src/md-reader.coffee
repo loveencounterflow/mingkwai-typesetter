@@ -403,7 +403,7 @@ tracker_pattern = /// ^
       if type is 'footnote_block_open'  then within_footnote_block = yes
       #.....................................................................................................
       if within_footnote_block or not S.has_ended
-        # urge '@a20g', token[ 'type' ], within_footnote_block
+        urge '@a20g', token[ 'type' ]#, within_footnote_block
         switch type
           # blocks
           when 'heading_open'       then send [ '(', token[ 'tag' ],  null,                         meta, ]

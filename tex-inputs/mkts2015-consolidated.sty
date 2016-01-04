@@ -196,10 +196,6 @@
 % consider to put these into `.master.tex`
 \newcommand{\mktsStyleBold}{%
   \renewcommand{\mktsFontCjkDefault}{\mktsFontfileCwtexqheibold}
-  % \renewcommand{\cn}[1]{{\adjustCjkIdeograph{\mktsFontfileCwtexqheibold##1}}}%
-  % \renewcommand{\ka}[1]{\adjustKatakana{\mktsFontfileCwtexqheibold##1}}%
-  % \renewcommand{\hi}[1]{\adjustHiragana{\mktsFontfileCwtexqheibold##1}}%
-  % \renewcommand{\hg}[1]{\adjustHangeul{\mktsFontfileCwtexqheibold##1}}%
   % ### TAINT ### consider to use relsize instead
   \fontsize{0.8\myFontsize}{0.8\myFontsize}\mktsFontfileUbuntub}
 
@@ -216,7 +212,10 @@
 \newcommand{\mktsStyleCode}{%
   \fontsize{0.8\myFontsize}{0.8\myFontsize}%%
   % \setlength{\baselineskip}{2\myLineheight}
-  \mktsFontfileSourcecodeproregular}
+  % \mktsFontfileSourcecodeproregular%
+  % \mktsFontfileSourcecodeproregular%
+  \mktsFontfileFiracoderegular%
+  }
 
 \newenvironment{mktsEnvWarning}%
   {\mktsStyleBold%

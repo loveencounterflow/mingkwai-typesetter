@@ -903,8 +903,9 @@ MACRO_ESCAPER             = require './macro-escaper'
   #.........................................................................................................
   return $ ( event, send ) =>
     #.......................................................................................................
+    # debug '©97721', event
     if select event, '(', 'link'
-      null
+      send stamp event
     else if select event, ')', 'link'
       send stamp event
       [ type, name, text, meta, ] = event
@@ -951,33 +952,37 @@ MACRO_ESCAPER             = require './macro-escaper'
       send event
 
 #-----------------------------------------------------------------------------------------------------------
-@MKTX.CLEANUP.$remove_empty_p_tags = ( S ) =>
+@MKTX.CLEANUP.$drop_empty_p_tags = ( S ) =>
   ### TAINT emptyness of  `p` tags ist tested for by counting intermittend `text` events; however, a
   paragraph could conceivably also consist of e.g. a single image. ###
   text_count  = 0
   remark      = MD_READER._get_remark()
   #.........................................................................................................
+  warn "not using `$drop_empty_p_tags` at the moment"
   return $ ( event, send ) =>
-    #.......................................................................................................
-    ### TAINT bogus selector ###
-    if select event, [ ')', ]
-      text_count = 0
-      send event
-    #.......................................................................................................
-    else if select event, '.', 'text'
-      text_count += +1
-      send event
-    #.......................................................................................................
-    else if select event, '.', 'p'
-      if text_count > 0
-        send event
-      else
-        [ _, _, _, meta, ] = event
-        send remark 'drop', "empty `.p`", copy meta
-      text_count = 0
-    #.......................................................................................................
-    else
-      send event
+    send event
+  # #.........................................................................................................
+  # return $ ( event, send ) =>
+  #   #.......................................................................................................
+  #   ### TAINT bogus selector ###
+  #   if select event, [ ')', ]
+  #     text_count = 0
+  #     send event
+  #   #.......................................................................................................
+  #   else if select event, '.', 'text'
+  #     text_count += +1
+  #     send event
+  #   #.......................................................................................................
+  #   else if select event, '.', 'p'
+  #     if text_count > 0
+  #       send event
+  #     else
+  #       [ _, _, _, meta, ] = event
+  #       send remark 'drop', "empty `.p`", copy meta
+  #     text_count = 0
+  #   #.......................................................................................................
+  #   else
+  #     send event
 
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.REGION.$correct_p_tags_before_regions = ( S ) =>
@@ -1201,7 +1206,7 @@ MACRO_ESCAPER             = require './macro-escaper'
     .pipe @MKTX.INLINE.$em_and_strong                     S
     .pipe @MKTX.INLINE.$image                             S
     .pipe @$custom_stuff_late                             S
-    .pipe @MKTX.CLEANUP.$remove_empty_p_tags              S
+    .pipe @MKTX.CLEANUP.$drop_empty_p_tags                S
     .pipe @MKTX.BLOCK.$paragraph                          S
     .pipe @MKTX.CLEANUP.$remove_empty_texts               S
     .pipe MKTSCRIPT_WRITER.$show_mktsmd_events            S

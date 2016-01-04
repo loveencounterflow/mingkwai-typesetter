@@ -109,7 +109,6 @@ module.exports = options =
       { texname: 'mktsFontfileSourcecodepromedium',            filename: 'SourceCodePro-Medium.otf',            }
       { texname: 'mktsFontfileSourcecodeproregular',           filename: 'SourceCodePro-Regular.otf',           }
       { texname: 'mktsFontfileSourcecodeprosemibold',          filename: 'SourceCodePro-Semibold.otf',          }
-      #...........................................
       { texname: 'mktsFontfileOptima',                         filename: 'Optima.ttc',                          }
       { texname: 'mktsFontfilePtsans',                         filename: 'PTSans.ttc',                          }
       { texname: 'mktsFontfileKai',                            filename: 'Kai.ttf',                             }
@@ -118,6 +117,15 @@ module.exports = options =
       { texname: 'mktsFontfileJizurathreeb',                   filename: 'jizura3b.ttf',                        }
       # { texname: 'mktsFontfileJizurathreeb',                   filename: 'jizura3b-from-svg-rewritten-by-fontforge.ttf',                        }
       { texname: 'mktsFontfileBiaukai',                        filename: 'BiauKai.ttf',                         }
+      { texname: 'mktsFontfileFiracodebold',                   filename: 'FiraCode-Bold.otf',                   }
+      { texname: 'mktsFontfileFiracodelight',                  filename: 'FiraCode-Light.otf',                  }
+      { texname: 'mktsFontfileFiracodemedium',                 filename: 'FiraCode-Medium.otf',                 }
+      { texname: 'mktsFontfileFiracoderegular',                filename: 'FiraCode-Regular.otf',                }
+      { texname: 'mktsFontfileFiracoderetina',                 filename: 'FiraCode-Retina.otf',                 }
+      { texname: 'mktsFontfileMonoidbold',                     filename: 'Monoid-Bold.ttf',                     }
+      { texname: 'mktsFontfileMonoiditalic',                   filename: 'Monoid-Italic.ttf',                   }
+      { texname: 'mktsFontfileMonoidregular',                  filename: 'Monoid-Regular.ttf',                  }
+      { texname: 'mktsFontfileMonoidretina',                   filename: 'Monoid-Retina.ttf',                   }
       ]
 
   #.........................................................................................................
