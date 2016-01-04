@@ -13,6 +13,7 @@
 % \XeTeXlinebreakskip 0pt plus 0.1pt% sets the skip
 
 \usepackage{leading}
+\usepackage{relsize}
 % \usepackage{/Volumes/Storage/io/jizura-xelatex/tex-inputs/utils}
 % \usepackage{/Users/flow/JIZURA/flow/dictionary/tex-inputs/accentbx/accentbx}
 \usepackage{cxltx-style-accentbox}
@@ -199,6 +200,7 @@
   % \renewcommand{\ka}[1]{\adjustKatakana{\mktsFontfileCwtexqheibold##1}}%
   % \renewcommand{\hi}[1]{\adjustHiragana{\mktsFontfileCwtexqheibold##1}}%
   % \renewcommand{\hg}[1]{\adjustHangeul{\mktsFontfileCwtexqheibold##1}}%
+  % ### TAINT ### consider to use relsize instead
   \fontsize{0.8\myFontsize}{0.8\myFontsize}\mktsFontfileUbuntub}
 
 
@@ -305,14 +307,13 @@
 \newcommand{\latin}[1]{{\mktsFontfileEbgaramondtwelveregular#1}}
 % \newcommand{\setPlainLatin}{\renewcommand{\latin}[1]{{\mktsFontfileEbgaramondtwelveregular#1}}}
 % \newcommand{\setCodeLatin}{\renewcommand{\latin}[1]{{\mktsFontfileSunexta#1}}}
-\newcommand{\py}[1]{{\mktsFontfileUbuntur#1}}
+\newcommand{\py}{\relscale{0.8}\mktsFontfileUbuntur{}}
 \newcommand{\ncr}[1]{{\mktsFontfileUbuntur#1}}
 \newcommand{\gloss}[1]{{\mktsFontfileEbgaramondtwelveregular#1}}
 % ..........................................................................................................
 % \XeTeXlinebreaklocale "ja"% for Japanese
 % \XeTeXlinebreakskip 0pt plus 0.1pt% sets the skip
 % }
-\usepackage{relsize}
 \newcommand{\mktsFontCjkDefault}{\mktsFontfileSunexta}
 \renewcommand{\cjkgGlue}{\hskip 0mm plus 0.7mm minus 0.0mm}
 \newcommand{\cjk}{%

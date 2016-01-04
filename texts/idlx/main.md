@@ -1,21 +1,6 @@
 
-
-MAIN^[ANNOTATION]
-<<!end>>
 <<(multi-column>>
 
-The choice between ⿺ and  depends on the element that occupies the left and bottom of the character in
-question:^[this has actually never been done before]^[... but we should certainly try it] only 廴 and 辶
-(⻍, ⻎)^[辶, ⻍, and ⻎ are positional variants of 辵 (chuò ㄔㄨㄛˋ), Kangxi radical #162] are written *after* the top right and hence
-need , as in 這:言辶 (observe that using standard Unicode IDL, we are forced to write
-this as
-這:<<<\cjkgGlue{\cjk{}⿺}\cjkgGlue{}>>>辶言, which,
-crucially, does not preserve the order in which the factors are normally written).^[see
-<<(url>>https://raw.githubusercontent.com/cjkvi/cjkvi-ids/master/ids.txt<<)>> for actual examples]
-
-<<!footnotes>>
-<<multi-column)>>
-<<!end>>
 
 ## The Extended Ideographic Description Language (IDLx)
 
@@ -62,9 +47,7 @@ crucially, does not preserve the order in which the factors are normally written
 
 All other elements (i.e. except for 廴 and 辶) that enclose another one from the left and
 from below in an L-shape take precedence; hence, in e.g. 赲, 走 comes first and 力
-comes second, so its formula is 赲:⿺走力.^[see
-<<(url>>https://xxxxxxxxx.com/xxxxx/xxxxx/xxxxxx/ids.txt<<)>> xxxxx xxxxx xxxxx
- xxxxx xxxxx xxxxx xxxxx]
+comes second, so its formula is 赲:⿺走力.
 
 **a-11**: XXXXX XXXXX XXXXX XXXXX XXXXX the reversed C-shape: lowest frequency, missing from Unicode IDCs,
 erroneously replaced by ⿴ in formula
@@ -90,17 +73,8 @@ the time,  really represents an element being overlaid onto another
 one, as in 夫:⿻二人, but more generally, it may be used in any place
 where no other operator fits, as, for example, in 〓〓〓〓〓〓.
 
-<<<
-%\begingroup
-%\parindent 0pt
-%\parskip 2ex
-%\def\enotesize{\normalsize}
-\printendnotes
-%\endgroup
->>>
+<<!footnotes>>
 
-<<multi-column)>>
-<<!end>>
 
 <<(keep-lines>>
 徵:(⿰彳(⿱山一𡈼)夊)

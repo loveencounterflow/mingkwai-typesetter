@@ -55,6 +55,8 @@ INPUT /usr/local/texlive/2015/texmf-dist/tex/latex/leading/leading.sty
 INPUT /usr/local/texlive/2015/texmf-dist/tex/latex/leading/leading.sty
 INPUT /usr/local/texlive/2015/texmf-dist/tex/latex/tools/calc.sty
 INPUT /usr/local/texlive/2015/texmf-dist/tex/latex/tools/calc.sty
+INPUT /usr/local/texlive/2015/texmf-dist/tex/latex/relsize/relsize.sty
+INPUT /usr/local/texlive/2015/texmf-dist/tex/latex/relsize/relsize.sty
 INPUT /home/flow/io/mingkwai-typesetter/node_modules/cxltx-styles/styles/cxltx-style-accentbox.sty
 INPUT /home/flow/io/mingkwai-typesetter/node_modules/cxltx-styles/styles/cxltx-style-accentbox.sty
 INPUT /home/flow/io/mingkwai-typesetter/node_modules/cxltx-styles/styles/accentbx/accentbx.sty
@@ -188,8 +190,6 @@ INPUT /usr/local/texlive/2015/texmf-dist/tex/latex/fancyhdr/fancyhdr.sty
 INPUT /usr/local/texlive/2015/texmf-dist/tex/latex/fancyhdr/fancyhdr.sty
 INPUT /usr/local/texlive/2015/texmf-dist/tex/latex/tools/multicol.sty
 INPUT /usr/local/texlive/2015/texmf-dist/tex/latex/tools/multicol.sty
-INPUT /usr/local/texlive/2015/texmf-dist/tex/latex/relsize/relsize.sty
-INPUT /usr/local/texlive/2015/texmf-dist/tex/latex/relsize/relsize.sty
 INPUT /home/flow/io/mingkwai-typesetter/texts/idlx/idlx.aux
 INPUT /home/flow/io/mingkwai-typesetter/texts/idlx/idlx.aux
 OUTPUT /home/flow/io/mingkwai-typesetter/texts/idlx/idlx.aux
@@ -208,6 +208,16 @@ INPUT /home/flow/io/mingkwai-typesetter/texts/idlx/idlx.out
 OUTPUT /home/flow/io/mingkwai-typesetter/texts/idlx/idlx.out
 INPUT /home/flow/io/mingkwai-typesetter/texts/idlx/.content.tex
 INPUT /home/flow/io/mingkwai-typesetter/texts/idlx/.content.tex
+INPUT /usr/local/texlive/2015/texmf-dist/fonts/tfm/public/cm/cmmi10.tfm
+INPUT /usr/local/texlive/2015/texmf-dist/fonts/tfm/public/cm/cmmi8.tfm
+INPUT /usr/local/texlive/2015/texmf-dist/fonts/tfm/public/cm/cmsy10.tfm
+INPUT /usr/local/texlive/2015/texmf-dist/fonts/tfm/public/cm/cmsy8.tfm
+INPUT /usr/local/texlive/2015/texmf-dist/fonts/tfm/public/cm/cmr10.tfm
+INPUT /usr/local/texlive/2015/texmf-dist/tex/latex/microtype/mt-cmr.cfg
+INPUT /usr/local/texlive/2015/texmf-dist/tex/latex/microtype/mt-cmr.cfg
+INPUT /usr/local/texlive/2015/texmf-dist/fonts/tfm/public/cm/cmr8.tfm
+INPUT /usr/local/texlive/2015/texmf-dist/tex/latex/euenc/eu1lmtt.fd
+INPUT /usr/local/texlive/2015/texmf-dist/tex/latex/euenc/eu1lmtt.fd
 INPUT /usr/local/texlive/2015/texmf-dist/tex/generic/oberdiek/se-ascii-print.def
 INPUT /usr/local/texlive/2015/texmf-dist/tex/generic/oberdiek/se-ascii-print.def
 INPUT /usr/local/texlive/2015/texmf-dist/tex/generic/oberdiek/se-ascii-print.def
