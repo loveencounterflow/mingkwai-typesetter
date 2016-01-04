@@ -404,11 +404,11 @@ after it, thereby inhibiting any processing of those portions. ###
         tag_stack.push raw
       when ')'
         if tag_stack.length < 1
-          return [ '.', 'warning', "too many closing regions", ( copy meta ), ]
+          return [ '.', 'warning', "too many closing regions", ( MKTS.MD_READER.copy meta ), ]
         expected = tag_stack.pop()
         if ( raw.length > 0 ) and expected isnt raw
           message = "expected closing region #{rpr expected}, got #{rpr raw}"
-          return [ '.', 'warning', message, ( copy meta ), ]
+          return [ '.', 'warning', message, ( MKTS.MD_READER.copy meta ), ]
         raw = expected
       else
         throw new Error "expected '(' or ')' as region markup, got #{rpr markup}"
