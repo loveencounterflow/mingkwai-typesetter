@@ -35,7 +35,7 @@
 \usepackage{cxltx-style-transform}
 \usepackage{cxltx-style-cjkglue}
 \usepackage{cxltx-style-smashbox}
-\usepackage{hyperref}
+% \usepackage{hyperref}
 
 % ==========================================================================================================
 % Page Layout
@@ -207,6 +207,15 @@
 
 \newcommand{\mktsStyleSymbol}{%
   \mktsFontfileSunexta}
+
+% \newcommand{\UG}{\hskip 0mm plus 0.7mm minus 0mm}%
+\makeatletter
+\def\mktsStyleUrl@Glue{\hskip 0mm plus 0.7mm minus 0mm}%
+\newcommand{\mktsStyleUrl}{%
+  \let\g\mktsStyleUrl@Glue%
+  \mktsFontfileSunexta%
+  }
+\makeatother
 
 % ### TAINT need to add space before and after code ###
 \newcommand{\mktsStyleCode}{%

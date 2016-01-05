@@ -46,6 +46,7 @@ select                    = MD_READER.select.bind      MD_READER
 is_hidden                 = MD_READER.is_hidden.bind   MD_READER
 is_stamped                = MD_READER.is_stamped.bind  MD_READER
 MACRO_ESCAPER             = require './macro-escaper'
+LINEBREAKER               = require './linebreaker'
 
 
 #===========================================================================================================
@@ -924,11 +925,26 @@ MACRO_ESCAPER             = require './macro-escaper'
     track event
     [ type, name, text, meta, ] = event
     #.......................................................................................................
-    if select event, [ '(', ')', ], 'url'
+    if select event, '(', 'url'
       send stamp event
+      send [ 'tex', "{\\mktsStyleUrl{}", ]
+    #.......................................................................................................
+    else if select event, ')', 'url'
+      send stamp event
+      send [ 'tex', "}", ]
+    #.......................................................................................................
     else if within_url and select event, '.', 'text'
-      # send stamp event
-      send [ 'tex', "\\url{#{text}}", ]
+      # text = ( LINEBREAKER.fragmentize text ).join " \u200b"
+      fragments = LINEBREAKER.fragmentize text
+      last_idx  = fragments.length - 1
+      for fragment, idx in fragments
+        unless idx is last_idx
+          if      fragment.endsWith '//' then fragment = fragment[ .. fragment.length - 3 ] + "\\g/\\g/"
+          else if fragment.endsWith '/'  then fragment = fragment[ .. fragment.length - 2 ] + "\\g/"
+        fragments[ idx ] = fragment
+      text = fragments.join "\\g\\allowbreak{}"
+      debug '©66255', text
+      send [ type, name, text, meta, ]
     #.......................................................................................................
     else
       send event
