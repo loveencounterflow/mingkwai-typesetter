@@ -38,6 +38,8 @@
     "commander": "^2.9.0",
     "cxltx-styles": "^1.4.2",
     "htmlparser2": "^3.9.0",
+    "hyphenation.en-us": "^0.2.1",
+    "hypher": "^0.2.4",
     "markdown-it": "^5.0.2",
     "markdown-it-container": "^2.0.0",
     "markdown-it-footnote": "^2.0.0",
