@@ -1,9 +1,20 @@
 
+
+<<(multi-column>>
+
 https://link.com/1
 
 <<(url>>https://link.com/2<<)>>
 
 [three](https://link.com/3)
+
+<<(url>>https://example.com/a/uniform/resource<<)>>
+
+An example <<(url>>https://example.com/a/uniform/resource<<)>> for a URL.
+An yet http://x.com another one.
+
+<<(url>>https://example.com/a/uniform/resource/locator/commonly/informally/termed/a/web/address/is/a/reference/to/a/web/resource/that/specifies/its/location/on/a/computer/network/and/a/mechanism/for/retrieving/it<<)>>
+<<)>>
 <<!end>>
 
 
