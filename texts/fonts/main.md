@@ -11,11 +11,14 @@ https://link.com/1
 <<(url>>https://example.com/a/uniform/resource<<)>>
 
 An example <<(url>>https://example.com/a/uniform/resource<<)>> for a URL.
-An yet http://x.com another one.
+And yet http://x.com another one.
 
 <<(url>>https://example.com/a/uniform/resource/locator/commonly/informally/termed/a/web/address/is/a/reference/to/a/web/resource/that/specifies/its/location/on/a/computer/network/and/a/mechanism/for/retrieving/it<<)>>
 <<)>>
-<<!end>>
+
+<<<{\mktsStyleFontCjkKaishu{}helo world}>>>
+
+<\<!end>>
 
 
 <<<
@@ -95,6 +98,44 @@ Monoidbold {\cjk\mktsFontfileMonoidbold{}本书使用的数字，符号一览表
 Monoiditalic {\cjk\mktsFontfileMonoiditalic{}本书使用的数字，符号一览表 AaBbCcDdEeFfghijklmn}\\
 Monoidregular {\cjk\mktsFontfileMonoidregular{}本书使用的数字，符号一览表 AaBbCcDdEeFfghijklmn}\\
 Monoidretina {\cjk\mktsFontfileMonoidretina{}本书使用的数字，符号一览表 AaBbCcDdEeFfghijklmn}\\
+
+———————————————————————————————————
+
+Babelstonehan {\cjk\mktsFontfileBabelstonehan{}本书使用的数字，符号一览表 AaBbCcDdEeFfghijklmn}\\
+Hanamina {\cjk\mktsFontfileHanamina{}本书使用的数字，符号一览表 AaBbCcDdEeFfghijklmn}\\
+simsun {\cjk\mktsFontfilesimsun{}本书使用的数字，符号一览表 AaBbCcDdEeFfghijklmn}\\
+Sourcehancodejpextralight {\cjk\mktsFontfileSourcehancodejpextralight{}本书使用的数字，符号一览表 AaBbCcDdEeFfghijklmn}\\
+Sourcehancodejpheavy {\cjk\mktsFontfileSourcehancodejpheavy{}本书使用的数字，符号一览表 AaBbCcDdEeFfghijklmn}\\
+Sourcehancodejplight {\cjk\mktsFontfileSourcehancodejplight{}本书使用的数字，符号一览表 AaBbCcDdEeFfghijklmn}\\
+Sourcehancodejpmedium {\cjk\mktsFontfileSourcehancodejpmedium{}本书使用的数字，符号一览表 AaBbCcDdEeFfghijklmn}\\
+Sourcehancodejpnormal {\cjk\mktsFontfileSourcehancodejpnormal{}本书使用的数字，符号一览表 AaBbCcDdEeFfghijklmn}\\
+Sourcehancodejpregular {\cjk\mktsFontfileSourcehancodejpregular{}本书使用的数字，符号一览表 AaBbCcDdEeFfghijklmn}\\
+Fandolfangregular {\cjk\mktsFontfileFandolfangregular{}本书使用的数字，符号一览表 AaBbCcDdEeFfghijklmn}\\
+Fandolheibold {\cjk\mktsFontfileFandolheibold{}本书使用的数字，符号一览表 AaBbCcDdEeFfghijklmn}\\
+Fandolheiregular {\cjk\mktsFontfileFandolheiregular{}本书使用的数字，符号一览表 AaBbCcDdEeFfghijklmn}\\
+Fandolkairegular {\cjk\mktsFontfileFandolkairegular{}本书使用的数字，符号一览表 AaBbCcDdEeFfghijklmn}\\
+Fandolsongbold {\cjk\mktsFontfileFandolsongbold{}本书使用的数字，符号一览表 AaBbCcDdEeFfghijklmn}\\
+Fandolsongregular {\cjk\mktsFontfileFandolsongregular{}本书使用的数字，符号一览表 AaBbCcDdEeFfghijklmn}\\
+ipaexg {\cjk\mktsFontfileipaexg{}本书使用的数字，符号一览表 AaBbCcDdEeFfghijklmn}\\
+ipaexm {\cjk\mktsFontfileipaexm{}本书使用的数字，符号一览表 AaBbCcDdEeFfghijklmn}\\
+ipag {\cjk\mktsFontfileipag{}本书使用的数字，符号一览表 AaBbCcDdEeFfghijklmn}\\
+ipagp {\cjk\mktsFontfileipagp{}本书使用的数字，符号一览表 AaBbCcDdEeFfghijklmn}\\
+ipam {\cjk\mktsFontfileipam{}本书使用的数字，符号一览表 AaBbCcDdEeFfghijklmn}\\
+ipamp {\cjk\mktsFontfileipamp{}本书使用的数字，符号一览表 AaBbCcDdEeFfghijklmn}\\
+ipaexg {\cjk\mktsFontfileipaexg{}本书使用的数字，符号一览表 AaBbCcDdEeFfghijklmn}\\
+ipaexm {\cjk\mktsFontfileipaexm{}本书使用的数字，符号一览表 AaBbCcDdEeFfghijklmn}\\
+ipag {\cjk\mktsFontfileipag{}本书使用的数字，符号一览表 AaBbCcDdEeFfghijklmn}\\
+ipagp {\cjk\mktsFontfileipagp{}本书使用的数字，符号一览表 AaBbCcDdEeFfghijklmn}\\
+ipam {\cjk\mktsFontfileipam{}本书使用的数字，符号一览表 AaBbCcDdEeFfghijklmn}\\
+ipamp {\cjk\mktsFontfileipamp{}本书使用的数字，符号一览表 AaBbCcDdEeFfghijklmn}\\
+ukai {\cjk\mktsFontfileukai{}本书使用的数字，符号一览表 AaBbCcDdEeFfghijklmn}\\
+uming {\cjk\mktsFontfileuming{}本书使用的数字，符号一览表 AaBbCcDdEeFfghijklmn}\\
+Droidsansfallbackfull {\cjk\mktsFontfileDroidsansfallbackfull{}本书使用的数字，符号一览表 AaBbCcDdEeFfghijklmn}\\
+Droidsansjapanese {\cjk\mktsFontfileDroidsansjapanese{}本书使用的数字，符号一览表 AaBbCcDdEeFfghijklmn}\\
+fontsjapanesegothic {\cjk\mktsFontfilefontsjapanesegothic{}本书使用的数字，符号一览表 AaBbCcDdEeFfghijklmn}\\
+fontsjapanesemincho {\cjk\mktsFontfilefontsjapanesemincho{}本书使用的数字，符号一览表 AaBbCcDdEeFfghijklmn}\\
+Takaopgothic {\cjk\mktsFontfileTakaopgothic{}本书使用的数字，符号一览表 AaBbCcDdEeFfghijklmn}\\
+
 >>>
 
 

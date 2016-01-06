@@ -1,5 +1,6 @@
 
 
+
 % ==========================================================================================================
 % Unicode and CJK Handling
 % ----------------------------------------------------------------------------------------------------------
@@ -123,6 +124,87 @@
   }%
   {}
 
+\newcommand{\mktsThrow}[2]{%
+  \trmWarn{#1}
+  \trmWarn{#2}
+  \PackageError{#1}{#2}
+  }
+
+\newcommand{\mktsStyleFontThrowUndefined}[1]{
+  \mktsThrow{mktsStyleFont}{#1 is not defined}}%
+
+\newcommand{\mktsStyleFontDefault}{\mktsStyleFontThrowUndefined{Default}}%
+\newcommand{\mktsStyleFontItalic}{\mktsStyleFontThrowUndefined{Italic}}%
+\newcommand{\mktsStyleFontBold}{\mktsStyleFontThrowUndefined{Bold}}%
+\newcommand{\mktsStyleFontBoldItalic}{\mktsStyleFontThrowUndefined{BoldItalic}}%
+\newcommand{\mktsStyleFontItalicBold}{\mktsStyleFontThrowUndefined{ItalicBold}}%
+\newcommand{\mktsStyleFontSymbol}{\mktsStyleFontThrowUndefined{Symbol}}%
+\newcommand{\mktsStyleFontCode}{\mktsStyleFontThrowUndefined{Code}}%
+\newcommand{\mktsStyleFontUrl}{\mktsStyleFontThrowUndefined{Code}}%
+\newcommand{\mktsStyleFontCjkDefault}{\mktsStyleFontThrowUndefined{CjkDefault}}%
+\newcommand{\mktsStyleFontCjkBold}{\mktsStyleFontThrowUndefined{CjkBold}}%
+\newcommand{\mktsStyleFontCjkItalic}{\mktsStyleFontThrowUndefined{CjkItalic}}%
+\newcommand{\mktsStyleFontCjkKaishu}{\mktsStyleFontThrowUndefined{CjkKaishu}}%
+
+% NB Fontstyles only define the fonts and sizes as such, no other details
+% of the respective style.
+% ----------------------------------------------------------------------------------------------------------
+\newcommand{\mktsStyleFontsetNone}{
+  \renewcommand{\mktsStyleFontDefault}{\mktsStyleFontThrowUndefined{Default}}%
+  \renewcommand{\mktsStyleFontItalic}{\mktsStyleFontThrowUndefined{Italic}}%
+  \renewcommand{\mktsStyleFontBold}{\mktsStyleFontThrowUndefined{Bold}}%
+  \renewcommand{\mktsStyleFontBoldItalic}{\mktsStyleFontThrowUndefined{BoldItalic}}%
+  \renewcommand{\mktsStyleFontItalicBold}{\mktsStyleFontThrowUndefined{ItalicBold}}%
+  \renewcommand{\mktsStyleFontSymbol}{\mktsStyleFontThrowUndefined{Symbol}}%
+  \renewcommand{\mktsStyleFontCode}{\mktsStyleFontThrowUndefined{Code}}%
+  \renewcommand{\mktsStyleFontUrl}{\mktsStyleFontThrowUndefined{Code}}%
+  \renewcommand{\mktsStyleFontCjkDefault}{\mktsStyleFontThrowUndefined{CjkDefault}}%
+  \renewcommand{\mktsStyleFontCjkBold}{\mktsStyleFontThrowUndefined{CjkBold}}%
+  \renewcommand{\mktsStyleFontCjkItalic}{\mktsStyleFontThrowUndefined{CjkItalic}}%
+  \renewcommand{\mktsStyleFontCjkKaishu}{\mktsStyleFontThrowUndefined{CjkKaishu}}%
+  }\mktsStyleFontsetNone
+
+% ----------------------------------------------------------------------------------------------------------
+\newcommand{\mktsStyleFontsetBase}{
+  \mktsStyleFontsetNone%
+  \renewcommand{\mktsStyleFontDefault}{\mktsFontfileEbgaramondtwelveregular}%
+  \renewcommand{\mktsStyleFontItalic}{\mktsFontfileEbgaramondtwelveitalic}%
+  % ### TAINT ### consider to use relsize instead
+  \renewcommand{\mktsStyleFontBold}{\fontsize{0.8\myFontsize}{0.8\myFontsize}\mktsFontfileUbuntub}%
+  % \renewcommand{\mktsStyleFontBoldItalic}{\mktsStyleFontThrowUndefined{BoldItalic}}%
+  % \renewcommand{\mktsStyleFontItalicBold}{\mktsStyleFontThrowUndefined{ItalicBold}}%
+  \renewcommand{\mktsStyleFontSymbol}{\mktsFontfileSunexta}%
+  % \renewcommand{\mktsStyleFontCode}{\mktsStyleFontThrowUndefined{Code}}%
+  \renewcommand{\mktsStyleFontUrl}{\mktsFontfileUbuntuc}%
+  \renewcommand{\mktsStyleFontCjkDefault}{\mktsFontfileSunexta}%
+  \renewcommand{\mktsStyleFontCjkBold}{\mktsFontfileCwtexqheibold}%
+  % \renewcommand{\mktsStyleFontCjkItalic}{\mktsStyleFontThrowUndefined{CjkItalic}}%
+  \renewcommand{\mktsStyleFontCjkKaishu}{\mktsFontfileBiaukai}%
+  }\mktsStyleFontsetBase
+
+% ----------------------------------------------------------------------------------------------------------
+% mkts Styles
+% consider to put these into `.master.tex`
+\newcommand{\mktsStyleBold}{%
+  \renewcommand{\mktsFontCjkDefault}{\mktsStyleFontCjkBold}%
+  \mktsStyleFontBold}
+
+\newcommand{\mktsStyleNormal}{%
+  \mktsFontfileEbgaramondtwelveregular%
+  \fontsize{\myFontsize}{\myLineheight}\selectfont}
+
+\newcommand{\mktsStyleItalic}{\mktsStyleFontItalic}
+\newcommand{\mktsStyleSymbol}{\mktsStyleFontSymbol}
+
+% \newcommand{\UG}{\hskip 0mm plus 0.7mm minus 0mm}%
+\makeatletter
+\def\mktsStyleUrl@Glue{\hskip 0mm plus 0.7mm minus 0mm}%
+\newcommand{\mktsStyleUrl}{%
+  \let\g\mktsStyleUrl@Glue%
+  \mktsStyleFontUrl%
+  }
+\makeatother
+
 
 
 % ==========================================================================================================
@@ -191,31 +273,6 @@
 \lineskip=0pt%
 \topskip=\baselineskip%
 
-% ----------------------------------------------------------------------------------------------------------
-% mkts Styles
-% consider to put these into `.master.tex`
-\newcommand{\mktsStyleBold}{%
-  \renewcommand{\mktsFontCjkDefault}{\mktsFontfileCwtexqheibold}
-  % ### TAINT ### consider to use relsize instead
-  \fontsize{0.8\myFontsize}{0.8\myFontsize}\mktsFontfileUbuntub}
-
-
-\newcommand{\mktsStyleNormal}{\mktsFontfileEbgaramondtwelveregular\fontsize{\myFontsize}{\myLineheight}\selectfont}
-
-\newcommand{\mktsStyleItalic}{%
-  \mktsFontfileEbgaramondtwelveitalic}
-
-\newcommand{\mktsStyleSymbol}{%
-  \mktsFontfileSunexta}
-
-% \newcommand{\UG}{\hskip 0mm plus 0.7mm minus 0mm}%
-\makeatletter
-\def\mktsStyleUrl@Glue{\hskip 0mm plus 0.7mm minus 0mm}%
-\newcommand{\mktsStyleUrl}{%
-  \let\g\mktsStyleUrl@Glue%
-  \mktsFontfileSunexta%
-  }
-\makeatother
 
 % ### TAINT need to add space before and after code ###
 \newcommand{\mktsStyleCode}{%
@@ -382,3 +439,44 @@
 \newcommand{\wbf}[1]{{\fontsize{2mm}{2mm}\jzrFontInputMonoCompressedMedium#1}}
 \newcommand{\pageNrText}[1]{{\fontsize{3mm}{5mm}\mktsFontfilePtsans#1}}
 \newcommand{\wbfText}[1]{{\fontsize{3mm}{5mm}\jzrFontInputMonoCompressedMedium#1}}
+
+
+
+
+
+
+
+\newfontface\mktsFontfileBabelstonehan[Path=/home/flow/.fonts/]{BabelStoneHan.ttf}
+\newfontface\mktsFontfileHanamina[Path=/home/flow/.fonts/]{HanaMinA.ttf}
+\newfontface\mktsFontfilesimsun[Path=/home/flow/.local/share/fonts/]{simsun.ttc}
+\newfontface\mktsFontfileSourcehancodejpextralight[Path=/home/flow/.local/share/fonts/]{SourceHanCodeJP-ExtraLight.otf}
+\newfontface\mktsFontfileSourcehancodejpheavy[Path=/home/flow/.local/share/fonts/]{SourceHanCodeJP-Heavy.otf}
+\newfontface\mktsFontfileSourcehancodejplight[Path=/home/flow/.local/share/fonts/]{SourceHanCodeJP-Light.otf}
+\newfontface\mktsFontfileSourcehancodejpmedium[Path=/home/flow/.local/share/fonts/]{SourceHanCodeJP-Medium.otf}
+\newfontface\mktsFontfileSourcehancodejpnormal[Path=/home/flow/.local/share/fonts/]{SourceHanCodeJP-Normal.otf}
+\newfontface\mktsFontfileSourcehancodejpregular[Path=/home/flow/.local/share/fonts/]{SourceHanCodeJP-Regular.otf}
+\newfontface\mktsFontfileFandolfangregular[Path=/usr/local/texlive/2015/texmf-dist/fonts/opentype/public/fandol/]{FandolFang-Regular.otf}
+\newfontface\mktsFontfileFandolheibold[Path=/usr/local/texlive/2015/texmf-dist/fonts/opentype/public/fandol/]{FandolHei-Bold.otf}
+\newfontface\mktsFontfileFandolheiregular[Path=/usr/local/texlive/2015/texmf-dist/fonts/opentype/public/fandol/]{FandolHei-Regular.otf}
+\newfontface\mktsFontfileFandolkairegular[Path=/usr/local/texlive/2015/texmf-dist/fonts/opentype/public/fandol/]{FandolKai-Regular.otf}
+\newfontface\mktsFontfileFandolsongbold[Path=/usr/local/texlive/2015/texmf-dist/fonts/opentype/public/fandol/]{FandolSong-Bold.otf}
+\newfontface\mktsFontfileFandolsongregular[Path=/usr/local/texlive/2015/texmf-dist/fonts/opentype/public/fandol/]{FandolSong-Regular.otf}
+\newfontface\mktsFontfileipaexg[Path=/usr/local/texlive/2015/texmf-dist/fonts/truetype/public/ipaex/]{ipaexg.ttf}
+\newfontface\mktsFontfileipaexm[Path=/usr/local/texlive/2015/texmf-dist/fonts/truetype/public/ipaex/]{ipaexm.ttf}
+\newfontface\mktsFontfileipag[Path=/usr/local/texlive/2015/texmf-dist/fonts/truetype/public/ipaex/]{ipag.ttf}
+\newfontface\mktsFontfileipagp[Path=/usr/local/texlive/2015/texmf-dist/fonts/truetype/public/ipaex/]{ipagp.ttf}
+\newfontface\mktsFontfileipam[Path=/usr/local/texlive/2015/texmf-dist/fonts/truetype/public/ipaex/]{ipam.ttf}
+\newfontface\mktsFontfileipamp[Path=/usr/local/texlive/2015/texmf-dist/fonts/truetype/public/ipaex/]{ipamp.ttf}
+\newfontface\mktsFontfileipaexg[Path=/usr/share/fonts/opentype/ipaexfont-gothic/]{ipaexg.ttf}
+\newfontface\mktsFontfileipaexm[Path=/usr/share/fonts/opentype/ipaexfont-mincho/]{ipaexm.ttf}
+\newfontface\mktsFontfileipag[Path=/usr/share/fonts/opentype/ipafont-gothic/]{ipag.ttf}
+\newfontface\mktsFontfileipagp[Path=/usr/share/fonts/opentype/ipafont-gothic/]{ipagp.ttf}
+\newfontface\mktsFontfileipam[Path=/usr/share/fonts/opentype/ipafont-mincho/]{ipam.ttf}
+\newfontface\mktsFontfileipamp[Path=/usr/share/fonts/opentype/ipafont-mincho/]{ipamp.ttf}
+\newfontface\mktsFontfileukai[Path=/usr/share/fonts/truetype/arphic/]{ukai.ttc}
+\newfontface\mktsFontfileuming[Path=/usr/share/fonts/truetype/arphic/]{uming.ttc}
+\newfontface\mktsFontfileDroidsansfallbackfull[Path=/usr/share/fonts/truetype/droid/]{DroidSansFallbackFull.ttf}
+\newfontface\mktsFontfileDroidsansjapanese[Path=/usr/share/fonts/truetype/droid/]{DroidSansJapanese.ttf}
+\newfontface\mktsFontfilefontsjapanesegothic[Path=/usr/share/fonts/truetype/]{fonts-japanese-gothic.ttf}
+\newfontface\mktsFontfilefontsjapanesemincho[Path=/usr/share/fonts/truetype/]{fonts-japanese-mincho.ttf}
+\newfontface\mktsFontfileTakaopgothic[Path=/usr/share/fonts/truetype/takao-gothic/]{TakaoPGothic.ttf}
