@@ -153,13 +153,13 @@ module.exports = options =
       { texname: 'mktsFontfileFontsjapanesegothic',            filename: 'fonts-japanese-gothic.ttf',           }
       { texname: 'mktsFontfileFontsjapanesemincho',            filename: 'fonts-japanese-mincho.ttf',           }
       { texname: 'mktsFontfileTakaopgothic',                   filename: 'TakaoPGothic.ttf',                    }
-      { texname: 'mktsFontfileSourcehansansbold',              filename: 'SourceHanSans-Bold.ttc',              }
-      { texname: 'mktsFontfileSourcehansansextralight',        filename: 'SourceHanSans-ExtraLight.ttc',        }
-      { texname: 'mktsFontfileSourcehansansheavy',             filename: 'SourceHanSans-Heavy.ttc',             }
-      { texname: 'mktsFontfileSourcehansanslight',             filename: 'SourceHanSans-Light.ttc',             }
-      { texname: 'mktsFontfileSourcehansansmedium',            filename: 'SourceHanSans-Medium.ttc',            }
-      { texname: 'mktsFontfileSourcehansansnormal',            filename: 'SourceHanSans-Normal.ttc',            }
-      { texname: 'mktsFontfileSourcehansansregular',           filename: 'SourceHanSans-Regular.ttc',           }
+      # { texname: 'mktsFontfileSourcehansansbold',              filename: 'SourceHanSans-Bold.ttc',              }
+      # { texname: 'mktsFontfileSourcehansansextralight',        filename: 'SourceHanSans-ExtraLight.ttc',        }
+      # { texname: 'mktsFontfileSourcehansansheavy',             filename: 'SourceHanSans-Heavy.ttc',             }
+      # { texname: 'mktsFontfileSourcehansanslight',             filename: 'SourceHanSans-Light.ttc',             }
+      # { texname: 'mktsFontfileSourcehansansmedium',            filename: 'SourceHanSans-Medium.ttc',            }
+      # { texname: 'mktsFontfileSourcehansansnormal',            filename: 'SourceHanSans-Normal.ttc',            }
+      # { texname: 'mktsFontfileSourcehansansregular',           filename: 'SourceHanSans-Regular.ttc',           }
 
       ]
 
