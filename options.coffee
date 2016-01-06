@@ -126,6 +126,41 @@ module.exports = options =
       { texname: 'mktsFontfileMonoiditalic',                   filename: 'Monoid-Italic.ttf',                   }
       { texname: 'mktsFontfileMonoidregular',                  filename: 'Monoid-Regular.ttf',                  }
       { texname: 'mktsFontfileMonoidretina',                   filename: 'Monoid-Retina.ttf',                   }
+
+      { texname: 'mktsFontfileSimsun',                         filename: 'simsun.ttc',                          }
+      { texname: 'mktsFontfileFandolfangregular',              filename: 'FandolFang-Regular.otf',              }
+      { texname: 'mktsFontfileFandolheibold',                  filename: 'FandolHei-Bold.otf',                  }
+      { texname: 'mktsFontfileFandolheiregular',               filename: 'FandolHei-Regular.otf',               }
+      { texname: 'mktsFontfileFandolkairegular',               filename: 'FandolKai-Regular.otf',               }
+      { texname: 'mktsFontfileFandolsongbold',                 filename: 'FandolSong-Bold.otf',                 }
+      { texname: 'mktsFontfileFandolsongregular',              filename: 'FandolSong-Regular.otf',              }
+      { texname: 'mktsFontfileIpaexg',                         filename: 'ipaexg.ttf',                          }
+      { texname: 'mktsFontfileIpaexm',                         filename: 'ipaexm.ttf',                          }
+      { texname: 'mktsFontfileIpag',                           filename: 'ipag.ttf',                            }
+      { texname: 'mktsFontfileIpagp',                          filename: 'ipagp.ttf',                           }
+      { texname: 'mktsFontfileIpam',                           filename: 'ipam.ttf',                            }
+      { texname: 'mktsFontfileIpamp',                          filename: 'ipamp.ttf',                           }
+      { texname: 'mktsFontfileIpaexg',                         filename: 'ipaexg.ttf',                          }
+      { texname: 'mktsFontfileIpaexm',                         filename: 'ipaexm.ttf',                          }
+      { texname: 'mktsFontfileIpag',                           filename: 'ipag.ttf',                            }
+      { texname: 'mktsFontfileIpagp',                          filename: 'ipagp.ttf',                           }
+      { texname: 'mktsFontfileIpam',                           filename: 'ipam.ttf',                            }
+      { texname: 'mktsFontfileIpamp',                          filename: 'ipamp.ttf',                           }
+      { texname: 'mktsFontfileUkai',                           filename: 'ukai.ttc',                            }
+      { texname: 'mktsFontfileUming',                          filename: 'uming.ttc',                           }
+      { texname: 'mktsFontfileDroidsansfallbackfull',          filename: 'DroidSansFallbackFull.ttf',           }
+      { texname: 'mktsFontfileDroidsansjapanese',              filename: 'DroidSansJapanese.ttf',               }
+      { texname: 'mktsFontfileFontsjapanesegothic',            filename: 'fonts-japanese-gothic.ttf',           }
+      { texname: 'mktsFontfileFontsjapanesemincho',            filename: 'fonts-japanese-mincho.ttf',           }
+      { texname: 'mktsFontfileTakaopgothic',                   filename: 'TakaoPGothic.ttf',                    }
+      { texname: 'mktsFontfileSourcehansansbold',              filename: 'SourceHanSans-Bold.ttc',              }
+      { texname: 'mktsFontfileSourcehansansextralight',        filename: 'SourceHanSans-ExtraLight.ttc',        }
+      { texname: 'mktsFontfileSourcehansansheavy',             filename: 'SourceHanSans-Heavy.ttc',             }
+      { texname: 'mktsFontfileSourcehansanslight',             filename: 'SourceHanSans-Light.ttc',             }
+      { texname: 'mktsFontfileSourcehansansmedium',            filename: 'SourceHanSans-Medium.ttc',            }
+      { texname: 'mktsFontfileSourcehansansnormal',            filename: 'SourceHanSans-Normal.ttc',            }
+      { texname: 'mktsFontfileSourcehansansregular',           filename: 'SourceHanSans-Regular.ttc',           }
+
       ]
 
   #.........................................................................................................
