@@ -1,14 +1,5 @@
 
 
-  
-<<!end>>
-**a-1**
-left to right
-<<<{\cjk{}⿰}>>>
-left-right
-      
-𪷈:⿰氵貫                   
-
 <<(multi-column>>
 
 ## The Extended Ideographic Description Language (IDLx)
@@ -36,7 +27,6 @@ left-right
 | **a-18** |                        ／ |        ／        |                    similar |    |           | 𠉒:⿱从≈电                  |
 | **a-19** |                        ／ |        ／        |         parentheses; group |    | (&#x3000;) | 埊:(⿱山水土)               |
 <<single-column)>>
-<<multi-column)>><<!end>>
 
 
 ## System used in 《汉字信息字典》
