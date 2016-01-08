@@ -102,7 +102,7 @@ MKTS                      = require './main'
     .enable 'normalize'
     .enable 'block'
     .enable 'inline'
-    .enable 'linkify'
+    # .enable 'linkify'
     .enable 'replacements'
     .enable 'smartquotes'
   #.......................................................................................................
@@ -403,7 +403,7 @@ tracker_pattern = /// ^
       if type is 'footnote_block_open'  then within_footnote_block = yes
       #.....................................................................................................
       if within_footnote_block or not S.has_ended
-        urge '@a20g', token[ 'type' ]#, within_footnote_block
+        # urge '@a20g', token[ 'type' ]#, within_footnote_block
         switch type
           # blocks
           when 'heading_open'       then send [ '(', token[ 'tag' ],  null,                         meta, ]
@@ -432,7 +432,7 @@ tracker_pattern = /// ^
               if attribute_name is 'href'
                 last_link_href = attribute_value
                 break
-              send [ '(', 'link', last_link_href, meta, ]
+            send [ '(', 'link', last_link_href, meta, ]
           #  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
           when 'link_close'
             send [ ')', 'link', last_link_href, meta, ]
@@ -821,7 +821,6 @@ tracker_pattern = /// ^
     .pipe @_PRE.$reinject_html_blocks                 S
     # .pipe D.$observe ( event ) => debug '©1', rpr event
     .pipe @_PRE.$rewrite_markdownit_tokens            S
-    # .pipe D.$show '47594-A'
     .pipe MKTS.MACRO_ESCAPER.$expand                  S
     # .pipe D.$show '47594-B'
     .pipe @_PRE.$process_end_command                  S

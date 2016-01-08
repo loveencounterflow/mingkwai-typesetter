@@ -583,16 +583,26 @@ LINEBREAKER               = require './linebreaker'
 
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.INLINE.$code_span = ( S ) =>
+  track = MD_READER.TRACKER.new_tracker '(code-span)'
   #.........................................................................................................
   return $ ( event, send ) =>
+    within_code_span = track.within '(code-span)'
+    track event
     #.......................................................................................................
-    if select event, [ '(', ')', ], 'code-span'
+    if select event, '(', 'code-span'
       send stamp event
+      send [ 'tex', '{\\mktsStyleCode{}', ]
+    #.......................................................................................................
+    else if select event, ')', 'code-span'
+      send [ 'tex', "}", ]
+    #.......................................................................................................
+    else if within_code_span
       [ type, name, text, meta, ] = event
-      if type is '('
-        send [ 'tex', '{\\mktsStyleCode{}', ]
-      else
-        send [ 'tex', "}", ]
+      if text?
+        fragments = LINEBREAKER.fragmentize text
+        # text      = fragments.join "\\g\\allowbreak{}"
+        text      = fragments.join "\\allowbreak{}"
+      send [ type, name, text, meta, ]
     #.......................................................................................................
     else
       send event
@@ -899,19 +909,36 @@ LINEBREAKER               = require './linebreaker'
 
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.INLINE.$link = ( S ) =>
-  ### TAINT make configurable how link is handled (clickable, footnote, inline...) ###
-  ### TAINT consider to re-send footnote event ###
+  cache     = []
+  last_href = null
+  track     = MD_READER.TRACKER.new_tracker '(link)'
   #.........................................................................................................
   return $ ( event, send ) =>
+    within_link = track.within '(link)'
+    track event
+    [ type, name, text, meta, ] = event
     #.......................................................................................................
-    # debug '©97721', event
     if select event, '(', 'link'
       send stamp event
+      last_href = text
+    #.......................................................................................................
     else if select event, ')', 'link'
+      # debug '©97721', event
       send stamp event
-      [ type, name, text, meta, ] = event
-      message                     = @MKTX.TEX.fix_typography_for_tex text, S.options
-      send [ 'tex', "\\footnote{#{message}}", ]
+      for cached_event in cache
+        send cached_event
+      last_href = @MKTX.TEX.fix_typography_for_tex last_href, S.options
+      send [ '(', 'footnote', null,       ( copy meta ), ]
+      send [ '(', 'url',      null,       ( copy meta ), ]
+      send [ '.', 'text',     last_href,  ( copy meta ), ]
+      send [ '.', 'p',        null,       ( copy meta ), ]
+      send [ ')', 'url',      null,       ( copy meta ), ]
+      send [ ')', 'footnote', null,       ( copy meta ), ]
+      cache.length  = 0
+      last_href     = null
+    #.......................................................................................................
+    else if within_link
+      cache.push event
     #.......................................................................................................
     else
       send event
@@ -943,7 +970,6 @@ LINEBREAKER               = require './linebreaker'
           else if fragment.endsWith '/'  then fragment = fragment[ .. fragment.length - 2 ] + "\\g/"
         fragments[ idx ] = fragment
       text = fragments.join "\\g\\allowbreak{}"
-      debug '©66255', text
       send [ type, name, text, meta, ]
     #.......................................................................................................
     else
@@ -1198,6 +1224,7 @@ LINEBREAKER               = require './linebreaker'
     .pipe @JIZURA.$py                                     S
     .pipe @MKTX.MIXED.$raw                                S
     .pipe @MKTX.MIXED.$raw                                S
+    .pipe @MKTX.INLINE.$link                              S
     .pipe @MKTX.MIXED.$footnote                           S
     .pipe @MKTX.MIXED.$footnote.$remove_extra_paragraphs  S
     # .pipe @MKTX.COMMAND.$do                               S
@@ -1216,7 +1243,6 @@ LINEBREAKER               = require './linebreaker'
     .pipe @MKTX.BLOCK.$hr                                 S
     .pipe @MKTX.BLOCK.$unordered_list                     S
     .pipe @MKTX.INLINE.$code_span                         S
-    .pipe @MKTX.INLINE.$link                              S
     .pipe @MKTX.INLINE.$url                               S
     .pipe @MKTX.INLINE.$translate_i_and_b                 S
     .pipe @MKTX.INLINE.$em_and_strong                     S

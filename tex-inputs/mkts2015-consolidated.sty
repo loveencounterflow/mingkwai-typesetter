@@ -115,11 +115,11 @@
 \newcommand{\mktsEnMarkBefore}{}
 \newcommand{\mktsEnMarkAfter}{)\,—\,}
 % \newcommand{\mktsEnStyleMark}[1]{\textsuperscript{#1}}
-\newcommand{\mktsEnStyleMarkMain}{\fontsize{0.8\myFontsize}{0.8\myFontsize}\tfRaise{0.3}}
+\newcommand{\mktsEnStyleMarkMain}{\relscale{0.8}\tfRaise{0.3}}
 \newcommand{\mktsEnStyleMarkNotes}{\mktsStyleNormal}
 \newenvironment{mktsEnNotes}{%
   \mktsEnTitle%
-  \mktsStyleItalic%
+  % \mktsStyleItalic%
   \setlength{\parskip}{0mm}%
   }%
   {}
@@ -169,13 +169,12 @@
   \mktsStyleFontsetNone%
   \renewcommand{\mktsStyleFontDefault}{\mktsFontfileEbgaramondtwelveregular}%
   \renewcommand{\mktsStyleFontItalic}{\mktsFontfileEbgaramondtwelveitalic}%
-  % ### TAINT ### consider to use relsize instead
-  \renewcommand{\mktsStyleFontBold}{\fontsize{0.8\myFontsize}{0.8\myFontsize}\mktsFontfileUbuntub}%
+  \renewcommand{\mktsStyleFontBold}{\relscale{0.8}\mktsFontfileUbuntub}%
   % \renewcommand{\mktsStyleFontBoldItalic}{\mktsStyleFontThrowUndefined{BoldItalic}}%
   % \renewcommand{\mktsStyleFontItalicBold}{\mktsStyleFontThrowUndefined{ItalicBold}}%
   \renewcommand{\mktsStyleFontSymbol}{\mktsFontfileSunexta}%
   % \renewcommand{\mktsStyleFontCode}{\mktsStyleFontThrowUndefined{Code}}%
-  \renewcommand{\mktsStyleFontUrl}{\mktsFontfileUbuntuc}%
+  \renewcommand{\mktsStyleFontUrl}{\relscale{0.8}\mktsFontfileUbuntuc}%
   \renewcommand{\mktsStyleFontCjkDefault}{\mktsFontfileSunexta}%
   \renewcommand{\mktsStyleFontCjkBold}{\mktsFontfileSourcehansansbold}%
   % \renewcommand{\mktsStyleFontCjkItalic}{\mktsStyleFontThrowUndefined{CjkItalic}}%

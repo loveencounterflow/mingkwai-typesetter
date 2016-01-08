@@ -1,0 +1,59 @@
+
+% begin of MD document
+
+
+\vspace{\myLineheight}\begin{multicols}{2}\raggedcolumns{}
+
+\end{multicols}
+
+
+\section{URLs, Footnotes, and Links
+}
+
+
+\vspace{\myLineheight}\begin{multicols}{2}\raggedcolumns{}
+\subsection{URLs
+}
+{\mktsStyleUrl{}https:\g/\g/\g\allowbreak{}link.com/2}
+
+{\mktsStyleUrl{}https:\g/\g/\g\allowbreak{}example.com\g/\g\allowbreak{}a\g/\g\allowbreak{}uniform\g/\g\allowbreak{}resource}
+
+An example {\mktsStyleUrl{}https:\g/\g/\g\allowbreak{}example.com\g/\g\allowbreak{}a\g/\g\allowbreak{}uniform\g/\g\allowbreak{}resource} for a URL.
+And yet {\mktsStyleUrl{}http:\g/\g/\g\allowbreak{}x.com} another one.
+
+{\mktsStyleUrl{}https:\g/\g/\g\allowbreak{}example.com\g/\g\allowbreak{}a\g/\g\allowbreak{}uniform\g/\g\allowbreak{}resource\g/\g\allowbreak{}locator\g/\g\allowbreak{}commonly\g/\g\allowbreak{}informally\g/\g\allowbreak{}termed\g/\g\allowbreak{}a\g/\g\allowbreak{}web\g/\g\allowbreak{}address\g/\g\allowbreak{}is\g/\g\allowbreak{}a\g/\g\allowbreak{}reference\g/\g\allowbreak{}to\g/\g\allowbreak{}a\g/\g\allowbreak{}web\g/\g\allowbreak{}resource\g/\g\allowbreak{}that\g/\g\allowbreak{}specifies\g/\g\allowbreak{}its\g/\g\allowbreak{}location\g/\g\allowbreak{}on\g/\g\allowbreak{}a\g/\g\allowbreak{}computer\g/\g\allowbreak{}network\g/\g\allowbreak{}and\g/\g\allowbreak{}a\g/\g\allowbreak{}mechanism\g/\g\allowbreak{}for\g/\g\allowbreak{}retrieving\g/\g\allowbreak{}it}
+
+
+\subsection{Footnotes
+}
+foo{\mktsEnStyleMarkMain{}1}
+
+
+\subsection{Links
+}
+When MD link syntax is used {\mktsStyleCode{}[like \allowbreak{}here]\allowbreak{}(https://\allowbreak{}example.com/\allowbreak{}\#like)}
+like here{\mktsEnStyleMarkMain{}2}, a footnote is generated; a footnote mark
+(a superscript number) is placed after the linked text, and the URL will appear in
+the footnotes wherever they will be generated. Since the anchor text is in no way
+marked, it is possible to achieve the same effect by leaving the anchor text
+empty; however, if you intend to use the same source for other output formats,
+it would probably be a good idea to always use a non-empty anchor text.{\mktsEnStyleMarkMain{}3}
+
+
+
+\begin{mktsEnNotes}{\mktsEnStyleMarkNotes\mktsEnMarkBefore1\mktsEnMarkAfter{}}bar
+
+{\mktsEnStyleMarkNotes\mktsEnMarkBefore2\mktsEnMarkAfter{}}{\mktsStyleUrl{}https:\g/\g/\g\allowbreak{}example.com\g/\g\allowbreak{}\#like
+
+}{\mktsEnStyleMarkNotes\mktsEnMarkBefore3\mktsEnMarkAfter{}}... and not
+to use 'click here' and similar wordings that only make sense in an interactive setting.
+
+\end{mktsEnNotes}
+
+
+\end{multicols}
+
+
+
+
+% end of MD document
