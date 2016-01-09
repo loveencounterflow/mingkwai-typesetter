@@ -296,19 +296,25 @@
   {\mktsStyleSymbol{}█}}%
   }
 
-\renewcommand{\chapter}[1]{{%
-  % \vspace{\myLineheight}%
-  \centering\mktsStyleBold{}* #1 *\\%
-  % \vspace{\myLineheight}%
+\newcommand{\mktsHOne}{%
+  \centering%
+  \mktsStyleBold%
+  *~%
   % \nopagebreak% ???
-  \par}}
-\renewcommand{\section}[1]{{%
-  % \vspace{\myLineheight}%
-  \centering\mktsStyleBold{}** #1 **\\%
-  % \vspace{\myLineheight}%
+  \par%
+  \par%
+  }
+\newcommand{\mktsHTwo}{%
+  \centering%
+  \mktsStyleBold%
+  **~%
   % \nopagebreak% ???
-  \par}}
-\renewcommand{\subsection}[1]{{\mktsStyleBold{}*** #1 ***}\par}
+  \par%
+  }
+\newcommand{\mktsHThree}{%
+  \mktsStyleBold{}***%
+  \par%
+  }
 
 % \newenvironment{mktsEnvWarning}[2]%
 %   {\newcommand{\mktsEnvWarningStopChr}{#2}

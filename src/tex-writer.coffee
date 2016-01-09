@@ -484,9 +484,9 @@ LINEBREAKER               = require './linebreaker'
         send [ 'tex', "\n", ]
         #...................................................................................................
         switch name
-          when 'h1' then  send [ 'tex', "\\chapter{", ]
-          when 'h2' then  send [ 'tex', "\\section{", ]
-          else            send [ 'tex', "\\subsection{", ]
+          when 'h1' then  send [ 'tex', "\\mktsHOne{", ]
+          when 'h2' then  send [ 'tex', "\\mktsHTwo{", ]
+          else            send [ 'tex', "\\mktsHThree{", ]
       #.....................................................................................................
       # CLOSE
       #.....................................................................................................
