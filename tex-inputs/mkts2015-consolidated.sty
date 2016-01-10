@@ -14,6 +14,7 @@
 % \XeTeXlinebreakskip 0pt plus 0.1pt% sets the skip
 
 \usepackage{leading}
+\usepackage{etextools}
 \usepackage{relsize}
 % \usepackage{/Volumes/Storage/io/jizura-xelatex/tex-inputs/utils}
 % \usepackage{/Users/flow/JIZURA/flow/dictionary/tex-inputs/accentbx/accentbx}
@@ -299,21 +300,23 @@
 \newcommand{\mktsHOne}{%
   \centering%
   \mktsStyleBold%
+  \setlength{\baselineskip}{2\myLineheight}%
+  \relscale{2}%
   *~%
   % \nopagebreak% ???
-  \par%
-  \par%
+  \AfterGroup{\par}%
   }
 \newcommand{\mktsHTwo}{%
   \centering%
+  \relscale{1.5}%
   \mktsStyleBold%
   **~%
   % \nopagebreak% ???
-  \par%
+  \AfterGroup{\par}%
   }
 \newcommand{\mktsHThree}{%
   \mktsStyleBold{}***%
-  \par%
+  \AfterGroup{\par}%
   }
 
 % \newenvironment{mktsEnvWarning}[2]%

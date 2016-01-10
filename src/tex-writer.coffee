@@ -1,7 +1,6 @@
 
 
 
-
 ############################################################################################################
 njs_path                  = require 'path'
 njs_fs                    = require 'fs'
@@ -468,36 +467,66 @@ LINEBREAKER               = require './linebreaker'
     within_multi_column = track.within '(multi-column)'
     track event
     #.......................................................................................................
-    if select event, [ '(', ')', ], [ 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', ]
-      # debug '@rg19TQ', event
+    if select event, '(', [ 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', ]
       send stamp event
       [ type, name, text, meta, ] = event
       #.....................................................................................................
-      # OPEN
+      if within_multi_column and ( name in [ 'h1', 'h2', ] )
+        send track @MKTX.REGION._end_multi_column meta
+        restart_multicols = yes
       #.....................................................................................................
-      if type is '('
-        #...................................................................................................
-        if within_multi_column and ( name in [ 'h1', 'h2', ] )
-          send track @MKTX.REGION._end_multi_column meta
-          restart_multicols = yes
-        #...................................................................................................
-        send [ 'tex', "\n", ]
-        #...................................................................................................
-        switch name
-          when 'h1' then  send [ 'tex', "\\mktsHOne{", ]
-          when 'h2' then  send [ 'tex', "\\mktsHTwo{", ]
-          else            send [ 'tex', "\\mktsHThree{", ]
+      send [ 'tex', "\n", ]
       #.....................................................................................................
-      # CLOSE
+      debug '9878', event
+      switch name
+        when 'h1' then  send [ 'tex', "{\\mktsHOne{}", ]
+        when 'h2' then  send [ 'tex', "{\\mktsHTwo{}", ]
+        else            send [ 'tex', "{\\mktsHThree{}", ]
+    #.......................................................................................................
+    else if select event, ')', [ 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', ]
+      send stamp event
+      send [ 'tex', "}\n\n", ]
       #.....................................................................................................
+      if restart_multicols
+        send track @MKTX.REGION._begin_multi_column meta
+        restart_multicols = no
+    #.......................................................................................................
+    else
+      send event
+
+#-----------------------------------------------------------------------------------------------------------
+@MKTX.BLOCK.$yadda = ( S ) =>
+  track           = MD_READER.TRACKER.new_tracker '(multi-column)'
+  generate_yadda  = require 'lorem-ipsum'
+  settings        =
+    count:                1                       # Number of words, sentences, or paragraphs to generate.
+    # units:                'sentences'             # Generate words, sentences, or paragraphs.
+    units:                'paragraphs'            # Generate words, sentences, or paragraphs.
+    sentenceLowerBound:   5                       # Minimum words per sentence.
+    sentenceUpperBound:   15                      # Maximum words per sentence.
+    paragraphLowerBound:  3                       # Minimum sentences per paragraph.
+    paragraphUpperBound:  7                       # Maximum sentences per paragraph.
+    format:               'plain'                 # Plain text or html
+    # words:                ['ad', 'dolor', ... ]   # Custom word dictionary. Uses dictionary.words (in lib/dictionary.js) by default.
+    # random:               Math.random             # A PRNG function. Uses Math.random by default
+    suffix:               '\n'                    # The character to insert between paragraphs. Defaults to default EOL for your OS.
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    within_multi_column = track.within '(multi-column)'
+    track event
+    if select event, '!', 'yadda'
+      [ type, name, text, meta, ] = event
+      if within_multi_column
+        settings[ 'paragraphLowerBound' ] = 3
+        settings[ 'paragraphUpperBound' ] = 7
       else
-        ### Placing the closing brace on a new line seems to improve line breaking ###
-        send [ 'tex', "\n", ]
-        send [ 'tex', "}", ]
-        send [ 'tex', "\n", ]
-        if restart_multicols
-          send track @MKTX.REGION._begin_multi_column meta
-          restart_multicols = no
+        settings[ 'paragraphLowerBound' ] = 6
+        settings[ 'paragraphUpperBound' ] = 12
+      yadda = generate_yadda settings
+      yadda = @MKTX.TEX.fix_typography_for_tex yadda, S.options
+      send stamp event
+      send [ 'tex', yadda, ]
+      send [ '.', 'p', null, ( copy meta ), ]
     #.......................................................................................................
     else
       send event
@@ -1249,6 +1278,7 @@ LINEBREAKER               = require './linebreaker'
     .pipe @MKTX.INLINE.$image                             S
     .pipe @$custom_stuff_late                             S
     .pipe @MKTX.CLEANUP.$drop_empty_p_tags                S
+    .pipe @MKTX.BLOCK.$yadda                              S
     .pipe @MKTX.BLOCK.$paragraph                          S
     .pipe @MKTX.CLEANUP.$remove_empty_texts               S
     .pipe MKTSCRIPT_WRITER.$show_mktsmd_events            S
