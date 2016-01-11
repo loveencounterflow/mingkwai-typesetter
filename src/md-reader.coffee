@@ -705,6 +705,11 @@ tracker_pattern = /// ^
   return event
 
 #-----------------------------------------------------------------------------------------------------------
+@unstamp = ( event ) ->
+  event[ 3 ] = @copy event[ 3 ], { stamped: no, }
+  return event
+
+#-----------------------------------------------------------------------------------------------------------
 @is_stamped   = ( event ) -> event[ 3 ]?[ 'stamped' ] is true
 @is_unstamped = ( event ) -> not @is_stamped event
 

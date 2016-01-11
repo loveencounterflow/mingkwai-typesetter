@@ -300,30 +300,50 @@
 
 \newcommand{\mktsHOne}{%
   % \newpage%
+  \clearpage%
   \centering%
   \mktsStyleBold%
   \setlength{\baselineskip}{2\myLineheight}%
   \relscale{2}%
-  *~%
+  % TEXT BEFORE HEADING GOES HERE %
   % \nopagebreak% ???
-  \AfterGroup{\par}%
+  \AfterGroup{
+    \null\par%
+    \null\par%
+    }%
   }
 \newcommand{\mktsHTwo}{%
   \Needspace{7.5\myLineheight}% ???
   \centering%
+  \null\par%
+  \null\par%
   \relscale{1.5}%
   \mktsStyleBold%
-  **~%
-  % \AfterGroup{\par}%
+  % TEXT BEFORE HEADING GOES HERE %
+  \AfterGroup{
+    \null\par%
+    }%
   }
 \newcommand{\mktsHThree}{%
-  \mktsStyleBold{}***%
+  \mktsStyleBold{}%
+  % TEXT BEFORE HEADING GOES HERE %
   % \AfterGroup{\par}%
   }
 
-\newcommand{\mktsHOneBEG}{~*\par}
-\newcommand{\mktsHTwoBEG}{~**\par}
-\newcommand{\mktsHThreeBEG}{~***\par}
+% BEG = Before End Group; sadly not possible in TeX, see
+% http://tex.stackexchange.com/questions/286866/beforeendgroup-similar-to-aftergroup
+\newcommand{\mktsHOneBEG}{%
+  \par%
+  % \null\par%
+  }
+\newcommand{\mktsHTwoBEG}{%
+  \par%
+  % \null\par%
+  }
+\newcommand{\mktsHThreeBEG}{%
+  \par%
+  % \null\par%
+  }
 
 
 % \newenvironment{mktsEnvWarning}[2]%

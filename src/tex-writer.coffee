@@ -41,6 +41,7 @@ MD_READER                 = require './md-reader'
 hide                      = MD_READER.hide.bind        MD_READER
 copy                      = MD_READER.copy.bind        MD_READER
 stamp                     = MD_READER.stamp.bind       MD_READER
+unstamp                   = MD_READER.unstamp.bind     MD_READER
 select                    = MD_READER.select.bind      MD_READER
 is_hidden                 = MD_READER.is_hidden.bind   MD_READER
 is_stamped                = MD_READER.is_stamped.bind  MD_READER
@@ -462,34 +463,102 @@ LINEBREAKER               = require './linebreaker'
 @MKTX.BLOCK.$heading = ( S ) =>
   restart_multicols = no
   track             = MD_READER.TRACKER.new_tracker '(multi-column)'
+  ### TAINT make numbering style configurable ###
+  ### TAINT generalize for more than 3 levels ###
+  h_nrs             = [ 1, 1, 1, ]
+  level             = null
+  h_idx             = null
   #.........................................................................................................
   return $ ( event, send ) =>
     within_multi_column = track.within '(multi-column)'
     track event
     #.......................................................................................................
-    if select event, '(', [ 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', ]
-      send stamp event
+    if select event, [ '(', ')', ], [ 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', ]
       [ type, name, text, meta, ] = event
+      ### TAINT will change; level set as 2nd argument in `rewrite_md_tokens` ###
+      level = switch name
+        when 'h1'  then 1
+        when 'h2'  then 2
+        else            3
       #.....................................................................................................
-      if within_multi_column and ( name in [ 'h1', 'h2', ] )
-        send track @MKTX.REGION._end_multi_column meta
-        restart_multicols = yes
+      if type is '('
+        if within_multi_column and ( name in [ 'h1', 'h2', ] )
+          send track @MKTX.REGION._end_multi_column meta
+          restart_multicols = yes
+        #...................................................................................................
+        send [ 'tex', "\n", ]
+        send stamp event
+        #...................................................................................................
+        switch level
+          when 1 then send [ 'tex', "{\\mktsHOne{}", ]
+          when 2 then send [ 'tex', "{\\mktsHTwo{}", ]
+          when 3 then send [ 'tex', "{\\mktsHThree{}", ]
+          else return send [ '.', 'warning', "heading level #{level} not implemented", ( copy meta ), ]
+        send [ '!', 'mark', name, ( copy meta ), ]
+        # send [ 'tex', "(#{name})~", ]
       #.....................................................................................................
-      send [ 'tex', "\n", ]
-      #.....................................................................................................
-      debug '9878', event
-      switch name
-        when 'h1' then  send [ 'tex', "{\\mktsHOne{}", ]
-        when 'h2' then  send [ 'tex', "{\\mktsHTwo{}", ]
-        else            send [ 'tex', "{\\mktsHThree{}", ]
+      else
+        send stamp event
+        switch level
+          when 1 then send [ 'tex', "\\mktsHOneBEG}", ]
+          when 2 then send [ 'tex', "\\mktsHTwoBEG}", ]
+          when 3 then send [ 'tex', "\\mktsHThreeBEG}", ]
+          else return send [ '.', 'warning', "heading level #{level} not implemented", ( copy meta ), ]
+        #...................................................................................................
+        if restart_multicols
+          send track @MKTX.REGION._begin_multi_column meta
+          restart_multicols = no
+    #.......................................................................................................
+    else
+      send event
+
+#-----------------------------------------------------------------------------------------------------------
+@MKTX.BLOCK.$toc = ( S ) =>
+  within_heading  = no
+  this_heading    = null
+  headings        = []
+  #.........................................................................................................
+  new_heading = ( level ) ->
+    R =
+      level:    level
+      events:   []
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    [ type, name, text, meta, ] = event
+    #.......................................................................................................
+    if select event, '(', [ 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', ]
+      ### TAINT will change; level set as 2nd argument in `rewrite_md_tokens` ###
+      level = switch name
+        when 'h1'  then 1
+        when 'h2'  then 2
+        else            3
+      within_heading  = yes
+      this_heading    = new_heading level
+      headings.push this_heading
+      send event
     #.......................................................................................................
     else if select event, ')', [ 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', ]
+      within_heading  = no
+      this_heading    = null
+      send event
+    #.......................................................................................................
+    else if within_heading
+      ### TAINT use library method to determine event category ###
+      if event.length is 4
+        this_heading[ 'events' ].push [ type, name, text, ( copy meta ), ]
+      else
+        this_heading[ 'events' ].push event
+      send event
+    #.......................................................................................................
+    else if select event, '!', 'toc'
       send stamp event
-      send [ 'tex', "}\n\n", ]
-      #.....................................................................................................
-      if restart_multicols
-        send track @MKTX.REGION._begin_multi_column meta
-        restart_multicols = no
+      send [ '!', 'mark', 'toc', ( copy meta ), ]
+      for heading in headings
+        { level, events, } = heading
+        for h_event in events
+          ### TAINT use library method to determine event category ###
+          h_event = unstamp h_event if h_event.length is 4
+          send h_event
     #.......................................................................................................
     else
       send event
@@ -508,7 +577,7 @@ LINEBREAKER               = require './linebreaker'
     paragraphUpperBound:  7                       # Maximum sentences per paragraph.
     format:               'plain'                 # Plain text or html
     # words:                ['ad', 'dolor', ... ]   # Custom word dictionary. Uses dictionary.words (in lib/dictionary.js) by default.
-    # random:               Math.random             # A PRNG function. Uses Math.random by default
+    random:               CND.get_rnd 42, 3       # A PRNG function. Uses Math.random by default
     suffix:               '\n'                    # The character to insert between paragraphs. Defaults to default EOL for your OS.
   #.........................................................................................................
   return $ ( event, send ) =>
@@ -1233,12 +1302,14 @@ LINEBREAKER               = require './linebreaker'
   #.......................................................................................................
   readstream    = D.create_throughstream()
   writestream   = D.create_throughstream()
-  # mktscript_in  = D.create_throughstream()
-  # mktscript_out = D.create_throughstream()
+  mktscript_in  = D.create_throughstream()
+  mktscript_out = D.create_throughstream()
   #.......................................................................................................
+  ### TAINT need a file to write MKTScript text events to; must still send on incoming events ###
   # mktscript_in
-  #   .pipe MKTS.$produce_mktscript                         S
+  #   .pipe MKTSCRIPT_WRITER.$produce_mktscript             S
   #   .pipe mktscript_out
+  # mktscript_tee = D.TEE.from_readwritestreams mktscript_in, mktscript_out
   #.......................................................................................................
   readstream
     .pipe @$custom_stuff_early                            S
@@ -1269,6 +1340,7 @@ LINEBREAKER               = require './linebreaker'
     .pipe @MKTX.REGION.$code                              S
     .pipe @MKTX.REGION.$keep_lines                        S
     .pipe @MKTX.BLOCK.$heading                            S
+    .pipe @MKTX.BLOCK.$toc                                S
     .pipe @MKTX.BLOCK.$hr                                 S
     .pipe @MKTX.BLOCK.$unordered_list                     S
     .pipe @MKTX.INLINE.$code_span                         S
@@ -1282,7 +1354,7 @@ LINEBREAKER               = require './linebreaker'
     .pipe @MKTX.BLOCK.$paragraph                          S
     .pipe @MKTX.CLEANUP.$remove_empty_texts               S
     .pipe MKTSCRIPT_WRITER.$show_mktsmd_events            S
-    # .pipe mktscript_in
+    # .pipe mktscript_tee
     .pipe @MKTX.INLINE.$mark                              S
     .pipe @MKTX.$show_unhandled_tags                      S
     .pipe @MKTX.$show_warnings                            S

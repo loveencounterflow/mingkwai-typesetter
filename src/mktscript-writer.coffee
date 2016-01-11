@@ -152,7 +152,7 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
   #.........................................................................................................
   return $ ( event, send, end ) ->
     if event?
-      # debug '©Yo4cR', rpr event
+      debug '©Yo4cR', rpr event
       [ type, name, text, meta, ] = event
       unless type in [ 'tex', 'text', ]
         { line_nr, } = meta
