@@ -16,6 +16,7 @@
 \usepackage{leading}
 \usepackage{etextools}
 \usepackage{relsize}
+\usepackage{needspace}
 % \usepackage{/Volumes/Storage/io/jizura-xelatex/tex-inputs/utils}
 % \usepackage{/Users/flow/JIZURA/flow/dictionary/tex-inputs/accentbx/accentbx}
 \usepackage{cxltx-style-accentbox}
@@ -298,6 +299,7 @@
   }
 
 \newcommand{\mktsHOne}{%
+  % \newpage%
   \centering%
   \mktsStyleBold%
   \setlength{\baselineskip}{2\myLineheight}%
@@ -307,17 +309,22 @@
   \AfterGroup{\par}%
   }
 \newcommand{\mktsHTwo}{%
+  \Needspace{7.5\myLineheight}% ???
   \centering%
   \relscale{1.5}%
   \mktsStyleBold%
   **~%
-  % \nopagebreak% ???
-  \AfterGroup{\par}%
+  % \AfterGroup{\par}%
   }
 \newcommand{\mktsHThree}{%
   \mktsStyleBold{}***%
-  \AfterGroup{\par}%
+  % \AfterGroup{\par}%
   }
+
+\newcommand{\mktsHOneBEG}{~*\par}
+\newcommand{\mktsHTwoBEG}{~**\par}
+\newcommand{\mktsHThreeBEG}{~***\par}
+
 
 % \newenvironment{mktsEnvWarning}[2]%
 %   {\newcommand{\mktsEnvWarningStopChr}{#2}
