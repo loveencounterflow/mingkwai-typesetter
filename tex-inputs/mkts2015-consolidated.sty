@@ -345,33 +345,31 @@
   % \null\par%
   }
 
-\newcommand{\mktsHOneToc}{%
-  \mktsStyleBold{}
-  \AfterGroup{%
-    \null\par%
-    }%
+\newenvironment{mktsToc}{%
+  {\mktsHOne{}TOC}\mktsHOneBEG%
+  \setlength{\parskip}{0mm}%
+  \renewcommand{\mktsHOne}{%
+    \mktsStyleBold{}
+    }
+  \renewcommand{\mktsHTwo}{%
+    \mktsStyleItalic{}
+    }
+  \renewcommand{\mktsHThree}{%
+    \mktsStyleItalic{}
+    }
+  \renewcommand{\mktsHOneBEG}{%
+    \par%
+    }
+  \renewcommand{\mktsHTwoBEG}{%
+    \par%
+    }
+  \renewcommand{\mktsHThreeBEG}{%
+    \par%
+    }
+  }%
+{%
   }
-\newcommand{\mktsHTwoToc}{%
-  \mktsStyleItalic{}
-  \AfterGroup{%
-    \null\par%
-    }%
-  }
-\newcommand{\mktsHThreeToc}{%
-  \mktsStyleItalic{}
-  \AfterGroup{%
-    \null\par%
-    }%
-  }
-\newcommand{\mktsHOneTocBEG}{%
-  \par%
-  }
-\newcommand{\mktsHTwoTocBEG}{%
-  \par%
-  }
-\newcommand{\mktsHThreeTocBEG}{%
-  \par%
-  }
+
 
 % \newenvironment{mktsEnvWarning}[2]%
 %   {\newcommand{\mktsEnvWarningStopChr}{#2}

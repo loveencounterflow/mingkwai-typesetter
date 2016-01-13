@@ -485,31 +485,39 @@ LINEBREAKER               = require './linebreaker'
       #.....................................................................................................
       switch level
         when 1
-          send [ 'tex', "{\\mktsHOne{}",        { toc: 'omit', }, ]
-          send [ 'tex', "{\\mktsHOneToc{}",     { toc: 'only', }, ]
+          send [ 'tex', "{\\mktsHOne{}",              ]
+          # send [ 'tex', "{\\mktsHOne{}",            { toc: 'omit', }, ]
+          # send [ 'tex', "{\\mktsHOneToc{}",         { toc: 'only', }, ]
         when 2
-          send [ 'tex', "{\\mktsHTwo{}",        { toc: 'omit', }, ]
-          send [ 'tex', "{\\mktsHTwoToc{}",     { toc: 'only', }, ]
+          send [ 'tex', "{\\mktsHTwo{}",              ]
+          # send [ 'tex', "{\\mktsHTwo{}",            { toc: 'omit', }, ]
+          # send [ 'tex', "{\\mktsHTwoToc{}",         { toc: 'only', }, ]
         when 3
-          send [ 'tex', "{\\mktsHThree{}",      { toc: 'omit', }, ]
-          send [ 'tex', "{\\mktsHThreeToc{}",   { toc: 'only', }, ]
+          send [ 'tex', "{\\mktsHThree{}",            ]
+          # send [ 'tex', "{\\mktsHThree{}",          { toc: 'omit', }, ]
+          # send [ 'tex', "{\\mktsHThreeToc{}",       { toc: 'only', }, ]
         else return send [ '.', 'warning', "heading level #{level} not implemented", ( copy meta ), ]
-      send [ '!', 'mark', name + level, ( copy meta ), ]
+      # send [ '!', 'mark', name + level, ( copy meta ), ]
     #.......................................................................................................
     else if select event, ')', 'h'
       [ type, name, level, meta, ] = event
-      send stamp event
+      #.....................................................................................................
       switch level
         when 1
-          send [ 'tex', "\\mktsHOneBEG}",       { toc: 'omit', }, ]
-          send [ 'tex', "\\mktsHOneTocBEG}",    { toc: 'only', }, ]
+          send [ 'tex', "\\mktsHOneBEG}%\n",          ]
+          # send [ 'tex', "\\mktsHOneBEG}%\n",        { toc: 'omit', }, ]
+          # send [ 'tex', "\\mktsHOneTocBEG}%\n",     { toc: 'only', }, ]
         when 2
-          send [ 'tex', "\\mktsHTwoBEG}",       { toc: 'omit', }, ]
-          send [ 'tex', "\\mktsHTwoTocBEG}",    { toc: 'only', }, ]
+          send [ 'tex', "\\mktsHTwoBEG}%\n",          ]
+          # send [ 'tex', "\\mktsHTwoBEG}%\n",        { toc: 'omit', }, ]
+          # send [ 'tex', "\\mktsHTwoTocBEG}%\n",     { toc: 'only', }, ]
         when 3
-          send [ 'tex', "\\mktsHThreeBEG}",     { toc: 'omit', }, ]
-          send [ 'tex', "\\mktsHThreeTocBEG}",  { toc: 'only', }, ]
+          send [ 'tex', "\\mktsHThreeBEG}%\n",        ]
+          # send [ 'tex', "\\mktsHThreeBEG}%\n",      { toc: 'omit', }, ]
+          # send [ 'tex', "\\mktsHThreeTocBEG}%\n",   { toc: 'only', }, ]
         else return send [ '.', 'warning', "heading level #{level} not implemented", ( copy meta ), ]
+      #.....................................................................................................
+      send stamp event
       #.....................................................................................................
       if restart_multicols
         send track @MKTX.REGION._begin_multi_column meta
@@ -559,13 +567,15 @@ LINEBREAKER               = require './linebreaker'
     else if select event, '!', 'toc'
       send stamp event
       [ type, name, text, meta, ] = event
-      send [ '!', 'mark', 'toc', ( copy meta ), ]
+      send [ 'tex', '\\begin{mktsToc}%\n', ]
+      # send [ '!', 'mark', 'toc', ( copy meta ), ]
       for heading in headings
         { level, events, } = heading
         for h_event in events
           ### TAINT use library method to determine event category ###
           h_event = unstamp h_event if h_event.length is 4
           send h_event
+      send [ 'tex', '\\end{mktsToc}%\n', ]
       headings.length = 0
     #.......................................................................................................
     else

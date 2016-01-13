@@ -186,3 +186,4 @@ INPUT /usr/local/texlive/2015/texmf-dist/tex/latex/microtype/mt-LatinModernRoman
 INPUT /usr/local/texlive/2015/texmf-dist/tex/latex/microtype/mt-LatinModernRoman.cfg
 INPUT /home/flow/io/mingkwai-typesetter/texts/headings/.content.tex
 INPUT /home/flow/io/mingkwai-typesetter/texts/headings/.content.tex
+INPUT /home/flow/io/mingkwai-typesetter/texts/headings/headings.aux
