@@ -554,7 +554,7 @@ LINEBREAKER               = require './linebreaker'
     #.......................................................................................................
     else if within_heading
       ### TAINT use library method to determine event category ###
-      debug '2342', event, event[ event.length - 1 ][ 'toc' ]
+      # debug '2342', event, event[ event.length - 1 ][ 'toc' ]
       unless event[ event.length - 1 ][ 'toc' ] is 'omit'
         if event.length is 4
           [ type, name, text, meta, ] = event
