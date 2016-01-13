@@ -466,48 +466,54 @@ LINEBREAKER               = require './linebreaker'
   ### TAINT make numbering style configurable ###
   ### TAINT generalize for more than 3 levels ###
   h_nrs             = [ 1, 1, 1, ]
-  level             = null
+  # h_level           = null
   h_idx             = null
   #.........................................................................................................
   return $ ( event, send ) =>
     within_multi_column = track.within '(multi-column)'
     track event
     #.......................................................................................................
-    if select event, [ '(', ')', ], [ 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', ]
-      [ type, name, text, meta, ] = event
-      ### TAINT will change; level set as 2nd argument in `rewrite_md_tokens` ###
-      level = switch name
-        when 'h1'  then 1
-        when 'h2'  then 2
-        else            3
+    if select event, '(', 'h'
+      [ type, name, level, meta, ] = event
       #.....................................................................................................
-      if type is '('
-        if within_multi_column and ( name in [ 'h1', 'h2', ] )
-          send track @MKTX.REGION._end_multi_column meta
-          restart_multicols = yes
-        #...................................................................................................
-        send [ 'tex', "\n", ]
-        send stamp event
-        #...................................................................................................
-        switch level
-          when 1 then send [ 'tex', "{\\mktsHOne{}", ]
-          when 2 then send [ 'tex', "{\\mktsHTwo{}", ]
-          when 3 then send [ 'tex', "{\\mktsHThree{}", ]
-          else return send [ '.', 'warning', "heading level #{level} not implemented", ( copy meta ), ]
-        send [ '!', 'mark', name, ( copy meta ), ]
-        # send [ 'tex', "(#{name})~", ]
+      if within_multi_column and level <= 2
+        send track @MKTX.REGION._end_multi_column meta
+        restart_multicols = yes
       #.....................................................................................................
-      else
-        send stamp event
-        switch level
-          when 1 then send [ 'tex', "\\mktsHOneBEG}", ]
-          when 2 then send [ 'tex', "\\mktsHTwoBEG}", ]
-          when 3 then send [ 'tex', "\\mktsHThreeBEG}", ]
-          else return send [ '.', 'warning', "heading level #{level} not implemented", ( copy meta ), ]
-        #...................................................................................................
-        if restart_multicols
-          send track @MKTX.REGION._begin_multi_column meta
-          restart_multicols = no
+      send [ 'tex', "\n", ]
+      send stamp event
+      #.....................................................................................................
+      switch level
+        when 1
+          send [ 'tex', "{\\mktsHOne{}",        { toc: 'omit', }, ]
+          send [ 'tex', "{\\mktsHOneToc{}",     { toc: 'only', }, ]
+        when 2
+          send [ 'tex', "{\\mktsHTwo{}",        { toc: 'omit', }, ]
+          send [ 'tex', "{\\mktsHTwoToc{}",     { toc: 'only', }, ]
+        when 3
+          send [ 'tex', "{\\mktsHThree{}",      { toc: 'omit', }, ]
+          send [ 'tex', "{\\mktsHThreeToc{}",   { toc: 'only', }, ]
+        else return send [ '.', 'warning', "heading level #{level} not implemented", ( copy meta ), ]
+      send [ '!', 'mark', name + level, ( copy meta ), ]
+    #.......................................................................................................
+    else if select event, ')', 'h'
+      [ type, name, level, meta, ] = event
+      send stamp event
+      switch level
+        when 1
+          send [ 'tex', "\\mktsHOneBEG}",       { toc: 'omit', }, ]
+          send [ 'tex', "\\mktsHOneTocBEG}",    { toc: 'only', }, ]
+        when 2
+          send [ 'tex', "\\mktsHTwoBEG}",       { toc: 'omit', }, ]
+          send [ 'tex', "\\mktsHTwoTocBEG}",    { toc: 'only', }, ]
+        when 3
+          send [ 'tex', "\\mktsHThreeBEG}",     { toc: 'omit', }, ]
+          send [ 'tex', "\\mktsHThreeTocBEG}",  { toc: 'only', }, ]
+        else return send [ '.', 'warning', "heading level #{level} not implemented", ( copy meta ), ]
+      #.....................................................................................................
+      if restart_multicols
+        send track @MKTX.REGION._begin_multi_column meta
+        restart_multicols = no
     #.......................................................................................................
     else
       send event
@@ -522,36 +528,37 @@ LINEBREAKER               = require './linebreaker'
     R =
       level:    level
       events:   []
+    return R
   #.........................................................................................................
   return $ ( event, send ) =>
-    [ type, name, text, meta, ] = event
     #.......................................................................................................
-    if select event, '(', [ 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', ]
-      ### TAINT will change; level set as 2nd argument in `rewrite_md_tokens` ###
-      level = switch name
-        when 'h1'  then 1
-        when 'h2'  then 2
-        else            3
-      within_heading  = yes
-      this_heading    = new_heading level
+    if select event, '(', 'h'
+      [ type, name, level, meta, ]    = event
+      within_heading                  = yes
+      this_heading                    = new_heading level
       headings.push this_heading
       send event
     #.......................................................................................................
-    else if select event, ')', [ 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', ]
-      within_heading  = no
-      this_heading    = null
+    else if select event, ')', 'h'
+      within_heading                  = no
+      this_heading                    = null
       send event
     #.......................................................................................................
     else if within_heading
       ### TAINT use library method to determine event category ###
-      if event.length is 4
-        this_heading[ 'events' ].push [ type, name, text, ( copy meta ), ]
-      else
-        this_heading[ 'events' ].push event
-      send event
+      debug '2342', event, event[ event.length - 1 ][ 'toc' ]
+      unless event[ event.length - 1 ][ 'toc' ] is 'omit'
+        if event.length is 4
+          [ type, name, text, meta, ] = event
+          this_heading[ 'events' ].push [ type, name, text, ( copy meta ), ]
+        else
+          this_heading[ 'events' ].push event
+      unless event[ event.length - 1 ][ 'toc' ] is 'only'
+        send event
     #.......................................................................................................
     else if select event, '!', 'toc'
       send stamp event
+      [ type, name, text, meta, ] = event
       send [ '!', 'mark', 'toc', ( copy meta ), ]
       for heading in headings
         { level, events, } = heading
@@ -559,6 +566,7 @@ LINEBREAKER               = require './linebreaker'
           ### TAINT use library method to determine event category ###
           h_event = unstamp h_event if h_event.length is 4
           send h_event
+      headings.length = 0
     #.......................................................................................................
     else
       send event
@@ -1341,6 +1349,7 @@ LINEBREAKER               = require './linebreaker'
     .pipe @MKTX.REGION.$keep_lines                        S
     .pipe @MKTX.BLOCK.$heading                            S
     .pipe @MKTX.BLOCK.$toc                                S
+    # .pipe D.$show '>>>>>>>>>'
     .pipe @MKTX.BLOCK.$hr                                 S
     .pipe @MKTX.BLOCK.$unordered_list                     S
     .pipe @MKTX.INLINE.$code_span                         S

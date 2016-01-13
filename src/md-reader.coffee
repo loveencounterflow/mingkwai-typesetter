@@ -406,8 +406,6 @@ tracker_pattern = /// ^
         # urge '@a20g', token[ 'type' ]#, within_footnote_block
         switch type
           # blocks
-          when 'heading_open'       then send [ '(', token[ 'tag' ],  null,                         meta, ]
-          when 'heading_close'      then send [ ')', token[ 'tag' ],  null,                         meta, ]
           when 'paragraph_open'     then null
           when 'paragraph_close'    then send [ '.', 'p',             null,                         meta, ]
           when 'bullet_list_open'   then send [ '(', 'ul',            null,                         meta, ]
@@ -424,6 +422,14 @@ tracker_pattern = /// ^
           when 'hr'                 then send [ '.', 'hr',            token[ 'markup' ],            meta, ]
           #.................................................................................................
           # specials
+          #.................................................................................................
+          when 'heading_open'
+            h_level = parseInt token[ 'tag' ][ 1 ], 10
+            send [ '(', 'h', h_level, meta, ]
+          #.................................................................................................
+          when 'heading_close'
+            h_level = parseInt token[ 'tag' ][ 1 ], 10
+            send [ ')', 'h', h_level, meta, ]
           #.................................................................................................
           when 'link_open'
             ### NB markdown-it does not support nested link markup a la `xxx [333 [444](555) 666](777)`;

@@ -307,7 +307,7 @@
   \relscale{2}%
   % TEXT BEFORE HEADING GOES HERE %
   % \nopagebreak% ???
-  \AfterGroup{
+  \AfterGroup{%
     \null\par%
     \null\par%
     }%
@@ -320,7 +320,7 @@
   \relscale{1.5}%
   \mktsStyleBold%
   % TEXT BEFORE HEADING GOES HERE %
-  \AfterGroup{
+  \AfterGroup{%
     \null\par%
     }%
   }
@@ -345,6 +345,33 @@
   % \null\par%
   }
 
+\newcommand{\mktsHOneToc}{%
+  \mktsStyleBold{}
+  \AfterGroup{%
+    \null\par%
+    }%
+  }
+\newcommand{\mktsHTwoToc}{%
+  \mktsStyleItalic{}
+  \AfterGroup{%
+    \null\par%
+    }%
+  }
+\newcommand{\mktsHThreeToc}{%
+  \mktsStyleItalic{}
+  \AfterGroup{%
+    \null\par%
+    }%
+  }
+\newcommand{\mktsHOneTocBEG}{%
+  \par%
+  }
+\newcommand{\mktsHTwoTocBEG}{%
+  \par%
+  }
+\newcommand{\mktsHThreeTocBEG}{%
+  \par%
+  }
 
 % \newenvironment{mktsEnvWarning}[2]%
 %   {\newcommand{\mktsEnvWarningStopChr}{#2}
