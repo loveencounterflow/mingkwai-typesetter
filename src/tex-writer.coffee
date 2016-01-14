@@ -467,7 +467,7 @@ LINEBREAKER               = require './linebreaker'
   ### TAINT generalize for more than 3 levels ###
   h_nrs             = [ 1, 1, 1, ]
   # h_level           = null
-  h_idx             = null
+  h_idx             = -1
   #.........................................................................................................
   return $ ( event, send ) =>
     within_multi_column = track.within '(multi-column)'
@@ -475,6 +475,11 @@ LINEBREAKER               = require './linebreaker'
     #.......................................................................................................
     if select event, '(', 'h'
       [ type, name, level, meta, ] = event
+      h_idx                += +1
+      h_key                 = "h-#{h_idx}"
+      meta[ 'h' ]          ?= {}
+      meta[ 'h' ][ 'idx' ]  = h_idx
+      meta[ 'h' ][ 'key' ]  = h_key
       #.....................................................................................................
       if within_multi_column and level <= 2
         send track @MKTX.REGION._end_multi_column meta
@@ -485,15 +490,18 @@ LINEBREAKER               = require './linebreaker'
       #.....................................................................................................
       switch level
         when 1
-          send [ 'tex', "{\\mktsHOne{}",              ]
+          send [ 'tex', "{\\mktsHOne{}", ]
+          send [ 'tex', "\\zlabel{#{h_key}}", { toc: 'omit' }, ]
           # send [ 'tex', "{\\mktsHOne{}",            { toc: 'omit', }, ]
           # send [ 'tex', "{\\mktsHOneToc{}",         { toc: 'only', }, ]
         when 2
-          send [ 'tex', "{\\mktsHTwo{}",              ]
+          send [ 'tex', "{\\mktsHTwo{}", ]
+          send [ 'tex', "\\zlabel{#{h_key}}", { toc: 'omit' }, ]
           # send [ 'tex', "{\\mktsHTwo{}",            { toc: 'omit', }, ]
           # send [ 'tex', "{\\mktsHTwoToc{}",         { toc: 'only', }, ]
         when 3
-          send [ 'tex', "{\\mktsHThree{}",            ]
+          send [ 'tex', "{\\mktsHThree{}", ]
+          send [ 'tex', "\\zlabel{#{h_key}}", { toc: 'omit' }, ]
           # send [ 'tex', "{\\mktsHThree{}",          { toc: 'omit', }, ]
           # send [ 'tex', "{\\mktsHThreeToc{}",       { toc: 'only', }, ]
         else return send [ '.', 'warning', "heading level #{level} not implemented", ( copy meta ), ]
@@ -532,9 +540,11 @@ LINEBREAKER               = require './linebreaker'
   this_heading    = null
   headings        = []
   #.........................................................................................................
-  new_heading = ( level ) ->
+  new_heading = ( level, meta ) ->
     R =
       level:    level
+      idx:      meta[ 'h' ][ 'idx' ]
+      key:      meta[ 'h' ][ 'key' ]
       events:   []
     return R
   #.........................................................................................................
@@ -543,8 +553,9 @@ LINEBREAKER               = require './linebreaker'
     if select event, '(', 'h'
       [ type, name, level, meta, ]    = event
       within_heading                  = yes
-      this_heading                    = new_heading level
+      this_heading                    = new_heading level, meta
       headings.push this_heading
+      debug '3123', this_heading
       send event
     #.......................................................................................................
     else if select event, ')', 'h'
@@ -565,15 +576,19 @@ LINEBREAKER               = require './linebreaker'
         send event
     #.......................................................................................................
     else if select event, '!', 'toc'
+      debug '4234', headings
       send stamp event
       [ type, name, text, meta, ] = event
       send [ 'tex', '\\begin{mktsToc}%\n', ]
       # send [ '!', 'mark', 'toc', ( copy meta ), ]
       for heading in headings
-        { level, events, } = heading
-        for h_event in events
+        { level, events, key, } = heading
+        last_idx                = events.length - 1
+        for h_event, idx in events
+          debug '23432', h_event
           ### TAINT use library method to determine event category ###
           h_event = unstamp h_event if h_event.length is 4
+          send [ 'tex', " \\dotfill \\zpageref{#{key}}", ] if idx is last_idx
           send h_event
       send [ 'tex', '\\end{mktsToc}%\n', ]
       headings.length = 0
@@ -1340,8 +1355,6 @@ LINEBREAKER               = require './linebreaker'
     .pipe @MKTX.DOCUMENT.$begin                           S
     .pipe @MKTX.DOCUMENT.$end                             S
     .pipe @JIZURA.$py                                     S
-    .pipe @MKTX.MIXED.$raw                                S
-    .pipe @MKTX.MIXED.$raw                                S
     .pipe @MKTX.INLINE.$link                              S
     .pipe @MKTX.MIXED.$footnote                           S
     .pipe @MKTX.MIXED.$footnote.$remove_extra_paragraphs  S
@@ -1375,6 +1388,7 @@ LINEBREAKER               = require './linebreaker'
     .pipe MKTSCRIPT_WRITER.$show_mktsmd_events            S
     # .pipe mktscript_tee
     .pipe @MKTX.INLINE.$mark                              S
+    .pipe @MKTX.MIXED.$raw                                S
     .pipe @MKTX.$show_unhandled_tags                      S
     .pipe @MKTX.$show_warnings                            S
     .pipe @$filter_tex                                    S

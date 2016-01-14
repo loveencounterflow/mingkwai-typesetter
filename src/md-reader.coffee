@@ -833,7 +833,7 @@ tracker_pattern = /// ^
     # .pipe D.$observe ( event ) => debug '©1', rpr event
     .pipe @_PRE.$rewrite_markdownit_tokens            S
     .pipe MKTS.MACRO_ESCAPER.$expand                  S
-    # .pipe D.$show '47594-B'
+    .pipe D.$show '47594-B'
     .pipe @_PRE.$process_end_command                  S
     .pipe @_PRE.$close_dangling_open_tags             S
     .pipe @_PRE.$consolidate_tables                   S

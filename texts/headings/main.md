@@ -1,21 +1,9 @@
 
-# xxx
-## yyy
-<<!toc>>
-<<!end>>
-## 宇宙洪荒 space and time vast, limitless
-
-<!--
-<<!yadda>>
-
-<<!yadda>>
- -->
-
 <<(multi-column>>
 
-# 天地玄黃 The sky was black, and yellow the earth\n宇宙洪荒 space and time vast, limitless
+# 天地玄黃 The sky was black, and yellow the earth<<<\\>>>宇宙洪荒 space and time vast, limitless
 <<!yadda>>
-<<!end>>
+
 ## 宇宙洪荒 space and time vast, limitless
 <<!yadda>>
 
