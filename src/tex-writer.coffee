@@ -550,17 +550,17 @@ before '@MKTX.BLOCK.$heading', '@MKTX.BLOCK.$toc', \
       #.....................................................................................................
       switch level
         when 1
-          send [ 'tex', "\\mktsHOneBEG}%\n",          ]
-          # send [ 'tex', "\\mktsHOneBEG}%\n",        { toc: 'omit', }, ]
-          # send [ 'tex', "\\mktsHOneTocBEG}%\n",     { toc: 'only', }, ]
+          send [ 'tex', "\\mktsHOneBeg}%\n",          ]
+          # send [ 'tex', "\\mktsHOneBeg}%\n",        { toc: 'omit', }, ]
+          # send [ 'tex', "\\mktsHOneTocBeg}%\n",     { toc: 'only', }, ]
         when 2
-          send [ 'tex', "\\mktsHTwoBEG}%\n",          ]
-          # send [ 'tex', "\\mktsHTwoBEG}%\n",        { toc: 'omit', }, ]
-          # send [ 'tex', "\\mktsHTwoTocBEG}%\n",     { toc: 'only', }, ]
+          send [ 'tex', "\\mktsHTwoBeg}%\n",          ]
+          # send [ 'tex', "\\mktsHTwoBeg}%\n",        { toc: 'omit', }, ]
+          # send [ 'tex', "\\mktsHTwoTocBeg}%\n",     { toc: 'only', }, ]
         when 3
-          send [ 'tex', "\\mktsHThreeBEG}%\n",        ]
-          # send [ 'tex', "\\mktsHThreeBEG}%\n",      { toc: 'omit', }, ]
-          # send [ 'tex', "\\mktsHThreeTocBEG}%\n",   { toc: 'only', }, ]
+          send [ 'tex', "\\mktsHThreeBeg}%\n",        ]
+          # send [ 'tex', "\\mktsHThreeBeg}%\n",      { toc: 'omit', }, ]
+          # send [ 'tex', "\\mktsHThreeTocBeg}%\n",   { toc: 'only', }, ]
         else return send [ '.', 'warning', "heading level #{level} not implemented", ( copy meta ), ]
       #.....................................................................................................
       send stamp event
