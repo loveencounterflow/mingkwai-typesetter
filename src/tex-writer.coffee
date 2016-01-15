@@ -629,7 +629,11 @@ before '@MKTX.BLOCK.$heading', '@MKTX.BLOCK.$toc', \
           send [ 'tex', " \\dotfill \\zpageref{#{key}}", ] if idx is last_idx
           send h_event
       send [ 'tex', '\\mktsTocBeg}%\n', ]
-      headings.length = 0
+      # headings.length = 0
+    #.......................................................................................................
+    else if select event, ')', 'document'
+      send event
+      njs_fs.writeFileSync '/tmp/mkts.json', JSON.stringify headings, null, '  '
     #.......................................................................................................
     else
       send event
