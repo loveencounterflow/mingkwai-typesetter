@@ -348,7 +348,7 @@
   % \null\par%
   }
 
-\newenvironment{mktsToc}{%
+\newcommand{\mktsToc}{%
   % {\mktsHOne{}TOC}\mktsHOneBEG%
   \setlength{\parskip}{0mm}%
   \renewcommand{\mktsHOne}{%
@@ -370,7 +370,8 @@
     \par%
     }
   }%
-{%
+
+\newcommand{\mktsTocBeg}{%
   }
 
 

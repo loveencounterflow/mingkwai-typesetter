@@ -617,7 +617,7 @@ before '@MKTX.BLOCK.$heading', '@MKTX.BLOCK.$toc', \
     else if select event, '!', 'toc'
       send stamp event
       [ type, name, text, meta, ] = event
-      send [ 'tex', '\\begin{mktsToc}%\n', ]
+      send [ 'tex', '{\\mktsToc%\n', ]
       # send [ '!', 'mark', 'toc', ( copy meta ), ]
       for heading in headings
         { level, events, key, } = heading
@@ -628,7 +628,7 @@ before '@MKTX.BLOCK.$heading', '@MKTX.BLOCK.$toc', \
           h_event = unstamp h_event if h_event.length is 4
           send [ 'tex', " \\dotfill \\zpageref{#{key}}", ] if idx is last_idx
           send h_event
-      send [ 'tex', '\\end{mktsToc}%\n', ]
+      send [ 'tex', '\\mktsTocBeg}%\n', ]
       headings.length = 0
     #.......................................................................................................
     else
