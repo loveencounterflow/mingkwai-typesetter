@@ -1,12 +1,25 @@
 
+<<(toc>>
+## Table of Contents
+<<toc)>>
+# 天地玄黃 The sky was black, and yellow the earth<<<\\>>>宇宙洪荒 space and time vast, limitless
+<<(toc>>
+## Table of Contents
+<<toc)>>
+<<!end>>
+
 
 <<(multi-column>>
+
+## Preface
+<<!yadda>>
 
 <<(toc>>
 ## Table of Contents
 <<toc)>>
-## 宇宙洪荒 space and time vast, limitless
-<<!end>>
+
+## Table of Figures
+<<!yadda>><<!yadda>><<!yadda>><<!yadda>>
 
 # 天地玄黃 The sky was black, and yellow the earth<<<\\>>>宇宙洪荒 space and time vast, limitless
 <<!yadda>>

@@ -58,6 +58,11 @@ before = ( names..., method ) ->
   urge '2134', names
   return method
 
+#-----------------------------------------------------------------------------------------------------------
+after = ( names..., method ) ->
+  urge '7897', names
+  return method
+
 
 #===========================================================================================================
 #
@@ -470,7 +475,7 @@ before = ( names..., method ) ->
       send event
 
 #-----------------------------------------------------------------------------------------------------------
-before '@MKTX.BLOCK.$heading', '@MKTX.BLOCK.$toc', \
+before '@MKTX.BLOCK.$heading', '@MKTX.COMMAND.$toc', \
 @MKTX.REGION.$toc = ( S ) =>
   track   = MD_READER.TRACKER.new_tracker '(toc)'
   buffer  = null
@@ -573,10 +578,12 @@ before '@MKTX.BLOCK.$heading', '@MKTX.BLOCK.$toc', \
       send event
 
 #-----------------------------------------------------------------------------------------------------------
-@MKTX.BLOCK.$toc = ( S ) =>
+before '@MKTX.COMMAND.$toc', after '@MKTX.BLOCK.$heading', \
+@MKTX.MIXED.$collect_headings_for_toc = ( S ) =>
   within_heading  = no
   this_heading    = null
   headings        = []
+  buffer          = []
   #.........................................................................................................
   new_heading = ( level, meta ) ->
     R =
@@ -587,35 +594,64 @@ before '@MKTX.BLOCK.$heading', '@MKTX.BLOCK.$toc', \
     return R
   #.........................................................................................................
   return $ ( event, send ) =>
-    #.......................................................................................................
+    # debug '8624', event
     [ type, name, text, meta, ] = event
-    ### TAINT use library method to test event category ###
-    if meta? and ( meta[ 'toc' ] isnt 'omit' ) and select event, '(', 'h'
+    #.......................................................................................................
+    if select event, '(', 'document'
+      send event
+    #.......................................................................................................
+    else if select event, ')', 'document'
+      # debug '2139', unstamp [ '.', 'toc-headings', headings, meta, ]
+      send unstamp [ '.', 'toc-headings', headings, meta, ]
+      send sub_event for sub_event in buffer
+      buffer.length = 0
+      send event
+    #.......................................................................................................
+    else if meta? and ( meta[ 'toc' ] isnt 'omit' ) and select event, '(', 'h'
+      ### TAINT use library method to test event category ###
       level                           = text
       within_heading                  = yes
       this_heading                    = new_heading level, meta
       headings.push this_heading
-      # debug '3123', this_heading
-      send event
+      buffer.push event
     #.......................................................................................................
     else if select event, ')', 'h'
       within_heading                  = no
       this_heading                    = null
-      send event
+      buffer.push event
     #.......................................................................................................
     else if within_heading
       ### TAINT use library method to determine event category ###
-      # debug '2342', event, event[ event.length - 1 ][ 'toc' ]
       unless event[ event.length - 1 ][ 'toc' ] is 'omit'
         if event.length is 4
           this_heading[ 'events' ].push [ type, name, text, ( copy meta ), ]
         else
           this_heading[ 'events' ].push event
       unless event[ event.length - 1 ][ 'toc' ] is 'only'
-        send event
+        buffer.push event
+    #.......................................................................................................
+    else
+      buffer.push event
+
+#-----------------------------------------------------------------------------------------------------------
+after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
+@MKTX.COMMAND.$toc = ( S ) =>
+  headings = null
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    #.......................................................................................................
+    ### TAINT use library method to test event category ###
+    if select event, '.', 'toc-headings'
+      debug '2347', event
+      [ _, _, headings, _, ] = event
+      send stamp event
     #.......................................................................................................
     else if select event, '!', 'toc'
       send stamp event
+      #.....................................................................................................
+      unless headings?
+        return send [ '.', 'warning', "expecting toc-headings event before this", ( copy meta ), ]
+      #.....................................................................................................
       [ type, name, text, meta, ] = event
       send [ 'tex', '{\\mktsToc%\n', ]
       # send [ '!', 'mark', 'toc', ( copy meta ), ]
@@ -625,18 +661,79 @@ before '@MKTX.BLOCK.$heading', '@MKTX.BLOCK.$toc', \
         for h_event, idx in events
           # debug '23432', h_event
           ### TAINT use library method to determine event category ###
+          debug '11232>>>>>>', event if select event, '.', 'raw'
           h_event = unstamp h_event if h_event.length is 4
           send [ 'tex', " \\dotfill \\zpageref{#{key}}", ] if idx is last_idx
           send h_event
       send [ 'tex', '\\mktsTocBeg}%\n', ]
       # headings.length = 0
     #.......................................................................................................
-    else if select event, ')', 'document'
-      send event
-      njs_fs.writeFileSync '/tmp/mkts.json', JSON.stringify headings, null, '  '
-    #.......................................................................................................
     else
       send event
+
+# #-----------------------------------------------------------------------------------------------------------
+# @MKTX.COMMAND.$toc = ( S ) =>
+#   within_heading  = no
+#   this_heading    = null
+#   headings        = []
+#   #.........................................................................................................
+#   new_heading = ( level, meta ) ->
+#     R =
+#       level:    level
+#       idx:      meta[ 'h' ][ 'idx' ]
+#       key:      meta[ 'h' ][ 'key' ]
+#       events:   []
+#     return R
+#   #.........................................................................................................
+#   return $ ( event, send ) =>
+#     #.......................................................................................................
+#     [ type, name, text, meta, ] = event
+#     ### TAINT use library method to test event category ###
+#     if select event, '.', 'toc-headings'
+#       debug '2347', event
+#     else if meta? and ( meta[ 'toc' ] isnt 'omit' ) and select event, '(', 'h'
+#       level                           = text
+#       within_heading                  = yes
+#       this_heading                    = new_heading level, meta
+#       headings.push this_heading
+#       # debug '3123', this_heading
+#       send event
+#     #.......................................................................................................
+#     else if select event, ')', 'h'
+#       within_heading                  = no
+#       this_heading                    = null
+#       send event
+#     #.......................................................................................................
+#     else if within_heading
+#       ### TAINT use library method to determine event category ###
+#       # debug '2342', event, event[ event.length - 1 ][ 'toc' ]
+#       unless event[ event.length - 1 ][ 'toc' ] is 'omit'
+#         if event.length is 4
+#           this_heading[ 'events' ].push [ type, name, text, ( copy meta ), ]
+#         else
+#           this_heading[ 'events' ].push event
+#       unless event[ event.length - 1 ][ 'toc' ] is 'only'
+#         send event
+#     #.......................................................................................................
+#     else if select event, '!', 'toc'
+#       send stamp event
+#       [ type, name, text, meta, ] = event
+#       send [ 'tex', '{\\mktsToc%\n', ]
+#       # send [ '!', 'mark', 'toc', ( copy meta ), ]
+#       for heading in headings
+#         { level, events, key, } = heading
+#         last_idx                = events.length - 1
+#         for h_event, idx in events
+#           # debug '23432', h_event
+#           ### TAINT use library method to determine event category ###
+#           h_event = unstamp h_event if h_event.length is 4
+#           send [ 'tex', " \\dotfill \\zpageref{#{key}}", ] if idx is last_idx
+#           send h_event
+#       send [ 'tex', '\\mktsTocBeg}%\n', ]
+#       # headings.length = 0
+#     #.......................................................................................................
+#     else
+#       send event
 
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.BLOCK.$yadda = ( S ) =>
@@ -823,10 +920,12 @@ before '@MKTX.BLOCK.$heading', '@MKTX.BLOCK.$toc', \
   return $ ( event, send ) =>
     #.......................................................................................................
     if select event, '.', 'raw'
+      debug '4389', event
       [ type, name, text, meta, ] = event
       send stamp hide event
       send remark 'convert', "raw to TeX", copy meta
       text = MACRO_ESCAPER.escape.unescape_escape_chrs S, text
+      # debug '9382', [ 'tex', text, ]
       send [ 'tex', text, ]
       # send stamp event
     #.......................................................................................................
@@ -1414,7 +1513,8 @@ before '@MKTX.BLOCK.$heading', '@MKTX.BLOCK.$toc', \
     .pipe @MKTX.REGION.$keep_lines                        S
     .pipe @MKTX.REGION.$toc                               S
     .pipe @MKTX.BLOCK.$heading                            S
-    .pipe @MKTX.BLOCK.$toc                                S
+    .pipe @MKTX.MIXED.$collect_headings_for_toc           S
+    .pipe @MKTX.COMMAND.$toc                              S
     # .pipe D.$show '>>>>>>>>>'
     .pipe @MKTX.BLOCK.$hr                                 S
     .pipe @MKTX.BLOCK.$unordered_list                     S
@@ -1427,11 +1527,11 @@ before '@MKTX.BLOCK.$heading', '@MKTX.BLOCK.$toc', \
     .pipe @MKTX.CLEANUP.$drop_empty_p_tags                S
     .pipe @MKTX.BLOCK.$yadda                              S
     .pipe @MKTX.BLOCK.$paragraph                          S
+    .pipe @MKTX.MIXED.$raw                                S
     .pipe @MKTX.CLEANUP.$remove_empty_texts               S
     .pipe MKTSCRIPT_WRITER.$show_mktsmd_events            S
     # .pipe mktscript_tee
     .pipe @MKTX.INLINE.$mark                              S
-    .pipe @MKTX.MIXED.$raw                                S
     .pipe @MKTX.$show_unhandled_tags                      S
     .pipe @MKTX.$show_warnings                            S
     .pipe @$filter_tex                                    S
