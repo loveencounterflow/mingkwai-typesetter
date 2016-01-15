@@ -301,6 +301,7 @@
 
 \newcommand{\mktsHOne}{%
   % \newpage%
+  \Needspace{7.5\myLineheight}% ???
   \clearpage%
   \centering%
   \mktsStyleBold%
@@ -326,6 +327,7 @@
     }%
   }
 \newcommand{\mktsHThree}{%
+  \Needspace{7.5\myLineheight}% ???
   \mktsStyleBold{}%
   % TEXT BEFORE HEADING GOES HERE %
   % \AfterGroup{\par}%
@@ -347,7 +349,7 @@
   }
 
 \newenvironment{mktsToc}{%
-  {\mktsHOne{}TOC}\mktsHOneBEG%
+  % {\mktsHOne{}TOC}\mktsHOneBEG%
   \setlength{\parskip}{0mm}%
   \renewcommand{\mktsHOne}{%
     \mktsStyleBold{}

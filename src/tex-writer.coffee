@@ -52,6 +52,16 @@ LINEBREAKER               = require './linebreaker'
 #===========================================================================================================
 #
 #-----------------------------------------------------------------------------------------------------------
+### TAINT experimental, should become part of `PIPEDREAMS` to facilitate automated assembly of pipelines
+based on registered precedences using `CND.TSORT` ###
+before = ( names..., method ) ->
+  urge '2134', names
+  return method
+
+
+#===========================================================================================================
+#
+#-----------------------------------------------------------------------------------------------------------
 @compile_options = ->
   ### TAINT this method should go to OPTIONS ###
   options_locator                   = require.resolve njs_path.resolve __dirname, options_route
@@ -460,6 +470,34 @@ LINEBREAKER               = require './linebreaker'
       send event
 
 #-----------------------------------------------------------------------------------------------------------
+before '@MKTX.BLOCK.$heading', '@MKTX.BLOCK.$toc', \
+@MKTX.REGION.$toc = ( S ) =>
+  track   = MD_READER.TRACKER.new_tracker '(toc)'
+  buffer  = null
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    within_toc = track.within '(toc)'
+    track event
+    #.......................................................................................................
+    if select event, '(', 'toc'
+      send stamp event
+      [ type, name, text, meta, ] = event
+      buffer = [ '!', name, text, meta, ]
+    #.......................................................................................................
+    else if select event, ')', 'toc'
+      send stamp event
+      send buffer
+      buffer = null
+    #.......................................................................................................
+    else if within_toc and select event, [ '(', ')', ], 'h'
+      [ type, name, text, meta, ] = event
+      meta[ 'toc' ] = 'omit'
+      send event
+    #.......................................................................................................
+    else
+      send event
+
+#-----------------------------------------------------------------------------------------------------------
 @MKTX.BLOCK.$heading = ( S ) =>
   restart_multicols = no
   track             = MD_READER.TRACKER.new_tracker '(multi-column)'
@@ -550,12 +588,14 @@ LINEBREAKER               = require './linebreaker'
   #.........................................................................................................
   return $ ( event, send ) =>
     #.......................................................................................................
-    if select event, '(', 'h'
-      [ type, name, level, meta, ]    = event
+    [ type, name, text, meta, ] = event
+    ### TAINT use library method to test event category ###
+    if meta? and ( meta[ 'toc' ] isnt 'omit' ) and select event, '(', 'h'
+      level                           = text
       within_heading                  = yes
       this_heading                    = new_heading level, meta
       headings.push this_heading
-      debug '3123', this_heading
+      # debug '3123', this_heading
       send event
     #.......................................................................................................
     else if select event, ')', 'h'
@@ -568,7 +608,6 @@ LINEBREAKER               = require './linebreaker'
       # debug '2342', event, event[ event.length - 1 ][ 'toc' ]
       unless event[ event.length - 1 ][ 'toc' ] is 'omit'
         if event.length is 4
-          [ type, name, text, meta, ] = event
           this_heading[ 'events' ].push [ type, name, text, ( copy meta ), ]
         else
           this_heading[ 'events' ].push event
@@ -576,7 +615,6 @@ LINEBREAKER               = require './linebreaker'
         send event
     #.......................................................................................................
     else if select event, '!', 'toc'
-      debug '4234', headings
       send stamp event
       [ type, name, text, meta, ] = event
       send [ 'tex', '\\begin{mktsToc}%\n', ]
@@ -585,7 +623,7 @@ LINEBREAKER               = require './linebreaker'
         { level, events, key, } = heading
         last_idx                = events.length - 1
         for h_event, idx in events
-          debug '23432', h_event
+          # debug '23432', h_event
           ### TAINT use library method to determine event category ###
           h_event = unstamp h_event if h_event.length is 4
           send [ 'tex', " \\dotfill \\zpageref{#{key}}", ] if idx is last_idx
@@ -1370,6 +1408,7 @@ LINEBREAKER               = require './linebreaker'
     .pipe @MKTX.REGION.$single_column                     S
     .pipe @MKTX.REGION.$code                              S
     .pipe @MKTX.REGION.$keep_lines                        S
+    .pipe @MKTX.REGION.$toc                               S
     .pipe @MKTX.BLOCK.$heading                            S
     .pipe @MKTX.BLOCK.$toc                                S
     # .pipe D.$show '>>>>>>>>>'
