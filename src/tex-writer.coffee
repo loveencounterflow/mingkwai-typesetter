@@ -661,8 +661,8 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
         for h_event, idx in events
           # debug '23432', h_event
           ### TAINT use library method to determine event category ###
-          debug '11232>>>>>>', event if select event, '.', 'raw'
           h_event = unstamp h_event if h_event.length is 4
+          debug '11232>>>>>>', h_event if h_event[ 1 ] is 'raw'
           send [ 'tex', " \\dotfill \\zpageref{#{key}}", ] if idx is last_idx
           send h_event
       send [ 'tex', '\\mktsTocBeg}%\n', ]
@@ -919,10 +919,11 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
   #.........................................................................................................
   return $ ( event, send ) =>
     #.......................................................................................................
+    debug '234324>>>>>>', event, ( select event, '.', 'raw' ) if event[ 1 ] is 'raw'
     if select event, '.', 'raw'
       debug '4389', event
       [ type, name, text, meta, ] = event
-      send stamp hide event
+      send stamp hide copy event
       send remark 'convert', "raw to TeX", copy meta
       text = MACRO_ESCAPER.escape.unescape_escape_chrs S, text
       # debug '9382', [ 'tex', text, ]
@@ -951,7 +952,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     #.......................................................................................................
     else if select event, ')', 'tr'
       buffer = null
-      send stamp hide event
+      send stamp hide copy event
       send [ 'tex', "\\\\\n", ]
     #.......................................................................................................
     else
@@ -960,7 +961,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       #.....................................................................................................
       if select event, '(', 'table'
         # debug '©36643', event
-        send stamp hide event
+        send stamp hide copy event
         col_styles  = []
         for alignment in meta[ 'table' ][ 'alignments' ]
           switch alignment
@@ -973,40 +974,40 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
         send [ 'tex', "\n\n\\begin{tabular}[pos]{ #{col_styles} }\n", ]
       #.....................................................................................................
       else if select event, ')', 'table'
-        send stamp hide event
+        send stamp hide copy event
         send [ 'tex', "\\end{tabular}\n\n", ]
       #.....................................................................................................
       else if select event, '(', 'tbody'
-        send stamp hide event
+        send stamp hide copy event
       #.....................................................................................................
       else if select event, ')', 'tbody'
         send [ 'tex', "\\hline\n", ]
-        send stamp hide event
+        send stamp hide copy event
       #.....................................................................................................
       else if select event, '(', 'td'
-        send stamp hide event
+        send stamp hide copy event
       #.....................................................................................................
       else if select event, ')', 'td'
-        send stamp hide event
+        send stamp hide copy event
         buffer = [ 'tex', " & ", ]
       #.....................................................................................................
       else if select event, '(', 'th'
-        send stamp hide event
+        send stamp hide copy event
       #.....................................................................................................
       else if select event, ')', 'th'
-        send stamp hide event
+        send stamp hide copy event
         buffer = [ 'tex', " & ", ]
       #.....................................................................................................
       else if select event, '(', 'thead'
         send [ 'tex', "\\hline\n", ]
-        send stamp hide event
+        send stamp hide copy event
       #.....................................................................................................
       else if select event, ')', 'thead'
-        send stamp hide event
+        send stamp hide copy event
         send [ 'tex', "\n\\hline\n", ]
       #.....................................................................................................
       else if select event, '(', 'tr'
-        send stamp hide event
+        send stamp hide copy event
       #.....................................................................................................
       else
         send event
@@ -1371,7 +1372,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       event_txt = "unhandled event: #{JSON.stringify event}"
       warn event_txt
       send [ '.', 'warning', event_txt, ( copy meta ), ]
-      # send hide stamp event
+      # send stamp hide copy event
     else
       send event
 
