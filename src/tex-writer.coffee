@@ -395,7 +395,7 @@ after = ( names..., method ) ->
       #.....................................................................................................
       if type is '('
         if within_multi_column
-          send remark 'insert', "`multi-column}`", copy meta
+          send remark 'insert', "`multi-column)`", copy meta
           send track @MKTX.REGION._end_multi_column()
           send stamp event
         else
@@ -405,7 +405,7 @@ after = ( names..., method ) ->
       else
         if within_multi_column
           send stamp event
-          send remark 'insert', "`{multi-column`", copy meta
+          send remark 'insert', "`(multi-column`", copy meta
           send track @MKTX.REGION._begin_multi_column()
         else
           send remark 'drop', "`single-column` because not within `(multi-column)`", copy meta
@@ -491,8 +491,14 @@ before '@MKTX.BLOCK.$heading', '@MKTX.COMMAND.$toc', \
     #.......................................................................................................
     else if select event, ')', 'toc'
       send stamp event
-      send buffer
-      buffer = null
+      if buffer?
+        send buffer
+        buffer = null
+    #.......................................................................................................
+    else if within_toc and select event, '.', 'comma'
+      if buffer?
+        send buffer
+        buffer = null
     #.......................................................................................................
     else if within_toc and select event, [ '(', ')', ], 'h'
       [ type, name, text, meta, ] = event
@@ -642,7 +648,6 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     #.......................................................................................................
     ### TAINT use library method to test event category ###
     if select event, '.', 'toc-headings'
-      debug '2347', event
       [ _, _, headings, _, ] = event
       send stamp event
     #.......................................................................................................
@@ -662,7 +667,6 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
           # debug '23432', h_event
           ### TAINT use library method to determine event category ###
           h_event = unstamp h_event if h_event.length is 4
-          debug '11232>>>>>>', h_event if h_event[ 1 ] is 'raw'
           send [ 'tex', " \\dotfill \\zpageref{#{key}}", ] if idx is last_idx
           send h_event
       send [ 'tex', '\\mktsTocBeg}%\n', ]
@@ -835,18 +839,28 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       send event
 
 #-----------------------------------------------------------------------------------------------------------
+before '@MKTX.REGION.$single_column', '@MKTX.REGION.$multi_column', \
 @MKTX.BLOCK.$hr = ( S ) =>
   remark = MD_READER._get_remark()
   #.........................................................................................................
   return $ ( event, send ) =>
     #.......................................................................................................
     if select event, '.', 'hr'
-      send stamp event
       [ type, name, text, meta, ] = event
       switch chr = text[ 0 ]
-        when '-' then send [ 'tex', '\n--------------\n' ]
-        when '*' then send [ 'tex', '\n**************\n' ]
-        else send remark 'drop', "`[hr] because markup unknown #{rpr text}", copy meta
+        when '-'
+          send stamp copy event
+          send [ 'tex', '\\mktsRulePlain{}' ]
+        when '*'
+          send stamp copy event
+          send [ 'tex', '\\mktsRuleSwell{}' ]
+        when '#'
+          send [ '(', 'single-column', null, ( copy meta ), ]
+          send stamp copy event
+          send [ 'tex', '\\mktsRuleSwell{}' ]
+          send [ ')', 'single-column', null, ( copy meta ), ]
+        else
+          send remark 'drop', "`[hr] because markup unknown #{rpr text}", copy meta
     #.......................................................................................................
     else
       send event
@@ -919,9 +933,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
   #.........................................................................................................
   return $ ( event, send ) =>
     #.......................................................................................................
-    debug '234324>>>>>>', event, ( select event, '.', 'raw' ) if event[ 1 ] is 'raw'
     if select event, '.', 'raw'
-      debug '4389', event
       [ type, name, text, meta, ] = event
       send stamp hide copy event
       send remark 'convert', "raw to TeX", copy meta
@@ -1508,6 +1520,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @MKTX.COMMAND.$multi_column                     S
     .pipe @MKTX.COMMAND.$slash                            S
     .pipe @MKTX.MIXED.$table                              S
+    .pipe @MKTX.BLOCK.$hr                                 S
     .pipe @MKTX.REGION.$multi_column                      S
     .pipe @MKTX.REGION.$single_column                     S
     .pipe @MKTX.REGION.$code                              S
@@ -1517,7 +1530,6 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @MKTX.MIXED.$collect_headings_for_toc           S
     .pipe @MKTX.COMMAND.$toc                              S
     # .pipe D.$show '>>>>>>>>>'
-    .pipe @MKTX.BLOCK.$hr                                 S
     .pipe @MKTX.BLOCK.$unordered_list                     S
     .pipe @MKTX.INLINE.$code_span                         S
     .pipe @MKTX.INLINE.$url                               S

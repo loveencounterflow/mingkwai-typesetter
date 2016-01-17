@@ -197,6 +197,8 @@ INPUT /usr/local/texlive/2015/texmf-dist/tex/latex/fancyhdr/fancyhdr.sty
 INPUT /usr/local/texlive/2015/texmf-dist/tex/latex/fancyhdr/fancyhdr.sty
 INPUT /usr/local/texlive/2015/texmf-dist/tex/latex/tools/multicol.sty
 INPUT /usr/local/texlive/2015/texmf-dist/tex/latex/tools/multicol.sty
+INPUT /usr/local/texlive/2015/texmf-dist/tex/generic/genmisc/swrule.sty
+INPUT /usr/local/texlive/2015/texmf-dist/tex/generic/genmisc/swrule.sty
 INPUT /home/flow/io/mingkwai-typesetter/texts/headings/headings.aux
 INPUT /home/flow/io/mingkwai-typesetter/texts/headings/headings.aux
 OUTPUT /home/flow/io/mingkwai-typesetter/texts/headings/headings.aux

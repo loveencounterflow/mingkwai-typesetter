@@ -1,23 +1,25 @@
-
-<<(toc>>
-## Table of Contents
-<<toc)>>
-# 天地玄黃 The sky was black, and yellow the earth<<<\\>>>宇宙洪荒 space and time vast, limitless
-<<(toc>>
-## Table of Contents
-<<toc)>>
-<<!end>>
-
-
 <<(multi-column>>
 
 ## Preface
 <<!yadda>>
 
 <<(toc>>
+##################################################################
 ## Table of Contents
+<<,>>
+##################################################################
 <<toc)>>
 
+<!--
+<<(single-column>>
+<<(toc>>
+<<<\hfil\swrulex{0.8\textwidth}{0.1mm}{0.25mm}\hfill>>>
+## Table of Contents
+<<,>>
+<<<\hfil\swrulex{0.8\textwidth}{0.1mm}{0.25mm}\hfill>>>
+<<toc)>>
+<<single-column)>>
+ -->
 ## Table of Figures
 <<!yadda>><<!yadda>><<!yadda>><<!yadda>>
 
@@ -58,10 +60,10 @@
 <<!yadda>>
 <<!yadda>>
 
-<<(toc>>
+<!-- <<(toc>>
 ## Table of Contents
 <<toc)>>
-
+ -->
 <<multi-column)>>
 
 

@@ -95,7 +95,7 @@ MKTS                      = require './main'
     .enable 'list'
     .enable 'reference'
     .enable 'heading'
-    .enable 'lheading'
+    # .enable 'lheading'
     .enable 'html_block'
     .enable 'table'
     .enable 'paragraph'
@@ -679,6 +679,24 @@ tracker_pattern = /// ^
     return null
 
 #-----------------------------------------------------------------------------------------------------------
+@_PRE.$extra_hr = ( S ) =>
+  pattern = /// ^ ( \#{3,} ) $ ///gm
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    #.......................................................................................................
+    if @select event, '.', 'text'
+      [ type, name, text, meta, ] = event
+      is_plain = no
+      for stretch in text.split pattern
+        if is_plain = not is_plain
+          send [ '.', 'text', stretch, ( @copy meta ), ]
+        else
+          send [ '.', 'hr', stretch, ( @copy meta ), ]
+    #.......................................................................................................
+    else
+      send event
+
+#-----------------------------------------------------------------------------------------------------------
 @select = ( event, type, name, hidden = no ) ->
   ### TAINT should use the same syntax as accepted by `FENCES.parse` ###
   ### check for arity as it's easy to write `select event, '(', ')', 'latex'` when what you meant
@@ -838,6 +856,7 @@ tracker_pattern = /// ^
     .pipe @_PRE.$close_dangling_open_tags             S
     .pipe @_PRE.$consolidate_tables                   S
     .pipe @_PRE.$consolidate_footnotes                S
+    .pipe @_PRE.$extra_hr                             S
     .pipe MKTS.MACRO_INTERPRETER.$process_actions     S
     .pipe MKTS.MACRO_INTERPRETER.$process_values      S
     .pipe writestream

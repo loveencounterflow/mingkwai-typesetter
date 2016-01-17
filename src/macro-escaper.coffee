@@ -191,6 +191,13 @@ MKTS                      = require './main'
   ///g
   ]
 
+#-----------------------------------------------------------------------------------------------------------
+@comma_patterns = [
+  ///                           # Comma macro to separate arguments within macro regions
+  <<,>>
+  ///g
+  ]
+
 # #-----------------------------------------------------------------------------------------------------------
 # @raw_heredoc_pattern  = ///
 #   ( ^ | [^\\] ) <<! raw: ( [^\s>]* )>> ( .*? ) \2
@@ -242,6 +249,7 @@ after it, thereby inhibiting any processing of those portions. ###
   R = @escape.bracketed_raw_macros      S, R
   R = @escape.action_macros             S, R
   R = @escape.region_macros             S, R
+  R = @escape.comma_macros              S, R
   R = @escape.command_and_value_macros  S, R
   #.........................................................................................................
   return R
@@ -310,6 +318,18 @@ after it, thereby inhibiting any processing of those portions. ###
   return R
 
 #-----------------------------------------------------------------------------------------------------------
+@escape.comma_macros = ( S, text ) =>
+  R = text
+  #.........................................................................................................
+  for pattern in @comma_patterns
+    R = R.replace pattern, ( _ ) =>
+      # debug '©ΛΨ regions', ( rpr text ), [ previous_chr, markup, identifier, content, stopper, ]
+      id      = @_register_content S, 'comma', null, null
+      return "\x15#{id}\x13"
+  #.........................................................................................................
+  return R
+
+#-----------------------------------------------------------------------------------------------------------
 @escape.command_and_value_macros = ( S, text ) =>
   R = text
   #.........................................................................................................
@@ -345,6 +365,11 @@ after it, thereby inhibiting any processing of those portions. ###
   ///g
 
 #-----------------------------------------------------------------------------------------------------------
+@comma_id_pattern = ///
+  \x15 comma ( [ 0-9 ]+ ) \x13
+  ///g
+
+#-----------------------------------------------------------------------------------------------------------
 @command_and_value_id_pattern = ///
   \x15 (?: command | value ) ( [ 0-9 ]+ ) \x13
   ///g
@@ -356,6 +381,7 @@ after it, thereby inhibiting any processing of those portions. ###
 @$expand = ( S ) ->
   pipeline = [
     @$expand.$command_and_value_macros  S
+    @$expand.$comma_macros              S
     @$expand.$region_macros             S
     @$expand.$action_macros             S
     @$expand.$raw_macros                S
@@ -392,6 +418,11 @@ after it, thereby inhibiting any processing of those portions. ###
       language ]  = entry[ 'markup' ]
     content       = entry[ 'raw' ]
     return [ '.', 'action', content, ( MKTS.MD_READER.copy meta, { mode, language, } ), ]
+
+#-----------------------------------------------------------------------------------------------------------
+@$expand.$comma_macros  = ( S ) =>
+  return @_get_expander S, @comma_id_pattern, ( meta, entry ) =>
+    return [ '.', 'comma', null, ( MKTS.MD_READER.copy meta, ), ]
 
 #-----------------------------------------------------------------------------------------------------------
 @$expand.$region_macros = ( S ) =>
@@ -490,8 +521,8 @@ after it, thereby inhibiting any processing of those portions. ###
       for stretch in text.split pattern
         is_plain = not is_plain
         unless is_plain
-          id                  = parseInt stretch, 10
-          entry               = @_retrieve_entry S, id
+          id    = parseInt stretch, 10
+          entry = @_retrieve_entry S, id
           send method meta, entry
         else
           send [ type, name, stretch, ( MKTS.MD_READER.copy meta ), ] unless stretch.length is 0
