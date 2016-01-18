@@ -265,9 +265,9 @@ after = ( names..., method ) ->
     return send event unless select event, '!', 'new-page'
     send stamp event
     [ type, name, text, meta, ] = event
-    send [ ')', 'multi-column', text, ( copy meta ), ]
+    # send [ ')', 'multi-column', text, ( copy meta ), ]
     send [ 'tex', "\\null\\newpage{}", ]
-    send [ '(', 'multi-column', text, ( copy meta ), ]
+    # send [ '(', 'multi-column', text, ( copy meta ), ]
 
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.COMMAND.$comment = ( S ) =>
@@ -674,70 +674,6 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     #.......................................................................................................
     else
       send event
-
-# #-----------------------------------------------------------------------------------------------------------
-# @MKTX.COMMAND.$toc = ( S ) =>
-#   within_heading  = no
-#   this_heading    = null
-#   headings        = []
-#   #.........................................................................................................
-#   new_heading = ( level, meta ) ->
-#     R =
-#       level:    level
-#       idx:      meta[ 'h' ][ 'idx' ]
-#       key:      meta[ 'h' ][ 'key' ]
-#       events:   []
-#     return R
-#   #.........................................................................................................
-#   return $ ( event, send ) =>
-#     #.......................................................................................................
-#     [ type, name, text, meta, ] = event
-#     ### TAINT use library method to test event category ###
-#     if select event, '.', 'toc-headings'
-#       debug '2347', event
-#     else if meta? and ( meta[ 'toc' ] isnt 'omit' ) and select event, '(', 'h'
-#       level                           = text
-#       within_heading                  = yes
-#       this_heading                    = new_heading level, meta
-#       headings.push this_heading
-#       # debug '3123', this_heading
-#       send event
-#     #.......................................................................................................
-#     else if select event, ')', 'h'
-#       within_heading                  = no
-#       this_heading                    = null
-#       send event
-#     #.......................................................................................................
-#     else if within_heading
-#       ### TAINT use library method to determine event category ###
-#       # debug '2342', event, event[ event.length - 1 ][ 'toc' ]
-#       unless event[ event.length - 1 ][ 'toc' ] is 'omit'
-#         if event.length is 4
-#           this_heading[ 'events' ].push [ type, name, text, ( copy meta ), ]
-#         else
-#           this_heading[ 'events' ].push event
-#       unless event[ event.length - 1 ][ 'toc' ] is 'only'
-#         send event
-#     #.......................................................................................................
-#     else if select event, '!', 'toc'
-#       send stamp event
-#       [ type, name, text, meta, ] = event
-#       send [ 'tex', '{\\mktsToc%\n', ]
-#       # send [ '!', 'mark', 'toc', ( copy meta ), ]
-#       for heading in headings
-#         { level, events, key, } = heading
-#         last_idx                = events.length - 1
-#         for h_event, idx in events
-#           # debug '23432', h_event
-#           ### TAINT use library method to determine event category ###
-#           h_event = unstamp h_event if h_event.length is 4
-#           send [ 'tex', " \\dotfill \\zpageref{#{key}}", ] if idx is last_idx
-#           send h_event
-#       send [ 'tex', '\\mktsTocBeg}%\n', ]
-#       # headings.length = 0
-#     #.......................................................................................................
-#     else
-#       send event
 
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.BLOCK.$yadda = ( S ) =>
@@ -1363,7 +1299,7 @@ before '@MKTX.REGION.$single_column', '@MKTX.REGION.$multi_column', \
     ### TAINT selection could be simpler, less repetitive ###
     if ( event[ 0 ] in [ 'tex', 'text', ] ) or select event, '.', [ 'text', 'raw', ]
       send event
-    else unless is_stamped event
+    else if ( not is_stamped event ) and ( not select event, '.', 'warning' )
       # debug '©04210', JSON.stringify event
       [ type, name, text, meta, ] = event
       # if text?
@@ -1381,7 +1317,7 @@ before '@MKTX.REGION.$single_column', '@MKTX.REGION.$multi_column', \
       #   first             = name
       #   last              = type
       # event_txt         = first + last + ' ' + text
-      event_txt = "unhandled event: #{JSON.stringify event}"
+      event_txt = "unhandled event: #{JSON.stringify event, null, ' '}"
       warn event_txt
       send [ '.', 'warning', event_txt, ( copy meta ), ]
       # send stamp hide copy event
@@ -1422,62 +1358,32 @@ before '@MKTX.REGION.$single_column', '@MKTX.REGION.$multi_column', \
 #===========================================================================================================
 #
 #-----------------------------------------------------------------------------------------------------------
-@$custom_stuff = ( S ) ->
-  ### TAINT should be defined by document ###
-  return $async ( event, done ) =>
-    input = S[ 'tees' ][ 'tex-writer' ][ 'tee' ][ 'input' ]
-    #.......................................................................................................
-    if select event, [ '(', ')', ], 'ublock'
-      [ type, name, text, meta, ] = event
-      debug '©06327'
-      setImmediate =>
-        input.write [ '.', 'text', "222", ( copy meta ), ]
-        done()
-      # send stamp event
-      # if type is '('
-      #   send [ 'tex', "{\\mktsStyleItalic{}", ]
-      # else
-      #   send [ 'tex', "}", ]
-    #.......................................................................................................
-    else
-      done event
+### TAINT makeshift solution for a commands namespace; should be definable by document e.g.
+ny `require`ing syntax extension modules ###
+CUSTOM      =
+  JZR:        {}
 
 #-----------------------------------------------------------------------------------------------------------
-@$custom_stuff_early = ( S ) ->
-  ### TAINT should be defined by document ###
-  return $ ( event, send ) =>
-    send event
-    # # input = S[ 'tees' ][ 'tex-writer' ][ 'tee' ][ 'input' ]
-    # #.......................................................................................................
-    # if select event, [ '(', ')', ], 'h2'
-    #   [ type, name, text, meta, ] = event
-    #   if type is '('
-    #     # send []
-    #     send event
-    #     # send [ 'tex', "{\\mktsStyleItalic{}", ]
-    #   else
-    #     send event
-    #     # send [ 'tex', "}", ]
-    # #.......................................................................................................
-    # else
-    #   send event
-
-#-----------------------------------------------------------------------------------------------------------
-@$custom_stuff_late = ( S ) ->
-  ### TAINT should be defined by document ###
-  return $ ( event, send ) =>
-    # input = S[ 'tees' ][ 'tex-writer' ][ 'tee' ][ 'input' ]
-    #.......................................................................................................
-    if select event, [ '(', ')', ], 'ublock'
-      [ type, name, text, meta, ] = event
-      send stamp event
-      if type is '('
-        send [ 'tex', "{\\mktsStyleItalic{}", ]
-      else
-        send [ 'tex', "}", ]
-    #.......................................................................................................
-    else
-      send event
+CUSTOM.JZR.$most_frequent = ( S ) =>
+  defaults =
+    n:      100
+  #.........................................................................................................
+  $most_frequent = ( S ) =>
+    return $async ( event, done ) =>
+      return done event unless select event, '!', 'JZR.most_frequent'
+      [ type, name, [ n ], meta, ]  = event
+      n                            ?= defaults.n
+      step ( resume ) =>
+        ### TAINT not a streaming solution ###
+        glyphs = yield ( require '../../hollerith/lib/demo' ).read_sample null, n, resume
+        glyphs = ( Object.keys glyphs ). join ''
+        done stamp [ '.', 'text', glyphs, ( copy meta ), ]
+  #.........................................................................................................
+  pipeline = [
+    $most_frequent S
+    ]
+  #.........................................................................................................
+  return D.TEE.from_pipeline pipeline
 
 
 #===========================================================================================================
@@ -1499,12 +1405,8 @@ before '@MKTX.REGION.$single_column', '@MKTX.REGION.$multi_column', \
   # mktscript_tee = D.TEE.from_readwritestreams mktscript_in, mktscript_out
   #.......................................................................................................
   readstream
-    .pipe @$custom_stuff_early                            S
+    .pipe CUSTOM.JZR.$most_frequent                       S
     .pipe MACRO_ESCAPER.$expand.$remove_backslashes       S
-    # .pipe $async ( event, done ) =>
-    #   debug '©31847', event
-    #   # done event
-    #   setImmediate ( -> done event )
     .pipe @MKTX.TEX.$fix_typography_for_tex               S
     .pipe @MKTX.DOCUMENT.$begin                           S
     .pipe @MKTX.DOCUMENT.$end                             S
@@ -1512,8 +1414,6 @@ before '@MKTX.REGION.$single_column', '@MKTX.REGION.$multi_column', \
     .pipe @MKTX.INLINE.$link                              S
     .pipe @MKTX.MIXED.$footnote                           S
     .pipe @MKTX.MIXED.$footnote.$remove_extra_paragraphs  S
-    # .pipe @MKTX.COMMAND.$do                               S
-    # .pipe @MKTX.COMMAND.$expansion                        S
     .pipe @MKTX.COMMAND.$new_page                         S
     .pipe @MKTX.COMMAND.$comment                          S
     # .pipe @MKTX.REGION.$correct_p_tags_before_regions     S
@@ -1529,14 +1429,12 @@ before '@MKTX.REGION.$single_column', '@MKTX.REGION.$multi_column', \
     .pipe @MKTX.BLOCK.$heading                            S
     .pipe @MKTX.MIXED.$collect_headings_for_toc           S
     .pipe @MKTX.COMMAND.$toc                              S
-    # .pipe D.$show '>>>>>>>>>'
     .pipe @MKTX.BLOCK.$unordered_list                     S
     .pipe @MKTX.INLINE.$code_span                         S
     .pipe @MKTX.INLINE.$url                               S
     .pipe @MKTX.INLINE.$translate_i_and_b                 S
     .pipe @MKTX.INLINE.$em_and_strong                     S
     .pipe @MKTX.INLINE.$image                             S
-    .pipe @$custom_stuff_late                             S
     .pipe @MKTX.CLEANUP.$drop_empty_p_tags                S
     .pipe @MKTX.BLOCK.$yadda                              S
     .pipe @MKTX.BLOCK.$paragraph                          S

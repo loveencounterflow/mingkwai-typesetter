@@ -859,6 +859,7 @@ tracker_pattern = /// ^
     .pipe @_PRE.$extra_hr                             S
     .pipe MKTS.MACRO_INTERPRETER.$process_actions     S
     .pipe MKTS.MACRO_INTERPRETER.$process_values      S
+    .pipe MKTS.MACRO_INTERPRETER.$process_commands    S
     .pipe writestream
   #.........................................................................................................
   # readstream.on     'end', -> debug '©tdfA4', "readstream ended"

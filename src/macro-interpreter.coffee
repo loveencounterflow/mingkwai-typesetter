@@ -57,6 +57,7 @@ MKTS                      = require './main'
       setImmediate:     setImmediate
       echo:             ( P... ) -> macro_output.push CND.pen P...
       mkts:
+        signature_reader: ( P... ) -> P
         output:           macro_output
         reserved_names:   []
         __filename:       local_filename
@@ -107,7 +108,7 @@ MKTS                      = require './main'
           macro_output_rpr    = macro_output.join ''
           macro_output.length = 0
           send [ '.', 'text', macro_output_rpr, ( copy meta ), ]
-        #.....................................................................................................
+        #...................................................................................................
         switch mode
           when 'silent'
             null
@@ -142,8 +143,8 @@ MKTS                      = require './main'
   throw new Error "internal error: need S.sandbox, must use `$process_actions`" unless S.sandbox?
   #.........................................................................................................
   return $ ( event, send ) =>
-    if MKTS.MD_READER.select event, '.', 'value'
-      [ _, _, identifier, meta, ]     = event
+    if MKTS.MD_READER.select event, '$'
+      [ _, identifier, _, meta, ]     = event
       action_value                    = S.sandbox[ identifier ]
       unless action_value is undefined
         action_value_rpr = rpr action_value unless CND.isa_text action_value
@@ -158,6 +159,57 @@ MKTS                      = require './main'
     #.......................................................................................................
     else
       send event
+
+#-----------------------------------------------------------------------------------------------------------
+@$process_commands = ( S ) =>
+  copy  = MKTS.MD_READER.copy.bind  MKTS.MD_READER
+  stamp = MKTS.MD_READER.stamp.bind MKTS.MD_READER
+  hide  = MKTS.MD_READER.hide.bind  MKTS.MD_READER
+  #.........................................................................................................
+  throw new Error "internal error: need S.sandbox, must use `$process_actions`" unless S.sandbox?
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    if MKTS.MD_READER.select event, '!'
+      [ _, call_signature, _, meta,     ] = event
+      [ _, identifier, parameters_txt,  ] = call_signature.match /^\s*([^\s]*)\s*(.*)$/
+      { mode, language, line_nr, }        = meta
+      [ error_message, parameters, ]      = @_parameters_from_text S, line_nr, parameters_txt
+      return send [ '.', 'warning', error_message, meta, ] if error_message?
+      send [ '!', identifier, parameters, meta, ]
+    #.......................................................................................................
+    else
+      send event
+
+#-----------------------------------------------------------------------------------------------------------
+@_parameters_from_text = ( S, line_nr, text ) =>
+  ### TAINT replicates some code from MACRO_INTERPRETER.process_actions ###
+  ### TAINT move to CND? COFFEESCRIPT? ###
+  CS              = require 'coffee-script'
+  VM              = require 'vm'
+  source          = "@mkts.signature_reader #{text}"
+  error_message   = null
+  #.........................................................................................................
+  throw new Error "internal error: need S.sandbox, must use `$process_actions`" unless S.sandbox?
+  #.....................................................................................................
+  try
+    js_source = CS.compile source, { bare: true, filename: 'parameter resolution', }
+  catch error
+    error_message = error[ 'message' ] ? rpr error
+  #.....................................................................................................
+  unless error_message?
+    try
+      R = VM.runInContext js_source, S.sandbox, { filename: 'parameter resolution', }
+    catch error
+      error_message = error[ 'message' ] ? rpr error
+  #.....................................................................................................
+  if error_message?
+    warn error_message
+    ### TAINT should preserve stack trace of error ###
+    ### TAINT use method to assemble warning event ###
+    ### TAINT write error log with full trace, insert reference (error nr) ###
+    return [ "action on line #{line_nr}: #{error_message}", null, ]
+    return done [ '.', 'warning', error_message, ( copy meta ), ]
+  return [ null, R, ]
 
 # #-----------------------------------------------------------------------------------------------------------
 # @MKTX.COMMAND.$expansion = ( S ) =>

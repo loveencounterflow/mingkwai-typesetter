@@ -294,7 +294,6 @@ after it, thereby inhibiting any processing of those portions. ###
   #.........................................................................................................
   for pattern in @action_patterns
     R = R.replace pattern, ( _, markup, identifier, content, stopper ) =>
-      debug '37458', [markup, identifier, content, stopper]
       mode      = if markup is '.' then 'silent' else 'vocal'
       language  = identifier
       language  = 'coffee' if language is ''
@@ -417,6 +416,7 @@ after it, thereby inhibiting any processing of those portions. ###
     [ mode
       language ]  = entry[ 'markup' ]
     content       = entry[ 'raw' ]
+    # debug '©19694', rpr content
     return [ '.', 'action', content, ( MKTS.MD_READER.copy meta, { mode, language, } ), ]
 
 #-----------------------------------------------------------------------------------------------------------
