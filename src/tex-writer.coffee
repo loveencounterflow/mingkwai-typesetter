@@ -1376,7 +1376,8 @@ CUSTOM.JZR.$most_frequent = ( S ) =>
       step ( resume ) =>
         ### TAINT not a streaming solution ###
         glyphs = yield ( require '../../hollerith/lib/demo' ).read_sample null, n, resume
-        glyphs = ( if idx % 40 is 0 then "#{glyph}\n" else glyph for glyph, idx in Object.keys glyphs )
+        glyphs = Object.keys glyphs
+        glyphs = ( ( if idx % 40 is 0 then "#{glyph}\n" else glyph ) for glyph, idx in glyphs )
         glyphs = glyphs. join ''
         done stamp [ '.', 'text', glyphs, ( copy meta ), ]
   #.........................................................................................................
