@@ -1,5 +1,4 @@
 
-
 <<<\FPmul\tfFactorMoveX{1}{5}%
 \FPmul\tfFactorMoveY{1}{7}>>>
 
@@ -11,6 +10,7 @@
 
 <<(single-column>>
 ```
+<<<{\relscale{0.9}>>>
        version 1                        version 2                        version 3
 
 　　　　　　|占　　　　　　　占　　║　　　　　　　|占　　　　　　　占　║　　　　　　　　|占　　　　　　　占<<< >>>
@@ -33,6 +33,7 @@
 　　　　　氵|占𠂭　　　　　　滷　＜║　　　　　臣𠂉|占𠂭皿　　　　　鹽　║　　　　　　臣𠂉|占𠂭皿　　　　　鹽<<< >>>
 　　　　臣𠂉|占𠂭皿　　　　　鹽　＜║　　　　　　　|占𠂭㑒　　　　　鹸　║　　　　　　　　|占𠂭㑒　　　　　鹸<<< >>>
 　　　禾人氺|占　　　　　　　黏　＜║　　　　　　　|占灬　　　　　　点　║　　　　　　　　|占灬　　　　　　点<<< >>>
+<<<}>>>
 ```
 <<single-column)>>
 
@@ -118,7 +119,6 @@
 ```
 <<single-column)>>
 
-<<!new-page>>
 True to the original ideas of the KWIC principle, each glyph appears
 as many times in the index as it has factors. Within the 15,000 or so most
 common characters, the maximum number of factors per glyph is 6, while the
@@ -253,7 +253,6 @@ xxx
 ```
 
 <<!slash>>
-<<!new-page>>
 ## Formulas
 
 The compositional character formulas represent the core of the Jizura project.
@@ -421,7 +420,6 @@ hzk1/d2ea	&#x26;hzk1#xd2ea;	⿰亻黃<<< >>>
 [...]<<< >>>
 ```
 
-<<!new-page>>
 ## Strokeorders (札字五筆法)
 
 ```
@@ -452,7 +450,6 @@ u-cjk-xb/24ad2 𤫒 <111211121344345412121>
 u-cjk-xb/21689 𡚉 <1112111213445434>
 ```
 
-<<!new-page>>
 ## Factors
 
 <<(single-column>>
@@ -620,7 +617,6 @@ u-cjk-xb/21689 𡚉 <1112111213445434>
 ```
 <<single-column)>>
 
-<<!new-page>>
 ## Figural Themes
 
 (over 4,000 lines)
@@ -714,7 +710,6 @@ u-cjk-xb/21689 𡚉 <1112111213445434>
 𥭯䇭<<< >>>
 ```
 
-<<!new-page>>
 ## Shape Identity Mappings (SIMs)
 
 (22,000 lines)
@@ -862,7 +857,6 @@ yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda
 yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda
 yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda yadda
 
-<<!new-page>>
 ## Dictionary Data
 
 The relatively little dictionary data I have comes largely
@@ -910,7 +904,6 @@ u-cjk/6e38	游	gloss:to swim; float, drift;
   wander, roam<<< >>>
 ```
 
-<<!new-page>>
 ## Variants and Usage
 
 This file contains around 8,400 records that connect 'variant characters'
@@ -978,7 +971,6 @@ current in Japan, possibly for different usages (I guess 鷗 is used in names).
 
 
 
-<<!new-page>>
 ## Frequency and Rankings
 
 Using data from the Leeds Corpus^[<<(url>>http://corpus.leeds.ac.uk/list.html<<)>>]
