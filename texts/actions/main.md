@@ -1,7 +1,7 @@
 
-x<<!JZR.most_frequent 1>>
-<<!end>>
 <<(.>>@n = 10<<)>>
+x<<!JZR.most_frequent @n>>
+<<!end>>
 
 
 ## Actions
