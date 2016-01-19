@@ -1359,9 +1359,89 @@ before '@MKTX.REGION.$single_column', '@MKTX.REGION.$multi_column', \
 #
 #-----------------------------------------------------------------------------------------------------------
 ### TAINT makeshift solution for a commands namespace; should be definable by document e.g.
-ny `require`ing syntax extension modules ###
+by `require`ing syntax extension modules ###
 CUSTOM      =
   JZR:        {}
+
+
+### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ###
+### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ###
+### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ###
+$map = D._ES.map.bind D._ES
+
+f = ->
+  #-----------------------------------------------------------------------------------------------------------
+  @TEE.from_readwritestreams = ( readstream, writestream, settings ) =>
+    ### Same as `create_fitting_from_pipeline`, but accepts a `readstream` and a `writestream` (and an
+    optional `settings` object). `readstream` should somehow be connected to `writestream`, and the pair
+    should be suitable arguments to the [EventsStream `duplex`
+    method](https://github.com/dominictarr/event-stream#duplex-writestream-readstream). ###
+    confluence = @_ES.duplex readstream, writestream
+    CND.dir confluence
+    return @TEE._from_confluence confluence, settings ? {}
+
+  #-----------------------------------------------------------------------------------------------------------
+  @TEE._from_confluence = ( confluence, settings ) =>
+    input       = settings[ 'input'  ] ? @create_throughstream()
+    output      = settings[ 'output' ] ? @create_throughstream()
+    #.........................................................................................................
+    input
+      .pipe confluence
+      .pipe output
+    debug '©86611', 'X'
+    #.........................................................................................................
+    if confluence.tee isnt undefined
+      throw new Error "naming conflict: `confluence.tee` already defined"
+    #.........................................................................................................
+    confluence.tee =
+      '~isa':       'PIPEDREAMS/tee'
+      input:        input
+      output:       output
+      inputs:       if settings[ 'inputs'  ]? then LODASH.clone settings[ 'inputs'  ] else {}
+      outputs:      if settings[ 'outputs' ]? then LODASH.clone settings[ 'outputs' ] else {}
+    #.........................................................................................................
+    for key, value of settings
+      continue if key in [ 'input', 'inputs', 'output', 'outputs', ]
+      confluence.tee[ key ] = value
+    #.........................................................................................................
+    return confluence
+
+  #-----------------------------------------------------------------------------------------------------------
+  @remit_async_spread = ( method ) ->
+    # unless ( arity = method.length ) is 2
+    #   throw new Error "expected a method with an arity of 2, got one with an arity of #{arity}"
+    Z = []
+    #.........................................................................................................
+    read = $map ( input_data, handler ) =>
+      ### TAINT should add `done.end`, `done.pause` and so on ###
+      #.......................................................................................................
+      send = ( output_data ) ->
+        if output_data? then  Z.push output_data
+        else
+          help '©53098', Z
+          handler null, 'ignore'
+      #.......................................................................................................
+      send.done = ( output_data ) =>
+        send output_data if output_data?
+        send()
+      #.......................................................................................................
+      send.error = ( error ) =>
+        handler error
+      #.......................................................................................................
+      method input_data, send
+    #.........................................................................................................
+    write = $ ( _, send ) =>
+      debug '©12400', _
+      send data for data in Z
+      Z.length = 0
+    #.........................................................................................................
+    return @TEE.from_pipeline [ read, write, ]
+
+f.apply D
+
+### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ###
+### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ###
+### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ###
 
 #-----------------------------------------------------------------------------------------------------------
 CUSTOM.JZR.$most_frequent = ( S ) =>
@@ -1369,17 +1449,21 @@ CUSTOM.JZR.$most_frequent = ( S ) =>
     n:      100
   #.........................................................................................................
   $most_frequent = ( S ) =>
-    return $async ( event, done ) =>
-      return done event unless select event, '!', 'JZR.most_frequent'
+    return D.remit_async_spread ( event, send ) =>
+      debug '©39546', event
+      return send.done event unless select event, '!', 'JZR.most_frequent'
       [ type, name, [ n ], meta, ]  = event
       n                            ?= defaults.n
       step ( resume ) =>
-        ### TAINT not a streaming solution ###
+        # ### TAINT not a streaming solution ###
         glyphs = yield ( require '../../hollerith/lib/demo' ).read_sample null, n, resume
         glyphs = Object.keys glyphs
         glyphs = ( ( if idx % 40 is 0 then "#{glyph}\n" else glyph ) for glyph, idx in glyphs )
-        glyphs = glyphs. join ''
-        done stamp [ '.', 'text', glyphs, ( copy meta ), ]
+        # glyphs = glyphs. join ''
+        for glyph in glyphs
+          urge '©94253', glyph
+          send [ '.', 'text', glyph, ( copy meta ), ]
+        send.done()
   #.........................................................................................................
   pipeline = [
     $most_frequent S
