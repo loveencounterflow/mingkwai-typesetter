@@ -227,7 +227,8 @@ module.exports = options =
     #.......................................................................................................
     'glyph-styles':
       ### Other stuff: ###
-      '‰':          '{\\mktsFontfileOptima‰}'
+      # '‰':          '{\\mktsFontfileOptima‰}'
+      '·':                                cmd: 'mktsFontfileSunexta' # U+00B7 MIDDLE DOT
       ### Ideographic description characters: ###
       '↻':                                cmd: 'cnxJzr',      glyph: ''
       '↔':                                cmd: 'cnxJzr',      glyph: ''

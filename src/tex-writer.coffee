@@ -1424,6 +1424,7 @@ CUSTOM.JZR.$most_frequent = ( S ) =>
     CUSTOM.JZR.$most_frequent.with_fncrs._$rewrite_events S
     CUSTOM.JZR.$most_frequent._$read                      S
     CUSTOM.JZR.$most_frequent.with_fncrs._$read           S
+    CUSTOM.JZR.$most_frequent.with_fncrs._$format         S
     CUSTOM.JZR.$most_frequent.with_fncrs._$collect        S
     CUSTOM.JZR.$most_frequent.with_fncrs._$assemble       S
     CUSTOM.JZR.$most_frequent._$assemble                  S
@@ -1517,6 +1518,41 @@ CUSTOM.JZR.$most_frequent._$assemble = ( S ) =>
       send event
 
 #-----------------------------------------------------------------------------------------------------------
+CUSTOM.JZR.$most_frequent.with_fncrs._$format = ( S ) =>
+  track         = MD_READER.TRACKER.new_tracker '(glyphs-with-fncrs)', '(details)'
+  this_glyph    = null
+  collector     = null
+  reading_keys  = [ 'reading/py', 'reading/hg', 'reading/ka', 'reading/hi', ]
+  has_readings  = ( x ) -> ( CND.isa_list x ) and ( x.length > 0 )
+  has_gloss     = ( x ) -> ( CND.isa_text x ) and ( x.length > 0 )
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    within_glyphs   = track.within '(glyphs-with-fncrs)'
+    within_details  = track.within '(details)'
+    track event
+    #.......................................................................................................
+    if within_glyphs and within_details and select event, '*', reading_keys
+      [ _, prd, obj, meta, ]  = event
+      #.....................................................................................................
+      if has_readings obj
+        #...................................................................................................
+        if prd in [ 'reading/ka', 'reading/hi', ]
+          for reading, idx in obj
+            obj[ idx ] = reading.replace /-/g, '⋯'
+        #...................................................................................................
+        value = obj.join ', '
+        send [ '*', prd, value, ( copy meta ), ]
+    #.......................................................................................................
+    else if within_glyphs and within_details and select event, '*', 'reading/gloss'
+      [ _, prd, obj, meta, ]  = event
+      if has_gloss obj
+        value = obj.replace /;/g, ','
+        send [ '*', prd, value, ( copy meta ), ]
+    #.......................................................................................................
+    else
+      send event
+
+#-----------------------------------------------------------------------------------------------------------
 CUSTOM.JZR.$most_frequent.with_fncrs._$collect = ( S ) =>
   track       = MD_READER.TRACKER.new_tracker '(glyphs-with-fncrs)', '(details)'
   this_glyph  = null
@@ -1537,7 +1573,7 @@ CUSTOM.JZR.$most_frequent.with_fncrs._$collect = ( S ) =>
       send [ '.', 'details', collector, ( copy meta ), ]
       collector = null
     #.......................................................................................................
-    else if within_glyphs and select event, '*'
+    else if within_glyphs and within_details and select event, '*'
       null # send hide stamp event
       [ _, prd, obj, _, ]     = event
       collector[ prd ]        = obj
@@ -1575,6 +1611,7 @@ CUSTOM.JZR.$most_frequent.with_fncrs._$assemble = ( S ) =>
       #.....................................................................................................
       for key in [ 'cp/fncr', 'reading/py', 'reading/hi', 'reading/ka', 'reading/gloss', ]
         value     = details[ key ]
+        continue unless value?
         value_txt = if CND.isa_text value then value else rpr value
         text      = " #{value_txt} "
         send [ '.', 'text', text, ( copy meta ), ]
