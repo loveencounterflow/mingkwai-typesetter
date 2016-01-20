@@ -1405,7 +1405,6 @@ f = ->
     $spread = =>
       return $ ( collection, send, end ) =>
         if collection?
-          debug '723429', collection if collection.length > 1
           send event for event in collection
         if end?
           end()
@@ -1426,52 +1425,148 @@ f.apply D
 
 #-----------------------------------------------------------------------------------------------------------
 CUSTOM.JZR.$most_frequent = ( S ) =>
-  defaults =
-    n:      100
+  HOLLERITH       = require '../../hollerith'
+  db_route        = njs_path.resolve __dirname, '../../jizura-datasources/data/leveldb-v2'
+  CUSTOM.JZR.db   = HOLLERITH.new_db db_route, create: no
   #.........................................................................................................
-  $read = =>
-    return D.remit_async_spread ( event, send ) =>
-      # debug '©39546', event
-      return send.done event unless select event, '!', 'JZR.most_frequent'
-      [ type, name, [ n ], meta, ]  = event
-      n                            ?= defaults.n
-      #.....................................................................................................
-      step ( resume ) =>
-        #...................................................................................................
-        try
-          glyphs = yield ( require '../../hollerith/lib/demo' ).read_sample null, n, resume
-        #...................................................................................................
-        catch error
-          warn error
-          return send.error error
-        #...................................................................................................
-        send stamp event
-        glyphs = Object.keys glyphs
-        glyphs = ( ( if idx % 40 is 0 then "#{glyph}\n" else glyph ) for glyph, idx in glyphs )
-        # glyphs = glyphs. join ''
-        send [ '(', 'glyphs', null, ( copy meta ), ]
-        for glyph in glyphs
-          send [ '.', 'glyph', glyph, ( copy meta ), ]
-        send [ ')', 'glyphs', null, ( copy meta ), ]
-        send.done()
+  return D.TEE.from_pipeline [
+    CUSTOM.JZR.$most_frequent.with_fncrs._$rewrite_events S
+    CUSTOM.JZR.$most_frequent._$read                      S
+    D.$show '7249374'
+    CUSTOM.JZR.$most_frequent.with_fncrs._$read           S
+    CUSTOM.JZR.$most_frequent.with_fncrs._$assemble       S
+    CUSTOM.JZR.$most_frequent._$assemble                  S
+    ]
+
+#-----------------------------------------------------------------------------------------------------------
+CUSTOM.JZR.$most_frequent.with_fncrs = {}
+
+#-----------------------------------------------------------------------------------------------------------
+CUSTOM.JZR.$most_frequent.with_fncrs._$rewrite_events = ( S ) =>
+  return $ ( event, send ) =>
+    if select event, '!', 'JZR.most_frequent.with_fncrs'
+      [ _, _, parameters, meta ]    = event
+      meta[ 'jzr' ]?=                 {}
+      meta[ 'jzr' ][ 'group-name' ] = 'glyphs-with-fncrs'
+      send [ '!', 'JZR.most_frequent', parameters, meta, ]
+    else
+      send event
+
+#-----------------------------------------------------------------------------------------------------------
+CUSTOM.JZR.$most_frequent._$read = ( S ) =>
+  HOLLERITH_DEMO  = require '../../hollerith/lib/demo'
+  defaults        =
+    n:            100
+    group_name:   'glyphs'
   #.........................................................................................................
-  $assemble = =>
-    return $ ( event, send ) =>
+  return D.remit_async_spread ( event, send ) =>
+    return send.done event unless select event, '!', 'JZR.most_frequent'
+    [ type, name, [ n ], meta, ]  = event
+    n                            ?= defaults.n
+    group_name                    = meta[ 'jzr' ]?[ 'group-name' ] ? defaults.group_name
+    #.......................................................................................................
+    step ( resume ) =>
       #.....................................................................................................
-      if select event, '(', 'glyphs'
-        send stamp event
+      try
+        glyphs = yield HOLLERITH_DEMO.read_sample CUSTOM.JZR.db, n, resume
       #.....................................................................................................
-      else if select event, '.', 'glyph'
-        [ _, _, glyph, meta, ] = event
-        send [ '.', 'text', glyph, ( copy meta ), ]
+      catch error
+        warn error
+        return send.error error
       #.....................................................................................................
-      else if select event, ')', 'glyphs'
-        send stamp event
-      #.....................................................................................................
-      else
-        send event
+      send stamp event
+      glyphs = Object.keys glyphs
+      send [ '(', group_name, null, ( copy meta ), ]
+      for glyph in glyphs
+        send [ '.', 'glyph', glyph, ( copy meta ), ]
+      send [ ')', group_name, null, ( copy meta ), ]
+      send.done()
+
+#-----------------------------------------------------------------------------------------------------------
+CUSTOM.JZR.$most_frequent.with_fncrs._$read = ( S ) =>
+  track     = MD_READER.TRACKER.new_tracker '(glyphs-with-fncrs)'
+  HOLLERITH = require '../../hollerith'
   #.........................................................................................................
-  return D.TEE.from_pipeline [ $read(), $assemble(), ]
+  return D.remit_async_spread ( event, send ) =>
+    within_glyphs = track.within '(glyphs-with-fncrs)'
+    track event
+    debug '88723', within_glyphs, event if event[ 2 ] in [ '的', '人', ]
+    return send.done event unless within_glyphs and select event, '.', 'glyph'
+    [ _, _, glyph, meta, ]  = event
+    prefix                  = [ 'spo', glyph, ] # 'cp/sfncr'
+    HOLLERITH.read_phrases CUSTOM.JZR.db, { prefix, }, ( error, phrases ) =>
+      send event
+      send [ '(', 'details', glyph, ( copy meta ), ]
+      for phrase in phrases
+        [ _, _, prd, obj, ] = phrase
+        send [ '*', prd, obj, ( copy meta ), ]
+      send [ ')', 'details', glyph, ( copy meta ), ]
+      send.done()
+
+#-----------------------------------------------------------------------------------------------------------
+CUSTOM.JZR.$most_frequent._$assemble = ( S ) =>
+  track = MD_READER.TRACKER.new_tracker '(glyphs)'
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    within_glyphs = track.within '(glyphs)'
+    track event
+    #.......................................................................................................
+    if select event, '(', 'glyphs'
+      send stamp event
+    #.......................................................................................................
+    else if within_glyphs and select event, '.', 'glyph'
+      # glyphs = ( ( if idx % 40 is 0 then "#{glyph}\n" else glyph ) for glyph, idx in glyphs )
+      # glyphs = glyphs. join ''
+      [ _, _, glyph, meta, ] = event
+      send [ '.', 'text', glyph, ( copy meta ), ]
+    #.......................................................................................................
+    else if select event, ')', 'glyphs'
+      send stamp event
+    #.......................................................................................................
+    else
+      send event
+
+#-----------------------------------------------------------------------------------------------------------
+CUSTOM.JZR.$most_frequent.with_fncrs._$assemble = ( S ) =>
+  track       = MD_READER.TRACKER.new_tracker '(glyphs-with-fncrs)'
+  this_glyph  = null
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    within_glyphs = track.within '(glyphs-with-fncrs)'
+    track event
+    #.......................................................................................................
+    if select event, [ '(', ')', ], 'glyphs-with-fncrs'
+      send stamp event
+    #.......................................................................................................
+    else if select event, '(', 'details'
+      [ _, _, this_glyph, _, ] = event
+      send stamp event
+    #.......................................................................................................
+    else if select event, ')', 'details'
+      [ _, _, _, meta, ] = event
+      this_glyph = null
+      send stamp copy event
+      send [ '.', 'p', null, ( copy meta ), ]
+    #.......................................................................................................
+    else if within_glyphs and select event, '.', 'glyph'
+      [ _, _, glyph, meta, ] = event
+      send [ '.', 'text', glyph, ( copy meta ), ]
+    #.......................................................................................................
+    else if within_glyphs and select event, '*', [ 'cp/fncr', 'reading/py', 'reading/hi', 'reading/ka', 'reading/gloss', ]
+      send stamp event
+      [ _, prd, obj, meta, ]  = event
+      obj_txt                 = if CND.isa_text obj then obj else rpr obj
+      text                    = " #{obj_txt} "
+      send [ '.', 'text', text, ( copy meta ), ]
+    #.......................................................................................................
+    else if within_glyphs and select event, '*'
+      null # send hide stamp event
+    #.......................................................................................................
+    else if select event, ')', 'glyphs-with-fncrs'
+      send stamp event
+    #.......................................................................................................
+    else
+      send event
 
 
 #===========================================================================================================
@@ -1494,6 +1589,7 @@ CUSTOM.JZR.$most_frequent = ( S ) =>
   #.......................................................................................................
   readstream
     .pipe CUSTOM.JZR.$most_frequent                       S
+    # .pipe CUSTOM.JZR.$most_frequent.with_fncrs            S
     .pipe MACRO_ESCAPER.$expand.$remove_backslashes       S
     .pipe @MKTX.TEX.$fix_typography_for_tex               S
     .pipe @MKTX.DOCUMENT.$begin                           S
