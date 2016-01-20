@@ -1541,16 +1541,23 @@ CUSTOM.JZR.$most_frequent.with_fncrs._$assemble = ( S ) =>
     else if select event, '(', 'details'
       [ _, _, this_glyph, _, ] = event
       send stamp event
+      send [ 'tex', "\\begin{minipage}{0.8\\linewidth}", ]
     #.......................................................................................................
     else if select event, ')', 'details'
       [ _, _, _, meta, ] = event
       this_glyph = null
       send stamp copy event
+      send [ 'tex', "\\end{minipage}", ]
       send [ '.', 'p', null, ( copy meta ), ]
     #.......................................................................................................
     else if within_glyphs and select event, '.', 'glyph'
       [ _, _, glyph, meta, ] = event
+      # send [ 'tex', "{\\relscale{2}", ( copy meta ), ]
+      # send [ '.', 'text', glyph, ( copy meta ), ]
+      # send [ 'tex', "}", ( copy meta ), ]
+      send [ 'tex', "\\lettrine[lines=3]{\\tfRaise{1.5}", ]
       send [ '.', 'text', glyph, ( copy meta ), ]
+      send [ 'tex', "}{}", ]
     #.......................................................................................................
     else if within_glyphs and select event, '*', [ 'cp/fncr', 'reading/py', 'reading/hi', 'reading/ka', 'reading/gloss', ]
       send stamp event

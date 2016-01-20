@@ -178,6 +178,8 @@ module.exports = options =
     #.......................................................................................................
     'tex-command-by-rsgs':
       'u-latn':                 'latin'
+      'u-latn-a':               'latin'
+      'u-latn-b':               'latin'
       'u-latn-1':               'latin'
       'u-punct':                'latin'
       'u-grek':                 'latin'
