@@ -67,10 +67,10 @@ INPUT /usr/local/texlive/2015/texmf-dist/fonts/map/fontname/texfonts.map
 INPUT /usr/local/texlive/2015/texmf-dist/fonts/tfm/jknappen/ec/ecrm1000.tfm
 INPUT /usr/local/texlive/2015/texmf-dist/tex/latex/relsize/relsize.sty
 INPUT /usr/local/texlive/2015/texmf-dist/tex/latex/relsize/relsize.sty
-INPUT /usr/local/texlive/2015/texmf-dist/tex/latex/lettrine/lettrine.sty
-INPUT /usr/local/texlive/2015/texmf-dist/tex/latex/lettrine/lettrine.sty
-INPUT /usr/local/texlive/2015/texmf-dist/tex/latex/lettrine/lettrine.cfg
-INPUT /usr/local/texlive/2015/texmf-dist/tex/latex/lettrine/lettrine.cfg
+INPUT /usr/local/texlive/2015/texmf-dist/tex/latex/ms/ragged2e.sty
+INPUT /usr/local/texlive/2015/texmf-dist/tex/latex/ms/ragged2e.sty
+INPUT /usr/local/texlive/2015/texmf-dist/tex/latex/ms/everysel.sty
+INPUT /usr/local/texlive/2015/texmf-dist/tex/latex/ms/everysel.sty
 INPUT /usr/local/texlive/2015/texmf-dist/tex/latex/needspace/needspace.sty
 INPUT /usr/local/texlive/2015/texmf-dist/tex/latex/needspace/needspace.sty
 INPUT /usr/local/texlive/2015/texmf-dist/tex/latex/oberdiek/zref.sty
@@ -212,12 +212,4 @@ INPUT /usr/local/texlive/2015/texmf-dist/tex/latex/microtype/mt-LatinModernRoman
 INPUT /usr/local/texlive/2015/texmf-dist/tex/latex/microtype/mt-LatinModernRoman.cfg
 INPUT /Volumes/Storage/io/mingkwai-typesetter/texts/actions/.content.tex
 INPUT /Volumes/Storage/io/mingkwai-typesetter/texts/actions/.content.tex
-INPUT /usr/local/texlive/2015/texmf-dist/fonts/tfm/public/cm/cmmi10.tfm
-INPUT /usr/local/texlive/2015/texmf-dist/fonts/tfm/public/cm/cmmi8.tfm
-INPUT /usr/local/texlive/2015/texmf-dist/fonts/tfm/public/cm/cmsy10.tfm
-INPUT /usr/local/texlive/2015/texmf-dist/fonts/tfm/public/cm/cmsy8.tfm
-INPUT /usr/local/texlive/2015/texmf-dist/fonts/tfm/public/cm/cmr10.tfm
-INPUT /usr/local/texlive/2015/texmf-dist/tex/latex/microtype/mt-cmr.cfg
-INPUT /usr/local/texlive/2015/texmf-dist/tex/latex/microtype/mt-cmr.cfg
-INPUT /usr/local/texlive/2015/texmf-dist/fonts/tfm/public/cm/cmr8.tfm
 INPUT /Volumes/Storage/io/mingkwai-typesetter/texts/actions/actions.aux

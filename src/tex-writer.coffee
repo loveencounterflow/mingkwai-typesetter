@@ -1593,30 +1593,38 @@ CUSTOM.JZR.$most_frequent.with_fncrs._$assemble = ( S ) =>
     if select event, '(', 'glyphs-with-fncrs'
       [ _, _, this_glyph, _, ] = event
       send stamp event
+      # send [ 'tex', '\\begin{flushleft}']
+      send [ 'tex', '{\\RaggedRight']
     #.......................................................................................................
     else if select event, ')', 'glyphs-with-fncrs'
       this_glyph = null
       send stamp event
+      # send [ 'tex', '\\end{flushleft}']
+      send [ 'tex', '}\n\n']
     #.......................................................................................................
     else if within_glyphs and select event, '.', 'glyph'
       [ _, _, glyph, meta, ] = event
-      send [ 'tex', "\\lettrine[lines=3]{\\tfRaise{1.5}", ]
+      # send [ 'tex', "\\lettrine[lines=3]{\\tfRaise{1.5}", ]
       send [ '.', 'text', glyph, ( copy meta ), ]
-      send [ 'tex', "}{}", ]
+      # send [ 'tex', "}{}", ]
     #.......................................................................................................
     else if within_glyphs and select event, '.', 'details'
       null # send hide stamp copy event
       [ _, _, details, meta, ] = event
-      send [ 'tex', "\\begin{minipage}{0.8\\linewidth}", ]
+      # send [ 'tex', "\\begin{minipage}{0.8\\linewidth}", ]
       #.....................................................................................................
+      count = 0
       for key in [ 'cp/fncr', 'reading/py', 'reading/hi', 'reading/ka', 'reading/gloss', ]
         value     = details[ key ]
         continue unless value?
         value_txt = if CND.isa_text value then value else rpr value
-        text      = " #{value_txt} "
+        text      = "#{value_txt}"
+        send [ '.', 'text', '; ', ( copy meta ), ] unless count is 0
         send [ '.', 'text', text, ( copy meta ), ]
+        count += +1
+      send [ '.', 'text', '.', ( copy meta ), ] unless count is 0
       #.....................................................................................................
-      send [ 'tex', "\\end{minipage}", ]
+      # send [ 'tex', "\\end{minipage}", ]
       send [ '.', 'p', null, ( copy meta ), ]
     #.......................................................................................................
     else
