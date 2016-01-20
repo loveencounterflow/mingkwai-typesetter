@@ -1373,19 +1373,12 @@ f = ->
 
   #-----------------------------------------------------------------------------------------------------------
   @remit_async_spread = ( method ) ->
-    # unless ( arity = method.length ) is 2
-    #   throw new Error "expected a method with an arity of 2, got one with an arity of #{arity}"
+    unless ( arity = method.length ) is 2
+      throw new Error "expected a method with an arity of 2, got one with an arity of #{arity}"
+    #.........................................................................................................
     Z       = []
     input   = D.create_throughstream()
     output  = D.create_throughstream()
-    #.........................................................................................................
-    $show = =>
-      return $ ( event, send, end ) =>
-        if event?
-          # debug '9843', event
-          send event
-        if end?
-          end()
     #.........................................................................................................
     $call = =>
       return $async ( event, done ) =>
@@ -1401,7 +1394,6 @@ f = ->
         method event, collect
         return null
     #.........................................................................................................
-    ### TAINT just use `PIDREAMS.spread`? ###
     $spread = =>
       return $ ( collection, send, end ) =>
         if collection?
@@ -1410,7 +1402,6 @@ f = ->
           end()
     #.........................................................................................................
     input
-      .pipe $show()
       .pipe $call()
       .pipe $spread()
       .pipe output
@@ -1432,8 +1423,8 @@ CUSTOM.JZR.$most_frequent = ( S ) =>
   return D.TEE.from_pipeline [
     CUSTOM.JZR.$most_frequent.with_fncrs._$rewrite_events S
     CUSTOM.JZR.$most_frequent._$read                      S
-    D.$show '7249374'
     CUSTOM.JZR.$most_frequent.with_fncrs._$read           S
+    CUSTOM.JZR.$most_frequent.with_fncrs._$collect        S
     CUSTOM.JZR.$most_frequent.with_fncrs._$assemble       S
     CUSTOM.JZR.$most_frequent._$assemble                  S
     ]
@@ -1490,7 +1481,6 @@ CUSTOM.JZR.$most_frequent.with_fncrs._$read = ( S ) =>
   return D.remit_async_spread ( event, send ) =>
     within_glyphs = track.within '(glyphs-with-fncrs)'
     track event
-    debug '88723', within_glyphs, event if event[ 2 ] in [ '的', '人', ]
     return send.done event unless within_glyphs and select event, '.', 'glyph'
     [ _, _, glyph, meta, ]  = event
     prefix                  = [ 'spo', glyph, ] # 'cp/sfncr'
@@ -1527,6 +1517,35 @@ CUSTOM.JZR.$most_frequent._$assemble = ( S ) =>
       send event
 
 #-----------------------------------------------------------------------------------------------------------
+CUSTOM.JZR.$most_frequent.with_fncrs._$collect = ( S ) =>
+  track       = MD_READER.TRACKER.new_tracker '(glyphs-with-fncrs)', '(details)'
+  this_glyph  = null
+  collector   = null
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    within_glyphs   = track.within '(glyphs-with-fncrs)'
+    within_details  = track.within '(details)'
+    track event
+    #.......................................................................................................
+    if select event,  '(', 'details'
+      send stamp event
+      collector = {}
+    #.......................................................................................................
+    else if select event, ')', 'details'
+      [ _, _, _, meta, ] = event
+      send stamp copy event
+      send [ '.', 'details', collector, ( copy meta ), ]
+      collector = null
+    #.......................................................................................................
+    else if within_glyphs and select event, '*'
+      null # send hide stamp event
+      [ _, prd, obj, _, ]     = event
+      collector[ prd ]        = obj
+    #.......................................................................................................
+    else
+      send event
+
+#-----------------------------------------------------------------------------------------------------------
 CUSTOM.JZR.$most_frequent.with_fncrs._$assemble = ( S ) =>
   track       = MD_READER.TRACKER.new_tracker '(glyphs-with-fncrs)'
   this_glyph  = null
@@ -1535,42 +1554,33 @@ CUSTOM.JZR.$most_frequent.with_fncrs._$assemble = ( S ) =>
     within_glyphs = track.within '(glyphs-with-fncrs)'
     track event
     #.......................................................................................................
-    if select event, [ '(', ')', ], 'glyphs-with-fncrs'
-      send stamp event
-    #.......................................................................................................
-    else if select event, '(', 'details'
+    if select event, '(', 'glyphs-with-fncrs'
       [ _, _, this_glyph, _, ] = event
       send stamp event
-      send [ 'tex', "\\begin{minipage}{0.8\\linewidth}", ]
     #.......................................................................................................
-    else if select event, ')', 'details'
-      [ _, _, _, meta, ] = event
+    else if select event, ')', 'glyphs-with-fncrs'
       this_glyph = null
-      send stamp copy event
-      send [ 'tex', "\\end{minipage}", ]
-      send [ '.', 'p', null, ( copy meta ), ]
+      send stamp event
     #.......................................................................................................
     else if within_glyphs and select event, '.', 'glyph'
       [ _, _, glyph, meta, ] = event
-      # send [ 'tex', "{\\relscale{2}", ( copy meta ), ]
-      # send [ '.', 'text', glyph, ( copy meta ), ]
-      # send [ 'tex', "}", ( copy meta ), ]
       send [ 'tex', "\\lettrine[lines=3]{\\tfRaise{1.5}", ]
       send [ '.', 'text', glyph, ( copy meta ), ]
       send [ 'tex', "}{}", ]
     #.......................................................................................................
-    else if within_glyphs and select event, '*', [ 'cp/fncr', 'reading/py', 'reading/hi', 'reading/ka', 'reading/gloss', ]
-      send stamp event
-      [ _, prd, obj, meta, ]  = event
-      obj_txt                 = if CND.isa_text obj then obj else rpr obj
-      text                    = " #{obj_txt} "
-      send [ '.', 'text', text, ( copy meta ), ]
-    #.......................................................................................................
-    else if within_glyphs and select event, '*'
-      null # send hide stamp event
-    #.......................................................................................................
-    else if select event, ')', 'glyphs-with-fncrs'
-      send stamp event
+    else if within_glyphs and select event, '.', 'details'
+      null # send hide stamp copy event
+      [ _, _, details, meta, ] = event
+      send [ 'tex', "\\begin{minipage}{0.8\\linewidth}", ]
+      #.....................................................................................................
+      for key in [ 'cp/fncr', 'reading/py', 'reading/hi', 'reading/ka', 'reading/gloss', ]
+        value     = details[ key ]
+        value_txt = if CND.isa_text value then value else rpr value
+        text      = " #{value_txt} "
+        send [ '.', 'text', text, ( copy meta ), ]
+      #.....................................................................................................
+      send [ 'tex', "\\end{minipage}", ]
+      send [ '.', 'p', null, ( copy meta ), ]
     #.......................................................................................................
     else
       send event
