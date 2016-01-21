@@ -183,6 +183,7 @@ module.exports = options =
       'u-latn-1':               'latin'
       'u-punct':                'latin'
       'u-grek':                 'latin'
+      'u-cdm':                  'latin' # combining diacritical marks
       'u-cjk':                  'cn'
       'u-halfull':              'cn'
       'u-dingb':                'cn'
@@ -228,7 +229,7 @@ module.exports = options =
     'glyph-styles':
       ### Other stuff: ###
       # '‰':          '{\\mktsFontfileOptima‰}'
-      '·':                                cmd: 'mktsFontfileSunexta' # U+00B7 MIDDLE DOT
+      '·':                                cmd: 'mktsFontfileEbgaramondtwelveregular' # U+00B7 MIDDLE DOT
       ### Ideographic description characters: ###
       '↻':                                cmd: 'cnxJzr',      glyph: ''
       '↔':                                cmd: 'cnxJzr',      glyph: ''
@@ -276,6 +277,8 @@ module.exports = options =
       '&#x3000;':                         cmd: 'cnjzr',       glyph: ''
       '《':             raise: -0.2
       '》':             raise: -0.2
+      '【':                                cmd: 'mktsFontfileNanummyeongjo'
+      '】':                                cmd: 'mktsFontfileNanummyeongjo'
       '囗':                                cmd: 'cnjzr',       glyph: ''
       '。':  push: 0.5, raise: 0.25,       cmd: 'cn'
       '亻':  push: 0.4

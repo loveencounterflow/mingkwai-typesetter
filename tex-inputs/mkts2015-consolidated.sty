@@ -23,6 +23,7 @@
 % \usepackage{/Users/flow/JIZURA/flow/dictionary/tex-inputs/accentbx/accentbx}
 \usepackage{cxltx-style-accentbox}
 \usepackage{cxltx-style-trm}
+% \usepackage{longtable}
 % \usepackage{pbox}
 % \usepackage{array}
 % \let\footruleskip\undefined\usepackage{fancyhdr}
@@ -144,7 +145,9 @@
 \newcommand{\mktsStyleFontItalicBold}{\mktsStyleFontThrowUndefined{ItalicBold}}%
 \newcommand{\mktsStyleFontSymbol}{\mktsStyleFontThrowUndefined{Symbol}}%
 \newcommand{\mktsStyleFontCode}{\mktsStyleFontThrowUndefined{Code}}%
-\newcommand{\mktsStyleFontUrl}{\mktsStyleFontThrowUndefined{Code}}%
+\newcommand{\mktsStyleFontFncr}{\mktsStyleFontThrowUndefined{Fncr}}%
+\newcommand{\mktsStyleFontGloss}{\mktsStyleFontThrowUndefined{Gloss}}%
+\newcommand{\mktsStyleFontUrl}{\mktsStyleFontThrowUndefined{Url}}%
 \newcommand{\mktsStyleFontCjkDefault}{\mktsStyleFontThrowUndefined{CjkDefault}}%
 \newcommand{\mktsStyleFontCjkBold}{\mktsStyleFontThrowUndefined{CjkBold}}%
 \newcommand{\mktsStyleFontCjkItalic}{\mktsStyleFontThrowUndefined{CjkItalic}}%
@@ -161,7 +164,9 @@
   \renewcommand{\mktsStyleFontItalicBold}{\mktsStyleFontThrowUndefined{ItalicBold}}%
   \renewcommand{\mktsStyleFontSymbol}{\mktsStyleFontThrowUndefined{Symbol}}%
   \renewcommand{\mktsStyleFontCode}{\mktsStyleFontThrowUndefined{Code}}%
-  \renewcommand{\mktsStyleFontUrl}{\mktsStyleFontThrowUndefined{Code}}%
+  \renewcommand{\mktsStyleFontFncr}{\mktsStyleFontThrowUndefined{Fncr}}%
+  \renewcommand{\mktsStyleFontGloss}{\mktsStyleFontThrowUndefined{Gloss}}%
+  \renewcommand{\mktsStyleFontUrl}{\mktsStyleFontThrowUndefined{Url}}%
   \renewcommand{\mktsStyleFontCjkDefault}{\mktsStyleFontThrowUndefined{CjkDefault}}%
   \renewcommand{\mktsStyleFontCjkBold}{\mktsStyleFontThrowUndefined{CjkBold}}%
   \renewcommand{\mktsStyleFontCjkItalic}{\mktsStyleFontThrowUndefined{CjkItalic}}%
@@ -178,6 +183,8 @@
   % \renewcommand{\mktsStyleFontItalicBold}{\mktsStyleFontThrowUndefined{ItalicBold}}%
   \renewcommand{\mktsStyleFontSymbol}{\mktsFontfileSunexta}%
   % \renewcommand{\mktsStyleFontCode}{\mktsStyleFontThrowUndefined{Code}}%
+  \renewcommand{\mktsStyleFontFncr}{\mktsFontfileFandolheibold}%
+  \renewcommand{\mktsStyleFontGloss}{\mktsFontfileEbgaramondtwelveitalic}%
   \renewcommand{\mktsStyleFontUrl}{\relscale{0.8}\mktsFontfileUbuntuc}%
   \renewcommand{\mktsStyleFontCjkDefault}{\mktsFontfileSunexta}%
   \renewcommand{\mktsStyleFontCjkBold}{\mktsFontfileSourcehansansbold}%
@@ -191,6 +198,18 @@
 \newcommand{\mktsStyleBold}{%
   \renewcommand{\mktsFontCjkDefault}{\mktsStyleFontCjkBold}%
   \mktsStyleFontBold}
+
+\newcommand{\mktsStyleFncr}{%
+  \relscale{0.8}%
+  % \tfRaise{-0.1}%
+  \mktsStyleFontFncr}
+
+\newcommand{\mktsStyleMidashi}{%
+  \relscale{3}%
+  \tfRaise{-1.25}}
+
+\newcommand{\mktsStyleGloss}{%
+  \mktsStyleFontGloss}
 
 \newcommand{\mktsStyleNormal}{%
   \mktsFontfileEbgaramondtwelveregular%
@@ -438,9 +457,7 @@
 \newcommand{\adjustCjkIdeograph}[1]{\prRaise{-0.125}{#1}} % !!!
 % \newcommand{\adjustJzrCjkIdeograph}[1]{\prRaise{-0.125}{#1}} % !!!
 \newcommand{\adjustJzrCjkIdeograph}[1]{\prRaise{-0.125}{\makebox[1.1053\myFontsize]{#1}}} % !!!
-\newcommand{\mktsAdjustKatakana}{}
-\newcommand{\mktsAdjustHiragana}{}
-\newcommand{\mktsAdjustHangeul}{}
+
 % ..........................................................................................................
 \newcommand{\latin}[1]{{\mktsFontfileEbgaramondtwelveregular#1}}
 % \newcommand{\setPlainLatin}{\renewcommand{\latin}[1]{{\mktsFontfileEbgaramondtwelveregular#1}}}
@@ -473,9 +490,16 @@
 \newcommand{\cnsym}{\mktsFontfileHanamina}
 \newcommand{\cnstrk}{\mktsFontfileSunexta}
 \newcommand{\cnjzr}{\mktsFontfileJizurathreeb}
-\newcommand{\ka}{\mktsAdjustKatakana}% \mktsFontfileNanummyeongjo
-\newcommand{\hi}{\mktsAdjustHiragana}% \mktsFontfileNanummyeongjo
-\newcommand{\hg}{\mktsAdjustHangeul\mktsFontfileNanummyeongjo}
+\newcommand{\ka}{%
+  % \relscale{0.8}%
+  % \tfRaise{-0.1}%
+  \mktsFontfileIpamp}% \mktsFontfileNanummyeongjo
+\newcommand{\hi}{%
+  % \relscale{0.8}%
+  % \tfRaise{-0.1}%
+  \mktsFontfileIpamp}% \mktsFontfileNanummyeongjo
+\newcommand{\hg}{%
+  \mktsFontfileNanummyeongjo}
 % ..........................................................................................................
 \newcommand{\cnxBabel}{\mktsFontfileBabelstonehan}
 \newcommand{\cnxHanaA}{\mktsFontfileHanamina}
@@ -508,7 +532,7 @@
 \newcommand{\jzrkai}[1]{{\mktsFontfileJizurathreeb{}#1}}
 % ..........................................................................................................
 \newcommand{\pageNr}[1]{{\fontsize{2.5mm}{2.5mm}\mktsFontfilePtsans#1}}
-\newcommand{\sfncr}[1]{{\fontsize{2mm}{2mm}\jzrFontInputMonoCompressedLight#1}}
+% \newcommand{\sfncr}[1]{{\fontsize{2mm}{2mm}\jzrFontInputMonoCompressedLight#1}}
 \newcommand{\wbf}[1]{{\fontsize{2mm}{2mm}\jzrFontInputMonoCompressedMedium#1}}
 \newcommand{\pageNrText}[1]{{\fontsize{3mm}{5mm}\mktsFontfilePtsans#1}}
 \newcommand{\wbfText}[1]{{\fontsize{3mm}{5mm}\jzrFontInputMonoCompressedMedium#1}}

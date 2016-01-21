@@ -1,4 +1,13 @@
 
+
+おもて表おもて u-cjk-8868; biǎo; おもて, あらわ·(す|れる); ヒョウ
+
+<<<{\mktsFontfileIpamp{}おもて表おもて u-cjk-8868; biǎo; おもて, あらわ·(す|れる); ヒョウ}>>>
+
+<<!JZR.fontlist>>
+
+<<!end>>
+
 ぁあぃいぅうぇえぉおかがきぎく
 ぐけげこごさざしじすずせぜそぞた
 だちぢっつづてでとどなにぬねのは
@@ -11,6 +20,10 @@
 バパヒビピフブプヘベペホボポマミ
 ムメモャヤュユョヨラリルレロヮワ
 ヰヱヲンヴヵヶヷヸヹヺ
+
+
+<<!end>>
+
 
 <<<
 Babelstonehan {\cjk\mktsFontfileBabelstonehan{}本书使用的数字，符号一览表 AaBbCcDdEeFfghijklmn}\\
