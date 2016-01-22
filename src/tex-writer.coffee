@@ -1351,8 +1351,8 @@ before '@MKTX.REGION.$single_column', '@MKTX.REGION.$multi_column', \
     primarily a formatting instruction ###
     if select event, '.', 'warning'
       [ type, name, text, meta, ] = event
-      # message                     = @MKTX.TEX.fix_typography_for_tex text, S.options
-      message                     = text
+      message                     = @MKTX.TEX.fix_typography_for_tex text, S.options
+      # message                     = text
       ### TAINT use location data ###
       send [ 'tex', "\\begin{mktsEnvWarning}#{message}\\end{mktsEnvWarning}" ]
     else

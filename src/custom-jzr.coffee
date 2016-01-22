@@ -63,7 +63,6 @@ HOLLERITH                 = require '../../hollerith'
     @$most_frequent.$read                         S
     @$most_frequent.with_fncrs.$read              S
     @$most_frequent.with_fncrs.$format            S
-    @$most_frequent.with_fncrs.$collect           S
     @$most_frequent.with_fncrs.$assemble          S
     @$most_frequent.$assemble                     S
     ]
@@ -256,17 +255,16 @@ HOLLERITH                 = require '../../hollerith'
     [ _, _, glyph, meta, ]  = event
     prefix                  = [ 'spo', glyph, ] # 'cp/sfncr'
     HOLLERITH.read_phrases S.JZR.db, { prefix, }, ( error, phrases ) =>
-      send event
-      send [ '(', 'details', glyph, ( copy meta ), ]
+      details = { glyph, }
       for phrase in phrases
         [ _, _, prd, obj, ] = phrase
-        send [ '*', prd, obj, ( copy meta ), ]
-      send [ ')', 'details', glyph, ( copy meta ), ]
+        details[ prd ] = obj
+      send [ '.', 'details', details, ( copy meta ), ]
       send.done()
 
 #-----------------------------------------------------------------------------------------------------------
 @$most_frequent.with_fncrs.$format = ( S ) =>
-  track         = MD_READER.TRACKER.new_tracker '(glyphs-with-fncrs)', '(details)'
+  track         = MD_READER.TRACKER.new_tracker '(glyphs-with-fncrs)'
   this_glyph    = null
   reading_keys  = [ 'reading/py', 'reading/hg', 'reading/ka', 'reading/hi', ]
   has_readings  = ( x ) -> ( CND.isa_list x ) and ( x.length > 0 )
@@ -274,62 +272,22 @@ HOLLERITH                 = require '../../hollerith'
   #.........................................................................................................
   return $ ( event, send ) =>
     within_glyphs   = track.within '(glyphs-with-fncrs)'
-    within_details  = track.within '(details)'
     track event
-    # #.......................................................................................................
-    # if within_glyphs and within_details and select event, '*'
-    #   [ _, prd, obj, meta, ]  = event
-    #   urge '77336', this_glyph, prd, obj
     #.......................................................................................................
-    if within_glyphs and within_details and select event, '*', reading_keys
-      [ _, prd, obj, meta, ]  = event
+    if within_glyphs and select event, '.', 'details'
+      [ _, _, details, meta, ]  = event
       #.....................................................................................................
-      if has_readings obj
+      for prd in reading_keys
         #...................................................................................................
-        if prd in [ 'reading/ka', 'reading/hi', ]
-          for reading, idx in obj
-            obj[ idx ] = reading.replace /-/g, '⋯'
-        #...................................................................................................
-        value = obj.join ', '
-        send [ '*', prd, value, ( copy meta ), ]
-    #.......................................................................................................
-    else if within_glyphs and within_details and select event, '*', 'reading/gloss'
-      [ _, prd, obj, meta, ]  = event
-      if has_gloss obj
-        value = obj.replace /;/g, ','
-        send [ '*', prd, value, ( copy meta ), ]
-    # #.......................................................................................................
-    # else if within_glyphs and select event, ')', 'details'
-    #   send event
-    #.......................................................................................................
-    else
+        if has_readings ( readings = details[ prd ] )
+          if prd in [ 'reading/ka', 'reading/hi', ]
+            readings = ( reading.replace /-/g, '⋯' for reading in readings )
+          details[ prd ] = readings.join ', '
+      #.....................................................................................................
+      if has_gloss ( gloss = details[ 'reading/gloss' ] )
+        details[ 'reading/gloss' ]  = gloss.replace /;/g, ','
+      #.....................................................................................................
       send event
-
-#-----------------------------------------------------------------------------------------------------------
-@$most_frequent.with_fncrs.$collect = ( S ) =>
-  track       = MD_READER.TRACKER.new_tracker '(glyphs-with-fncrs)', '(details)'
-  this_glyph  = null
-  collector   = null
-  #.........................................................................................................
-  return $ ( event, send ) =>
-    within_glyphs   = track.within '(glyphs-with-fncrs)'
-    within_details  = track.within '(details)'
-    track event
-    #.......................................................................................................
-    if select event,  '(', 'details'
-      send stamp event
-      collector = {}
-    #.......................................................................................................
-    else if select event, ')', 'details'
-      [ _, _, _, meta, ] = event
-      send stamp copy event
-      send [ '.', 'details', collector, ( copy meta ), ]
-      collector = null
-    #.......................................................................................................
-    else if within_glyphs and within_details and select event, '*'
-      null # send hide stamp event
-      [ _, prd, obj, _, ]     = event
-      collector[ prd ]        = obj
     #.......................................................................................................
     else
       send event
@@ -340,36 +298,62 @@ HOLLERITH                 = require '../../hollerith'
   this_glyph  = null
   #.........................................................................................................
   return $ ( event, send ) =>
-    within_glyphs = track.within '(glyphs-with-fncrs)'
+    within_glyphs   = track.within '(glyphs-with-fncrs)'
     track event
     #.......................................................................................................
     if select event, '(', 'glyphs-with-fncrs'
       [ _, _, this_glyph, _, ] = event
       send stamp event
-      # send [ 'tex', '\\begin{flushleft}', ]
-      # send [ 'tex', '{\\RaggedRight', ]
       send [ 'tex', '{\\setlength\\parskip{0mm}\n', ]
     #.......................................................................................................
     else if select event, ')', 'glyphs-with-fncrs'
       this_glyph = null
       send stamp event
-      # send [ 'tex', '\\end{flushleft}']
       send [ 'tex', '}\n\n']
     #.......................................................................................................
-    else if within_glyphs and select event, '.', 'glyph'
-      [ _, _, glyph, meta, ] = event
-      send [ 'tex', "\\begin{tabular}{ | @{} l @{} | @{} p{1mm} @{} | @{} p{60mm} @{} | }\n", ]
+    else if within_glyphs and select event, '.', 'details'
+      [ _, _, details, meta, ] = event
+      send [ 'tex', "\\begin{tabular}{ | @{} p{20mm} @{} | @{} l @{} | @{} p{1mm} @{} | @{} p{60mm} @{} | }\n", ]
+      # send [ 'tex', "\\begin{tabular}{ | @{} l @{} | @{} p{1mm} @{} | @{} p{60mm} @{} | }\n", ]
       # send [ 'tex', "\\hline\n", ]
+      #.....................................................................................................
+      # GUIDES
+      #.....................................................................................................
+      value = details[ 'guide/kwic/v3/sortcode' ]
+      # if value? and value.length > 0
+      value = value[ 0 ]
+      # [ [ '1293f---', '1217f---', null ], '女', [ '子' ], [] ]
+      [ _, infix, suffix, prefix, ] = value
+      unless prefix.length is 0
+        throw new Error "expected empty prefix, got #{glyph} #{rpr value}"
+      # send [ 'tex', "{\\mktsStyleGuides{}", ]
+      value = infix + suffix.join ''
+      send [ '.', 'text', value, ( copy meta ), ]
+      # send [ 'tex', "}", ]
+      #.....................................................................................................
+      send [ 'tex', " & ", ]
+      #.....................................................................................................
+      # MIDASHI
+      #.....................................................................................................
+      glyph = details[ 'glyph' ]
       send [ 'tex', "{\\mktsStyleMidashi{}\\sbSmash{", ]
       send [ '.', 'text', "#{glyph}", ( copy meta ), ]
       send [ 'tex', "}}", ]
-      send [ 'tex', " &  {\\color{white} | |} & ", ]
-    #.......................................................................................................
-    else if within_glyphs and select event, '.', 'details'
-      null # send hide stamp copy event
-      [ _, _, details, meta, ] = event
-      urge details
-      # send [ 'tex', "\\begin{minipage}{0.8\\linewidth}", ]
+      #.....................................................................................................
+      send [ 'tex', " & ", ]
+      #.....................................................................................................
+      # STRUT
+      #.....................................................................................................
+      send [ 'tex', "{\\color{white} | |}", ]
+      #.....................................................................................................
+      send [ 'tex', " & ", ]
+      #.....................................................................................................
+      value = details[ 'formula' ]
+      if value? and value.length > 0
+        value = value[ 0 ]
+        # send [ 'tex', "{\\mktsStyleFormula{}", ]
+        send [ '.', 'text', value, ( copy meta ), ]
+        # send [ 'tex', "} ", ]
       #.....................................................................................................
       value = details[ 'cp/fncr' ]
       value = value.replace /-/g, '·'
@@ -391,7 +375,6 @@ HOLLERITH                 = require '../../hollerith'
       send [ '.', 'text', '.', ( copy meta ), ] unless count is 0
       #.....................................................................................................
       if ( value = details[ 'variant' ] )?
-        debug '23423', value
         value = value.join ''
         send [ '.', 'text', " #{value}", ( copy meta ), ]
       #.....................................................................................................
