@@ -15,7 +15,8 @@
 
 \usepackage{leading}
 \usepackage{etextools}
-\usepackage{relsize}
+\usepackage{array}
+\usepackage{relsize}\renewcommand\RSlargest{100mm}
 \usepackage{ragged2e}
 \usepackage{needspace}
 \usepackage[user]{zref}
@@ -25,7 +26,6 @@
 \usepackage{cxltx-style-trm}
 % \usepackage{longtable}
 % \usepackage{pbox}
-% \usepackage{array}
 % \let\footruleskip\undefined\usepackage{fancyhdr}
 \usepackage{fixltx2e}
 % \usepackage[usenames,dvipsnames,svgnames,table,x11names]{xcolor}
@@ -63,8 +63,10 @@
   includehead=true,%
   includefoot=true,%
   includemp=false,%
-  paperwidth=210mm,%
-  paperheight=297mm,%
+  paperwidth=148mm,%
+  paperheight=210mm,%
+  % paperwidth=210mm,%
+  % paperheight=297mm,%
   ]{geometry}
 % ..........................................................................................................
 % \usepackage{pagegrid}\pagegridsetup{top-left,step=1mm,arrows=false}
@@ -205,8 +207,9 @@
   \mktsStyleFontFncr}
 
 \newcommand{\mktsStyleMidashi}{%
-  \relscale{3}%
-  \tfRaise{-1.25}}
+  \relscale{2.25}%
+  \tfRaise{-1.2}%
+  }
 
 \newcommand{\mktsStyleGloss}{%
   \mktsStyleFontGloss}

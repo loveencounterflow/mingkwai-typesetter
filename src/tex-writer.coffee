@@ -704,7 +704,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
         settings[ 'paragraphLowerBound' ] = 6
         settings[ 'paragraphUpperBound' ] = 12
       yadda = generate_yadda settings
-      yadda = @MKTX.TEX.fix_typography_for_tex yadda, S.options
+      # yadda = @MKTX.TEX.fix_typography_for_tex yadda, S.options
       send stamp event
       send [ 'tex', yadda, ]
       send [ '.', 'p', null, ( copy meta ), ]
@@ -1100,7 +1100,7 @@ before '@MKTX.REGION.$single_column', '@MKTX.REGION.$multi_column', \
       unless text?
         mark_idx += +1
         text      = "a-#{mark_idx}"
-      text = @MKTX.TEX.fix_typography_for_tex text, S.options
+      # text = @MKTX.TEX.fix_typography_for_tex text, S.options
       send [ 'tex', "\\mktsMark{#{text}}", ]
     #.......................................................................................................
     else
@@ -1148,7 +1148,7 @@ before '@MKTX.REGION.$single_column', '@MKTX.REGION.$multi_column', \
       send stamp event
       for cached_event in cache
         send cached_event
-      last_href = @MKTX.TEX.fix_typography_for_tex last_href, S.options
+      # last_href = @MKTX.TEX.fix_typography_for_tex last_href, S.options
       send [ '(', 'footnote', null,       ( copy meta ), ]
       send [ '(', 'url',      null,       ( copy meta ), ]
       send [ '.', 'text',     last_href,  ( copy meta ), ]
@@ -1212,6 +1212,24 @@ before '@MKTX.REGION.$single_column', '@MKTX.REGION.$multi_column', \
       else
         send event
     else
+      send event
+
+#-----------------------------------------------------------------------------------------------------------
+@MKTX.CLEANUP.$consolidate_texts = ( S ) ->
+  # remark      = MD_READER._get_remark()
+  collector   = []
+  first_meta  = null
+  return $ ( event, send ) =>
+    if select event, '.', 'text'
+      [ type, name, text, meta, ] = event
+      first_meta                 ?= meta
+      collector.push text
+    else
+      # debug '83726', collector
+      if collector.length > 0
+        send [ '.', 'text', ( collector.join '' ), ( copy first_meta ), ]
+        first_meta        = null
+        collector.length  = 0
       send event
 
 #-----------------------------------------------------------------------------------------------------------
@@ -1333,7 +1351,8 @@ before '@MKTX.REGION.$single_column', '@MKTX.REGION.$multi_column', \
     primarily a formatting instruction ###
     if select event, '.', 'warning'
       [ type, name, text, meta, ] = event
-      message                     = @MKTX.TEX.fix_typography_for_tex text, S.options
+      # message                     = @MKTX.TEX.fix_typography_for_tex text, S.options
+      message                     = text
       ### TAINT use location data ###
       send [ 'tex', "\\begin{mktsEnvWarning}#{message}\\end{mktsEnvWarning}" ]
     else
@@ -1438,7 +1457,6 @@ f.apply D
     .pipe CUSTOM.JZR.$main                                S
     # .pipe CUSTOM.JZR.$most_frequent.with_fncrs            S
     .pipe MACRO_ESCAPER.$expand.$remove_backslashes       S
-    .pipe @MKTX.TEX.$fix_typography_for_tex               S
     .pipe @MKTX.DOCUMENT.$begin                           S
     .pipe @MKTX.DOCUMENT.$end                             S
     .pipe @JIZURA.$py                                     S
@@ -1471,6 +1489,8 @@ f.apply D
     .pipe @MKTX.BLOCK.$paragraph                          S
     .pipe @MKTX.MIXED.$raw                                S
     .pipe @MKTX.CLEANUP.$remove_empty_texts               S
+    .pipe @MKTX.CLEANUP.$consolidate_texts                S
+    .pipe @MKTX.TEX.$fix_typography_for_tex               S
     .pipe MKTSCRIPT_WRITER.$show_mktsmd_events            S
     # .pipe mktscript_tee
     .pipe @MKTX.INLINE.$mark                              S

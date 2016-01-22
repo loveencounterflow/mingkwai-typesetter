@@ -60,6 +60,7 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
 @$fix_typography_for_tex = ( S ) =>
   return $ ( event, send ) =>
     if select event, '.', 'text'
+      # urge '12312', event
       [ type, name, text, meta, ] = event
       meta[ 'raw' ] = text
       text          = @fix_typography_for_tex text, S.options

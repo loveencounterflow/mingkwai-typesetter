@@ -1,7 +1,7 @@
 
-<<(.>>@n = 5<<)>>
+<<(.>>@n = 100<<)>>
 
-<<(multi-column>>
+<!-- <<(multi-column>> -->
 
 
 ## Actions
@@ -13,6 +13,6 @@ Here are the <<$n>> most frequent CJK characters:
 <<!JZR.most_frequent.with_fncrs @n>>
 
 
-<<multi-column)>>
+<!-- <<multi-column)>> -->
 
 

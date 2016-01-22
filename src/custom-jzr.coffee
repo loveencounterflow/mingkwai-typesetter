@@ -150,6 +150,10 @@ HOLLERITH                 = require '../../hollerith'
     \\> {\\($texname){}出『出』出【出】出〒出〓出〔出〕出〖出〗出〘出〙出〚出}
     """
   #.........................................................................................................
+  template = """
+    {\\($texname){}abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ}
+    """
+  #.........................................................................................................
   return $ ( event, send ) =>
     #.......................................................................................................
     if select event, '!', 'JZR.fontlist'
@@ -336,8 +340,9 @@ HOLLERITH                 = require '../../hollerith'
     if select event, '(', 'glyphs-with-fncrs'
       [ _, _, this_glyph, _, ] = event
       send stamp event
-      # send [ 'tex', '\\begin{flushleft}']
-      send [ 'tex', '{\\RaggedRight']
+      # send [ 'tex', '\\begin{flushleft}', ]
+      # send [ 'tex', '{\\RaggedRight', ]
+      send [ 'tex', '{\\setlength\\parskip{0mm}\n', ]
     #.......................................................................................................
     else if select event, ')', 'glyphs-with-fncrs'
       this_glyph = null
@@ -347,9 +352,12 @@ HOLLERITH                 = require '../../hollerith'
     #.......................................................................................................
     else if within_glyphs and select event, '.', 'glyph'
       [ _, _, glyph, meta, ] = event
-      send [ 'tex', "{\\mktsStyleMidashi{}", ]
-      send [ '.', 'text', "【#{glyph}】", ( copy meta ), ]
-      send [ 'tex', "}", ]
+      send [ 'tex', "\\begin{tabular}{ | @{} l @{} | @{} p{1mm} @{} | @{} p{60mm} @{} | }\n", ]
+      # send [ 'tex', "\\hline\n", ]
+      send [ 'tex', "{\\mktsStyleMidashi{}\\sbSmash{", ]
+      send [ '.', 'text', "#{glyph}", ( copy meta ), ]
+      send [ 'tex', "}}", ]
+      send [ 'tex', " &  {\\color{white} | |} & ", ]
     #.......................................................................................................
     else if within_glyphs and select event, '.', 'details'
       null # send hide stamp copy event
@@ -363,7 +371,7 @@ HOLLERITH                 = require '../../hollerith'
       send [ 'tex', "} "]
       #.....................................................................................................
       count = 0
-      for key in [ 'reading/py', 'reading/hg', 'reading/hi', 'reading/ka', 'reading/gloss', ]
+      for key in [ 'reading/py', 'reading/hg', 'reading/ka', 'reading/hi', 'reading/gloss', ]
         value     = details[ key ]
         continue unless value?
         value_txt = if CND.isa_text value then value else rpr value
@@ -374,6 +382,8 @@ HOLLERITH                 = require '../../hollerith'
         send [ 'tex', "}", ]                    if key is 'reading/gloss'
         count += +1
       send [ '.', 'text', '.', ( copy meta ), ] unless count is 0
+      send [ 'tex', "\\\\\n\\hline\n", ]
+      send [ 'tex', "\\end{tabular}\n", ]
       #.....................................................................................................
       # send [ 'tex', "\\end{minipage}", ]
       send [ '.', 'p', null, ( copy meta ), ]
