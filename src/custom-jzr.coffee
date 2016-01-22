@@ -222,26 +222,6 @@ HOLLERITH                 = require '../../hollerith'
       send.done()
 
 #-----------------------------------------------------------------------------------------------------------
-@$most_frequent.with_fncrs.$read = ( S ) =>
-  track     = MD_READER.TRACKER.new_tracker '(glyphs-with-fncrs)'
-  HOLLERITH = require '../../hollerith'
-  #.........................................................................................................
-  return D.remit_async_spread ( event, send ) =>
-    within_glyphs = track.within '(glyphs-with-fncrs)'
-    track event
-    return send.done event unless within_glyphs and select event, '.', 'glyph'
-    [ _, _, glyph, meta, ]  = event
-    prefix                  = [ 'spo', glyph, ] # 'cp/sfncr'
-    HOLLERITH.read_phrases S.JZR.db, { prefix, }, ( error, phrases ) =>
-      send event
-      send [ '(', 'details', glyph, ( copy meta ), ]
-      for phrase in phrases
-        [ _, _, prd, obj, ] = phrase
-        send [ '*', prd, obj, ( copy meta ), ]
-      send [ ')', 'details', glyph, ( copy meta ), ]
-      send.done()
-
-#-----------------------------------------------------------------------------------------------------------
 @$most_frequent.$assemble = ( S ) =>
   track = MD_READER.TRACKER.new_tracker '(glyphs)'
   #.........................................................................................................
@@ -265,10 +245,29 @@ HOLLERITH                 = require '../../hollerith'
       send event
 
 #-----------------------------------------------------------------------------------------------------------
+@$most_frequent.with_fncrs.$read = ( S ) =>
+  track     = MD_READER.TRACKER.new_tracker '(glyphs-with-fncrs)'
+  HOLLERITH = require '../../hollerith'
+  #.........................................................................................................
+  return D.remit_async_spread ( event, send ) =>
+    within_glyphs = track.within '(glyphs-with-fncrs)'
+    track event
+    return send.done event unless within_glyphs and select event, '.', 'glyph'
+    [ _, _, glyph, meta, ]  = event
+    prefix                  = [ 'spo', glyph, ] # 'cp/sfncr'
+    HOLLERITH.read_phrases S.JZR.db, { prefix, }, ( error, phrases ) =>
+      send event
+      send [ '(', 'details', glyph, ( copy meta ), ]
+      for phrase in phrases
+        [ _, _, prd, obj, ] = phrase
+        send [ '*', prd, obj, ( copy meta ), ]
+      send [ ')', 'details', glyph, ( copy meta ), ]
+      send.done()
+
+#-----------------------------------------------------------------------------------------------------------
 @$most_frequent.with_fncrs.$format = ( S ) =>
   track         = MD_READER.TRACKER.new_tracker '(glyphs-with-fncrs)', '(details)'
   this_glyph    = null
-  collector     = null
   reading_keys  = [ 'reading/py', 'reading/hg', 'reading/ka', 'reading/hi', ]
   has_readings  = ( x ) -> ( CND.isa_list x ) and ( x.length > 0 )
   has_gloss     = ( x ) -> ( CND.isa_text x ) and ( x.length > 0 )
@@ -277,6 +276,10 @@ HOLLERITH                 = require '../../hollerith'
     within_glyphs   = track.within '(glyphs-with-fncrs)'
     within_details  = track.within '(details)'
     track event
+    # #.......................................................................................................
+    # if within_glyphs and within_details and select event, '*'
+    #   [ _, prd, obj, meta, ]  = event
+    #   urge '77336', this_glyph, prd, obj
     #.......................................................................................................
     if within_glyphs and within_details and select event, '*', reading_keys
       [ _, prd, obj, meta, ]  = event
@@ -295,6 +298,9 @@ HOLLERITH                 = require '../../hollerith'
       if has_gloss obj
         value = obj.replace /;/g, ','
         send [ '*', prd, value, ( copy meta ), ]
+    # #.......................................................................................................
+    # else if within_glyphs and select event, ')', 'details'
+    #   send event
     #.......................................................................................................
     else
       send event
@@ -362,13 +368,14 @@ HOLLERITH                 = require '../../hollerith'
     else if within_glyphs and select event, '.', 'details'
       null # send hide stamp copy event
       [ _, _, details, meta, ] = event
+      urge details
       # send [ 'tex', "\\begin{minipage}{0.8\\linewidth}", ]
       #.....................................................................................................
       value = details[ 'cp/fncr' ]
       value = value.replace /-/g, '·'
-      send [ 'tex', "{\\mktsStyleFncr{}"]
+      send [ 'tex', "{\\mktsStyleFncr{}", ]
       send [ '.', 'text', value, ( copy meta ), ]
-      send [ 'tex', "} "]
+      send [ 'tex', "} ", ]
       #.....................................................................................................
       count = 0
       for key in [ 'reading/py', 'reading/hg', 'reading/ka', 'reading/hi', 'reading/gloss', ]
@@ -382,6 +389,12 @@ HOLLERITH                 = require '../../hollerith'
         send [ 'tex', "}", ]                    if key is 'reading/gloss'
         count += +1
       send [ '.', 'text', '.', ( copy meta ), ] unless count is 0
+      #.....................................................................................................
+      if ( value = details[ 'variant' ] )?
+        debug '23423', value
+        value = value.join ''
+        send [ '.', 'text', " #{value}", ( copy meta ), ]
+      #.....................................................................................................
       send [ 'tex', "\\\\\n\\hline\n", ]
       send [ 'tex', "\\end{tabular}\n", ]
       #.....................................................................................................
