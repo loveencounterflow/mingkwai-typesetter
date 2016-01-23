@@ -63,10 +63,10 @@
   includehead=true,%
   includefoot=true,%
   includemp=false,%
-  paperwidth=148mm,%
-  paperheight=210mm,%
-  % paperwidth=210mm,%
-  % paperheight=297mm,%
+  % paperwidth=148mm,%
+  % paperheight=210mm,%
+  paperwidth=210mm,%
+  paperheight=297mm,%
   ]{geometry}
 % ..........................................................................................................
 % \usepackage{pagegrid}\pagegridsetup{top-left,step=1mm,arrows=false}
@@ -189,6 +189,7 @@
   \renewcommand{\mktsStyleFontGloss}{\mktsFontfileEbgaramondtwelveitalic}%
   \renewcommand{\mktsStyleFontUrl}{\relscale{0.8}\mktsFontfileUbuntuc}%
   \renewcommand{\mktsStyleFontCjkDefault}{\mktsFontfileSunexta}%
+  % \renewcommand{\mktsStyleFontCjkDefault}{\mktsFontfileFandolkairegular}%
   \renewcommand{\mktsStyleFontCjkBold}{\mktsFontfileSourcehansansbold}%
   % \renewcommand{\mktsStyleFontCjkItalic}{\mktsStyleFontThrowUndefined{CjkItalic}}%
   \renewcommand{\mktsStyleFontCjkKaishu}{\mktsFontfileBiaukai}%
@@ -198,7 +199,7 @@
 % mkts Styles
 % consider to put these into `.master.tex`
 \newcommand{\mktsStyleBold}{%
-  \renewcommand{\mktsFontCjkDefault}{\mktsStyleFontCjkBold}%
+  \renewcommand{\mktsStyleFontCjkDefault}{\mktsStyleFontCjkBold}%
   \mktsStyleFontBold}
 
 \newcommand{\mktsStyleFncr}{%
@@ -472,13 +473,12 @@
 % \XeTeXlinebreaklocale "ja"% for Japanese
 % \XeTeXlinebreakskip 0pt plus 0.1pt% sets the skip
 % }
-\newcommand{\mktsFontCjkDefault}{\mktsFontfileSunexta}
 \renewcommand{\cjkgGlue}{\hskip 0mm plus 0.7mm minus 0.0mm}
 \newcommand{\cjk}{%
   \cjkgUseCjkGlue%
   \relscale{1.05}%
   \tfRaise{-0.1}%
-  \mktsFontCjkDefault}
+  \mktsStyleFontCjkDefault}
 % \newcommand{\cn}{\mktsStartCjk\mktsFontfileSunexta}
 \newcommand{\cn}{}
 \newcommand{\mktsRsgFb}{\mktsFontfileSunexta}

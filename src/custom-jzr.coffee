@@ -25,8 +25,8 @@ D                         = require 'pipedreams'
 $                         = D.remit.bind D
 $async                    = D.remit_async.bind D
 #...........................................................................................................
-# ASYNC                     = require 'async'
-# #...........................................................................................................
+ASYNC                     = require 'async'
+#...........................................................................................................
 # ƒ                         = CND.format_number.bind CND
 # HELPERS                   = require './helpers'
 # TEXLIVEPACKAGEINFO        = require './texlivepackageinfo'
@@ -61,14 +61,23 @@ HOLLERITH                 = require '../../hollerith'
     #.......................................................................................................
     @$most_frequent.with_fncrs.$rewrite_events    S
     @$most_frequent.$read                         S
-    @$most_frequent.with_fncrs.$read              S
+    @$most_frequent.$assemble                     S
+    @$most_frequent.$details_from_glyphs          S
     @$most_frequent.with_fncrs.$format            S
     @$most_frequent.with_fncrs.$assemble          S
-    @$most_frequent.$assemble                     S
+    @$dump_db                                     S
     ]
 
 #-----------------------------------------------------------------------------------------------------------
 @$fontlist = ( S ) =>
+  kaishu_shortnames = [
+    'Fandolkairegular'
+    'Kai'
+    'Ukai'
+    'Epkaisho'
+    'Cwtexqkaimedium'
+    'Biaukai'
+    ]
   kana_shortnames = [
     'Babelstonehan'
     'Cwtexqfangsongmedium'
@@ -151,6 +160,10 @@ HOLLERITH                 = require '../../hollerith'
   #.........................................................................................................
   template = """
     {\\($texname){}abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ}
+    """
+  #.........................................................................................................
+  template = """
+    {\\($texname){\\cjk\\($texname){}本书使用的数字，符号一览表書覽} AaBbCcDdEeFfghijklmnopqrstuvwxyz}
     """
   #.........................................................................................................
   return $ ( event, send ) =>
@@ -244,23 +257,27 @@ HOLLERITH                 = require '../../hollerith'
       send event
 
 #-----------------------------------------------------------------------------------------------------------
-@$most_frequent.with_fncrs.$read = ( S ) =>
-  track     = MD_READER.TRACKER.new_tracker '(glyphs-with-fncrs)'
+@$most_frequent.$details_from_glyphs = ( S ) =>
+  # track     = MD_READER.TRACKER.new_tracker '(glyphs-with-fncrs)'
   HOLLERITH = require '../../hollerith'
   #.........................................................................................................
   return D.remit_async_spread ( event, send ) =>
-    within_glyphs = track.within '(glyphs-with-fncrs)'
-    track event
-    return send.done event unless within_glyphs and select event, '.', 'glyph'
-    [ _, _, glyph, meta, ]  = event
-    prefix                  = [ 'spo', glyph, ] # 'cp/sfncr'
-    HOLLERITH.read_phrases S.JZR.db, { prefix, }, ( error, phrases ) =>
-      details = { glyph, }
-      for phrase in phrases
-        [ _, _, prd, obj, ] = phrase
-        details[ prd ] = obj
-      send [ '.', 'details', details, ( copy meta ), ]
-      send.done()
+    # within_glyphs = track.within '(glyphs-with-fncrs)'
+    # track event
+    #.......................................................................................................
+    if select event, '.', 'glyph'
+      [ _, _, glyph, meta, ]  = event
+      prefix                  = [ 'spo', glyph, ] # 'cp/sfncr'
+      HOLLERITH.read_phrases S.JZR.db, { prefix, }, ( error, phrases ) =>
+        details = { glyph, }
+        for phrase in phrases
+          [ _, _, prd, obj, ] = phrase
+          details[ prd ] = obj
+        send [ '.', 'details', details, ( copy meta ), ]
+        send.done()
+    #.......................................................................................................
+    else
+      send.done event
 
 #-----------------------------------------------------------------------------------------------------------
 @$most_frequent.with_fncrs.$format = ( S ) =>
@@ -387,6 +404,27 @@ HOLLERITH                 = require '../../hollerith'
     else
       send event
 
+#-----------------------------------------------------------------------------------------------------------
+@$dump_db = ( S ) =>
+  HOLLERITH = require '../../hollerith'
+  return $ ( event, send ) =>
+    if select event, '!', 'JZR.dump_db'
+      [ _, _, parameters, meta ]    = event
+      [ settings ] = parameters
+      send [ '.', 'text', ( rpr settings ), ( copy meta ), ]
+      if ( glyphs = settings[ 'glyphs' ] )?
+        glyphs  = XNCHR.chrs_from_text glyphs if CND.isa_text glyphs
+        tasks   = []
+        for glyph in glyphs
+          tasks.push
+      else
+        send [ '.', 'warning', "expected setting 'glyphs' in call to `JZR.dump_db`", ( copy meta ), ]
+      # meta[ 'jzr' ]?=                 {}
+      # meta[ 'jzr' ][ 'group-name' ] = 'glyphs-with-fncrs'
+
+      # send [ '!', 'JZR.most_frequent', parameters, meta, ]
+    else
+      send event
 
 
 

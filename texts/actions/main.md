@@ -1,5 +1,7 @@
 
-<<(.>>@n = 300<<)>>
+
+
+<<(.>>@n = 10<<)>>
 
 <!-- <<(multi-column>> -->
 
@@ -15,4 +17,6 @@ Here are the <<$n>> most frequent CJK characters:
 
 <!-- <<multi-column)>> -->
 
+<<!end>>
+<<!JZR.dump_db glyphs: '用的数字'>>
 
