@@ -25,7 +25,7 @@ D                         = require 'pipedreams'
 $                         = D.remit.bind D
 $async                    = D.remit_async.bind D
 #...........................................................................................................
-ASYNC                     = require 'async'
+# ASYNC                     = require 'async'
 #...........................................................................................................
 # ƒ                         = CND.format_number.bind CND
 # HELPERS                   = require './helpers'
@@ -34,7 +34,7 @@ ASYNC                     = require 'async'
 # { CACHE, OPTIONS, }       = require './options'
 # SEMVER                    = require 'semver'
 #...........................................................................................................
-# XNCHR                     = require './xnchr'
+XNCHR                     = require './xnchr'
 # MKTS                      = require './main'
 # MKTSCRIPT_WRITER          = require './mktscript-writer'
 MD_READER                 = require './md-reader'
@@ -60,12 +60,13 @@ HOLLERITH                 = require '../../hollerith'
     @$fontlist                                    S
     #.......................................................................................................
     @$most_frequent.with_fncrs.$rewrite_events    S
+    @$dump_db                                     S
     @$most_frequent.$read                         S
     @$most_frequent.$assemble                     S
     @$most_frequent.$details_from_glyphs          S
     @$most_frequent.with_fncrs.$format            S
     @$most_frequent.with_fncrs.$assemble          S
-    @$dump_db                                     S
+    @$dump_db.$format                             S
     ]
 
 #-----------------------------------------------------------------------------------------------------------
@@ -332,7 +333,6 @@ HOLLERITH                 = require '../../hollerith'
       [ _, _, details, meta, ] = event
       send [ 'tex', "\\begin{tabular}{ | @{} p{20mm} @{} | @{} l @{} | @{} p{1mm} @{} | @{} p{60mm} @{} | }\n", ]
       # send [ 'tex', "\\begin{tabular}{ | @{} l @{} | @{} p{1mm} @{} | @{} p{60mm} @{} | }\n", ]
-      # send [ 'tex', "\\hline\n", ]
       #.....................................................................................................
       # GUIDES
       #.....................................................................................................
@@ -397,8 +397,6 @@ HOLLERITH                 = require '../../hollerith'
       #.....................................................................................................
       send [ 'tex', "\\\\\n\\hline\n", ]
       send [ 'tex', "\\end{tabular}\n", ]
-      #.....................................................................................................
-      # send [ 'tex', "\\end{minipage}", ]
       send [ '.', 'p', null, ( copy meta ), ]
     #.......................................................................................................
     else
@@ -406,26 +404,122 @@ HOLLERITH                 = require '../../hollerith'
 
 #-----------------------------------------------------------------------------------------------------------
 @$dump_db = ( S ) =>
-  HOLLERITH = require '../../hollerith'
   return $ ( event, send ) =>
     if select event, '!', 'JZR.dump_db'
       [ _, _, parameters, meta ]    = event
       [ settings ] = parameters
-      send [ '.', 'text', ( rpr settings ), ( copy meta ), ]
+      # send [ '.', 'text', ( rpr settings ), ( copy meta ), ]
       if ( glyphs = settings[ 'glyphs' ] )?
         glyphs  = XNCHR.chrs_from_text glyphs if CND.isa_text glyphs
         tasks   = []
-        for glyph in glyphs
-          tasks.push
+        send [ '(', 'dump-db', glyphs, ( copy meta ), ]
+        send [ '.', 'glyph', glyph, ( copy meta ), ] for glyph in glyphs
+        send [ ')', 'dump-db', glyphs, ( copy meta ), ]
       else
         send [ '.', 'warning', "expected setting 'glyphs' in call to `JZR.dump_db`", ( copy meta ), ]
-      # meta[ 'jzr' ]?=                 {}
-      # meta[ 'jzr' ][ 'group-name' ] = 'glyphs-with-fncrs'
-
-      # send [ '!', 'JZR.most_frequent', parameters, meta, ]
     else
       send event
 
+#-----------------------------------------------------------------------------------------------------------
+@$dump_db.$format = ( S ) =>
+  track     = MD_READER.TRACKER.new_tracker '(dump-db)'
+  excludes  = [
+    'guide/kwic/v1/lineup/wrapped/infix'
+    'guide/kwic/v1/lineup/wrapped/prefix'
+    'guide/kwic/v1/lineup/wrapped/single'
+    'guide/kwic/v1/lineup/wrapped/suffix'
+    'guide/kwic/v1/sortcode'
+    'guide/kwic/v2/lineup/wrapped/single'
+    'guide/kwic/v2/sortcode'
+    ]
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    within_dumpdb = track.within '(dump-db)'
+    track event
+    #.......................................................................................................
+    if within_dumpdb and select event, '.', 'details'
+      [ _, _, details, meta, ]  = event
+      send stamp event
+      send [ '.', 'text', "xxxxxx/yyyyy", ( copy meta ), ]
+      send [ '.', 'p', null, ( copy meta ), ]
+      send [ 'tex', '{%\\setlength\\parskip{0mm}\n', ]
+      #...........................................................................
+      send [ 'tex', "\\begin{tabular}{ | p{30mm} | p{129mm} | }\n", ]
+      send [ 'tex', "\\hline\n", ] #if idx is 0
+      send [ 'tex', "{\\mktsStyleFontUrl{}", ]
+      send [ '.', 'text', "xxxxxx/yyyyy", ( copy meta ), ]
+      send [ 'tex', "}", ]
+      send [ 'tex', " & ", ( copy meta ), ]
+      send [ '.', 'text', "x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x ", ( copy meta, 'typofix': 'escape-ncrs' ), ]
+      send [ 'tex', "\\\\\n", ( copy meta ), ]
+      send [ 'tex', "\\end{tabular}\n", ]
+      #...........................................................................
+      send [ '.', 'p', null, ( copy meta ), ]
+      #...........................................................................
+      send [ 'tex', "\\begin{tabular}{ | p{30mm} | p{129mm} | }\n", ]
+      send [ 'tex', "\\hline\n", ] #if idx is 0
+      send [ 'tex', "{\\mktsStyleFontUrl{}", ]
+      send [ '.', 'text', "xxxxxx/yyyyy", ( copy meta ), ]
+      send [ 'tex', "}", ]
+      send [ 'tex', " & ", ( copy meta ), ]
+      send [ '.', 'text', "x x x x x x x x x x x x x x x x ", ( copy meta, 'typofix': 'escape-ncrs' ), ]
+      send [ 'tex', "\\\\\n", ( copy meta ), ]
+      send [ 'tex', "\\hline\n", ] #if idx is 0
+      send [ 'tex', "\\end{tabular}\n", ]
+      #...........................................................................
+      send [ '.', 'p', null, ( copy meta ), ]
+      #...........................................................................
+      send [ 'tex', "\\begin{tabular}{ | p{30mm} | p{129mm} | }\n", ]
+      send [ 'tex', "{\\mktsStyleFontUrl{}", ]
+      send [ '.', 'text', "xxxxxx/yyyyy", ( copy meta ), ]
+      send [ 'tex', "}", ]
+      send [ 'tex', " & ", ( copy meta ), ]
+      send [ '.', 'text', "x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x ", ( copy meta, 'typofix': 'escape-ncrs' ), ]
+      send [ 'tex', "\\\\\n", ( copy meta ), ]
+      send [ 'tex', "\\hline\n", ] #if idx is last_idx
+      send [ 'tex', "\\end{tabular}\n", ]
+      send [ 'tex', '}\n', ]
+      send [ '.', 'p', null, ( copy meta ), ]
+      send [ '.', 'text', "xxxxxx/yyyyy", ( copy meta ), ]
+    # #.......................................................................................................
+    # if within_dumpdb and select event, '.', 'details'
+    #   [ _, _, details, meta, ]  = event
+    #   send stamp event
+    #   { glyph } = details
+    #   delete details[ 'glyph' ]
+    #   last_idx  = ( Object.keys details ).length - 1
+    #   idx       = -1
+    #   #.....................................................................................................
+    #   # send [ '(', 'h', 3, ( copy meta ), ]
+    #   send [ '.', 'p', null, ( copy meta ), ]
+    #   send [ '.', 'text', "Details for Glyph #{glyph} #{details[ 'cp/fncr' ]}", ( copy meta ), ]
+    #   send [ '.', 'p', null, ( copy meta ), ]
+    #   #.....................................................................................................
+    #   for predicate, value of details
+    #     idx += +1
+    #     continue if predicate in excludes
+    #     value_txt = ( JSON.stringify value, null, ' ' ).replace /\n/g, ''
+    #     send [ 'tex', "\\begin{tabular}{ | p{30mm} | p{129mm} | }\n", ]
+    #     send [ 'tex', "\\hline\n", ] if idx is 0
+    #     send [ 'tex', "{\\mktsStyleFontUrl{}", ]
+    #     send [ '.', 'text', "#{predicate}", ( copy meta ), ]
+    #     send [ 'tex', "}", ]
+    #     send [ 'tex', " & ", ( copy meta ), ]
+    #     send [ '.', 'text', "#{value_txt}", ( copy meta, 'typofix': 'escape-ncrs' ), ]
+    #     send [ 'tex', "\\\\\n", ( copy meta ), ]
+    #     send [ 'tex', "\\hline\n", ] if idx is last_idx
+    #     send [ 'tex', "\\end{tabular}\n", ]
+      #.....................................................................................................
+      send [ '.', 'p', null, ( copy meta ), ]
+    #.......................................................................................................
+    else if select event, '(', 'dump-db'
+      send stamp event
+    #.......................................................................................................
+    else if select event, ')', 'dump-db'
+      send stamp event
+    #.......................................................................................................
+    else
+      send event
 
 
 

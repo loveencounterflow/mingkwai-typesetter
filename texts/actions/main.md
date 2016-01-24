@@ -1,5 +1,11 @@
 
 
+<<!JZR.dump_db glyphs: '用'>>
+
+<<!JZR.most_frequent.with_fncrs 2>>
+
+<<!end>>
+<<!JZR.dump_db glyphs: '用&jzr#xe353;的数字'>>
 
 <<(.>>@n = 10<<)>>
 
@@ -17,6 +23,4 @@ Here are the <<$n>> most frequent CJK characters:
 
 <!-- <<multi-column)>> -->
 
-<<!end>>
-<<!JZR.dump_db glyphs: '用的数字'>>
 

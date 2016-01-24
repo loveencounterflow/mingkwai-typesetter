@@ -63,7 +63,8 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
       # urge '12312', event
       [ type, name, text, meta, ] = event
       meta[ 'raw' ] = text
-      text          = @fix_typography_for_tex text, S.options
+      style         = meta[ 'typofix' ] ? 'basic' # 'escape-ncrs' ]
+      text          = @fix_typography_for_tex text, S.options, null, style
       send [ type, name, text, meta, ]
     else
       send event
@@ -72,9 +73,9 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
 @is_cjk_rsg = ( rsg, options ) => rsg in options[ 'tex' ][ 'cjk-rsgs' ]
 
 #-----------------------------------------------------------------------------------------------------------
-@_analyze_chr = ( S, chr ) ->
+@_analyze_chr = ( S, chr, style ) ->
     #.......................................................................................................
-    R = XNCHR.analyze chr
+    R = XNCHR.CHR.analyze chr, { input: if style is 'escape-ncrs' then 'plain' else 'xncr' }
     #.......................................................................................................
     switch R.rsg
       when 'jzr-fig'  then R.chr = R.uchr
@@ -151,7 +152,7 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
   return null
 
 #-----------------------------------------------------------------------------------------------------------
-@fix_typography_for_tex = ( text, options, send = null ) =>
+@fix_typography_for_tex = ( text, options, send = null, style ) =>
   S =
     cjk_rsgs:                     options[ 'tex' ]?[ 'cjk-rsgs' ] ? null
     glyph_styles:                 options[ 'tex' ]?[ 'glyph-styles'             ] ? {}
@@ -169,7 +170,7 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
   throw new Error "need setting 'cjk-rsgs'" unless S.cjk_rsgs?
   #.........................................................................................................
   for chr in XNCHR.chrs_from_text text
-    A = @_analyze_chr S, chr
+    A = @_analyze_chr S, chr, style
     #.......................................................................................................
     ### Whitespace is ambiguous; it is treated as CJK when coming between two unambiguous CJK characters and
     as non-CJK otherwise; to decide between these cases, we have to wait for the next non-whitespace
