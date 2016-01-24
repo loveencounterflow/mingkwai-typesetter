@@ -1,3 +1,68 @@
+<<<
+
+% begin of MD document
+xxxxxx/yyyyy{%\setlength\parskip{0mm}
+
+
+\begin{tabular}{ | p{30mm} | p{129mm} | }
+\hline
+{\mktsStyleFontUrl{}xxxxxx/yyyyy} & x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \\
+\end{tabular}
+
+
+\begin{tabular}{ | p{30mm} | p{129mm} | }
+\hline
+{\mktsStyleFontUrl{}xxxxxx/yyyyy} & x x x x x x x x x x x x x x x x \\
+\hline
+\end{tabular}
+
+
+\begin{tabular}{ | p{30mm} | p{129mm} | }
+{\mktsStyleFontUrl{}xxxxxx/yyyyy} & x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \\
+\hline
+\end{tabular}
+}
+
+
+xxxxxx/yyyyy
+
+
+
+{\setlength\parskip{0mm}
+\begin{tabular}{ | @{} p{20mm} @{} | @{} l @{} | @{} p{1mm} @{} | @{} p{60mm} @{} | }
+x & | & x & x \\
+\hline
+\end{tabular}
+
+
+\begin{tabular}{ | @{} p{30mm} @{} | @{} p{1mm} @{} | @{} p{129mm} @{} | }
+\hline
+{\mktsStyleFontUrl{}xxxxxx/yyyyy} & | & x x x x x x x x x x x x x x x x \\
+\hline
+\end{tabular}
+
+\begin{tabular}{ | @{} p{30mm} @{} | @{} p{1mm} @{} | @{} p{129mm} @{} | }
+{\mktsStyleFontUrl{}xxxxxx/yyyyy} & | & x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \\
+\hline
+\end{tabular}
+
+\begin{tabular}{ | @{} p{20mm} @{} | @{} l @{} | @{} p{1mm} @{} | @{} p{60mm} @{} | }
+\cjkgGlue{\cjk{}人}\cjkgGlue{} & {\mktsStyleMidashi{}\sbSmash{\cjkgGlue{\cjk{}人}\cjkgGlue{}}} & | | & x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \\
+\hline
+\end{tabular}
+
+\begin{tabular}{ | @{} p{20mm} @{} | @{} l @{} | @{} p{1mm} @{} | @{} p{60mm} @{} | }
+\cjkgGlue{\cjk{}人}\cjkgGlue{} & {\mktsStyleMidashi{}\sbSmash{\cjkgGlue{\cjk{}人}\cjkgGlue{}}} & {\color{white} | |} & \cjkgGlue{\cnxJzr{}}\cjkgGlue{}\cjkgGlue{\cjk{}\cjkgGlue{\cnxJzr{}}\cjkgGlue{}\cjkgGlue{\cnstrk{}㇏}\cjkgGlue{}}\cjkgGlue{}{\mktsStyleFncr{}u\cjkgGlue{\mktsFontfileEbgaramondtwelveregular{}·}\cjkgGlue{}cjk\cjkgGlue{\mktsFontfileEbgaramondtwelveregular{}·}\cjkgGlue{}4eba} rén; \cjkgGlue{\cjk{}\cjkgGlue{\hg{}인}\cjkgGlue{}}\cjkgGlue{}; \cjkgGlue{\cjk{}\cjkgGlue{\ka{}ジ}\cjkgGlue{}\cjkgGlue{\ka{}ン}\cjkgGlue{}}\cjkgGlue{}, \cjkgGlue{\cjk{}\cjkgGlue{\ka{}ニ}\cjkgGlue{}\cjkgGlue{\ka{}ン}\cjkgGlue{}}\cjkgGlue{}; \cjkgGlue{\cjk{}\cjkgGlue{\hi{}ひ}\cjkgGlue{}\cjkgGlue{\hi{}と}\cjkgGlue{}}\cjkgGlue{}, \cjkgGlue{\cjk{}\cjkgGlue{\hi{}り}\cjkgGlue{}}\cjkgGlue{}, \cjkgGlue{\cjk{}\cjkgGlue{\hi{}と}\cjkgGlue{}}\cjkgGlue{}; {\mktsStyleGloss{}man, people, mankind, someone}. \cjkgGlue{\cjk{}\cjkgGlue{\tfPush{0.4}亻}\cjkgGlue{}\cjkgGlue{\cnjzr{}}\cjkgGlue{}\cjkgGlue{\cnxb{}𠔽}\cjkgGlue{}}\cjkgGlue{}\\
+\hline
+\end{tabular}
+
+
+
+}
+
+
+
+>>>
 
 
 <<!JZR.dump_db glyphs: '用'>>
