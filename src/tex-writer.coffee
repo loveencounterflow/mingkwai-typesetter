@@ -190,7 +190,7 @@ after = ( names..., method ) ->
     throw new Error "need entry options/fonts/name" unless main_font_name?
     write ""
     write "% CONTENT"
-    write "\\begin{document}#{main_font_name}\\fontsize{\\myFontsize}{\\myLineheight}\\selectfont"
+    write "\\begin{document}\\mktsStyleNormal"
     #-------------------------------------------------------------------------------------------------------
     # INCLUDES
     #.......................................................................................................
@@ -306,7 +306,7 @@ after = ( names..., method ) ->
 @MKTX.REGION._begin_multi_column = =>
   ### TAINT Column count must come from layout / options / MKTS-MD command ###
   ### TAINT make `\raggedcolumns` optional? ###
-  return [ 'tex', "\n\n\\vspace{\\myLineheight}\\begin{multicols}{2}\\raggedcolumns{}" ]
+  return [ 'tex', "\n\n\\vspace{\\mktsLineheight}\\begin{multicols}{2}\\raggedcolumns{}" ]
 
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.REGION._end_multi_column = =>

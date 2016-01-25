@@ -1,0 +1,46 @@
+
+
+% ==========================================================================================================
+% MKTS HEADERS AND FOOTERS
+% ----------------------------------------------------------------------------------------------------------
+% \let\footruleskip\undefined\usepackage{fancyhdr}
+\usepackage{fancyhdr}
+% \usepackage{fix2col}% Patch LaTeX's output routine to handle marks correctly with two columns
+
+
+
+
+% ==========================================================================================================
+% JIZURA
+% ----------------------------------------------------------------------------------------------------------
+% ### TAINT make texts, styling configurable ###
+\DeclareOption{jizura}{%
+  \pagestyle{fancy}%
+  \renewcommand{\headrulewidth}{0mm}%
+  \renewcommand{\footrulewidth}{0mm}%
+  \fancyhead[OR]{\prPush{1.1}{\cn{{\mktsFontfileBiaukai{}萬字一覽置換索引}}}}%
+  \fancyhead[EL]{\cn{{\mktsFontfileBiaukai{}萬字一覽置換索引}}}%
+  % \fancyhead[EL,OR]{\leftmark}%
+  % \fancyhead[OL,ER]{\rightmark\cn{{\mktsFontfileBiaukai{}字面萬字一覽}}}%
+  \fancyfoot[OR]{\prPush{1.1}{\pageNr{\thepage}}}%
+  \fancyfoot[EL]{\pageNr{\thepage}}%
+  \fancyfoot[OC,EC]{}%
+  \fancyfoot[OL,ER]{}%
+  }
+
+% ==========================================================================================================
+% NULL
+% ----------------------------------------------------------------------------------------------------------
+\DeclareOption{null}{%
+  }
+
+% ----------------------------------------------------------------------------------------------------------
+\DeclareOption{default}{%
+  }
+
+
+% ----------------------------------------------------------------------------------------------------------
+\ExecuteOptions{default}
+\ProcessOptions\relax
+
+

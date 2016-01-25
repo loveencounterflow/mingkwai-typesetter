@@ -1,0 +1,109 @@
+
+
+
+
+
+% ==========================================================================================================
+% MKTS STYLES
+% ----------------------------------------------------------------------------------------------------------
+\newcommand{\mktsStyleBold}{}%
+\newcommand{\mktsStyleFncr}{}%
+\newcommand{\mktsStyleGloss}{}%
+\newcommand{\mktsStyleItalic}{}%
+\newcommand{\mktsStyleMidashi}{}%
+\newcommand{\mktsStyleNormal}{}%
+\newcommand{\mktsStyleSymbol}{}%
+\newcommand{\mktsStyleUrl}{}%
+\newcommand{\mktsStyleCode}{}%
+% ........................................................................................................
+\makeatletter
+\def\mktsStyleUrl@Glue{}%
+\makeatother
+
+
+% ----------------------------------------------------------------------------------------------------------
+\DeclareOption{default}{%
+
+  % ........................................................................................................
+  \renewcommand{\mktsStyleBold}{%
+    \renewcommand{\mktsStyleFontCjkDefault}{\mktsStyleFontCjkBold}%
+    \mktsStyleFontBold%
+    }
+
+  % ........................................................................................................
+  \renewcommand{\mktsStyleFncr}{%
+    \relscale{0.8}%
+    % \tfRaise{-0.1}%
+    \mktsStyleFontFncr%
+    }
+
+  % ........................................................................................................
+  \renewcommand{\mktsStyleMidashi}{%
+    \relscale{2.25}%
+    \tfRaise{-1.2}%
+    }
+
+  % ........................................................................................................
+  \renewcommand{\mktsStyleGloss}{%
+    \mktsStyleFontGloss}
+
+  % ........................................................................................................
+  \renewcommand{\mktsStyleNormal}{%
+    \mktsFontfileEbgaramondtwelveregular%
+    \fontsize{\mktsFontsize}{\mktsLineheight}\selectfont%
+    }
+
+  % ........................................................................................................
+  \renewcommand{\mktsStyleItalic}{%
+    \mktsStyleFontItalic%
+    }
+
+  % ........................................................................................................
+  \renewcommand{\mktsStyleSymbol}{%
+    \mktsStyleFontSymbol%
+    }
+
+  % ........................................................................................................
+  \makeatletter
+  \def\mktsStyleUrl@Glue{\hskip 0mm plus 0.7mm minus 0mm}%
+  \renewcommand{\mktsStyleUrl}{%
+    \let\g\mktsStyleUrl@Glue%
+    \mktsStyleFontUrl%
+    }
+  \makeatother
+
+  % ........................................................................................................
+  \renewcommand{\mktsStyleCode}{%
+    \fontsize{0.8\mktsFontsize}{0.8\mktsFontsize}%%
+    \mktsStyleFontCode%
+    }
+
+  % ........................................................................................................
+  }
+
+
+
+% ==========================================================================================================
+%
+% ----------------------------------------------------------------------------------------------------------
+\DeclareOption{null}{%
+  \renewcommand{\mktsStyleBold}{}%
+  \renewcommand{\mktsStyleFncr}{}%
+  \renewcommand{\mktsStyleGloss}{}%
+  \renewcommand{\mktsStyleItalic}{}%
+  \renewcommand{\mktsStyleMidashi}{}%
+  \renewcommand{\mktsStyleNormal}{}%
+  \renewcommand{\mktsStyleSymbol}{}%
+  \renewcommand{\mktsStyleUrl}{}%
+  \renewcommand{\mktsStyleCode}{}%
+  % ........................................................................................................
+  \makeatletter
+  \def\mktsStyleUrl@Glue{}%
+  \makeatother
+  }
+
+
+% ----------------------------------------------------------------------------------------------------------
+\ExecuteOptions{default}
+\ProcessOptions\relax
+

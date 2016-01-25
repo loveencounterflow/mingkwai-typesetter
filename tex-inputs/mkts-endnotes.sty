@@ -15,15 +15,59 @@
 %
 %   \end{mktsEnNotes}
 %
-\newcommand{\mktsEnTitle}{{\mktsStyleBold Notes\par}}
-\newcommand{\mktsEnMarkBefore}{}
-\newcommand{\mktsEnMarkAfter}{)\,—\,}
-% \newcommand{\mktsEnStyleMark}[1]{\textsuperscript{#1}}
-\newcommand{\mktsEnStyleMarkMain}{\relscale{0.8}\tfRaise{0.3}}
-\newcommand{\mktsEnStyleMarkNotes}{\mktsStyleNormal}
-\newenvironment{mktsEnNotes}{%
-  \mktsEnTitle%
-  % \mktsStyleItalic%
-  \setlength{\parskip}{0mm}%
-  }%
-  {}
+
+% ----------------------------------------------------------------------------------------------------------
+\newcommand{\mktsEnMarkBefore}{}%
+\newcommand{\mktsEnMarkAfter}{}%
+\newcommand{\mktsEnStyleMarkMain}{}%
+\newcommand{\mktsEnStyleMarkNotes}{}%
+\newcommand{\mktsEnTitle}{}%
+\newenvironment{mktsEnNotes}{}{}%
+
+% ==========================================================================================================
+% DEFAULT
+% ----------------------------------------------------------------------------------------------------------
+\DeclareOption{default}{%
+  % ........................................................................................................
+  \renewcommand{\mktsEnTitle}{{\mktsStyleBold Notes\par}}
+
+  % ........................................................................................................
+  \renewcommand{\mktsEnMarkBefore}{}
+  \renewcommand{\mktsEnMarkAfter}{)\,—\,}
+
+  % ........................................................................................................
+  % \renewcommand{\mktsEnStyleMark}[1]{\textsuperscript{#1}}
+
+  % ........................................................................................................
+  \renewcommand{\mktsEnStyleMarkMain}{\relscale{0.8}\tfRaise{0.3}}
+
+  % ........................................................................................................
+  \renewcommand{\mktsEnStyleMarkNotes}{\mktsStyleNormal}
+
+  % ........................................................................................................
+  \renewenvironment{mktsEnNotes}{%
+    \mktsEnTitle%
+    % \mktsStyleItalic%
+    \setlength{\parskip}{0mm}%
+    }%
+    {}
+  }
+
+% ==========================================================================================================
+% NULL
+% ----------------------------------------------------------------------------------------------------------
+\DeclareOption{null}{%
+  \renewcommand{\mktsEnMarkBefore}{}%
+  \renewcommand{\mktsEnMarkAfter}{}%
+  \renewcommand{\mktsEnStyleMarkMain}{}%
+  \renewcommand{\mktsEnStyleMarkNotes}{}%
+  \renewcommand{\mktsEnTitle}{}%
+  \renewenvironment{mktsEnNotes}{}{}%
+  }
+
+
+% ----------------------------------------------------------------------------------------------------------
+\ExecuteOptions{default}
+\ProcessOptions\relax
+
+

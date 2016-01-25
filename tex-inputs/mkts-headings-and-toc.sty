@@ -1,0 +1,130 @@
+
+
+
+% ==========================================================================================================
+% MKTS HEADINGS AND T.O.C.
+% ----------------------------------------------------------------------------------------------------------
+\newcommand{\mktsHOneBeg}{}%
+\newcommand{\mktsHOne}{}%
+\newcommand{\mktsHThreeBeg}{}%
+\newcommand{\mktsHThree}{}%
+\newcommand{\mktsHTwoBeg}{}%
+\newcommand{\mktsHTwo}{}%
+\newcommand{\mktsTocBeg}{}%
+\newcommand{\mktsToc}{}%
+
+
+% ==========================================================================================================
+% DEFAULT
+% ----------------------------------------------------------------------------------------------------------
+\DeclareOption{default}{%
+
+  % ........................................................................................................
+  \renewcommand{\mktsHOne}{%
+    % \newpage%
+    \Needspace{7.5\mktsLineheight}% ???
+    \clearpage%
+    \centering%
+    \mktsStyleBold%
+    \setlength{\baselineskip}{2\mktsLineheight}%
+    \relscale{2}%
+    % TEXT BEFORE HEADING GOES HERE %
+    % \nopagebreak% ???
+    \AfterGroup{%
+      \null\par%
+      \null\par%
+      }%
+    }
+  % ........................................................................................................
+  \renewcommand{\mktsHTwo}{%
+    \Needspace{7.5\mktsLineheight}% ???
+    \centering%
+    \null\par%
+    \null\par%
+    \relscale{1.5}%
+    \mktsStyleBold%
+    % TEXT BEFORE HEADING GOES HERE %
+    \AfterGroup{%
+      \null\par%
+      }%
+    }
+  % ........................................................................................................
+  \renewcommand{\mktsHThree}{%
+    \Needspace{7.5\mktsLineheight}% ???
+    \mktsStyleBold{}%
+    % TEXT BEFORE HEADING GOES HERE %
+    % \AfterGroup{\par}%
+    }
+
+  % ........................................................................................................
+  % BEG = Before End Group; sadly not possible in TeX, see
+  % http://tex.stackexchange.com/questions/286866/beforeendgroup-similar-to-aftergroup
+  \renewcommand{\mktsHOneBeg}{%
+    \par%
+    % \null\par%
+    }
+  % ........................................................................................................
+  \renewcommand{\mktsHTwoBeg}{%
+    \par%
+    % \null\par%
+    }
+  % ........................................................................................................
+  \renewcommand{\mktsHThreeBeg}{%
+    \par%
+    % \null\par%
+    }
+
+  % ........................................................................................................
+  \renewcommand{\mktsToc}{%
+    % {\mktsHOne{}TOC}\mktsHOneBEG%
+    \setlength{\parskip}{0mm}%
+    % ......................................................................................................
+    \renewcommand{\mktsHOne}{%
+      \mktsStyleBold{}
+      }
+    % ......................................................................................................
+    \renewcommand{\mktsHTwo}{%
+      \mktsStyleItalic{}
+      }
+    % ......................................................................................................
+    \renewcommand{\mktsHThree}{%
+      \mktsStyleItalic{}
+      }
+    % ......................................................................................................
+    \renewcommand{\mktsHOneBeg}{%
+      \par%
+      }
+    % ......................................................................................................
+    \renewcommand{\mktsHTwoBeg}{%
+      \par%
+      }
+    % ......................................................................................................
+    \renewcommand{\mktsHThreeBeg}{%
+      \par%
+      }
+    }%
+
+  % ........................................................................................................
+  \renewcommand{\mktsTocBeg}{%
+    }
+  }
+
+% ==========================================================================================================
+%
+% ----------------------------------------------------------------------------------------------------------
+\DeclareOption{null}{%
+  \renewcommand{\mktsHOneBeg}{}%
+  \renewcommand{\mktsHOne}{}%
+  \renewcommand{\mktsHThreeBeg}{}%
+  \renewcommand{\mktsHThree}{}%
+  \renewcommand{\mktsHTwoBeg}{}%
+  \renewcommand{\mktsHTwo}{}%
+  \renewcommand{\mktsTocBeg}{}%
+  \renewcommand{\mktsToc}{}%
+  }
+
+
+% ----------------------------------------------------------------------------------------------------------
+\ExecuteOptions{default}
+\ProcessOptions\relax
+

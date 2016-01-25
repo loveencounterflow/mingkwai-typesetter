@@ -1,0 +1,133 @@
+
+
+
+
+% ==========================================================================================================
+% MKTS BASE
+% ----------------------------------------------------------------------------------------------------------
+\usepackage{swrule}
+
+% ----------------------------------------------------------------------------------------------------------
+\newcommand{\mktsThrow}[2]{%
+  \trmWarn{#1}
+  \trmWarn{#2}
+  \PackageError{#1}{#2}
+  }
+
+% ----------------------------------------------------------------------------------------------------------
+\newenvironment{mktsEnvWarning}%
+  {\mktsStyleBold%
+  \color{violet}%
+  {\mktsStyleSymbol{}█}}%
+  {{\mktsStyleSymbol{}█}}
+
+% ----------------------------------------------------------------------------------------------------------
+\newcommand{\mktsMark}[1]{%
+  {\mktsStyleBold%
+  \color{blue}%
+  {\mktsStyleSymbol{}█}%
+  #1%
+  {\mktsStyleSymbol{}█}}%
+  }
+
+
+% ==========================================================================================================
+\newcommand{\mktsShowpar}{}%
+\newcommand{\mktsInsertblankpage}{}%
+\newcommand{\mktsCleartoleftpage}{}%
+\newcommand{\mktsRulePlain}{}%
+\newcommand{\mktsRuleSwell}{}%
+
+
+% ==========================================================================================================
+% DEFAULT
+% ----------------------------------------------------------------------------------------------------------
+\DeclareOption{plain}{%
+
+  % ........................................................................................................
+  \renewcommand{\mktsShowpar}{%
+    \makebox[0mm]{\color{red!25}¶}}
+
+  % ........................................................................................................
+  \renewcommand{\mktsInsertblankpage}{\thispagestyle{empty}\mbox{}\newpage}
+
+  % ........................................................................................................
+  % thx to http://tex.stackexchange.com/a/11709/28067
+  \renewcommand*{\mktsCleartoleftpage}{%
+    \clearpage
+    \ifodd\value{page}\hbox{}\newpage\fi
+  }
+  % A more complex version which behaves nicely in single-sided documents and also supports two-column mode is:
+
+  % \makeatletter
+  % \newcommand*{\cleartoleftpage}{%
+  %   \clearpage
+  %     \if@twoside
+  %     \ifodd\c@page
+  %       \hbox{}\newpage
+  %       \if@twocolumn
+  %         \hbox{}\newpage
+  %       \fi
+  %     \fi
+  %   \fi
+  % }
+  % \makeatother
+
+
+  % ........................................................................................................
+  \renewcommand{\mktsRulePlain}{%
+    \par\hfil\swrulex{0.8\linewidth}{0.1mm}{0.1mm}\hfill\par%
+    }
+
+  % ........................................................................................................
+  \renewcommand{\mktsRuleSwell}{%
+    \par\hfil\swrulex{0.8\linewidth}{0.1mm}{0.25mm}\hfill\par%
+    }
+
+  % ........................................................................................................
+  % https://groups.google.com/d/msg/comp.text.tex/J2qcZxgcR5M/3HyPquEDkcgJ
+  % obeyalllines is like obeylines, excepts it also keeps blank lines
+  % TAINT it would probably be simpler to encode <<(keep-lines)>> and
+  % <<(code-block)>> separately, with the latter implying the first.
+  % Right now we rely on nesting the two for code blocks which actually
+  % makes it more difficult to keep consistent metrics.
+  \def\mktsMakeActive#1{\catcode`#113\relax}
+
+  \def\mktsAdjustedPar{\par\mbox{}}
+  \newdimen\mktsAdjustedParIndent
+  \mktsAdjustedParIndent=0em
+  \newskip\mktsAdjustedParSkip
+  % \mktsAdjustedParSkip=0pt plus 1pt
+  % TAINT ad-goc, breaks baseline register
+  \mktsAdjustedParSkip=1mm
+
+  {\mktsMakeActive\^^M
+    \gdef\mktsObeyAllLines{%
+      \parindent=\mktsAdjustedParIndent%
+      \parskip=\mktsAdjustedParSkip%
+      \mktsMakeActive\^^M%
+      \let^^M=\mktsAdjustedPar%
+      \leavevmode\hbox{}}}
+
+  }
+
+% ==========================================================================================================
+% NULL
+% ----------------------------------------------------------------------------------------------------------
+\DeclareOption{null}{%
+  \renewcommand{\mktsShowpar}{}
+  \renewcommand{\mktsInsertblankpage}{}
+  \renewcommand{\mktsCleartoleftpage}{}
+  \renewcommand{\mktsRulePlain}{}%
+  \renewcommand{\mktsRuleSwell}{}%
+  \gdef\mktsObeyAllLines{}%
+  }
+
+% ----------------------------------------------------------------------------------------------------------
+\DeclareOption{default}{%
+  }
+
+% ----------------------------------------------------------------------------------------------------------
+\ExecuteOptions{default}
+\ProcessOptions\relax
+

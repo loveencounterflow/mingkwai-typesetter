@@ -1,0 +1,104 @@
+
+
+
+
+% ==========================================================================================================
+% MKTS FONT STYLES
+% ----------------------------------------------------------------------------------------------------------
+% NB Fontstyles only define the fonts and sizes as such, no other details
+% of the respective style.
+
+% ----------------------------------------------------------------------------------------------------------
+\newcommand{\mktsStyleFontThrowUndefined}[1]{
+  \mktsThrow{mktsStyleFont}{#1 is not defined}}%
+
+% ----------------------------------------------------------------------------------------------------------
+\newcommand{\mktsStyleFontDefault}{\mktsStyleFontThrowUndefined{Default}}%
+\newcommand{\mktsStyleFontItalic}{\mktsStyleFontThrowUndefined{Italic}}%
+\newcommand{\mktsStyleFontBold}{\mktsStyleFontThrowUndefined{Bold}}%
+\newcommand{\mktsStyleFontBoldItalic}{\mktsStyleFontThrowUndefined{BoldItalic}}%
+\newcommand{\mktsStyleFontItalicBold}{\mktsStyleFontThrowUndefined{ItalicBold}}%
+\newcommand{\mktsStyleFontSymbol}{\mktsStyleFontThrowUndefined{Symbol}}%
+\newcommand{\mktsStyleFontCode}{\mktsStyleFontThrowUndefined{Code}}%
+\newcommand{\mktsStyleFontFncr}{\mktsStyleFontThrowUndefined{Fncr}}%
+\newcommand{\mktsStyleFontGloss}{\mktsStyleFontThrowUndefined{Gloss}}%
+\newcommand{\mktsStyleFontUrl}{\mktsStyleFontThrowUndefined{Url}}%
+\newcommand{\mktsStyleFontCjkDefault}{\mktsStyleFontThrowUndefined{CjkDefault}}%
+\newcommand{\mktsStyleFontCjkBold}{\mktsStyleFontThrowUndefined{CjkBold}}%
+\newcommand{\mktsStyleFontCjkItalic}{\mktsStyleFontThrowUndefined{CjkItalic}}%
+\newcommand{\mktsStyleFontCjkKaishu}{\mktsStyleFontThrowUndefined{CjkKaishu}}%
+
+% ----------------------------------------------------------------------------------------------------------
+\newcommand{\mktsStyleFontsetNone}{
+  \renewcommand{\mktsStyleFontDefault}{\mktsStyleFontThrowUndefined{Default}}%
+  \renewcommand{\mktsStyleFontItalic}{\mktsStyleFontThrowUndefined{Italic}}%
+  \renewcommand{\mktsStyleFontBold}{\mktsStyleFontThrowUndefined{Bold}}%
+  \renewcommand{\mktsStyleFontBoldItalic}{\mktsStyleFontThrowUndefined{BoldItalic}}%
+  \renewcommand{\mktsStyleFontItalicBold}{\mktsStyleFontThrowUndefined{ItalicBold}}%
+  \renewcommand{\mktsStyleFontSymbol}{\mktsStyleFontThrowUndefined{Symbol}}%
+  \renewcommand{\mktsStyleFontCode}{\mktsStyleFontThrowUndefined{Code}}%
+  \renewcommand{\mktsStyleFontFncr}{\mktsStyleFontThrowUndefined{Fncr}}%
+  \renewcommand{\mktsStyleFontGloss}{\mktsStyleFontThrowUndefined{Gloss}}%
+  \renewcommand{\mktsStyleFontUrl}{\mktsStyleFontThrowUndefined{Url}}%
+  \renewcommand{\mktsStyleFontCjkDefault}{\mktsStyleFontThrowUndefined{CjkDefault}}%
+  \renewcommand{\mktsStyleFontCjkBold}{\mktsStyleFontThrowUndefined{CjkBold}}%
+  \renewcommand{\mktsStyleFontCjkItalic}{\mktsStyleFontThrowUndefined{CjkItalic}}%
+  \renewcommand{\mktsStyleFontCjkKaishu}{\mktsStyleFontThrowUndefined{CjkKaishu}}%
+  }\mktsStyleFontsetNone
+
+% ----------------------------------------------------------------------------------------------------------
+\newcommand{\mktsStyleFontsetNull}{
+  \renewcommand{\mktsStyleFontDefault}{}%
+  \renewcommand{\mktsStyleFontItalic}{}%
+  \renewcommand{\mktsStyleFontBold}{}%
+  \renewcommand{\mktsStyleFontBoldItalic}{}%
+  \renewcommand{\mktsStyleFontItalicBold}{}%
+  \renewcommand{\mktsStyleFontSymbol}{}%
+  \renewcommand{\mktsStyleFontCode}{}%
+  \renewcommand{\mktsStyleFontFncr}{}%
+  \renewcommand{\mktsStyleFontGloss}{}%
+  \renewcommand{\mktsStyleFontUrl}{}%
+  \renewcommand{\mktsStyleFontCjkDefault}{}%
+  \renewcommand{\mktsStyleFontCjkBold}{}%
+  \renewcommand{\mktsStyleFontCjkItalic}{}%
+  \renewcommand{\mktsStyleFontCjkKaishu}{}%
+  }
+
+% ----------------------------------------------------------------------------------------------------------
+\newcommand{\mktsStyleFontsetDefault}{
+  \mktsStyleFontsetNone%
+  \renewcommand{\mktsStyleFontDefault}{\mktsFontfileEbgaramondtwelveregular}%
+  \renewcommand{\mktsStyleFontItalic}{\mktsFontfileEbgaramondtwelveitalic}%
+  \renewcommand{\mktsStyleFontBold}{\relscale{0.8}\mktsFontfileUbuntub}%
+  % \renewcommand{\mktsStyleFontBoldItalic}{\mktsStyleFontThrowUndefined{BoldItalic}}%
+  % \renewcommand{\mktsStyleFontItalicBold}{\mktsStyleFontThrowUndefined{ItalicBold}}%
+  \renewcommand{\mktsStyleFontSymbol}{\mktsFontfileSunexta}%
+  \renewcommand{\mktsStyleFontCode}{\mktsFontfileFiracoderegular}%
+  \renewcommand{\mktsStyleFontFncr}{\mktsFontfileFandolheibold}%
+  \renewcommand{\mktsStyleFontGloss}{\mktsFontfileEbgaramondtwelveitalic}%
+  \renewcommand{\mktsStyleFontUrl}{\relscale{0.8}\mktsFontfileUbuntuc}%
+  \renewcommand{\mktsStyleFontCjkDefault}{\mktsFontfileSunexta}%
+  % \renewcommand{\mktsStyleFontCjkDefault}{\mktsFontfileFandolkairegular}%
+  \renewcommand{\mktsStyleFontCjkBold}{\mktsFontfileSourcehansansbold}%
+  % \renewcommand{\mktsStyleFontCjkItalic}{\mktsStyleFontThrowUndefined{CjkItalic}}%
+  \renewcommand{\mktsStyleFontCjkKaishu}{\mktsFontfileBiaukai}%
+  }
+
+
+% ==========================================================================================================
+%
+% ----------------------------------------------------------------------------------------------------------
+\DeclareOption{null}{%
+  \mktsStyleFontsetNull%
+  }
+
+% ----------------------------------------------------------------------------------------------------------
+\DeclareOption{default}{%
+  \mktsStyleFontsetDefault%
+  }
+
+
+% ----------------------------------------------------------------------------------------------------------
+\ExecuteOptions{default}
+\ProcessOptions\relax
+

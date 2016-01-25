@@ -1,0 +1,48 @@
+
+
+
+% ==========================================================================================================
+% Page Layout
+% ----------------------------------------------------------------------------------------------------------
+\usepackage{geometry}
+
+% ----------------------------------------------------------------------------------------------------------
+\DeclareOption{null}{%
+  }
+
+% ----------------------------------------------------------------------------------------------------------
+\DeclareOption{default}{%
+  }
+
+% ----------------------------------------------------------------------------------------------------------
+\DeclareOption{a4}{%
+  \geometry{
+    % asymmetric,% see http://tex.stackexchange.com/a/42051/28067
+    driver=xetex,
+    % showframe,%
+    % twoside,
+    left=21mm,%
+    right=21mm,%
+    top=18mm,%
+    bottom=11.5mm,%
+    headsep=5mm,%
+    headheight=5mm,%
+    footskip=5mm,%
+    marginparsep=0mm,%
+    marginparwidth=0mm,%
+    includehead=true,%
+    includefoot=true,%
+    includemp=false,%
+    % paperwidth=148mm,%
+    % paperheight=210mm,%
+    paperwidth=210mm,%
+    paperheight=297mm,%
+    }
+  }
+
+
+% ----------------------------------------------------------------------------------------------------------
+\ExecuteOptions{default}
+\ProcessOptions\relax
+
+

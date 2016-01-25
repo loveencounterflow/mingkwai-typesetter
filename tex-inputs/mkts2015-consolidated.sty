@@ -4,6 +4,9 @@
 % ==========================================================================================================
 % Unicode and CJK Handling
 % ----------------------------------------------------------------------------------------------------------
+% ftp://ftp.tu-chemnitz.de/pub/tex/macros/latex/contrib/nag/nag.pdf
+\RequirePackage[l2tabu, orthodox]{nag}
+
 \usepackage{fontspec}
 % \usepackage{/home/flow/own/tex-packages/xeCJK-2.4.6-r306/xeCJK}
 % \usepackage{xeCJK}
@@ -27,7 +30,12 @@
 % \usepackage{longtable}
 % \usepackage{pbox}
 % \let\footruleskip\undefined\usepackage{fancyhdr}
-\usepackage{fixltx2e}
+
+% Package fixltx2e Warning: fixltx2e is not required with releases after 2015
+% (fixltx2e)                All fixes are now in the LaTeX kernel.
+% (fixltx2e)                See the latexrelease package for details.
+% \usepackage{fixltx2e}
+
 % \usepackage[usenames,dvipsnames,svgnames,table,x11names]{xcolor}
 \usepackage[factor=1000]{microtype}
 \usepackage{cxltx-style-base}
@@ -41,403 +49,22 @@
 \usepackage{cxltx-style-transform}
 \usepackage{cxltx-style-cjkglue}
 \usepackage{cxltx-style-smashbox}
+\usepackage[plain]{mkts-base}
+\usepackage[default]{mkts-endnotes}
+\usepackage[a4]{mkts-page-geometry}
+\usepackage[default]{mkts-headers-and-footers}
+\usepackage[default]{mkts-fontsets}
+\usepackage[default]{mkts-styles}
+\usepackage[default]{mkts-multi-columns}
+\usepackage[plain]{mkts-para-font-size}
+\usepackage[default]{mkts-headings-and-toc}
 % \usepackage{hyperref}
 
-% ==========================================================================================================
-% Page Layout
-% ----------------------------------------------------------------------------------------------------------
-\usepackage[
-  % asymmetric,% see http://tex.stackexchange.com/a/42051/28067
-  driver=xetex,
-  % showframe,%
-  % twoside,
-  left=21mm,%
-  right=21mm,%
-  top=18mm,%
-  bottom=11.5mm,%
-  headsep=5mm,%
-  headheight=5mm,%
-  footskip=5mm,%
-  marginparsep=0mm,%
-  marginparwidth=0mm,%
-  includehead=true,%
-  includefoot=true,%
-  includemp=false,%
-  % paperwidth=148mm,%
-  % paperheight=210mm,%
-  paperwidth=210mm,%
-  paperheight=297mm,%
-  ]{geometry}
 % ..........................................................................................................
 % \usepackage{pagegrid}\pagegridsetup{top-left,step=1mm,arrows=false}
 % \pagegridsetup{top-left,step=4.6667mm,arrows=false}
-% % \pagegridsetup{top-left,step=\myLineheight,arrows=false}
+% % \pagegridsetup{top-left,step=\mktsLineheight,arrows=false}
 % % \pagegridsetup{top-left,step=7mm,arrows=false}
-
-
-% ----------------------------------------------------------------------------------------------------------
-% Footnotes
-% ### TAINT this combination does increase font size and line spacing in
-% footnotes, but the notes are still not run together, and the spacing
-% between footnotes is too small. — Considering to use endnotes instead. ###
-% \usepackage{enotez}
-% \let\footnote=\endnote
-% \usepackage[para,bottom,multiple]{footmisc}
-% \usepackage{setspace,etoolbox}% http://ctan.org/pkg/{setspace,etoolbox}
-% \makeatletter
-% \patchcmd{\@footnotetext}% <cmd>
-%   {\footnotesize}% <search>
-%   {\normalsize\setstretch{1}}% <replace>
-%   {}{}% <success><failure>
-% \makeatother
-
-% ----------------------------------------------------------------------------------------------------------
-\let\footruleskip\undefined\usepackage{fancyhdr}
-% \usepackage{fix2col}% Patch LaTeX's output routine to handle marks correctly with two columns
-\pagestyle{fancy}
-\renewcommand{\headrulewidth}{0mm}
-\renewcommand{\footrulewidth}{0mm}
-\fancyhead[OR]{\prPush{1.1}{\cn{{\mktsFontfileBiaukai{}萬字一覽置換索引}}}}
-\fancyhead[EL]{\cn{{\mktsFontfileBiaukai{}萬字一覽置換索引}}}
-% \fancyhead[EL,OR]{\leftmark}
-% \fancyhead[OL,ER]{\rightmark\cn{{\mktsFontfileBiaukai{}字面萬字一覽}}}
-\fancyfoot[OR]{\prPush{1.1}{\pageNr{\thepage}}}
-\fancyfoot[EL]{\pageNr{\thepage}}
-\fancyfoot[OC,EC]{}
-\fancyfoot[OL,ER]{}
-
-% ==========================================================================================================
-% MKTS ENDNOTES
-% ----------------------------------------------------------------------------------------------------------
-% Schematic of MKTS Endnotes:
-%
-%   MAIN{\mktsEnStyleMarkMain{}1}
-%
-%   \begin{mktsEnNotes}%
-%   {\mktsEnStyleMarkNotes\mktsEnMarkBefore1\mktsEnMarkAfter{}}ANNOTATION
-%
-%   \end{mktsEnNotes}
-%
-\newcommand{\mktsEnTitle}{{\mktsStyleBold Notes\par}}
-\newcommand{\mktsEnMarkBefore}{}
-\newcommand{\mktsEnMarkAfter}{)\,—\,}
-% \newcommand{\mktsEnStyleMark}[1]{\textsuperscript{#1}}
-\newcommand{\mktsEnStyleMarkMain}{\relscale{0.8}\tfRaise{0.3}}
-\newcommand{\mktsEnStyleMarkNotes}{\mktsStyleNormal}
-\newenvironment{mktsEnNotes}{%
-  \mktsEnTitle%
-  % \mktsStyleItalic%
-  \setlength{\parskip}{0mm}%
-  }%
-  {}
-
-\newcommand{\mktsThrow}[2]{%
-  \trmWarn{#1}
-  \trmWarn{#2}
-  \PackageError{#1}{#2}
-  }
-
-\newcommand{\mktsStyleFontThrowUndefined}[1]{
-  \mktsThrow{mktsStyleFont}{#1 is not defined}}%
-
-\newcommand{\mktsStyleFontDefault}{\mktsStyleFontThrowUndefined{Default}}%
-\newcommand{\mktsStyleFontItalic}{\mktsStyleFontThrowUndefined{Italic}}%
-\newcommand{\mktsStyleFontBold}{\mktsStyleFontThrowUndefined{Bold}}%
-\newcommand{\mktsStyleFontBoldItalic}{\mktsStyleFontThrowUndefined{BoldItalic}}%
-\newcommand{\mktsStyleFontItalicBold}{\mktsStyleFontThrowUndefined{ItalicBold}}%
-\newcommand{\mktsStyleFontSymbol}{\mktsStyleFontThrowUndefined{Symbol}}%
-\newcommand{\mktsStyleFontCode}{\mktsStyleFontThrowUndefined{Code}}%
-\newcommand{\mktsStyleFontFncr}{\mktsStyleFontThrowUndefined{Fncr}}%
-\newcommand{\mktsStyleFontGloss}{\mktsStyleFontThrowUndefined{Gloss}}%
-\newcommand{\mktsStyleFontUrl}{\mktsStyleFontThrowUndefined{Url}}%
-\newcommand{\mktsStyleFontCjkDefault}{\mktsStyleFontThrowUndefined{CjkDefault}}%
-\newcommand{\mktsStyleFontCjkBold}{\mktsStyleFontThrowUndefined{CjkBold}}%
-\newcommand{\mktsStyleFontCjkItalic}{\mktsStyleFontThrowUndefined{CjkItalic}}%
-\newcommand{\mktsStyleFontCjkKaishu}{\mktsStyleFontThrowUndefined{CjkKaishu}}%
-
-% NB Fontstyles only define the fonts and sizes as such, no other details
-% of the respective style.
-% ----------------------------------------------------------------------------------------------------------
-\newcommand{\mktsStyleFontsetNone}{
-  \renewcommand{\mktsStyleFontDefault}{\mktsStyleFontThrowUndefined{Default}}%
-  \renewcommand{\mktsStyleFontItalic}{\mktsStyleFontThrowUndefined{Italic}}%
-  \renewcommand{\mktsStyleFontBold}{\mktsStyleFontThrowUndefined{Bold}}%
-  \renewcommand{\mktsStyleFontBoldItalic}{\mktsStyleFontThrowUndefined{BoldItalic}}%
-  \renewcommand{\mktsStyleFontItalicBold}{\mktsStyleFontThrowUndefined{ItalicBold}}%
-  \renewcommand{\mktsStyleFontSymbol}{\mktsStyleFontThrowUndefined{Symbol}}%
-  \renewcommand{\mktsStyleFontCode}{\mktsStyleFontThrowUndefined{Code}}%
-  \renewcommand{\mktsStyleFontFncr}{\mktsStyleFontThrowUndefined{Fncr}}%
-  \renewcommand{\mktsStyleFontGloss}{\mktsStyleFontThrowUndefined{Gloss}}%
-  \renewcommand{\mktsStyleFontUrl}{\mktsStyleFontThrowUndefined{Url}}%
-  \renewcommand{\mktsStyleFontCjkDefault}{\mktsStyleFontThrowUndefined{CjkDefault}}%
-  \renewcommand{\mktsStyleFontCjkBold}{\mktsStyleFontThrowUndefined{CjkBold}}%
-  \renewcommand{\mktsStyleFontCjkItalic}{\mktsStyleFontThrowUndefined{CjkItalic}}%
-  \renewcommand{\mktsStyleFontCjkKaishu}{\mktsStyleFontThrowUndefined{CjkKaishu}}%
-  }\mktsStyleFontsetNone
-
-% ----------------------------------------------------------------------------------------------------------
-\newcommand{\mktsStyleFontsetBase}{
-  \mktsStyleFontsetNone%
-  \renewcommand{\mktsStyleFontDefault}{\mktsFontfileEbgaramondtwelveregular}%
-  \renewcommand{\mktsStyleFontItalic}{\mktsFontfileEbgaramondtwelveitalic}%
-  \renewcommand{\mktsStyleFontBold}{\relscale{0.8}\mktsFontfileUbuntub}%
-  % \renewcommand{\mktsStyleFontBoldItalic}{\mktsStyleFontThrowUndefined{BoldItalic}}%
-  % \renewcommand{\mktsStyleFontItalicBold}{\mktsStyleFontThrowUndefined{ItalicBold}}%
-  \renewcommand{\mktsStyleFontSymbol}{\mktsFontfileSunexta}%
-  % \renewcommand{\mktsStyleFontCode}{\mktsStyleFontThrowUndefined{Code}}%
-  \renewcommand{\mktsStyleFontFncr}{\mktsFontfileFandolheibold}%
-  \renewcommand{\mktsStyleFontGloss}{\mktsFontfileEbgaramondtwelveitalic}%
-  \renewcommand{\mktsStyleFontUrl}{\relscale{0.8}\mktsFontfileUbuntuc}%
-  \renewcommand{\mktsStyleFontCjkDefault}{\mktsFontfileSunexta}%
-  % \renewcommand{\mktsStyleFontCjkDefault}{\mktsFontfileFandolkairegular}%
-  \renewcommand{\mktsStyleFontCjkBold}{\mktsFontfileSourcehansansbold}%
-  % \renewcommand{\mktsStyleFontCjkItalic}{\mktsStyleFontThrowUndefined{CjkItalic}}%
-  \renewcommand{\mktsStyleFontCjkKaishu}{\mktsFontfileBiaukai}%
-  }\mktsStyleFontsetBase
-
-% ----------------------------------------------------------------------------------------------------------
-% mkts Styles
-% consider to put these into `.master.tex`
-\newcommand{\mktsStyleBold}{%
-  \renewcommand{\mktsStyleFontCjkDefault}{\mktsStyleFontCjkBold}%
-  \mktsStyleFontBold}
-
-\newcommand{\mktsStyleFncr}{%
-  \relscale{0.8}%
-  % \tfRaise{-0.1}%
-  \mktsStyleFontFncr}
-
-\newcommand{\mktsStyleMidashi}{%
-  \relscale{2.25}%
-  \tfRaise{-1.2}%
-  }
-
-\newcommand{\mktsStyleGloss}{%
-  \mktsStyleFontGloss}
-
-\newcommand{\mktsStyleNormal}{%
-  \mktsFontfileEbgaramondtwelveregular%
-  \fontsize{\myFontsize}{\myLineheight}\selectfont}
-
-\newcommand{\mktsStyleItalic}{\mktsStyleFontItalic}
-\newcommand{\mktsStyleSymbol}{\mktsStyleFontSymbol}
-
-% \newcommand{\UG}{\hskip 0mm plus 0.7mm minus 0mm}%
-\makeatletter
-\def\mktsStyleUrl@Glue{\hskip 0mm plus 0.7mm minus 0mm}%
-\newcommand{\mktsStyleUrl}{%
-  \let\g\mktsStyleUrl@Glue%
-  \mktsStyleFontUrl%
-  }
-\makeatother
-
-
-
-% ==========================================================================================================
-% \usepackage{float}
-% \usepackage{wrapfig}
-% \usepackage{enumitem}
-% \usepackage[protrusion=true,final]{/home/flow/own/tex-packages/microtype/microtype} % doesn't work yet
-% \usepackage[protrusion=true,final]{microtype} % doesn't work yet
-\newcommand{\mktsShowpar}{%
-  \makebox[0mm]{\color{red!25}¶}}
-\renewcommand{\mktsShowpar}{}
-
-\newcommand{\mktsInsertblankpage}{\thispagestyle{empty}\mbox{}\newpage}
-
-% thx to http://tex.stackexchange.com/a/11709/28067
-\newcommand*\mktsCleartoleftpage{%
-  \clearpage
-  \ifodd\value{page}\hbox{}\newpage\fi
-}
-
-
-% % ----------------------------------------------------------------------------------------------------------
-% \usepackage{multicol}
-% % \setlength{\multicolsep}{6.0pt plus 2.0pt minus 1.5pt}
-% % \setlength{\multicolsep}{0mm plus 0mm minus 0mm}
-% \setlength{\columnsep}{5mm}
-% \setlength\columnseprule{0.155mm}
-% % ----------------------------------------------------------------------------------------------------------
-% % fontsizes
-% \newdimen\myLineheight
-% \newdimen\myFontsize
-% % \myFontsize=3.5mm% too small
-% % \myFontsize=4.1667mm
-% % space between lines 4.6667mm - 3.8mm = 0.8667mm
-% \myFontsize=3.8mm
-% % now in fonts.sty:
-% % \renewcommand{\adjustJzrCjkIdeograph}[1]{\prRaise{-0.125}{\makebox[1.1053\myFontsize]{#1}}} % !!!
-% \myLineheight=4.6667mm
-% % \myLineheight=3.8mm % reduced to fontsize
-% \setlength{\baselineskip}{\myLineheight}
-% \setlength{\parskip}{0mm}
-% \setlength{\parskip}{\myLineheight}
-% \setlength{\parindent}{0mm}
-% \newcommand{\mktsEmptyLine}{\vspace{\myLineheight}}
-%
-% % thx to http://www.tug.org/TUGboat/tb28-1/tb88bazargan.pdf for the next:
-% \lineskiplimit=-10pt%
-% \lineskip=0pt%
-% \topskip=\baselineskip%
-
-\usepackage{multicol}
-\setlength{\columnsep}{5mm}
-\setlength\columnseprule{0.155mm}
-\newdimen\myLineheight
-\newdimen\myFontsize
-\myFontsize=3.8mm
-\myLineheight=4.6667mm
-\setlength{\baselineskip}{\myLineheight}
-\setlength{\parindent}{0mm}
-% \setlength{\multicolsep}{6.0pt plus 2.0pt minus 1.5pt}
-\setlength{\parskip}{\myLineheight}
-% \setlength{\multicolsep}{\myLineheight}
-\setlength{\multicolsep}{0mm}
-% thx to http://www.tug.org/TUGboat/tb28-1/tb88bazargan.pdf for the next:
-\lineskiplimit=-10pt%
-\lineskip=0pt%
-\topskip=\baselineskip%
-
-
-% ### TAINT need to add space before and after code ###
-\newcommand{\mktsStyleCode}{%
-  \fontsize{0.8\myFontsize}{0.8\myFontsize}%%
-  % \setlength{\baselineskip}{2\myLineheight}
-  % \mktsFontfileSourcecodeproregular%
-  % \mktsFontfileSourcecodeproregular%
-  \mktsFontfileFiracoderegular%
-  }
-
-\newenvironment{mktsEnvWarning}%
-  {\mktsStyleBold%
-  \color{violet}%
-  {\mktsStyleSymbol{}█}}%
-  {{\mktsStyleSymbol{}█}}
-
-\newcommand{\mktsMark}[1]{%
-  {\mktsStyleBold%
-  \color{blue}%
-  {\mktsStyleSymbol{}█}%
-  #1%
-  {\mktsStyleSymbol{}█}}%
-  }
-
-\newcommand{\mktsHOne}{%
-  % \newpage%
-  \Needspace{7.5\myLineheight}% ???
-  \clearpage%
-  \centering%
-  \mktsStyleBold%
-  \setlength{\baselineskip}{2\myLineheight}%
-  \relscale{2}%
-  % TEXT BEFORE HEADING GOES HERE %
-  % \nopagebreak% ???
-  \AfterGroup{%
-    \null\par%
-    \null\par%
-    }%
-  }
-\newcommand{\mktsHTwo}{%
-  \Needspace{7.5\myLineheight}% ???
-  \centering%
-  \null\par%
-  \null\par%
-  \relscale{1.5}%
-  \mktsStyleBold%
-  % TEXT BEFORE HEADING GOES HERE %
-  \AfterGroup{%
-    \null\par%
-    }%
-  }
-\newcommand{\mktsHThree}{%
-  \Needspace{7.5\myLineheight}% ???
-  \mktsStyleBold{}%
-  % TEXT BEFORE HEADING GOES HERE %
-  % \AfterGroup{\par}%
-  }
-
-% BEG = Before End Group; sadly not possible in TeX, see
-% http://tex.stackexchange.com/questions/286866/beforeendgroup-similar-to-aftergroup
-\newcommand{\mktsHOneBeg}{%
-  \par%
-  % \null\par%
-  }
-\newcommand{\mktsHTwoBeg}{%
-  \par%
-  % \null\par%
-  }
-\newcommand{\mktsHThreeBeg}{%
-  \par%
-  % \null\par%
-  }
-
-\newcommand{\mktsToc}{%
-  % {\mktsHOne{}TOC}\mktsHOneBEG%
-  \setlength{\parskip}{0mm}%
-  \renewcommand{\mktsHOne}{%
-    \mktsStyleBold{}
-    }
-  \renewcommand{\mktsHTwo}{%
-    \mktsStyleItalic{}
-    }
-  \renewcommand{\mktsHThree}{%
-    \mktsStyleItalic{}
-    }
-  \renewcommand{\mktsHOneBeg}{%
-    \par%
-    }
-  \renewcommand{\mktsHTwoBeg}{%
-    \par%
-    }
-  \renewcommand{\mktsHThreeBeg}{%
-    \par%
-    }
-  }%
-
-\newcommand{\mktsTocBeg}{%
-  }
-
-% ----------------------------------------------------------------------------------------------------------
-\usepackage{swrule}
-\newcommand{\mktsRulePlain}{%
-  \par\hfil\swrulex{0.8\linewidth}{0.1mm}{0.1mm}\hfill\par%
-  }
-\newcommand{\mktsRuleSwell}{%
-  \par\hfil\swrulex{0.8\linewidth}{0.1mm}{0.25mm}\hfill\par%
-  }
-
-% \newenvironment{mktsEnvWarning}[2]%
-%   {\newcommand{\mktsEnvWarningStopChr}{#2}
-%   \mktsStyleBold%
-%   \color{violet}%
-%   \mktsStyleSymbol{}#1}%
-%   {\mktsStyleSymbol{}\mktsEnvWarningStopChr}
-
-% ----------------------------------------------------------------------------------------------------------
-% https://groups.google.com/d/msg/comp.text.tex/J2qcZxgcR5M/3HyPquEDkcgJ
-% obeyalllines is like obeylines, excepts it also keeps blank lines
-% TAINT it would probably be simpler to encode <<(keep-lines)>> and
-% <<(code-block)>> separately, with the latter implying the first.
-% Right now we rely on nesting the two for code blocks which actually
-% makes it more difficult to keep consistent metrics.
-\def\mktsMakeActive#1{\catcode`#113\relax}
-
-\def\mktsAdjustedPar{\par\mbox{}}
-\newdimen\mktsAdjustedParIndent
-\mktsAdjustedParIndent=0em
-\newskip\mktsAdjustedParSkip
-% \mktsAdjustedParSkip=0pt plus 1pt
-% TAINT ad-goc, breaks baseline register
-\mktsAdjustedParSkip=1mm
-
-{\mktsMakeActive\^^M
-  \gdef\mktsObeyAllLines{%
-    \parindent=\mktsAdjustedParIndent%
-    \parskip=\mktsAdjustedParSkip%
-    \mktsMakeActive\^^M%
-    \let^^M=\mktsAdjustedPar%
-    \leavevmode\hbox{}}}
 
 
 % ==========================================================================================================
@@ -460,7 +87,7 @@
 % ----------------------------------------------------------------------------------------------------------
 \newcommand{\adjustCjkIdeograph}[1]{\prRaise{-0.125}{#1}} % !!!
 % \newcommand{\adjustJzrCjkIdeograph}[1]{\prRaise{-0.125}{#1}} % !!!
-\newcommand{\adjustJzrCjkIdeograph}[1]{\prRaise{-0.125}{\makebox[1.1053\myFontsize]{#1}}} % !!!
+\newcommand{\adjustJzrCjkIdeograph}[1]{\prRaise{-0.125}{\makebox[1.1053\mktsFontsize]{#1}}} % !!!
 
 % ..........................................................................................................
 \newcommand{\latin}[1]{{\mktsFontfileEbgaramondtwelveregular#1}}
