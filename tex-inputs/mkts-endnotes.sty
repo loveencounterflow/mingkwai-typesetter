@@ -1,0 +1,29 @@
+
+
+
+
+
+% ==========================================================================================================
+% MKTS ENDNOTES
+% ----------------------------------------------------------------------------------------------------------
+% Schematic of MKTS Endnotes:
+%
+%   MAIN{\mktsEnStyleMarkMain{}1}
+%
+%   \begin{mktsEnNotes}%
+%   {\mktsEnStyleMarkNotes\mktsEnMarkBefore1\mktsEnMarkAfter{}}ANNOTATION
+%
+%   \end{mktsEnNotes}
+%
+\newcommand{\mktsEnTitle}{{\mktsStyleBold Notes\par}}
+\newcommand{\mktsEnMarkBefore}{}
+\newcommand{\mktsEnMarkAfter}{)\,—\,}
+% \newcommand{\mktsEnStyleMark}[1]{\textsuperscript{#1}}
+\newcommand{\mktsEnStyleMarkMain}{\relscale{0.8}\tfRaise{0.3}}
+\newcommand{\mktsEnStyleMarkNotes}{\mktsStyleNormal}
+\newenvironment{mktsEnNotes}{%
+  \mktsEnTitle%
+  % \mktsStyleItalic%
+  \setlength{\parskip}{0mm}%
+  }%
+  {}
