@@ -4,13 +4,15 @@
 % ==========================================================================================================
 % MKTS PARA-FONT-SIZE
 % ----------------------------------------------------------------------------------------------------------
+\usepackage{_mkts-parskip}
 
 
 % ----------------------------------------------------------------------------------------------------------
-\newdimen\mktsLineheight
-\newdimen\mktsFontsize
-\mktsFontsize=3.8mm
-\mktsLineheight=4.6667mm
+\newdimen\mktsLineheight%
+\newdimen\mktsFontsize%
+\mktsFontsize=3.8mm%
+\mktsLineheight=4.6667mm%
+\newcommand{\mktsTightParagraphs}{}%
 
 
 % ==========================================================================================================
@@ -28,6 +30,9 @@
   \lineskiplimit=-10pt%
   \lineskip=0pt%
   \topskip=\baselineskip%
+
+  \renewcommand{\mktsTightParagraphs}{\setlength\parskip{0mm}}
+
   }
 
 
