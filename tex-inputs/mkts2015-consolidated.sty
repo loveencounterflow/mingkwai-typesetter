@@ -119,37 +119,47 @@
   \mktsStyleFontCjkDefault}
 % \newcommand{\cn}{\mktsStartCjk\mktsFontfileSunexta}
 \newcommand{\cn}{}
-\newcommand{\mktsRsgFb}{\mktsFontfileSunexta}
-\newcommand{\cnxa}{\mktsFontfileSunexta}
-\newcommand{\cnxb}{\mktsFontfileSunflowerucjkxb}
-\newcommand{\cnxc}{\mktsFontfileHanaminb}
-\newcommand{\cnxd}{\mktsFontfileBabelstonehan}
-\newcommand{\cncone}{\mktsFontfileSunexta}      	% CJK Compatibility 1
-\newcommand{\cnctwo}{\mktsFontfileHanamina}   				% CJK Compatibility 2
-\newcommand{\cnrone}{\mktsFontfileSunexta}      	% CJK Radicals 1
-\newcommand{\cnrtwo}{\mktsFontfileSunexta}      	% CJK Radicals 2
-\newcommand{\cnsym}{\mktsFontfileHanamina}
-\newcommand{\cnstrk}{\mktsFontfileSunexta}
-\newcommand{\cnjzr}{\mktsFontfileJizurathreeb}
+\newcommand{\mktsRsgFb}{\cjkgGlue\mktsFontfileSunexta\aftergroup\cjkgGlue}
+\newcommand{\cnxa}{\cjkgGlue\mktsFontfileSunexta\aftergroup\cjkgGlue}
+\newcommand{\cnxb}{\cjkgGlue\mktsFontfileSunflowerucjkxb\aftergroup\cjkgGlue}
+\newcommand{\cnxc}{\cjkgGlue\mktsFontfileHanaminb\aftergroup\cjkgGlue}
+\newcommand{\cnxd}{\cjkgGlue\mktsFontfileBabelstonehan\aftergroup\cjkgGlue}
+\newcommand{\cncone}{\cjkgGlue\mktsFontfileSunexta\aftergroup\cjkgGlue}      	% CJK Compatibility 1
+\newcommand{\cnctwo}{\cjkgGlue\mktsFontfileHanamina\aftergroup\cjkgGlue}   				% CJK Compatibility 2
+\newcommand{\cnrone}{\cjkgGlue\mktsFontfileSunexta\aftergroup\cjkgGlue}      	% CJK Radicals 1
+\newcommand{\cnrtwo}{\cjkgGlue\mktsFontfileSunexta\aftergroup\cjkgGlue}      	% CJK Radicals 2
+\newcommand{\cnsym}{\cjkgGlue\mktsFontfileHanamina\aftergroup\cjkgGlue}
+\newcommand{\cnstrk}{\cjkgGlue\mktsFontfileSunexta\aftergroup\cjkgGlue}
+\newcommand{\cnjzr}{\cjkgGlue\mktsFontfileJizurathreeb\aftergroup\cjkgGlue}
+% ..........................................................................................................
+\newcommand{\cnxBabel}{\cjkgGlue\mktsFontfileBabelstonehan\aftergroup\cjkgGlue}
+\newcommand{\cnxHanaA}{\cjkgGlue\mktsFontfileHanamina\aftergroup\cjkgGlue}
+\newcommand{\cnxHanaB}{\cjkgGlue\mktsFontfileHanaminb\aftergroup\cjkgGlue}
+\newcommand{\cnxSunXA}{\cjkgGlue\mktsFontfileSunexta\aftergroup\cjkgGlue}
+\newcommand{\cnxJzr}{\cjkgGlue\mktsFontfileJizurathreeb\aftergroup\cjkgGlue}
+% \newcommand{\missing}[1]{{\missingFont#1}}
+% ..........................................................................................................
 % ### TAINT scaling given here is only for readings, not for ordinary mixed text ###
 \newcommand{\ka}{%
+  \cjkgGlue%
   \relscale{0.8}%
   % \tfRaise{-0.1}%
-  \mktsFontfileIpamp}% \mktsFontfileNanummyeongjo
+  \mktsFontfileIpamp%
+  \aftergroup\cjkgGlue%
+  }% \mktsFontfileNanummyeongjo
 \newcommand{\hi}{%
+  \cjkgGlue%
   \relscale{0.8}%
   % \tfRaise{-0.1}%
-  \mktsFontfileIpamp}% \mktsFontfileNanummyeongjo
+  \mktsFontfileIpamp%
+  \aftergroup\cjkgGlue%
+  }% \mktsFontfileNanummyeongjo
 \newcommand{\hg}{%
+  \cjkgGlue%
   \relscale{0.8}%
-  \mktsFontfileNanummyeongjo}
-% ..........................................................................................................
-\newcommand{\cnxBabel}{\mktsFontfileBabelstonehan}
-\newcommand{\cnxHanaA}{\mktsFontfileHanamina}
-\newcommand{\cnxHanaB}{\mktsFontfileHanaminb}
-\newcommand{\cnxSunXA}{\mktsFontfileSunexta}
-\newcommand{\cnxJzr}{\mktsFontfileJizurathreeb}
-% \newcommand{\missing}[1]{{\missingFont#1}}
+  \mktsFontfileNanummyeongjo%
+  \aftergroup\cjkgGlue%
+  }
 % ..........................................................................................................
 \newcommand{\jzrStrokeclassZZWBF}{\prPushRaise{-0.1}{-0.1}{{\mktsFontfileJizurathreeb{}}}}
 \newcommand{\jzrStrokeclassOne}{\prPushRaise{-0.1}{-0.1}{{\mktsFontfileJizurathreeb{}}}}

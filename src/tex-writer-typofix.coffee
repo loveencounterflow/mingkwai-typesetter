@@ -109,7 +109,8 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
   if style?
     ### TAINT use `cjkgGlue` only if `is_cjk` ###
     R         = []
-    R.push "\\cjkgGlue{"
+    # R.push "\\cjkgGlue{"
+    R.push "{"
     rpl_push  = style[ 'push'   ] ? null
     rpl_raise = style[ 'raise'  ] ? null
     rpl_chr   = style[ 'glyph'  ] ? chr_info[ 'uchr' ]
@@ -120,14 +121,15 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
     else if               rpl_raise?  then R.push "\\tfRaise{#{rpl_raise}}"
     if rpl_cmd?                       then R.push "\\#{rpl_cmd}{}"
     R.push rpl_chr
-    R.push "}\\cjkgGlue{}"
+    # R.push "}\\cjkgGlue{}"
+    R.push "}"
     R = R.join ''
   #.........................................................................................................
   else
     ### TAINT does not collect glyphs with same RSG ###
     # debug '©95429', chr_info
     R = "{\\#{rsg_command}{}#{chr_info[ 'uchr' ]}}"
-    R = "\\cjkgGlue#{R}\\cjkgGlue{}" if is_cjk
+    # R = "\\cjkgGlue#{R}\\cjkgGlue{}" if is_cjk
   #.........................................................................................................
   S.last_rsg_command = rsg_command
   return R
@@ -186,10 +188,10 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
     command; before we do that, any cached whitespace will be moved into the result. If we're leaving a
     CJK region, the group must be closed first and followed by any cached whitespace: ###
     if ( not S.last_was_cjk ) and ( S.this_is_cjk )
-      @_push S, "\\cjkgGlue{\\cjk{}"
+      @_push S, "{\\cjk{}"
       # @_push S, "{\\cjk{}"
     else if ( S.last_was_cjk ) and ( not S.this_is_cjk )
-      @_push S, "}\\cjkgGlue{}", yes
+      @_push S, "}", yes
       # @_push S, "}", yes
     #.......................................................................................................
     if A.styled_chr?
@@ -201,7 +203,7 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
   ### TAINT here we should keep state across text chunks to decide on cases like
   `國 **b** 國` vs `國 **國** 國` ###
   @_push S
-  @_push S, '}\\cjkgGlue{}' if S.this_is_cjk
+  @_push S, '}' if S.this_is_cjk
   return S.collector.join ''
 
 
