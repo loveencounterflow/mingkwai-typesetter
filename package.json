@@ -36,7 +36,7 @@
     "coffeenode-suspend": "^0.1.11",
     "coffeenode-text": "^0.1.9",
     "commander": "^2.9.0",
-    "cxltx-styles": "^1.4.2",
+    "cxltx-styles": "^1.4.3",
     "font-cmap": "^1.0.1",
     "htmlparser2": "^3.9.0",
     "hyphenation.en-us": "^0.2.1",
