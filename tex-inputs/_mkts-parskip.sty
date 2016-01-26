@@ -1,7 +1,5 @@
 
-
 % patched version
-
 
 % parskip.sty; last edited by Robin Fairbairns (rf10@cam.ac.uk),
 %              derived from:
@@ -20,76 +18,74 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{_mkts-parskip}[2001/04/09 non-zero parskip adjustments]
 
-\makeatletter
-\newcommand{\mkts@parskip}{
-  \parskip=\mktsLineheight
-  \parindent=\z@
+\parskip=\mktsLineheight
+% \parskip=0.5\baselineskip \advance\parskip by 0pt plus 2pt
+\parindent=\z@
 
-  %
-  % from a suggestion by Donald Arseneau on comp.text.tex:
+%
+% from a suggestion by Donald Arseneau on comp.text.tex:
 
-  \DeclareOption{parfill}{\setlength{\parfillskip}{30\p@ \@plus 1fil}}
-  \ProcessOptions
+\DeclareOption{parfill}{\setlength{\parfillskip}{30\p@ \@plus 1fil}}
+\ProcessOptions
 
-  % To accompany this, the vertical spacing in the list environments is changed
-  % to use the same as \parskip in all relevant places (for normalsize only):
-  %   \parsep = \parskip
-  %   \itemsep = \z@ % add nothing to \parskip between items
-  %   \topsep = \z@ % add nothing to \parskip before first item
+% To accompany this, the vertical spacing in the list environments is changed
+% to use the same as \parskip in all relevant places (for normalsize only):
+%   \parsep = \parskip
+%   \itemsep = \z@ % add nothing to \parskip between items
+%   \topsep = \z@ % add nothing to \parskip before first item
 
-  \def\@listI{\leftmargin\leftmargini
-     \topsep\z@ \parsep\parskip \itemsep\z@}
-  \let\@listi\@listI
-  \@listi
+\def\@listI{\leftmargin\leftmargini
+   \topsep\z@ \parsep\parskip \itemsep\z@}
+\let\@listi\@listI
+\@listi
 
-  \def\@listii{\leftmargin\leftmarginii
-     \labelwidth\leftmarginii\advance\labelwidth-\labelsep
-     \topsep\z@ \parsep\parskip \itemsep\z@}
+\def\@listii{\leftmargin\leftmarginii
+   \labelwidth\leftmarginii\advance\labelwidth-\labelsep
+   \topsep\z@ \parsep\parskip \itemsep\z@}
 
-  \def\@listiii{\leftmargin\leftmarginiii
-      \labelwidth\leftmarginiii\advance\labelwidth-\labelsep
-      \topsep\z@ \parsep\parskip \itemsep\z@}
+\def\@listiii{\leftmargin\leftmarginiii
+    \labelwidth\leftmarginiii\advance\labelwidth-\labelsep
+    \topsep\z@ \parsep\parskip \itemsep\z@}
 
-  % and, now...
-  %   \partopsep = \z@ % don't even add anything before first item (beyond
-  %                    % \parskip) even if the list is preceded by a blank line
-  \partopsep=\z@
+% and, now...
+%   \partopsep = \z@ % don't even add anything before first item (beyond
+%                    % \parskip) even if the list is preceded by a blank line
+\partopsep=\z@
 
-  % % Note that listiv, listv and listvi don't change vertical parameters.
+% Note that listiv, listv and listvi don't change vertical parameters.
 
-  % % deal with a problem raised on comp.text.tex in april 2001
-  % %
-  % % don't expand the table of contents any further
-  % %
-  % % first: check that the definition of \@starttoc is unchanged from
-  % % that in latex.ltx
-  % \@ifundefined{CheckCommand}{}{%
-  %   \CheckCommand*{\@starttoc}[1]{%
-  %     \begingroup
-  %       \makeatletter
-  %       \@input{\jobname.#1}%
-  %       \if@filesw
-  %         \expandafter\newwrite\csname tf@#1\endcsname
-  %         \immediate\openout \csname tf@#1\endcsname \jobname.#1\relax
-  %       \fi
-  %       \@nobreakfalse
-  %     \endgroup}}
-  % %
-  % % now having generated any warning that might help, redefine
-  % \renewcommand*{\@starttoc}[1]{%
-  %   \begingroup
-  %     \makeatletter
-  %     \parskip\z@
-  %     \@input{\jobname.#1}%
-  %     \if@filesw
-  %       \expandafter\newwrite\csname tf@#1\endcsname
-  %       \immediate\openout \csname tf@#1\endcsname \jobname.#1\relax
-  %     \fi
-  %     \@nobreakfalse
-  %   \endgroup
-  % }
-
-  % \endinput
+% deal with a problem raised on comp.text.tex in april 2001
+%
+% don't expand the table of contents any further
+%
+% first: check that the definition of \@starttoc is unchanged from
+% that in latex.ltx
+\@ifundefined{CheckCommand}{}{%
+  \CheckCommand*{\@starttoc}[1]{%
+    \begingroup
+      \makeatletter
+      \@input{\jobname.#1}%
+      \if@filesw
+        \expandafter\newwrite\csname tf@#1\endcsname
+        \immediate\openout \csname tf@#1\endcsname \jobname.#1\relax
+      \fi
+      \@nobreakfalse
+    \endgroup}}
+%
+% now having generated any warning that might help, redefine
+\renewcommand*{\@starttoc}[1]{%
+  \begingroup
+    \makeatletter
+    \parskip\z@
+    \@input{\jobname.#1}%
+    \if@filesw
+      \expandafter\newwrite\csname tf@#1\endcsname
+      \immediate\openout \csname tf@#1\endcsname \jobname.#1\relax
+    \fi
+    \@nobreakfalse
+  \endgroup
 }
-\makeatother
+
+\endinput
+
 

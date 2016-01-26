@@ -300,7 +300,7 @@ HOLLERITH                 = require '../../hollerith'
         if has_readings ( readings = details[ prd ] )
           if prd in [ 'reading/ka', 'reading/hi', ]
             readings = ( reading.replace /-/g, '⋯' for reading in readings )
-          details[ prd ] = readings.join ', '
+          details[ prd ] = readings.join ', \n'
       #.....................................................................................................
       if has_gloss ( gloss = details[ 'reading/gloss' ] )
         details[ 'reading/gloss' ]  = gloss.replace /;/g, ','
@@ -376,7 +376,7 @@ HOLLERITH                 = require '../../hollerith'
       value = value.replace /-/g, '·'
       send [ 'tex', "{\\mktsStyleFncr{}", ]
       send [ '.', 'text', value, ( copy meta ), ]
-      send [ 'tex', "} ", ]
+      send [ 'tex', "}\n", ]
       #.....................................................................................................
       count = 0
       for key in [ 'reading/py', 'reading/hg', 'reading/ka', 'reading/hi', 'reading/gloss', ]
@@ -384,7 +384,7 @@ HOLLERITH                 = require '../../hollerith'
         continue unless value?
         value_txt = if CND.isa_text value then value else rpr value
         text      = "#{value_txt}"
-        send [ '.', 'text', '; ', ( copy meta ), ] unless count is 0
+        send [ '.', 'text', '; \n', ( copy meta ), ] unless count is 0
         send [ 'tex', "{\\mktsStyleGloss{}", ]  if key is 'reading/gloss'
         send [ '.', 'text', text, ( copy meta ), ]
         send [ 'tex', "}", ]                    if key is 'reading/gloss'
@@ -440,75 +440,30 @@ HOLLERITH                 = require '../../hollerith'
     if within_dumpdb and select event, '.', 'details'
       [ _, _, details, meta, ]  = event
       send stamp event
-      send [ '.', 'text', "xxxxxx/yyyyy", ( copy meta ), ]
+      { glyph } = details
+      delete details[ 'glyph' ]
+      last_idx  = ( Object.keys details ).length - 1
+      idx       = -1
+      #.....................................................................................................
+      # send [ '(', 'h', 3, ( copy meta ), ]
       send [ '.', 'p', null, ( copy meta ), ]
-      send [ 'tex', '{%\\setlength\\parskip{0mm}\n', ]
-      #...........................................................................
-      send [ 'tex', "\\begin{tabular}{ | p{30mm} | p{129mm} | }\n", ]
-      send [ 'tex', "\\hline\n", ] #if idx is 0
-      send [ 'tex', "{\\mktsStyleFontUrl{}", ]
-      send [ '.', 'text', "xxxxxx/yyyyy", ( copy meta ), ]
-      send [ 'tex', "}", ]
-      send [ 'tex', " & ", ( copy meta ), ]
-      send [ '.', 'text', "x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x ", ( copy meta, 'typofix': 'escape-ncrs' ), ]
-      send [ 'tex', "\\\\\n", ( copy meta ), ]
-      send [ 'tex', "\\end{tabular}\n", ]
-      #...........................................................................
+      send [ '.', 'text', "Details for Glyph #{glyph} #{details[ 'cp/fncr' ]}", ( copy meta ), ]
       send [ '.', 'p', null, ( copy meta ), ]
-      #...........................................................................
-      send [ 'tex', "\\begin{tabular}{ | p{30mm} | p{129mm} | }\n", ]
-      send [ 'tex', "\\hline\n", ] #if idx is 0
-      send [ 'tex', "{\\mktsStyleFontUrl{}", ]
-      send [ '.', 'text', "xxxxxx/yyyyy", ( copy meta ), ]
-      send [ 'tex', "}", ]
-      send [ 'tex', " & ", ( copy meta ), ]
-      send [ '.', 'text', "x x x x x x x x x x x x x x x x ", ( copy meta, 'typofix': 'escape-ncrs' ), ]
-      send [ 'tex', "\\\\\n", ( copy meta ), ]
-      send [ 'tex', "\\hline\n", ] #if idx is 0
-      send [ 'tex', "\\end{tabular}\n", ]
-      #...........................................................................
-      send [ '.', 'p', null, ( copy meta ), ]
-      #...........................................................................
-      send [ 'tex', "\\begin{tabular}{ | p{30mm} | p{129mm} | }\n", ]
-      send [ 'tex', "{\\mktsStyleFontUrl{}", ]
-      send [ '.', 'text', "xxxxxx/yyyyy", ( copy meta ), ]
-      send [ 'tex', "}", ]
-      send [ 'tex', " & ", ( copy meta ), ]
-      send [ '.', 'text', "x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x ", ( copy meta, 'typofix': 'escape-ncrs' ), ]
-      send [ 'tex', "\\\\\n", ( copy meta ), ]
-      send [ 'tex', "\\hline\n", ] #if idx is last_idx
-      send [ 'tex', "\\end{tabular}\n", ]
-      send [ 'tex', '}\n', ]
-      send [ '.', 'p', null, ( copy meta ), ]
-      send [ '.', 'text', "xxxxxx/yyyyy", ( copy meta ), ]
-    # #.......................................................................................................
-    # if within_dumpdb and select event, '.', 'details'
-    #   [ _, _, details, meta, ]  = event
-    #   send stamp event
-    #   { glyph } = details
-    #   delete details[ 'glyph' ]
-    #   last_idx  = ( Object.keys details ).length - 1
-    #   idx       = -1
-    #   #.....................................................................................................
-    #   # send [ '(', 'h', 3, ( copy meta ), ]
-    #   send [ '.', 'p', null, ( copy meta ), ]
-    #   send [ '.', 'text', "Details for Glyph #{glyph} #{details[ 'cp/fncr' ]}", ( copy meta ), ]
-    #   send [ '.', 'p', null, ( copy meta ), ]
-    #   #.....................................................................................................
-    #   for predicate, value of details
-    #     idx += +1
-    #     continue if predicate in excludes
-    #     value_txt = ( JSON.stringify value, null, ' ' ).replace /\n/g, ''
-    #     send [ 'tex', "\\begin{tabular}{ | p{30mm} | p{129mm} | }\n", ]
-    #     send [ 'tex', "\\hline\n", ] if idx is 0
-    #     send [ 'tex', "{\\mktsStyleFontUrl{}", ]
-    #     send [ '.', 'text', "#{predicate}", ( copy meta ), ]
-    #     send [ 'tex', "}", ]
-    #     send [ 'tex', " & ", ( copy meta ), ]
-    #     send [ '.', 'text', "#{value_txt}", ( copy meta, 'typofix': 'escape-ncrs' ), ]
-    #     send [ 'tex', "\\\\\n", ( copy meta ), ]
-    #     send [ 'tex', "\\hline\n", ] if idx is last_idx
-    #     send [ 'tex', "\\end{tabular}\n", ]
+      #.....................................................................................................
+      for predicate, value of details
+        idx += +1
+        continue if predicate in excludes
+        value_txt = JSON.stringify value, null, ' '
+        send [ 'tex', "\\begin{tabular}{ | p{30mm} | p{129mm} | }\n", ]
+        send [ 'tex', "\\hline\n", ] if idx is 0
+        send [ 'tex', "{\\mktsStyleFontUrl{}", ]
+        send [ '.', 'text', "#{predicate}", ( copy meta ), ]
+        send [ 'tex', "}", ]
+        send [ 'tex', " & ", ( copy meta ), ]
+        send [ '.', 'text', "#{value_txt}", ( copy meta, 'typofix': 'escape-ncrs' ), ]
+        send [ 'tex', "\\\\\n", ( copy meta ), ]
+        send [ 'tex', "\\hline\n", ] if idx is last_idx
+        send [ 'tex', "\\end{tabular}\n", ]
       #.....................................................................................................
       send [ '.', 'p', null, ( copy meta ), ]
     #.......................................................................................................

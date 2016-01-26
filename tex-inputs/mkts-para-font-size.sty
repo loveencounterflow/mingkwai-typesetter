@@ -4,7 +4,7 @@
 % ==========================================================================================================
 % MKTS PARA-FONT-SIZE
 % ----------------------------------------------------------------------------------------------------------
-\usepackage{_mkts-parskip}
+% \usepackage{_mkts-parskip}
 
 
 % ----------------------------------------------------------------------------------------------------------
@@ -19,19 +19,24 @@
 %
 % ----------------------------------------------------------------------------------------------------------
 \DeclareOption{plain}{%
-  \setlength{\baselineskip}{\mktsLineheight}
-  % see http://ftp.fernuni-hagen.de/ftp-dir/pub/mirrors/www.ctan.org/info/l2tabu/german/l2tabu.pdf
-  % for a warning against setting parindent, parskip this way
-  \setlength{\parindent}{0mm}
-  % \setlength{\multicolsep}{6.0pt plus 2.0pt minus 1.5pt}
-  \setlength{\parskip}{\mktsLineheight}
+  % \setlength{\baselineskip}{\mktsLineheight}
+  % % see http://ftp.fernuni-hagen.de/ftp-dir/pub/mirrors/www.ctan.org/info/l2tabu/german/l2tabu.pdf
+  % % for a warning against setting parindent, parskip this way
+  % \setlength{\parindent}{0mm}
+  % % \setlength{\multicolsep}{6.0pt plus 2.0pt minus 1.5pt}
+  % \setlength{\parskip}{\mktsLineheight}
 
   % thx to http://www.tug.org/TUGboat/tb28-1/tb88bazargan.pdf for the next:
-  \lineskiplimit=-10pt%
-  \lineskip=0pt%
+  \setlength\lineskiplimit{-10pt}%
+  \setlength\lineskip{0pt}%
+  % \lineskiplimit=-10pt%
+  % \lineskip=0pt%
   \topskip=\baselineskip%
 
-  \renewcommand{\mktsTightParagraphs}{\setlength\parskip{0mm}}
+  \renewcommand{\mktsTightParagraphs}{%
+    \setlength\lineskiplimit{0mm}%
+    \setlength\parskip{0mm}%
+    }%
 
   }
 
