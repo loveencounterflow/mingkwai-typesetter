@@ -54,7 +54,12 @@ HOLLERITH                 = require '../../hollerith'
 @$main = ( S ) =>
   db_route        = njs_path.resolve __dirname, '../../jizura-datasources/data/leveldb-v2'
   S.JZR          ?= {}
-  S.JZR.db       ?= HOLLERITH.new_db db_route, create: no
+  if S.JZR.db?
+    help "re-using DB connection to DB at #{db_route}"
+  else
+    warn "establishing new DB connection to DB at #{db_route}"
+    S.JZR.db = HOLLERITH.new_db db_route, create: no
+  debug '©52564', Object.keys S.JZR.db
   #.........................................................................................................
   return D.TEE.from_pipeline [
     @$fontlist                                    S
@@ -67,6 +72,8 @@ HOLLERITH                 = require '../../hollerith'
     @$most_frequent.with_fncrs.$format            S
     @$most_frequent.with_fncrs.$assemble          S
     @$dump_db.$format                             S
+    #.......................................................................................................
+    @$py                                          S
     ]
 
 #-----------------------------------------------------------------------------------------------------------
@@ -477,6 +484,41 @@ HOLLERITH                 = require '../../hollerith'
       send event
 
 
+
+#===========================================================================================================
+# PINYIN (EXPERIMENTAL, INCOMPLETE)
+#-----------------------------------------------------------------------------------------------------------
+@$py = ( S ) =>
+  ### TAINT should translate special syntax to ordinary commands, then translate to TeX ###
+  # track   = MD_READER.TRACKER.new_tracker '(py)'
+  # remark  = MD_READER._get_remark()
+  ### TAINT make RegEx more specific, don't include punctuation ###
+  py_pattern = /// !py!([^\s]+) ///
+  compile_pinyin = ( text ) =>
+    return text.replace py_pattern, ( $0, $1 ) =>
+      ### TAINT translate digits to accents ###
+      ### TAINT consider to use fix_typography_for_tex ###
+      return "{\\py{}#{$1}}"
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    # within_py = track.within '(py)'
+    # track event
+    [ type, name, text, meta, ] = event
+    #.......................................................................................................
+    # if within_py and text?
+    if select event, '(', 'py'
+      send stamp event
+      send [ 'tex', "{\\py{}", ]
+    #.......................................................................................................
+    else if select event, ')', 'py'
+      send stamp event
+      send [ 'tex', "}", ]
+    #.......................................................................................................
+    else if select event, '.', 'text'
+      send [ '.', 'text', ( compile_pinyin text ), ( copy meta ), ]
+    #.......................................................................................................
+    else
+      send event
 
 
 
