@@ -50,6 +50,7 @@
     "markdown-it-regexp": "^0.4.0",
     "markdown-it-sub": "^1.0.0",
     "markdown-it-sup": "^1.0.0",
+    "mingkwai-typesetter-jizura": "^1.0.0",
     "parse5": "^2.0.2",
     "pipedreams": "^3.0.4",
     "source-map-support": "^0.4.0"
