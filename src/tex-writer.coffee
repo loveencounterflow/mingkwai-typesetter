@@ -239,7 +239,7 @@ after = ( names..., method ) ->
     send remark 'drop', "`.comment`: #{rpr text}", copy meta
 
 #-----------------------------------------------------------------------------------------------------------
-@MKTX.DOCUMENT.$begin = ( S ) =>
+@$document = ( S ) =>
   #.........................................................................................................
   return $ ( event, send ) =>
     #.......................................................................................................
@@ -247,17 +247,9 @@ after = ( names..., method ) ->
       send stamp event
       send [ 'tex', "\n% begin of MD document\n", ]
     #.......................................................................................................
-    else
-      send event
-
-#-----------------------------------------------------------------------------------------------------------
-@MKTX.DOCUMENT.$end = ( S ) =>
-  #.........................................................................................................
-  return $ ( event, send ) =>
-    #.......................................................................................................
-    if select event, ')', 'document'
-      send stamp event
+    else if select event, ')', 'document'
       send [ 'tex', "\n% end of MD document\n", ]
+      send stamp event
     #.......................................................................................................
     else
       send event
@@ -1334,14 +1326,6 @@ before '@MKTX.REGION.$single_column', '@MKTX.REGION.$multi_column', \
       send.error new Error "unhandled events not allowed at this point; got #{JSON.stringify event}"
 
 
-#===========================================================================================================
-#
-#-----------------------------------------------------------------------------------------------------------
-### TAINT makeshift solution for a commands namespace; should be definable by document e.g.
-by `require`ing syntax extension modules ###
-CUSTOM      =
-  JZR:        require './custom-jzr'
-
 
 ### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ###
 ### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ###
@@ -1418,8 +1402,7 @@ f.apply D
     # .pipe CUSTOM.JZR.$main                                S
     # .pipe CUSTOM.JZR.$most_frequent.with_fncrs            S
     .pipe MACRO_ESCAPER.$expand.$remove_backslashes       S
-    .pipe @MKTX.DOCUMENT.$begin                           S
-    .pipe @MKTX.DOCUMENT.$end                             S
+    .pipe @$document                                      S
     .pipe @MKTX.INLINE.$link                              S
     .pipe @MKTX.MIXED.$footnote                           S
     .pipe @MKTX.MIXED.$footnote.$remove_extra_paragraphs  S
@@ -1436,6 +1419,7 @@ f.apply D
     .pipe @MKTX.REGION.$keep_lines                        S
     .pipe @MKTX.REGION.$toc                               S
     .pipe @MKTX.BLOCK.$heading                            S
+    # .pipe D.$observe ( event ) -> alert event if ( CND.isa_text text = event[ 1 ] ) and ( /MD/ ).test text
     .pipe @MKTX.MIXED.$collect_headings_for_toc           S
     .pipe @MKTX.COMMAND.$toc                              S
     .pipe @MKTX.BLOCK.$unordered_list                     S
