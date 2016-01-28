@@ -175,6 +175,7 @@ MKTS                      = require './main'
       { mode, language, line_nr, }        = meta
       [ error_message, parameters, ]      = @_parameters_from_text S, line_nr, parameters_txt
       return send [ '.', 'warning', error_message, meta, ] if error_message?
+      debug '©76385', [ '!', identifier, parameters, meta, ]
       send [ '!', identifier, parameters, meta, ]
     #.......................................................................................................
     else
@@ -182,6 +183,8 @@ MKTS                      = require './main'
 
 #-----------------------------------------------------------------------------------------------------------
 @_parameters_from_text = ( S, line_nr, text ) =>
+  return [ null, [], ] if ( /^\s*$/ ).test text
+  #.........................................................................................................
   ### TAINT replicates some code from MACRO_INTERPRETER.process_actions ###
   ### TAINT move to CND? COFFEESCRIPT? ###
   CS              = require 'coffee-script'
