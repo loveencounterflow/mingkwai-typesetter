@@ -27,4 +27,6 @@ echo                      = CND.echo.bind CND
 @MD_READER                = require './md-reader'
 @TEX_WRITER               = require './tex-writer'
 @MKTSCRIPT_WRITER         = require './mktscript-writer'
+@PLUGIN_MANAGER           = require './plugin-manager'
 
+# debug @PLUGIN_MANAGER.find_plugin_package_infos njs_path.resolve __dirname, '../node_modules'
