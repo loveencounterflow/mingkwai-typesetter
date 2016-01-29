@@ -29,4 +29,16 @@ echo                      = CND.echo.bind CND
 @MKTSCRIPT_WRITER         = require './mktscript-writer'
 @PLUGIN_MANAGER           = require './plugin-manager'
 
-# debug @PLUGIN_MANAGER.find_plugin_package_infos njs_path.resolve __dirname, '../node_modules'
+plugin_info_by_routes = @PLUGIN_MANAGER.find_plugin_package_infos njs_path.resolve __dirname, '../node_modules'
+for plugin_route, plugin_info of plugin_info_by_routes
+  debug '234627', plugin_info[ 'name' ]
+  debug '234627', require plugin_info[ 'name' ]
+  debug '234627', require plugin_route
+
+
+
+
+
+
+
+
