@@ -7,7 +7,7 @@ njs_fs                    = require 'fs'
 #...........................................................................................................
 CND                       = require 'cnd'
 rpr                       = CND.rpr
-badge                     = 'mkts/tex-writer'
+badge                     = 'MK/TS/TEX-WRITER'
 log                       = CND.get_logger 'plain',     badge
 info                      = CND.get_logger 'info',      badge
 whisper                   = CND.get_logger 'whisper',   badge
@@ -1326,59 +1326,6 @@ before '@MKTX.REGION.$single_column', '@MKTX.REGION.$multi_column', \
       send.error new Error "unhandled events not allowed at this point; got #{JSON.stringify event}"
 
 
-
-### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ###
-### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ###
-### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ###
-$map = D._ES.map.bind D._ES
-
-f = ->
-
-  #-----------------------------------------------------------------------------------------------------------
-  @remit_async_spread = ( method ) ->
-    unless ( arity = method.length ) is 2
-      throw new Error "expected a method with an arity of 2, got one with an arity of #{arity}"
-    #.........................................................................................................
-    Z       = []
-    input   = D.create_throughstream()
-    output  = D.create_throughstream()
-    #.........................................................................................................
-    $call = =>
-      return $async ( event, done ) =>
-        #.........................................................................................................
-        collect = ( data ) =>
-          Z.push data
-          return null
-        #.........................................................................................................
-        collect.done = ( data ) =>
-          collect data if data?
-          done Object.assign [], Z
-          Z.length = 0
-        method event, collect
-        return null
-    #.........................................................................................................
-    $spread = =>
-      return $ ( collection, send, end ) =>
-        if collection?
-          send event for event in collection
-        if end?
-          end()
-    #.........................................................................................................
-    input
-      .pipe $call()
-      .pipe $spread()
-      .pipe output
-    #.........................................................................................................
-    return @TEE.from_readwritestreams input, output
-
-f.apply D
-
-### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ###
-### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ###
-### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ###
-
-
-
 #===========================================================================================================
 #
 #-----------------------------------------------------------------------------------------------------------
@@ -1398,9 +1345,15 @@ f.apply D
   # mktscript_tee = D.TEE.from_readwritestreams mktscript_in, mktscript_out
   #.......................................................................................................
   debug '©26056', 'building TeX pipeline'
+  pipeline    = ( ( plugin.$main S ) for plugin in MK.TS.plugins )
+  debug '©07379', pipeline
+  # plugins_tee = D.TEE.from_pipeline pipeline
+  plugins_tee = D.combine pipeline
+  #.......................................................................................................
   readstream
     # .pipe CUSTOM.JZR.$main                                S
     # .pipe CUSTOM.JZR.$most_frequent.with_fncrs            S
+    .pipe plugins_tee
     .pipe MACRO_ESCAPER.$expand.$remove_backslashes       S
     .pipe @$document                                      S
     .pipe @MKTX.INLINE.$link                              S

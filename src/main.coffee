@@ -7,7 +7,7 @@ njs_fs                    = require 'fs'
 #...........................................................................................................
 CND                       = require 'cnd'
 rpr                       = CND.rpr
-badge                     = 'MKTS/main'
+badge                     = 'MK/TS/main'
 log                       = CND.get_logger 'plain',     badge
 info                      = CND.get_logger 'info',      badge
 whisper                   = CND.get_logger 'whisper',   badge
@@ -27,7 +27,6 @@ echo                      = CND.echo.bind CND
 @MD_READER                = require './md-reader'
 @TEX_WRITER               = require './tex-writer'
 @MKTSCRIPT_WRITER         = require './mktscript-writer'
-@PLUGIN_MANAGER           = require './plugin-manager'
 @XNCHR                    = require './xnchr'
 
 
