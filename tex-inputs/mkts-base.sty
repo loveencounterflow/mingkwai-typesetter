@@ -95,19 +95,19 @@
 
   \def\mktsAdjustedPar{\par\mbox{}}
   \newdimen\mktsAdjustedParIndent
-  \mktsAdjustedParIndent=0em
+  \mktsAdjustedParIndent=0mm
   \newskip\mktsAdjustedParSkip
-  % \mktsAdjustedParSkip=0pt plus 1pt
-  % TAINT ad-goc, breaks baseline register
-  \mktsAdjustedParSkip=1mm
+  \mktsAdjustedParSkip=0pt plus 1pt
 
-  {\mktsMakeActive\^^M
+  {\mktsMakeActive\^^M%
     \gdef\mktsObeyAllLines{%
+      \def\cjkgKeepLines{true}%
       \parindent=\mktsAdjustedParIndent%
       \parskip=\mktsAdjustedParSkip%
       \mktsMakeActive\^^M%
       \let^^M=\mktsAdjustedPar%
-      \leavevmode\hbox{}}}
+      \leavevmode\hbox{}}%
+      }
 
   }
 
