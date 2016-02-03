@@ -1,3 +1,64 @@
+<<(keep-lines>>
+    xxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxx
+    xxxxxxxxxxxxxxxxxx
+<<keep-lines)>>
+
+<<!end>>
 
 
 일;
@@ -15,6 +76,23 @@ tempor dolore quis nisi fugiat nostrud pariatur. Do ad consectetur cupidatat id
 veniam dolore tempor est.^[<<!yadda>>]
 
 
+Landscape in characters: 13 ways to combine 山 and 水 in a single character:
+
+<<(keep-lines>>
+　　　白水山|山　　　　　　𣻮
+　　　　　木|山二水一　　　𪳢
+　　　　　　|山水　　　　　汖
+　　　　　　|山水　　　　　𡵰
+　　　　　扌|山水　　　　　𢫂
+　　　　　忄|山水　　　　　𢚭
+　　　　　　|山水土　　　　埊
+　　　　　　|山水日　　　　崉
+　　　　　卄|山水金　　　　𧁆
+　　　　白水|山山　　　　　𣻮
+　　　　　　|山白水　　　　㟫
+　　　　　　|山白水　　　　𡺙
+　　　　　　|山尸水　　　　𡷷
+<<keep-lines)>>
 
 <!-- <<!JZR.dump_db glyphs: '用國鬱'>> -->
 

@@ -87,10 +87,6 @@
   % ........................................................................................................
   % https://groups.google.com/d/msg/comp.text.tex/J2qcZxgcR5M/3HyPquEDkcgJ
   % obeyalllines is like obeylines, excepts it also keeps blank lines
-  % TAINT it would probably be simpler to encode <<(keep-lines)>> and
-  % <<(code-block)>> separately, with the latter implying the first.
-  % Right now we rely on nesting the two for code blocks which actually
-  % makes it more difficult to keep consistent metrics.
   \def\mktsMakeActive#1{\catcode`#113\relax}
 
   \def\mktsAdjustedPar{\par\mbox{}}

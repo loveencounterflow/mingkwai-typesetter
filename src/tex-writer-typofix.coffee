@@ -73,24 +73,24 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
 @is_cjk_rsg = ( rsg, options ) => rsg in options[ 'tex' ][ 'cjk-rsgs' ]
 
 #-----------------------------------------------------------------------------------------------------------
-@_analyze_chr = ( S, chr, style ) ->
-    #.......................................................................................................
-    R = XNCHR.CHR.analyze chr, { input: if style is 'escape-ncrs' then 'plain' else 'xncr' }
-    #.......................................................................................................
-    switch R.rsg
-      when 'jzr-fig'  then R.chr = R.uchr
-      when 'u-pua'    then R.rsg = 'jzr-fig'
-      when 'u-latn'   then R.chr = @escape_for_tex chr
-    #.......................................................................................................
-    ### OBS `chr` has still the value this method was called with, so styling should work even for `u-latn`
-    characters ###
-    R.is_whitespace = chr   in S.whitespace
-    R.is_cjk        = R.rsg in S.cjk_rsgs
-    R.styled_chr    = @_style_chr S, R, chr
-    return R
+@_analyze_chr = ( S, chr, style, is_last ) ->
+  #.........................................................................................................
+  R = XNCHR.CHR.analyze chr, { input: if style is 'escape-ncrs' then 'plain' else 'xncr' }
+  #.........................................................................................................
+  switch R.rsg
+    when 'jzr-fig'  then R.chr = R.uchr
+    when 'u-pua'    then R.rsg = 'jzr-fig'
+    when 'u-latn'   then R.chr = @escape_for_tex chr
+  #.........................................................................................................
+  ### OBS `chr` has still the value this method was called with, so styling should work even for `u-latn`
+  characters ###
+  R.is_whitespace = chr   in S.whitespace
+  R.is_cjk        = R.rsg in S.cjk_rsgs
+  R.styled_chr    = @_style_chr S, R, chr, is_last
+  return R
 
 #-----------------------------------------------------------------------------------------------------------
-@_style_chr = ( S, chr_info, chr ) ->
+@_style_chr = ( S, chr_info, chr, is_last ) ->
   { rsg
     fncr
     is_cjk    }       = chr_info
@@ -104,7 +104,7 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
   rsg_command         = null if rsg_command in [ 'latin', 'cn', ]
   style               = S.glyph_styles[ chr ]
   #.........................................................................................................
-  return null if ( not rsg_command? ) and ( not style? )
+  # return null if ( not rsg_command? ) and ( not style? )
   #.........................................................................................................
   if style?
     ### TAINT use `cjkgGlue` only if `is_cjk` ###
@@ -125,11 +125,16 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
     R.push "}"
     R = R.join ''
   #.........................................................................................................
-  else
+  else if rsg_command?
     ### TAINT does not collect glyphs with same RSG ###
     # debug '©95429', chr_info
+    # debug '12321', ( rpr chr_info[ 'uchr' ] ), S.last_rsg_command, rsg_command, is_last
+    # if rsg_command
     R = "{\\#{rsg_command}{}#{chr_info[ 'uchr' ]}}"
     # R = "\\cjkgGlue#{R}\\cjkgGlue{}" if is_cjk
+  #.........................................................................................................
+  else
+    R = null
   #.........................................................................................................
   S.last_rsg_command = rsg_command
   return R
@@ -154,6 +159,12 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
   return null
 
 #-----------------------------------------------------------------------------------------------------------
+@_split_dangling_ws = ( text ) ->
+  [ _, head, tail, ] = text.match @_split_dangling_ws.pattern
+  return [ head, tail, ]
+@_split_dangling_ws.pattern = /^([\s\S]*?)(\s*)$/
+
+#-----------------------------------------------------------------------------------------------------------
 @fix_typography_for_tex = ( text, options, send = null, style ) =>
   S =
     cjk_rsgs:                     options[ 'tex' ]?[ 'cjk-rsgs' ] ? null
@@ -171,8 +182,12 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
   throw new Error "need setting 'tex-command-by-rsgs'" unless S.tex_command_by_rsgs?
   throw new Error "need setting 'cjk-rsgs'" unless S.cjk_rsgs?
   #.........................................................................................................
-  for chr in XNCHR.chrs_from_text text
-    A = @_analyze_chr S, chr, style
+  [ text, danglin_ws, ] = @_split_dangling_ws text
+  chrs                  = XNCHR.chrs_from_text text
+  last_idx              = chrs.length - 1
+  #.........................................................................................................
+  for chr, idx in chrs
+    A = @_analyze_chr S, chr, style, ( idx is last_idx )
     #.......................................................................................................
     ### Whitespace is ambiguous; it is treated as CJK when coming between two unambiguous CJK characters and
     as non-CJK otherwise; to decide between these cases, we have to wait for the next non-whitespace
@@ -204,6 +219,8 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
   `國 **b** 國` vs `國 **國** 國` ###
   @_push S
   @_push S, '}' if S.this_is_cjk
+  @_push S, danglin_ws
+  #.........................................................................................................
   return S.collector.join ''
 
 

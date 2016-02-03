@@ -1346,7 +1346,6 @@ before '@MKTX.REGION.$single_column', '@MKTX.REGION.$multi_column', \
   #.......................................................................................................
   debug '©26056', 'building TeX pipeline'
   pipeline    = ( ( plugin.$main S ) for plugin in MK.TS.plugins )
-  debug '©07379', pipeline
   # plugins_tee = D.TEE.from_pipeline pipeline
   plugins_tee = D.combine pipeline
   #.......................................................................................................
