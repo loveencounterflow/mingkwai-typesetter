@@ -162,7 +162,8 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
 @_split_dangling_ws = ( text ) ->
   [ _, head, tail, ] = text.match @_split_dangling_ws.pattern
   return [ head, tail, ]
-@_split_dangling_ws.pattern = /^([\s\S]*?)(\s*)$/
+@_split_dangling_ws.pattern = /^([\s\S]*?)([\x20\t\n]*)$/
+# @_split_dangling_ws.pattern = /^([\s\S]*?)(\s*)$/
 
 #-----------------------------------------------------------------------------------------------------------
 @fix_typography_for_tex = ( text, options, send = null, style ) =>
