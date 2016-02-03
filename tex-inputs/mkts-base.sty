@@ -37,6 +37,7 @@
 \newcommand{\mktsCleartoleftpage}{}%
 \newcommand{\mktsRulePlain}{}%
 \newcommand{\mktsRuleSwell}{}%
+\newcommand{\mktsVerticalBar}{}%
 
 
 % ==========================================================================================================
@@ -73,7 +74,8 @@
   % }
   % \makeatother
 
-
+  % ========================================================================================================
+  % RULES (SHOULD GO TO OWN MODULE)
   % ........................................................................................................
   \renewcommand{\mktsRulePlain}{%
     \par\hfil\swrulex{0.8\linewidth}{0.1mm}{0.1mm}\hfill\par%
@@ -82,6 +84,11 @@
   % ........................................................................................................
   \renewcommand{\mktsRuleSwell}{%
     \par\hfil\swrulex{0.8\linewidth}{0.1mm}{0.25mm}\hfill\par%
+    }
+
+  % ........................................................................................................
+  \renewcommand{\mktsVerticalBar}{%
+    {\color{red}\rule[-1mm]{0.5mm}{5mm}}%
     }
 
   % ........................................................................................................
@@ -101,7 +108,7 @@
       \parindent=\mktsAdjustedParIndent%
       \parskip=\mktsAdjustedParSkip%
       \mktsMakeActive\^^M%
-      \let^^M=\mktsAdjustedPar%
+      % \let^^M=\mktsAdjustedPar%
       \leavevmode\hbox{}}%
       }
 
@@ -116,6 +123,7 @@
   \renewcommand{\mktsCleartoleftpage}{}
   \renewcommand{\mktsRulePlain}{}%
   \renewcommand{\mktsRuleSwell}{}%
+  \renewcommand{\mktsVerticalBar}{}%
   \gdef\mktsObeyAllLines{}%
   }
 
