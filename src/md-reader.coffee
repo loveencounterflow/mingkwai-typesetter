@@ -845,6 +845,7 @@ tracker_pattern = /// ^
   # S.confluence = input
   #.........................................................................................................
   readstream
+    # .pipe D.$observe ( event ) -> alert event
     .pipe @_PRE.$flatten_inline_tokens                S
     .pipe @_PRE.$flatten_image_tokens                 S
     .pipe @_PRE.$reinject_html_blocks                 S
@@ -872,6 +873,7 @@ tracker_pattern = /// ^
     MKTS.MACRO_ESCAPER.initialize_state S
     md_source   = MKTS.MACRO_ESCAPER.escape S, md_source
     tokens      = md_parser.parse md_source, S.environment
+    # debug '©78531', rpr tokens
     for token in tokens
       input.write token
     input.write Symbol.for 'end'

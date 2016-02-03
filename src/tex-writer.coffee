@@ -1371,7 +1371,6 @@ before '@MKTX.REGION.$single_column', '@MKTX.REGION.$multi_column', \
     .pipe @MKTX.REGION.$keep_lines                        S
     .pipe @MKTX.REGION.$toc                               S
     .pipe @MKTX.BLOCK.$heading                            S
-    # .pipe D.$observe ( event ) -> alert event if ( CND.isa_text text = event[ 1 ] ) and ( /MD/ ).test text
     .pipe @MKTX.MIXED.$collect_headings_for_toc           S
     .pipe @MKTX.COMMAND.$toc                              S
     .pipe @MKTX.BLOCK.$unordered_list                     S
