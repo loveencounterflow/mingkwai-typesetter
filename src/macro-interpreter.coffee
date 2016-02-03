@@ -175,7 +175,6 @@ MKTS                      = require './main'
       { mode, language, line_nr, }        = meta
       [ error_message, parameters, ]      = @_parameters_from_text S, line_nr, parameters_txt
       return send [ '.', 'warning', error_message, meta, ] if error_message?
-      debug '©76385', [ '!', identifier, parameters, meta, ]
       send [ '!', identifier, parameters, meta, ]
     #.......................................................................................................
     else

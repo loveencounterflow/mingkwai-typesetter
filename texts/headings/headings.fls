@@ -1,4 +1,4 @@
-PWD /Volumes/Storage/io/mingkwai-typesetter
+PWD /Volumes/Storage/io/mingkwai
 INPUT /usr/local/texlive/2015/texmf.cnf
 INPUT /usr/local/texlive/2015/texmf-dist/web2c/texmf.cnf
 INPUT /usr/local/texlive/2015/texmf-var/web2c/xetex/xelatex.fmt
@@ -225,8 +225,6 @@ INPUT /usr/local/texlive/2015/texmf-dist/tex/latex/tools/multicol.sty
 INPUT /usr/local/texlive/2015/texmf-dist/tex/latex/tools/multicol.sty
 INPUT /Volumes/Storage/io/mingkwai-typesetter/tex-inputs/mkts-para-font-size.sty
 INPUT /Volumes/Storage/io/mingkwai-typesetter/tex-inputs/mkts-para-font-size.sty
-INPUT /Volumes/Storage/io/mingkwai-typesetter/tex-inputs/_mkts-parskip.sty
-INPUT /Volumes/Storage/io/mingkwai-typesetter/tex-inputs/_mkts-parskip.sty
 INPUT /Volumes/Storage/io/mingkwai-typesetter/tex-inputs/mkts-headings-and-toc.sty
 INPUT /Volumes/Storage/io/mingkwai-typesetter/tex-inputs/mkts-headings-and-toc.sty
 INPUT /Volumes/Storage/io/mingkwai-typesetter/texts/headings/headings.aux
