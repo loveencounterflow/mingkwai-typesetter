@@ -3,7 +3,7 @@
 
 ############################################################################################################
 # njs_path                  = require 'path'
-# njs_fs                    = require 'fs'
+njs_fs                    = require 'fs'
 #...........................................................................................................
 CND                       = require 'cnd'
 rpr                       = CND.rpr
@@ -219,6 +219,22 @@ MKTS                      = require './main'
   ]
 
 #-----------------------------------------------------------------------------------------------------------
+@insert_command_patterns = [
+  ///                           # An insert command macro
+  <<                            # starts with two left pointy brackets,
+    ( [ ! $ ] )                 # then: an exclamation mark or a dollar sign,
+    insert (?= [\s>] )          # then: an 'insert' literal (followed by WS or RPB)
+    (
+      (?:                       # then:
+        [^ > ]             |    #   or: anything but a RPB
+        > (?! > )               #   or: a RPB not followed by yet another RPB
+      )*                        # repeated any number of times
+    )
+    >>                          # then: two RPBs.
+  ///g
+  ]
+
+#-----------------------------------------------------------------------------------------------------------
 ### NB The end command macro looks like any other command except we can detect it with a much simpler
 RegEx; we want to do that so we can, as a first processing step, remove it and any material that appears
 after it, thereby inhibiting any processing of those portions. ###
@@ -248,6 +264,7 @@ after it, thereby inhibiting any processing of those portions. ###
   R = @escape.html_comments             S, R
   R = @escape.sensitive_ws              S, R
   R = @escape.bracketed_raw_macros      S, R
+  R = @escape.insert_macros             S, R
   R = @escape.action_macros             S, R
   R = @escape.region_macros             S, R
   R = @escape.comma_macros              S, R
@@ -289,7 +306,6 @@ after it, thereby inhibiting any processing of those portions. ###
   R = R.replace pattern, ( _, anchor, sws ) =>
     id      = @_register_content S, 'sws', sws, sws
     return "#{anchor}\x15#{id}\x13"
-  debug '©68426', S[ 'MACRO_ESCAPER' ][ 'registry' ]
   #.........................................................................................................
   return R
 
@@ -327,6 +343,31 @@ after it, thereby inhibiting any processing of those portions. ###
       ### TAINT not using arguments peoperly ###
       id        = @_register_content S, 'action', [ mode, language, ], content
       return "\x15#{id}\x13"
+  #.........................................................................................................
+  return R
+
+#-----------------------------------------------------------------------------------------------------------
+@escape.insert_macros = ( S, text ) =>
+  R = text
+  #.........................................................................................................
+  for pattern in @insert_command_patterns
+    R = R.replace pattern, ( _, markup, parameter_txt ) =>
+      [ error_message, result, ] = MKTS.MACRO_INTERPRETER._parameters_from_text S, 0, parameter_txt
+      ### TAINT need current context to resolve file route ###
+      ### TAINT how to return proper error message? ###
+      ### TAINT what kind of error handling is this? ###
+      if result?
+        [ route, ] = result
+        if route?
+          try
+            content = njs_fs.readFileSync route, encoding: 'utf-8'
+          catch error
+            error_message = ( error_message ? '' ) + "\n" + error[ 'message' ]
+        else
+          error_message = ( error_message ? '' ) + "\nneed file route for insert macro"
+      if error_message?
+        return " XXXXXXXX #{error_message} XXXXXXXX "
+      return content
   #.........................................................................................................
   return R
 

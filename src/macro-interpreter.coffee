@@ -210,7 +210,7 @@ MKTS                      = require './main'
     ### TAINT use method to assemble warning event ###
     ### TAINT write error log with full trace, insert reference (error nr) ###
     return [ "action on line #{line_nr}: #{error_message}", null, ]
-    return done [ '.', 'warning', error_message, ( copy meta ), ]
+    # return done [ '.', 'warning', error_message, ( copy meta ), ]
   return [ null, R, ]
 
 # #-----------------------------------------------------------------------------------------------------------
