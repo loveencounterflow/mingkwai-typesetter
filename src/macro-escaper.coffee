@@ -246,6 +246,7 @@ after it, thereby inhibiting any processing of those portions. ###
   whisper "detected <<!end>> macro; discarding approx. #{discard_count} characters" if discard_count > 0
   R = @escape.escape_chrs               S, R
   R = @escape.html_comments             S, R
+  R = @escape.sensitive_ws              S, R
   R = @escape.bracketed_raw_macros      S, R
   R = @escape.action_macros             S, R
   R = @escape.region_macros             S, R
@@ -265,6 +266,32 @@ after it, thereby inhibiting any processing of those portions. ###
 @escape.escape_chrs                 = ( S, text ) => @cloak.backslashed.hide  @cloak.hide               text
 @escape.unescape_escape_chrs        = ( S, text ) => @cloak.reveal            @cloak.backslashed.reveal text
 @escape.remove_escaping_backslashes = ( S, text ) => @cloak.backslashed.remove text
+
+#-----------------------------------------------------------------------------------------------------------
+@escape.sensitive_ws = ( S, text ) =>
+  ### Fixes an annoying parsing problem with Markdown-it where the leading whitespace in
+  ```
+  <<(keep-lines>>
+  　　　　　　　|𠦝韦　　　　　　韩
+  ```
+  is kept but deleted when the first line is blank, as in
+  ```
+  <<(keep-lines>>
+
+  　　　　　　　|𠦝韦　　　　　　韩
+  ```
+  ###
+  # pattern = /// (>>) (\s*) ///g
+  pattern = /// (<<\(keep-lines>>) (\s*) ///g
+  R = text
+  #.........................................................................................................
+  # for pattern in @region_patterns
+  R = R.replace pattern, ( _, anchor, sws ) =>
+    id      = @_register_content S, 'sws', sws, sws
+    return "#{anchor}\x15#{id}\x13"
+  debug '©68426', S[ 'MACRO_ESCAPER' ][ 'registry' ]
+  #.........................................................................................................
+  return R
 
 #-----------------------------------------------------------------------------------------------------------
 @escape.html_comments = ( S, text ) =>
@@ -369,6 +396,11 @@ after it, thereby inhibiting any processing of those portions. ###
   ///g
 
 #-----------------------------------------------------------------------------------------------------------
+@sws_id_pattern = ///
+  \x15 sws ( [ 0-9 ]+ ) \x13
+  ///g
+
+#-----------------------------------------------------------------------------------------------------------
 @command_and_value_id_pattern = ///
   \x15 (?: command | value ) ( [ 0-9 ]+ ) \x13
   ///g
@@ -384,6 +416,7 @@ after it, thereby inhibiting any processing of those portions. ###
     @$expand.$region_macros             S
     @$expand.$action_macros             S
     @$expand.$raw_macros                S
+    @$expand.$sensitive_ws              S
     @$expand.$html_comments             S
     @$expand.$escape_chrs               S
     # @$expand.$escape_illegals           S
@@ -423,6 +456,11 @@ after it, thereby inhibiting any processing of those portions. ###
 @$expand.$comma_macros  = ( S ) =>
   return @_get_expander S, @comma_id_pattern, ( meta, entry ) =>
     return [ '.', 'comma', null, ( MKTS.MD_READER.copy meta, ), ]
+
+#-----------------------------------------------------------------------------------------------------------
+@$expand.$sensitive_ws  = ( S ) =>
+  return @_get_expander S, @sws_id_pattern, ( meta, entry ) =>
+    return [ '.', 'text', entry[ 'raw' ], ( MKTS.MD_READER.copy meta, ), ]
 
 #-----------------------------------------------------------------------------------------------------------
 @$expand.$region_macros = ( S ) =>
