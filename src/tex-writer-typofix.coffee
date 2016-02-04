@@ -91,11 +91,17 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
 
 #-----------------------------------------------------------------------------------------------------------
 @_style_chr = ( S, chr_info, chr, is_last ) ->
-  { rsg
+  { csg
+    rsg
     fncr
     is_cjk    }       = chr_info
   rsg_command         = S.tex_command_by_rsgs[ rsg ]
   # debug '©28708', chr, rsg_command
+  #.........................................................................................................
+  unless csg in [ 'u', 'jzr', ]
+    ### TAINT won't capture styling for `&`, `#` and so on ###
+    return @escape_for_tex chr_info.chr
+  #.........................................................................................................
   unless rsg_command?
     rsg_command = S.tex_command_by_rsgs[ 'fallback' ] ? null
     message     = "unknown RSG #{rpr rsg}: #{fncr} #{chr} (using fallback #{rpr rsg_command})"

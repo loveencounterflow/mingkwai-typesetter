@@ -1,6 +1,7 @@
 
 
 
+
 <<!JZR.vertical-bar>>
 <<(multi-column>>
 
@@ -10,9 +11,6 @@
 <<!yadda>>
 <<!yadda>>
  -->
-
-<<!insert "/tmp/kwic.txt">>
-<<multi-column)>><<!end>>
 
 
 Japanese forms not well represented
@@ -74,8 +72,15 @@ sfo66087u-cjk-xb/293cd  𩏍   ⿰(⿱𫝀口㐄)⿱爫旧
       '㿟': 1
       '皛': 1
 
+Reduplication
+
 <<keep-lines)>>
 
+#############################
+
+<<!insert "/tmp/kwic.txt">>
+
+<<multi-column)>><<!end>>
 
 ## Landscape in characters
 
