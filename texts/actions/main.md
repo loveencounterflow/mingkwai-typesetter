@@ -2,6 +2,14 @@
 
 
 
+<<<
+abc{\mktsFontfileSunexta\color{red}\sbSmash{「}}def
+abc{\mktsFontfileSunexta\color{red}\sbSmash{【}}def
+abc{\color{red}\sbSmash{x}}def
+abc\makebox[0mm]{\color{red}x}def
+>>>
+
+
 <<!JZR.vertical-bar>>
 <<(multi-column>>
 
@@ -78,7 +86,9 @@ Reduplication
 
 #############################
 
+<<(keep-lines>>
 <<!insert "/tmp/kwic.txt">>
+<<keep-lines)>>
 
 <<multi-column)>><<!end>>
 
