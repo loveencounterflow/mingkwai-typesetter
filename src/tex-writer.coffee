@@ -384,7 +384,9 @@ after = ( names..., method ) ->
     #.......................................................................................................
     else if select event, [ '(', ')', ], 'code'
       send stamp event
-      [ type, name, text, meta, ] = event
+      [ type, name, language, meta, ] = event
+      debug '©27956', language, language is 'keep-lines'
+      return send stamp hide copy event if language is 'keep-lines'
       #.....................................................................................................
       if type is '('
         # send [ 'tex', "\\begingroup\\mktsObeyAllLines\\mktsStyleCode{}", ]

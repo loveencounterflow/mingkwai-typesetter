@@ -262,7 +262,7 @@ after it, thereby inhibiting any processing of those portions. ###
   whisper "detected <<!end>> macro; discarding approx. #{discard_count} characters" if discard_count > 0
   R = @escape.escape_chrs               S, R
   R = @escape.html_comments             S, R
-  R = @escape.sensitive_ws              S, R
+  # R = @escape.sensitive_ws              S, R
   R = @escape.bracketed_raw_macros      S, R
   R = @escape.insert_macros             S, R
   R = @escape.action_macros             S, R
@@ -270,6 +270,7 @@ after it, thereby inhibiting any processing of those portions. ###
   R = @escape.comma_macros              S, R
   R = @escape.command_and_value_macros  S, R
   #.........................................................................................................
+  debug '©87418', R
   return R
 
 #-----------------------------------------------------------------------------------------------------------
@@ -377,9 +378,18 @@ after it, thereby inhibiting any processing of those portions. ###
   #.........................................................................................................
   for pattern in @region_patterns
     R = R.replace pattern, ( _, start_markup, identifier, stop_markup ) =>
-      # debug '©ΛΨ regions', ( rpr text ), [ previous_chr, markup, identifier, content, stopper, ]
+      debug '©85393', [ start_markup, identifier, stop_markup, ]
       markup  = if start_markup.length is 0 then stop_markup else start_markup
       id      = @_register_content S, 'region', markup, identifier
+      if identifier is 'keep-lines'
+        if start_markup is '('
+          return """
+            \x15#{id}\x13
+            ```keep-lines"""
+        else
+          return """
+            ```
+            \x15#{id}\x13"""
       return "\x15#{id}\x13"
   #.........................................................................................................
   return R

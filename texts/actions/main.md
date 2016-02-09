@@ -1,5 +1,41 @@
 
+<<!yadda>>
 
+<<(keep-lines>>
+
+
+
+
+
+　　　【虫】　　　　虫
+
+
+
+
+　　冄【阝】　　　　𨙻
+　　　【冄】阝　　　𨙻
+
+<<keep-lines)>>
+
+```
+
+first
+second
+
+
+third
+
+
+
+
+fourth
+
+
+
+```
+
+
+<<!yadda>>
 
 
 <<<
@@ -9,6 +45,7 @@ abc{\color{red}\sbSmash{x}}def
 abc\makebox[0mm]{\color{red}x}def
 >>>
 
+<<!end>>
 
 <<!JZR.vertical-bar>>
 <<(multi-column>>
@@ -86,9 +123,7 @@ Reduplication
 
 #############################
 
-<<(keep-lines>>
 <<!insert "/tmp/kwic.txt">>
-<<keep-lines)>>
 
 <<multi-column)>><<!end>>
 
