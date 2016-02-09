@@ -1,5 +1,5 @@
-
 <<!yadda>>
+
 
 <<(keep-lines>>
 
@@ -17,7 +17,7 @@
 
 <<keep-lines)>>
 
-```
+<<(keep-lines>>
 
 first
 second
@@ -32,11 +32,10 @@ fourth
 
 
 
-```
+<<keep-lines)>>
 
 
 <<!yadda>>
-
 
 <<<
 abc{\mktsFontfileSunexta\color{red}\sbSmash{「}}def
