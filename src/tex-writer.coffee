@@ -401,29 +401,38 @@ after = ( names..., method ) ->
 
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.REGION.$keep_lines = ( S ) =>
-  track = MD_READER.TRACKER.new_tracker '(keep-lines)'
+  track           = MD_READER.TRACKER.new_tracker '(keep-lines)'
+  last_was_empty  = no
   #.........................................................................................................
   return $ ( event, send ) =>
     within_keep_lines = track.within '(keep-lines)'
     track event
     #.......................................................................................................
-    if select event, '.', 'text'
+    if within_keep_lines and select event, '.', 'text'
       [ type, name, text, meta, ] = event
       ### TAINT other replacements possible; use API ###
       ### TAINT U+00A0 (nbsp) might be too wide ###
-      text = text.replace /\u0020/g, '\u00a0' if within_keep_lines
-      send [ type, name, text, meta, ]
+      # taxt = text.replace /\n\n/g, "{\\mktsTightParagraphs\\null\\par\n"
+      text    = text.replace /\u0020/g, '\u00a0'
+      chunks  = text.split /(\n)/g
+      for chunk in chunks
+        if chunk is '\n'
+          if last_was_empty then send [ 'tex', "\\null\\par\n", ]
+          else                   send [ 'tex',       "\\par\n", ]
+        else
+          unless last_was_empty = chunk.length is 0
+            send [ '.', 'text', chunk, ( copy meta ), ]
     #.......................................................................................................
     else if select event, [ '(', ')', ], 'keep-lines'
       send stamp event
       [ type, name, text, meta, ] = event
       #.....................................................................................................
       if type is '('
-        track.enter '(keep-lines)'
-        send [ 'tex', "\\begingroup\\mktsObeyAllLines{}", ]
+        # track.enter '(keep-lines)'
+        send [ 'tex', "{\\mktsTightParagraphs{}", ]
       else
-        send [ 'tex', "\\endgroup{}", ]
-        track.leave '(keep-lines)'
+        send [ 'tex', "}", ]
+        # track.leave '(keep-lines)'
     #.......................................................................................................
     else
       send event
