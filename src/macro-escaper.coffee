@@ -270,7 +270,6 @@ after it, thereby inhibiting any processing of those portions. ###
   R = @escape.comma_macros              S, R
   R = @escape.command_and_value_macros  S, R
   #.........................................................................................................
-  debug '©87418', R
   return R
 
 #-----------------------------------------------------------------------------------------------------------
@@ -378,7 +377,6 @@ after it, thereby inhibiting any processing of those portions. ###
   #.........................................................................................................
   for pattern in @region_patterns
     R = R.replace pattern, ( _, start_markup, identifier, stop_markup ) =>
-      debug '©85393', [ start_markup, identifier, stop_markup, ]
       markup  = if start_markup.length is 0 then stop_markup else start_markup
       id      = @_register_content S, 'region', markup, identifier
       if identifier is 'keep-lines'

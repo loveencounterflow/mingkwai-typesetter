@@ -1,24 +1,16 @@
+<<!JZR.vertical-bar>>
+
+
 <<!yadda>>
 
-
 <<(keep-lines>>
-
-
-
-
-
 　　　【虫】　　　　虫
-
-
-
 
 　　冄【阝】　　　　𨙻
 　　　【冄】阝　　　𨙻
-
 <<keep-lines)>>
 
 <<(keep-lines>>
-
 first
 second
 
@@ -29,11 +21,7 @@ third
 
 
 fourth
-
-
-
 <<keep-lines)>>
-
 
 <<!yadda>>
 
@@ -44,9 +32,6 @@ abc{\color{red}\sbSmash{x}}def
 abc\makebox[0mm]{\color{red}x}def
 >>>
 
-<<!end>>
-
-<<!JZR.vertical-bar>>
 <<(multi-column>>
 
 <!-- ## All characters that feature 日
@@ -121,6 +106,12 @@ Reduplication
 <<keep-lines)>>
 
 #############################
+
+Consectetur exercitation sunt sit aliquip ex. Deserunt irure fugiat aute adipisicing incididunt nisi labore exercitation.
+Dolor reprehenderit laborum sit commodo. Eu qui ullamco duis non consectetur reprehenderit consequat amet fugiat
+in.
+
+=================================================================================
 
 <<!insert "/tmp/kwic.txt">>
 

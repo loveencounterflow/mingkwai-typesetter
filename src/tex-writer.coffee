@@ -385,7 +385,8 @@ after = ( names..., method ) ->
     else if select event, [ '(', ')', ], 'code'
       send stamp event
       [ type, name, language, meta, ] = event
-      debug '©27956', language, language is 'keep-lines'
+      ### We insert a code block fenced with `\`\`\`keep-lines ... \`\`\`` to make the Markdown parser
+      respect all whitespace. Here we discard that event: ###
       return send stamp hide copy event if language is 'keep-lines'
       #.....................................................................................................
       if type is '('
@@ -429,7 +430,7 @@ after = ( names..., method ) ->
       #.....................................................................................................
       if type is '('
         # track.enter '(keep-lines)'
-        send [ 'tex', "{\\mktsTightParagraphs{}", ]
+        send [ 'tex', "\\null\\par{\\mktsTightParagraphs{}", ]
       else
         send [ 'tex', "}", ]
         # track.leave '(keep-lines)'
@@ -753,6 +754,10 @@ before '@MKTX.REGION.$single_column', '@MKTX.REGION.$multi_column', \
         when '*'
           send stamp copy event
           send [ 'tex', '\\mktsRuleSwell{}' ]
+        when '='
+          send [ '(', 'single-column', null, ( copy meta ), ]
+          send stamp copy event
+          send [ ')', 'single-column', null, ( copy meta ), ]
         when '#'
           send [ '(', 'single-column', null, ( copy meta ), ]
           send stamp copy event

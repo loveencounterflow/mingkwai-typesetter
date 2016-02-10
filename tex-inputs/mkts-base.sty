@@ -37,7 +37,6 @@
 \newcommand{\mktsCleartoleftpage}{}%
 \newcommand{\mktsRulePlain}{}%
 \newcommand{\mktsRuleSwell}{}%
-\newcommand{\mktsVerticalBar}{}%
 
 
 % ==========================================================================================================
@@ -87,12 +86,6 @@
     }
 
   % ........................................................................................................
-  \renewcommand{\mktsVerticalBar}{%
-    {\color{red}\hspace{0.2em}\rule[-0.4em]{0.15mm}{1.4em}\hspace{0.1em}}%
-    % {\color{red}\rule[-0.4em]{0.15mm}{1.4em}}%
-    }
-
-  % ........................................................................................................
   % https://groups.google.com/d/msg/comp.text.tex/J2qcZxgcR5M/3HyPquEDkcgJ
   % obeyalllines is like obeylines, excepts it also keeps blank lines
   \def\mktsMakeActive#1{\catcode`#113\relax}
@@ -124,7 +117,6 @@
   \renewcommand{\mktsCleartoleftpage}{}
   \renewcommand{\mktsRulePlain}{}%
   \renewcommand{\mktsRuleSwell}{}%
-  \renewcommand{\mktsVerticalBar}{}%
   \gdef\mktsObeyAllLines{}%
   }
 

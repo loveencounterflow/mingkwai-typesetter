@@ -19,7 +19,7 @@
 \usepackage{leading}
 \usepackage{etextools}
 \usepackage{array}
-\usepackage{relsize}\renewcommand\RSlargest{100mm}
+\usepackage{relsize}\renewcommand\RSlargest{100mm}\renewcommand\RSsmallest{0.1mm}
 \usepackage{ragged2e}
 \usepackage{needspace}
 \usepackage[user]{zref}
@@ -69,6 +69,62 @@
 \usepackage[plain]{mkts-multi-columns}
 \usepackage[plain]{mkts-para-font-size} % plain
 \usepackage[default]{mkts-headings-and-toc}
+
+
+\newcommand{\mktsJzrVerticalBar}{}%
+
+  % ........................................................................................................
+  \renewcommand{\mktsJzrVerticalBar}{%
+    {\color{red}\hspace{0.2em}\rule[-0.4em]{0.15mm}{1.4em}\hspace{0.1em}}%
+    % {\color{red}\rule[-0.4em]{0.15mm}{1.4em}}%
+    }
+
+\newcommand{\mktsJzrGlyphbraceLeft}{%
+  {%
+    \mktsFontfileSourcehansansheavy%
+    \color{red}%
+    \makebox[0mm]{「}%
+    }%
+  }
+
+\newcommand{\mktsJzrGlyphbraceRight}{%
+  {%
+    \mktsFontfileSourcehansansheavy%
+    \color{red}%
+    \makebox[0mm]{」}%
+    }%
+  }
+
+% \newcommand{\mktsJzrGlyphdivider}{%
+%   {%
+%     \mktsFontfileUming%
+%     \color{red}%
+%     \relscale{1.5}%
+%     \tfRaise{-0.25}%
+%     \makebox[0mm]{∫}%
+%     }%
+%   }
+
+% \newcommand{\mktsJzrGlyphdivider}{%
+%   {%
+%     \mktsFontfileSunexta%
+%     % \color{red}%
+%     \relscale{0.75}%
+%     \tfRaise{-0.4}%
+%     \makebox[0mm]{⊥}%
+%     }%
+%   }
+
+\newcommand{\mktsJzrGlyphdivider}{%
+  {%
+    \mktsFontfileHanamina%
+    % \color{red}%
+    % {\makebox(0,0){\rule[0em]{0.1mm}{1em}}}%
+    \relscale{0.2}%
+    {\tfRaise{+0.85}\makebox(0,0){▼}}%
+    {\tfRaise{-0.35}\makebox(0,0){▲}}%
+    }%
+  }
 
 % ..........................................................................................................
 % \usepackage{pagegrid}\pagegridsetup{top-left,step=1mm,arrows=false}
