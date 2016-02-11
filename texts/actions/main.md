@@ -1,6 +1,20 @@
 <<!JZR.vertical-bar>>
-<<!multi-column 3>>
+<<(.>>@document.column_count = 3<<)>>
+<<!multi-column>>
 
+This document uses <<(:>>@document.column_count<<)>> columns by default.
+
+<<!yadda>>
+
+###################################
+
+<<!yadda>>
+
+
+## To Be, or Not to Be
+
+
+<<!yadda>>
 
 <<!end>>
 
