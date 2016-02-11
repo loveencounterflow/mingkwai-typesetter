@@ -1,45 +1,8 @@
 <<!JZR.vertical-bar>>
+<<!multi-column 3>>
 
 
-<<!yadda>>
-
-<<(keep-lines>>
-　　　【虫】　　　　虫
-
-　　冄【阝】　　　　𨙻
-　　　【冄】阝　　　𨙻
-<<keep-lines)>>
-
-<<(keep-lines>>
-first
-second
-
-
-third
-
-
-
-
-fourth
-<<keep-lines)>>
-
-<<!yadda>>
-
-<<<
-abc{\mktsFontfileSunexta\color{red}\sbSmash{「}}def
-abc{\mktsFontfileSunexta\color{red}\sbSmash{【}}def
-abc{\color{red}\sbSmash{x}}def
-abc\makebox[0mm]{\color{red}x}def
->>>
-
-<<(multi-column>>
-
-<!-- ## All characters that feature 日
-
-<<!yadda>>
-<<!yadda>>
-<<!yadda>>
- -->
+<<!end>>
 
 
 Japanese forms not well represented
@@ -111,11 +74,15 @@ Consectetur exercitation sunt sit aliquip ex. Deserunt irure fugiat aute adipisi
 Dolor reprehenderit laborum sit commodo. Eu qui ullamco duis non consectetur reprehenderit consequat amet fugiat
 in.
 
+## All characters that feature 日
+
+<<!yadda>>
+
 =================================================================================
 
 <<!insert "/tmp/kwic.txt">>
 
-<<multi-column)>><<!end>>
+<<!end>>
 
 ## Landscape in characters
 

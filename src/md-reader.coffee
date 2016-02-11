@@ -660,7 +660,6 @@ tracker_pattern = /// ^
       null
     #.......................................................................................................
     else if @select event, ')', 'document'
-      # debug '©18623', tag_stack
       while tag_stack.length > 0
         sub_event                                   = tag_stack.pop()
         [ sub_type, sub_name, sub_text, sub_meta, ] = sub_event
@@ -670,6 +669,7 @@ tracker_pattern = /// ^
     #.......................................................................................................
     else if @select event, '('
       tag_stack.push [ type, name, null, meta, ]
+      # debug '©18623', tag_stack
     #.......................................................................................................
     else if @select event, ')'
       ### TAINT should check matching pairs ###
@@ -853,13 +853,13 @@ tracker_pattern = /// ^
     .pipe @_PRE.$rewrite_markdownit_tokens            S
     .pipe MKTS.MACRO_ESCAPER.$expand                  S
     .pipe @_PRE.$process_end_command                  S
-    .pipe @_PRE.$close_dangling_open_tags             S
     .pipe @_PRE.$consolidate_tables                   S
     .pipe @_PRE.$consolidate_footnotes                S
     .pipe @_PRE.$extra_hr                             S
     .pipe MKTS.MACRO_INTERPRETER.$process_actions     S
     .pipe MKTS.MACRO_INTERPRETER.$process_values      S
     .pipe MKTS.MACRO_INTERPRETER.$process_commands    S
+    .pipe @_PRE.$close_dangling_open_tags             S
     # .pipe D.$show '47594-B'
     .pipe writestream
   #.........................................................................................................
