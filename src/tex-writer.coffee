@@ -317,7 +317,7 @@ after = ( names..., method ) ->
     if select event, [ '(', ')', ], 'multi-column'
       send stamp event
       [ type, name, parameters, meta, ] = event
-      column_count                      = parameters[ 0 ] ? S.document.column_count
+      column_count                      = parameters?[ 0 ] ? S.document.column_count
       #.....................................................................................................
       if type is '('
         if within_multi_column
@@ -354,7 +354,7 @@ after = ( names..., method ) ->
     if select event, [ '(', ')', ], 'multi-column'
       send event
       [ type, name, parameters, meta, ] = event
-      column_count                      = parameters[ 0 ] ? S.document.column_count
+      column_count                      = parameters?[ 0 ] ? S.document.column_count
     #.......................................................................................................
     else if select event, [ '(', ')', ], 'single-column'
       [ type, name, text, meta, ] = event
@@ -503,7 +503,7 @@ before '@MKTX.BLOCK.$heading', '@MKTX.COMMAND.$toc', \
     #.......................................................................................................
     if select event, '(', 'multi-column'
       [ type, name, parameters, meta, ] = event
-      column_count = parameters[ 0 ] ? S.document.column_count
+      column_count = parameters?[ 0 ] ? S.document.column_count
       send event
     #.......................................................................................................
     if select event, '(', 'h'

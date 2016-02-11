@@ -1,23 +1,6 @@
 <<!JZR.vertical-bar>>
-<<(.>>@document.column_count = 3<<)>>
+<<(.>>@document.column_count = 2<<)>>
 <<!multi-column>>
-
-This document uses <<(:>>@document.column_count<<)>> columns by default.
-
-<<!yadda>>
-
-###################################
-
-<<!yadda>>
-
-
-## To Be, or Not to Be
-
-
-<<!yadda>>
-
-<<!end>>
-
 
 Japanese forms not well represented
 
@@ -94,7 +77,10 @@ in.
 
 =================================================================================
 
+<<(.>>@document.column_count = 4<<)>>
+<<(multi-column>>
 <<!insert "/tmp/kwic.txt">>
+<<multi-column)>>
 
 <<!end>>
 
