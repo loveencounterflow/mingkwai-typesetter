@@ -255,13 +255,14 @@ after = ( names..., method ) ->
       send event
 
 #-----------------------------------------------------------------------------------------------------------
-@MKTX.REGION._begin_multi_column = ( column_count = 2 ) =>
+@MKTX.REGION._begin_multi_column = ( S, column_count = 2 ) =>
   ### TAINT Column count must come from layout / options / MKTS-MD command ###
   ### TAINT make `\raggedcolumns` optional? ###
+  column_count ?= S.document.column_count
   return [ 'tex', "\n\n\\vspace{\\mktsLineheight}\\begin{multicols}{#{column_count}}\\raggedcolumns{}" ]
 
 #-----------------------------------------------------------------------------------------------------------
-@MKTX.REGION._end_multi_column = ( column_count = 2 ) =>
+@MKTX.REGION._end_multi_column = ( S, column_count = 2 ) =>
   return [ 'tex', "\\end{multicols}\n\n" ]
 
 #-----------------------------------------------------------------------------------------------------------
@@ -305,8 +306,9 @@ after = ( names..., method ) ->
 
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.REGION.$multi_column = ( S ) =>
-  track   = MD_READER.TRACKER.new_tracker '(multi-column)'
-  remark  = MD_READER._get_remark()
+  track         = MD_READER.TRACKER.new_tracker '(multi-column)'
+  remark        = MD_READER._get_remark()
+  column_count  = 1
   #.........................................................................................................
   return $ ( event, send ) =>
     within_multi_column = track.within '(multi-column)'
@@ -315,23 +317,22 @@ after = ( names..., method ) ->
     if select event, [ '(', ')', ], 'multi-column'
       send stamp event
       [ type, name, parameters, meta, ] = event
-      ### TAINT use document-specific default ###
-      column_count                      = parameters[ 0 ] ? 2
+      column_count                      = parameters[ 0 ] ? S.document.column_count
       #.....................................................................................................
       if type is '('
         if within_multi_column
           send remark 'drop', "`(multi-column` because already within `(multi-column)`", ( copy meta )
         else
-          send track @MKTX.REGION._begin_multi_column column_count
+          send track @MKTX.REGION._begin_multi_column S, column_count
       #.....................................................................................................
       else
         if within_multi_column
-          send track @MKTX.REGION._end_multi_column column_count
+          send track @MKTX.REGION._end_multi_column S, column_count
         else
           send remark 'drop', "`multi-column)` because not within `(multi-column)`", ( copy meta )
     #.......................................................................................................
     else if select event, ')', 'document'
-      send track @MKTX.REGION._end_multi_column column_count if within_multi_column
+      send track @MKTX.REGION._end_multi_column S, column_count if within_multi_column
       send event
     #.......................................................................................................
     else
@@ -342,20 +343,26 @@ after = ( names..., method ) ->
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.REGION.$single_column = ( S ) =>
   ### TAINT consider to implement command `change_column_count = ( send, n )` ###
-  track   = MD_READER.TRACKER.new_tracker '(multi-column)'
-  remark  = MD_READER._get_remark()
+  track         = MD_READER.TRACKER.new_tracker '(multi-column)'
+  remark        = MD_READER._get_remark()
+  column_count  = 1
   #.........................................................................................................
   return $ ( event, send ) =>
     within_multi_column = track.within '(multi-column)'
     track event
     #.......................................................................................................
-    if select event, [ '(', ')', ], 'single-column'
+    if select event, [ '(', ')', ], 'multi-column'
+      send event
+      [ type, name, parameters, meta, ] = event
+      column_count                      = parameters[ 0 ] ? S.document.column_count
+    #.......................................................................................................
+    else if select event, [ '(', ')', ], 'single-column'
       [ type, name, text, meta, ] = event
       #.....................................................................................................
       if type is '('
         if within_multi_column
           send remark 'insert', "`multi-column)`", copy meta
-          send track @MKTX.REGION._end_multi_column()
+          send track @MKTX.REGION._end_multi_column S, column_count
           send stamp event
         else
           # send stamp event
@@ -365,7 +372,7 @@ after = ( names..., method ) ->
         if within_multi_column
           send stamp event
           send remark 'insert', "`(multi-column`", copy meta
-          send track @MKTX.REGION._begin_multi_column()
+          send track @MKTX.REGION._begin_multi_column S, column_count
         else
           send remark 'drop', "`single-column` because not within `(multi-column)`", copy meta
     #.......................................................................................................
@@ -496,8 +503,7 @@ before '@MKTX.BLOCK.$heading', '@MKTX.COMMAND.$toc', \
     #.......................................................................................................
     if select event, '(', 'multi-column'
       [ type, name, parameters, meta, ] = event
-      ### TAINT use document-specific default ###
-      column_count = parameters[ 0 ] ? 2
+      column_count = parameters[ 0 ] ? S.document.column_count
       send event
     #.......................................................................................................
     if select event, '(', 'h'
@@ -509,7 +515,7 @@ before '@MKTX.BLOCK.$heading', '@MKTX.COMMAND.$toc', \
       meta[ 'h' ][ 'key' ]  = h_key
       #.....................................................................................................
       if within_multi_column and level <= 2
-        send track @MKTX.REGION._end_multi_column column_count
+        send track @MKTX.REGION._end_multi_column S, column_count
         restart_multicols = yes
       #.....................................................................................................
       send [ 'tex', "\n", ]
@@ -555,7 +561,7 @@ before '@MKTX.BLOCK.$heading', '@MKTX.COMMAND.$toc', \
       send stamp event
       #.....................................................................................................
       if restart_multicols
-        send track @MKTX.REGION._begin_multi_column column_count
+        send track @MKTX.REGION._begin_multi_column S, column_count
         restart_multicols = no
     #.......................................................................................................
     else
@@ -1475,7 +1481,7 @@ before '@MKTX.REGION.$single_column', '@MKTX.REGION.$multi_column', \
     #.......................................................................................................
     ### TAINT should read MD source stream ###
     md_source               = njs_fs.readFileSync source_locator, encoding: 'utf-8'
-    md_readstream           = MD_READER.create_md_read_tee md_source
+    md_readstream           = MD_READER.create_md_read_tee S, md_source
     tex_writestream         = @create_tex_write_tee S
     md_input                =  md_readstream.tee[ 'input'  ]
     md_output               =  md_readstream.tee[ 'output' ]

@@ -50,11 +50,15 @@ MKTS                      = require './main'
   do =>
     S.compiled          = {}
     S.compiled.coffee   = {}
+    S.document          =
+      column_count:       2
     S.sandbox           =
       'rpr':            CND.rpr
       urge:             CND.get_logger 'urge', local_filename
       help:             CND.get_logger 'help', local_filename
       setImmediate:     setImmediate
+      document:         S.document
+      S:                S
       echo:             ( P... ) -> macro_output.push CND.pen P...
       mkts:
         signature_reader: ( P... ) -> P

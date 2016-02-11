@@ -820,13 +820,19 @@ tracker_pattern = /// ^
 #===========================================================================================================
 # STREAM CREATION
 #-----------------------------------------------------------------------------------------------------------
-@create_md_read_tee = ( md_source, settings ) ->
-  throw new Error "settings currently unsupported" if settings?
-  #.........................................................................................................
-  ### for `environment` see https://markdown-it.github.io/markdown-it/#MarkdownIt.parse ###
-  S =
-    # confluence:           confluence
-    environment:          {}
+@create_md_read_tee = ( S, md_source ) ->
+  switch arity = arguments.length
+    when 1
+      md_source = S
+      #.....................................................................................................
+      ### for `environment` see https://markdown-it.github.io/markdown-it/#MarkdownIt.parse ###
+      S =
+        # confluence:           confluence
+        environment:  {}
+    when 2
+      S.environment = {}
+    else
+      throw new Error "expected 1 or 2 arguments, got #{arity}"
   #.........................................................................................................
   ### TAINT `settings`, `S` and fitting should be the same object ###
   settings =
