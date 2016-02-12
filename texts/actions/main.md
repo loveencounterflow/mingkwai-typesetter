@@ -1,5 +1,25 @@
 <<!JZR.vertical-bar>>
-<<(.>>@document.column_count = 2<<)>>
+<<(.>>@document.column_count = 3<<)>>
+
+## All characters that feature 日
+
+<<!yadda>>
+
+=================================================================================
+
+<<(:>>Object.keys @document<<)>>
+<<(:>>@document.column_count<<)>>
+
+<<!multi-column 4>>
+<<!insert "/tmp/kwic.txt">>
+
+<!-- <<multi-column)>> -->
+
+<<!end>>
+
+
+
+<<(.>>@document.column_count = 3<<)>>
 <<!multi-column>>
 
 Japanese forms not well represented
@@ -71,18 +91,6 @@ Consectetur exercitation sunt sit aliquip ex. Deserunt irure fugiat aute adipisi
 Dolor reprehenderit laborum sit commodo. Eu qui ullamco duis non consectetur reprehenderit consequat amet fugiat
 in.
 
-## All characters that feature 日
-
-<<!yadda>>
-
-=================================================================================
-
-<<(.>>@document.column_count = 4<<)>>
-<<(multi-column>>
-<<!insert "/tmp/kwic.txt">>
-<<multi-column)>>
-
-<<!end>>
 
 ## Landscape in characters
 
