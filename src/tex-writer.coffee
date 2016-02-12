@@ -427,7 +427,7 @@ after = ( names..., method ) ->
       [ type, name, text, meta, ] = event
       ### TAINT other replacements possible; use API ###
       ### TAINT U+00A0 (nbsp) might be too wide ###
-      # taxt = text.replace /\n\n/g, "{\\mktsTightParagraphs\\null\\par\n"
+      # text = text.replace /\n\n/g, "{\\mktsTightParagraphs\\null\\par\n"
       text    = text.replace /\u0020/g, '\u00a0'
       chunks  = text.split /(\n)/g
       for chunk in chunks
@@ -443,11 +443,9 @@ after = ( names..., method ) ->
       [ type, name, text, meta, ] = event
       #.....................................................................................................
       if type is '('
-        # track.enter '(keep-lines)'
         send [ 'tex', "\\null\\par{\\mktsTightParagraphs{}", ]
       else
         send [ 'tex', "}", ]
-        # track.leave '(keep-lines)'
     #.......................................................................................................
     else
       send event

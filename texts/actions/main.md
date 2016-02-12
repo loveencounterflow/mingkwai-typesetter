@@ -1,11 +1,75 @@
 <<!JZR.vertical-bar>>
 <<(.>>@document.column_count = 3<<)>>
 
+
+## Landscape in characters
+
+13 ways to combine 山 and 水 in a single character:
+
+<<(keep-lines>>
+　　　白水山【山】　　　　　　|𣻮
+　　　　　木【山】二水一　　　|𪳢
+　　　　　　【山】水　　　　　|汖
+　　　　　　【山】水　　　　　|𡵰
+　　　　　扌【山】水　　　　　|𢫂
+　　　　　忄【山】水　　　　　|𢚭
+　　　　　　【山】水土　　　　|埊
+　　　　　　【山】水日　　　　|崉
+　　　　　卄【山】水金　　　　|𧁆
+　　　　白水【山】山　　　　　|𣻮
+　　　　　　【山】白水　　　　|㟫
+　　　　　　【山】白水　　　　|𡺙
+　　　　　　【山】尸水　　　　|𡷷
+<<keep-lines)>>
+
 ## All characters that feature 日
 
 <<!yadda>>
 
 =================================================================================
+
+Most frequent occurrences of one of the selected infixes with a prefixed
+or suffixed factor; counts based on a base gamut comprising the 10,000 most frequent
+CJK characters:
+
+<<(keep-lines>>
+　日一　　60
+耂日　　　41
+卄日　　　35
+立日　　　33
+　日匃　　30
+　日　　28
+日　　　27
+　日大　　26
+　日𤴓　　23
+氵日　　　
+　日小　　19
+一日　　　
+龷日　　　
+　日罒　　18
+𡗜日　　　
+立早　　　17
+　日比　　16
+回日　　　
+木日　　　15
+𠂉日　　　14
+　日勿　　13
+匕日　　　
+　白方　　12
+　白王　　
+勹日　　　
+　日心　　11
+亚日　　　
+扌日　　　
+比白　　　
+　日亠　　10
+　日皿　　
+　日羽　　
+　白幺　　
+禾日　　　
+鱼日　　　
+<<keep-lines)>>
+
 
 <<(:>>Object.keys @document<<)>>
 <<(:>>@document.column_count<<)>>
