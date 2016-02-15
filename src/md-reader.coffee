@@ -865,6 +865,7 @@ tracker_pattern = /// ^
     .pipe MKTS.MACRO_INTERPRETER.$process_actions     S
     .pipe MKTS.MACRO_INTERPRETER.$process_values      S
     .pipe MKTS.MACRO_INTERPRETER.$process_commands    S
+    .pipe MKTS.MACRO_INTERPRETER.$process_regions     S
     .pipe @_PRE.$close_dangling_open_tags             S
     # .pipe D.$show '47594-B'
     .pipe writestream

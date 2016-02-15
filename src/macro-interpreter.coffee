@@ -185,6 +185,44 @@ MKTS                      = require './main'
       send event
 
 #-----------------------------------------------------------------------------------------------------------
+@$process_regions = ( S ) =>
+  copy  = MKTS.MD_READER.copy.bind  MKTS.MD_READER
+  stamp = MKTS.MD_READER.stamp.bind MKTS.MD_READER
+  hide  = MKTS.MD_READER.hide.bind  MKTS.MD_READER
+  #.........................................................................................................
+  throw new Error "internal error: need S.sandbox, must use `$process_actions`" unless S.sandbox?
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    ### TAINT code duplication ###
+    if MKTS.MD_READER.select event, '('
+      [ _, call_signature, extra, meta, ] = event
+      ### Refuse to overwrite 3rd event parameter when already set. This is a makeshift solution that will
+      be removed when we implement a simplified and more unified event syntax. ###
+      return send event if extra?
+      [ _, identifier, parameters_txt,  ] = call_signature.match /^\s*([^\s]*)\s*(.*)$/
+      { mode, language, line_nr, }        = meta
+      [ error_message, parameters, ]      = @_parameters_from_text S, line_nr, parameters_txt
+      return send [ '.', 'warning', error_message, meta, ] if error_message?
+      send [ '(', identifier, parameters, meta, ]
+  # tag_stack = []
+    # switch markup
+    #   when '('
+    #     tag_stack.push raw
+    #   when ')'
+    #     if tag_stack.length < 1
+    #       return [ '.', 'warning', "too many closing regions", ( MKTS.MD_READER.copy meta ), ]
+    #     expected = tag_stack.pop()
+    #     if ( raw.length > 0 ) and expected isnt raw
+    #       message = "expected closing region #{rpr expected}, got #{rpr raw}"
+    #       return [ '.', 'warning', message, ( MKTS.MD_READER.copy meta ), ]
+    #     raw = expected
+    #   else
+    #     throw new Error "expected '(' or ')' as region markup, got #{rpr markup}"
+    #.......................................................................................................
+    else
+      send event
+
+#-----------------------------------------------------------------------------------------------------------
 @_parameters_from_text = ( S, line_nr, text ) =>
   return [ null, [], ] if ( /^\s*$/ ).test text
   #.........................................................................................................

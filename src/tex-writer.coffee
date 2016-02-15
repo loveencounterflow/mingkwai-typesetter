@@ -404,11 +404,10 @@ after = ( names..., method ) ->
       return send stamp hide copy event if language is 'keep-lines'
       #.....................................................................................................
       if type is '('
-        # send [ 'tex', "\\begingroup\\mktsObeyAllLines\\mktsStyleCode{}", ]
         send [ '(', 'keep-lines', null, ( copy meta ), ]
-        send [ 'tex', "\n\n\\begingroup\\mktsStyleCode{}", ]
+        send [ 'tex', "\n\n{\\mktsStyleCode{}", ]
       else
-        send [ 'tex', "\\endgroup{}{}\n\n", ]
+        send [ 'tex', "}\n\n", ]
         send [ ')', 'keep-lines', null, ( copy meta ), ]
     #.......................................................................................................
     else
@@ -418,17 +417,20 @@ after = ( names..., method ) ->
 @MKTX.REGION.$keep_lines = ( S ) =>
   track           = MD_READER.TRACKER.new_tracker '(keep-lines)'
   last_was_empty  = no
+  squish          = no
   #.........................................................................................................
   return $ ( event, send ) =>
     within_keep_lines = track.within '(keep-lines)'
     track event
     #.......................................................................................................
     if within_keep_lines and select event, '.', 'text'
+      # send stamp event
       [ type, name, text, meta, ] = event
       ### TAINT other replacements possible; use API ###
       ### TAINT U+00A0 (nbsp) might be too wide ###
       # text = text.replace /\n\n/g, "{\\mktsTightParagraphs\\null\\par\n"
       text    = text.replace /\u0020/g, '\u00a0'
+      text    = text.replace /^\n/,     ''
       chunks  = text.split /(\n)/g
       for chunk in chunks
         if chunk is '\n'
@@ -438,14 +440,16 @@ after = ( names..., method ) ->
           unless last_was_empty = chunk.length is 0
             send [ '.', 'text', chunk, ( copy meta ), ]
     #.......................................................................................................
-    else if select event, [ '(', ')', ], 'keep-lines'
+    else if select event, '(', 'keep-lines'
       send stamp event
-      [ type, name, text, meta, ] = event
-      #.....................................................................................................
-      if type is '('
-        send [ 'tex', "\\null\\par{\\mktsTightParagraphs{}", ]
-      else
-        send [ 'tex', "}", ]
+      [ type, name, parameters, meta, ] = event
+      unless squish = parameters?[ 0 ]?[ 'squish' ] ? no
+        send [ 'tex', "\\null\\par", ]
+      send [ 'tex', "{\\mktsTightParagraphs{}", ]
+    #.......................................................................................................
+    else if select event, ')', 'keep-lines'
+      send stamp event
+      send [ 'tex', "}", ]
     #.......................................................................................................
     else
       send event
@@ -1403,6 +1407,7 @@ before '@MKTX.REGION.$single_column', '@MKTX.REGION.$multi_column', \
     .pipe @MKTX.REGION.$single_column                     S
     .pipe @MKTX.REGION.$code                              S
     .pipe @MKTX.REGION.$keep_lines                        S
+    # .pipe D.$show()
     .pipe @MKTX.REGION.$toc                               S
     .pipe @MKTX.BLOCK.$heading                            S
     .pipe @MKTX.MIXED.$collect_headings_for_toc           S
