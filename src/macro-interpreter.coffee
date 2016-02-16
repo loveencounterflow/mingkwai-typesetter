@@ -186,40 +186,58 @@ MKTS                      = require './main'
 
 #-----------------------------------------------------------------------------------------------------------
 @$process_regions = ( S ) =>
-  copy  = MKTS.MD_READER.copy.bind  MKTS.MD_READER
-  stamp = MKTS.MD_READER.stamp.bind MKTS.MD_READER
-  hide  = MKTS.MD_READER.hide.bind  MKTS.MD_READER
+  copy      = MKTS.MD_READER.copy.bind    MKTS.MD_READER
+  stamp     = MKTS.MD_READER.stamp.bind   MKTS.MD_READER
+  hide      = MKTS.MD_READER.hide.bind    MKTS.MD_READER
+  select    = MKTS.MD_READER.select.bind  MKTS.MD_READER
+  tag_stack = []
   #.........................................................................................................
   throw new Error "internal error: need S.sandbox, must use `$process_actions`" unless S.sandbox?
   #.........................................................................................................
   return $ ( event, send ) =>
     ### TAINT code duplication ###
-    if MKTS.MD_READER.select event, '('
+    debug '©18567', event
+    if select event, '('
       [ _, call_signature, extra, meta, ] = event
+      [ _, identifier, parameters_txt,  ] = call_signature.match /^\s*([^\s]*)\s*(.*)$/
+      #.....................................................................................................
       ### Refuse to overwrite 3rd event parameter when already set. This is a makeshift solution that will
       be removed when we implement a simplified and more unified event syntax. ###
-      return send event if extra?
-      [ _, identifier, parameters_txt,  ] = call_signature.match /^\s*([^\s]*)\s*(.*)$/
+      if extra?
+        warn "encountered start region event with parameters and extra" if parameters_txt.length > 0
+        return send event
+      #.....................................................................................................
       { mode, language, line_nr, }        = meta
       [ error_message, parameters, ]      = @_parameters_from_text S, line_nr, parameters_txt
-      return send [ '.', 'warning', error_message, meta, ] if error_message?
+      #.....................................................................................................
+      send [ '.', 'warning', error_message, meta, ] if error_message?
       send [ '(', identifier, parameters, meta, ]
-  # tag_stack = []
-    # switch markup
-    #   when '('
-    #     tag_stack.push raw
-    #   when ')'
-    #     if tag_stack.length < 1
-    #       return [ '.', 'warning', "too many closing regions", ( MKTS.MD_READER.copy meta ), ]
-    #     expected = tag_stack.pop()
-    #     if ( raw.length > 0 ) and expected isnt raw
-    #       message = "expected closing region #{rpr expected}, got #{rpr raw}"
-    #       return [ '.', 'warning', message, ( MKTS.MD_READER.copy meta ), ]
-    #     raw = expected
-    #   else
-    #     throw new Error "expected '(' or ')' as region markup, got #{rpr markup}"
+      tag_stack.push identifier
+    #.......................................................................................................
+    else if select event, ')'
+      # debug '©01840', JSON.stringify event
+      # debug '©01840', select event, ')'
+      [ _, identifier, extra, meta, ] = event
+      #.....................................................................................................
+      if tag_stack.length < 1
+        warn '34-1', [ '.', 'warning', "too many closing regions", ( copy meta ), ]
+        return send [ '.', 'warning', "too many closing regions", ( copy meta ), ]
+      #.....................................................................................................
+      expected = tag_stack.pop()
+      #.....................................................................................................
+      if ( identifier.length > 0 ) and ( expected isnt identifier )
+        message = "expected closing region #{rpr expected}, got #{rpr identifier}"
+        warn '34-2', [ '.', 'warning', message, ( copy meta ), ]
+        send [ '.', 'warning', message, ( copy meta ), ]
+        send event if identifier is 'document'
+      #.....................................................................................................
+      identifier = expected
+      send [ ')', identifier, extra, ( copy meta ), ]
+      # send [ ')', 'document', extra, ( copy meta ), ]
+      urge '443', [ ')', identifier, extra, ( copy meta ), ]
     #.......................................................................................................
     else
+      # debug '©88225', JSON.stringify event
       send event
 
 #-----------------------------------------------------------------------------------------------------------

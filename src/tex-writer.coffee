@@ -55,12 +55,10 @@ LINEBREAKER               = require './linebreaker'
 ### TAINT experimental, should become part of `PIPEDREAMS` to facilitate automated assembly of pipelines
 based on registered precedences using `CND.TSORT` ###
 before = ( names..., method ) ->
-  urge '2134', names
   return method
 
 #-----------------------------------------------------------------------------------------------------------
 after = ( names..., method ) ->
-  urge '7897', names
   return method
 
 
@@ -190,7 +188,7 @@ after = ( names..., method ) ->
     throw new Error "need entry options/fonts/name" unless main_font_name?
     write ""
     write "% CONTENT"
-    write "\\begin{document}\\mktsStyleNormal"
+    write "\\begin{document}\\null\\mktsStyleNormal"
     #-------------------------------------------------------------------------------------------------------
     # INCLUDES
     #.......................................................................................................
@@ -1222,16 +1220,16 @@ before '@MKTX.REGION.$single_column', '@MKTX.REGION.$multi_column', \
         collector.length  = 0
       send event
 
-#-----------------------------------------------------------------------------------------------------------
-@MKTX.CLEANUP.$drop_empty_p_tags = ( S ) =>
-  ### TAINT emptyness of  `p` tags ist tested for by counting intermittend `text` events; however, a
-  paragraph could conceivably also consist of e.g. a single image. ###
-  text_count  = 0
-  remark      = MD_READER._get_remark()
-  #.........................................................................................................
-  warn "not using `$drop_empty_p_tags` at the moment"
-  return $ ( event, send ) =>
-    send event
+# #-----------------------------------------------------------------------------------------------------------
+# @MKTX.CLEANUP.$drop_empty_p_tags = ( S ) =>
+#   ### TAINT emptyness of  `p` tags ist tested for by counting intermittend `text` events; however, a
+#   paragraph could conceivably also consist of e.g. a single image. ###
+#   text_count  = 0
+#   remark      = MD_READER._get_remark()
+#   #.........................................................................................................
+#   warn "not using `$drop_empty_p_tags` at the moment"
+#   return $ ( event, send ) =>
+#     send event
   # #.........................................................................................................
   # return $ ( event, send ) =>
   #   #.......................................................................................................
@@ -1382,7 +1380,6 @@ before '@MKTX.REGION.$single_column', '@MKTX.REGION.$multi_column', \
   #   .pipe mktscript_out
   # mktscript_tee = D.TEE.from_readwritestreams mktscript_in, mktscript_out
   #.......................................................................................................
-  debug '©26056', 'building TeX pipeline'
   pipeline    = ( ( plugin.$main S ) for plugin in MK.TS.plugins )
   # plugins_tee = D.TEE.from_pipeline pipeline
   plugins_tee = D.combine pipeline
@@ -1418,7 +1415,7 @@ before '@MKTX.REGION.$single_column', '@MKTX.REGION.$multi_column', \
     .pipe @MKTX.INLINE.$translate_i_and_b                 S
     .pipe @MKTX.INLINE.$em_and_strong                     S
     .pipe @MKTX.INLINE.$image                             S
-    .pipe @MKTX.CLEANUP.$drop_empty_p_tags                S
+    # .pipe @MKTX.CLEANUP.$drop_empty_p_tags                S
     .pipe @MKTX.BLOCK.$yadda                              S
     .pipe @MKTX.BLOCK.$paragraph                          S
     .pipe @MKTX.MIXED.$raw                                S
