@@ -190,6 +190,37 @@ MKTS                      = require './main'
   stamp     = MKTS.MD_READER.stamp.bind   MKTS.MD_READER
   hide      = MKTS.MD_READER.hide.bind    MKTS.MD_READER
   select    = MKTS.MD_READER.select.bind  MKTS.MD_READER
+  #.........................................................................................................
+  throw new Error "internal error: need S.sandbox, must use `$process_actions`" unless S.sandbox?
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    ### TAINT code duplication ###
+    debug '©18567', event
+    if select event, '('
+      [ _, call_signature, extra, meta, ] = event
+      [ _, identifier, parameters_txt,  ] = call_signature.match /^\s*([^\s]*)\s*(.*)$/
+      #.....................................................................................................
+      ### Refuse to overwrite 3rd event parameter when already set. This is a makeshift solution that will
+      be removed when we implement a simplified and more unified event syntax. ###
+      if extra?
+        warn "encountered start region event with parameters and extra" if parameters_txt.length > 0
+        return send event
+      #.....................................................................................................
+      { mode, language, line_nr, }        = meta
+      [ error_message, parameters, ]      = @_parameters_from_text S, line_nr, parameters_txt
+      #.....................................................................................................
+      send [ '.', 'warning', error_message, meta, ] if error_message?
+      send [ '(', identifier, parameters, meta, ]
+    #.......................................................................................................
+    else
+      send event
+
+#-----------------------------------------------------------------------------------------------------------
+@$consolidate_regions = ( S ) =>
+  copy      = MKTS.MD_READER.copy.bind    MKTS.MD_READER
+  stamp     = MKTS.MD_READER.stamp.bind   MKTS.MD_READER
+  hide      = MKTS.MD_READER.hide.bind    MKTS.MD_READER
+  select    = MKTS.MD_READER.select.bind  MKTS.MD_READER
   tag_stack = []
   #.........................................................................................................
   throw new Error "internal error: need S.sandbox, must use `$process_actions`" unless S.sandbox?
