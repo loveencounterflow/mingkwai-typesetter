@@ -27,14 +27,21 @@ D                         = require 'pipedreams'
 $                         = D.remit.bind D
 $async                    = D.remit_async.bind D
 #...........................................................................................................
-debug '9387', MK
-hide                      = MK.TS.MD_READER.hide.bind        MK.TS.MD_READER
-copy                      = MK.TS.MD_READER.copy.bind        MK.TS.MD_READER
-stamp                     = MK.TS.MD_READER.stamp.bind       MK.TS.MD_READER
-unstamp                   = MK.TS.MD_READER.unstamp.bind     MK.TS.MD_READER
-select                    = MK.TS.MD_READER.select.bind      MK.TS.MD_READER
-is_hidden                 = MK.TS.MD_READER.is_hidden.bind   MK.TS.MD_READER
-is_stamped                = MK.TS.MD_READER.is_stamped.bind  MK.TS.MD_READER
+MD_READER                 = require './md-reader'
+hide                      = MD_READER.hide.bind        MD_READER
+copy                      = MD_READER.copy.bind        MD_READER
+stamp                     = MD_READER.stamp.bind       MD_READER
+unstamp                   = MD_READER.unstamp.bind     MD_READER
+select                    = MD_READER.select.bind      MD_READER
+is_hidden                 = MD_READER.is_hidden.bind   MD_READER
+is_stamped                = MD_READER.is_stamped.bind  MD_READER
+# hide                      = MK.TS.MD_READER.hide.bind        MK.TS.MD_READER
+# copy                      = MK.TS.MD_READER.copy.bind        MK.TS.MD_READER
+# stamp                     = MK.TS.MD_READER.stamp.bind       MK.TS.MD_READER
+# unstamp                   = MK.TS.MD_READER.unstamp.bind     MK.TS.MD_READER
+# select                    = MK.TS.MD_READER.select.bind      MK.TS.MD_READER
+# is_hidden                 = MK.TS.MD_READER.is_hidden.bind   MK.TS.MD_READER
+# is_stamped                = MK.TS.MD_READER.is_stamped.bind  MK.TS.MD_READER
 
 
 
@@ -226,3 +233,24 @@ is_stamped                = MK.TS.MD_READER.is_stamped.bind  MK.TS.MD_READER
       send event
     #.......................................................................................................
     return null
+
+
+###
+
+<<(.>>@document.column_count = 3<<)>>
+
+
+<<!columns 1>>                            (single-column
+<<!columns 1>>                            (multi-column 1
+<<!columns>>                              (multi-column
+<<!columns 'push'>>
+<<!columns 'pop'>>
+<<!columns 'pop'>>
+
+
+
+
+###
+
+
+

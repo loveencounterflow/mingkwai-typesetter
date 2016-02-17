@@ -49,6 +49,7 @@ MACRO_ESCAPER             = require './macro-escaper'
 LINEBREAKER               = require './linebreaker'
 @COLUMNS                  = require './tex-writer-columns'
 
+
 #===========================================================================================================
 #
 #-----------------------------------------------------------------------------------------------------------
@@ -359,35 +360,20 @@ before '@MKTX.BLOCK.$heading', '@MKTX.COMMAND.$toc', \
 
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.BLOCK.$heading = ( S ) =>
-  restart_multicols = no
-  track             = MD_READER.TRACKER.new_tracker '(multi-column)'
   ### TAINT make numbering style configurable ###
   ### TAINT generalize for more than 3 levels ###
   h_nrs             = [ 1, 1, 1, ]
-  # h_level           = null
   h_idx             = -1
-  column_count      = 1
   #.........................................................................................................
   return $ ( event, send ) =>
-    within_multi_column = track.within '(multi-column)'
-    track event
     #.......................................................................................................
-    if select event, '(', 'multi-column'
-      [ type, name, parameters, meta, ] = event
-      column_count = parameters?[ 0 ] ? S.document.column_count
-      send event
-    #.......................................................................................................
-    else if select event, '(', 'h'
+    if select event, '(', 'h'
       [ type, name, level, meta, ] = event
       h_idx                += +1
       h_key                 = "h-#{h_idx}"
       meta[ 'h' ]          ?= {}
       meta[ 'h' ][ 'idx' ]  = h_idx
       meta[ 'h' ][ 'key' ]  = h_key
-      #.....................................................................................................
-      if within_multi_column and level <= 2
-        send track @MKTX.REGION._end_multi_column S, column_count
-        restart_multicols = yes
       #.....................................................................................................
       send [ 'tex', "\n", ]
       send stamp event
@@ -396,20 +382,13 @@ before '@MKTX.BLOCK.$heading', '@MKTX.COMMAND.$toc', \
         when 1
           send [ 'tex', "{\\mktsHOne{}", ]
           send [ 'tex', "\\zlabel{#{h_key}}", { toc: 'omit' }, ]
-          # send [ 'tex', "{\\mktsHOne{}",            { toc: 'omit', }, ]
-          # send [ 'tex', "{\\mktsHOneToc{}",         { toc: 'only', }, ]
         when 2
           send [ 'tex', "{\\mktsHTwo{}", ]
           send [ 'tex', "\\zlabel{#{h_key}}", { toc: 'omit' }, ]
-          # send [ 'tex', "{\\mktsHTwo{}",            { toc: 'omit', }, ]
-          # send [ 'tex', "{\\mktsHTwoToc{}",         { toc: 'only', }, ]
         when 3
           send [ 'tex', "{\\mktsHThree{}", ]
           send [ 'tex', "\\zlabel{#{h_key}}", { toc: 'omit' }, ]
-          # send [ 'tex', "{\\mktsHThree{}",          { toc: 'omit', }, ]
-          # send [ 'tex', "{\\mktsHThreeToc{}",       { toc: 'only', }, ]
         else return send [ '.', 'warning', "heading level #{level} not implemented", ( copy meta ), ]
-      # send [ '!', 'mark', name + level, ( copy meta ), ]
     #.......................................................................................................
     else if select event, ')', 'h'
       [ type, name, level, meta, ] = event
@@ -417,23 +396,13 @@ before '@MKTX.BLOCK.$heading', '@MKTX.COMMAND.$toc', \
       switch level
         when 1
           send [ 'tex', "\\mktsHOneBeg}%\n",          ]
-          # send [ 'tex', "\\mktsHOneBeg}%\n",        { toc: 'omit', }, ]
-          # send [ 'tex', "\\mktsHOneTocBeg}%\n",     { toc: 'only', }, ]
         when 2
           send [ 'tex', "\\mktsHTwoBeg}%\n",          ]
-          # send [ 'tex', "\\mktsHTwoBeg}%\n",        { toc: 'omit', }, ]
-          # send [ 'tex', "\\mktsHTwoTocBeg}%\n",     { toc: 'only', }, ]
         when 3
           send [ 'tex', "\\mktsHThreeBeg}%\n",        ]
-          # send [ 'tex', "\\mktsHThreeBeg}%\n",      { toc: 'omit', }, ]
-          # send [ 'tex', "\\mktsHThreeTocBeg}%\n",   { toc: 'only', }, ]
         else return send [ '.', 'warning', "heading level #{level} not implemented", ( copy meta ), ]
       #.....................................................................................................
       send stamp event
-      #.....................................................................................................
-      if restart_multicols
-        send track @MKTX.REGION._begin_multi_column S, column_count
-        restart_multicols = no
     #.......................................................................................................
     else
       send event
@@ -532,7 +501,6 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
 
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.BLOCK.$yadda = ( S ) =>
-  track           = MD_READER.TRACKER.new_tracker '(multi-column)'
   generate_yadda  = require 'lorem-ipsum'
   settings        =
     count:                1                       # Number of words, sentences, or paragraphs to generate.
@@ -548,16 +516,10 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     suffix:               '\n'                    # The character to insert between paragraphs. Defaults to default EOL for your OS.
   #.........................................................................................................
   return $ ( event, send ) =>
-    within_multi_column = track.within '(multi-column)'
-    track event
     if select event, '!', 'yadda'
       [ type, name, text, meta, ] = event
-      if within_multi_column
-        settings[ 'paragraphLowerBound' ] = 3
-        settings[ 'paragraphUpperBound' ] = 7
-      else
-        settings[ 'paragraphLowerBound' ] = 6
-        settings[ 'paragraphUpperBound' ] = 12
+      settings[ 'paragraphLowerBound' ] = 3
+      settings[ 'paragraphUpperBound' ] = 7
       yadda = generate_yadda settings
       # yadda = @MKTX.TEX.fix_typography_for_tex yadda, S.options
       send stamp event
@@ -630,7 +592,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       send event
 
 #-----------------------------------------------------------------------------------------------------------
-before '@MKTX.REGION.$single_column', '@MKTX.REGION.$multi_column', \
+# before '@MKTX.REGION.$single_column', '@MKTX.REGION.$multi_column', \
 @MKTX.BLOCK.$hr = ( S ) =>
   remark = MD_READER._get_remark()
   #.........................................................................................................
@@ -1256,8 +1218,6 @@ before '@MKTX.REGION.$single_column', '@MKTX.REGION.$multi_column', \
   plugins_tee = D.combine pipeline
   #.......................................................................................................
   readstream
-    # .pipe CUSTOM.JZR.$main                                S
-    # .pipe CUSTOM.JZR.$most_frequent.with_fncrs            S
     .pipe plugins_tee
     .pipe MACRO_ESCAPER.$expand.$remove_backslashes         S
     .pipe @$document                                        S
@@ -1266,20 +1226,12 @@ before '@MKTX.REGION.$single_column', '@MKTX.REGION.$multi_column', \
     .pipe @MKTX.MIXED.$footnote.$remove_extra_paragraphs    S
     .pipe @MKTX.COMMAND.$new_page                           S
     .pipe @MKTX.COMMAND.$comment                            S
-    # .pipe @MKTX.REGION.$correct_p_tags_before_regions     S
-    # .pipe @MKTX.COMMAND.$single_and_multi_column            S
-    # .pipe @MKTX.COMMAND.$slash                              S
     .pipe @MKTX.MIXED.$table                                S
     .pipe @MKTX.BLOCK.$hr                                   S
-    .pipe @COLUMN.$main                                     S
-    # .pipe @MKTX.CLEANUP.$single_and_multi_column            S
-    # .pipe @MKTX.REGION.$multi_column                        S
-    # .pipe @MKTX.REGION.$single_column                       S
     .pipe @MKTX.REGION.$code                                S
     .pipe @MKTX.REGION.$keep_lines                          S
     .pipe @MKTX.REGION.$toc                                 S
     .pipe @MKTX.BLOCK.$heading                              S
-    # .pipe D.$show()
     .pipe @MKTX.MIXED.$collect_headings_for_toc             S
     .pipe @MKTX.COMMAND.$toc                                S
     .pipe @MKTX.BLOCK.$unordered_list                       S
@@ -1288,20 +1240,19 @@ before '@MKTX.REGION.$single_column', '@MKTX.REGION.$multi_column', \
     .pipe @MKTX.INLINE.$translate_i_and_b                   S
     .pipe @MKTX.INLINE.$em_and_strong                       S
     .pipe @MKTX.INLINE.$image                               S
-    # .pipe @MKTX.CLEANUP.$drop_empty_p_tags                S
     .pipe @MKTX.BLOCK.$yadda                                S
     .pipe @MKTX.BLOCK.$paragraph                            S
     .pipe @MKTX.MIXED.$raw                                  S
+    .pipe @COLUMNS.$main                                    S
     .pipe @MKTX.CLEANUP.$remove_empty_texts                 S
     .pipe @MKTX.CLEANUP.$consolidate_texts                  S
     .pipe @MKTX.TEX.$fix_typography_for_tex                 S
     .pipe MKTSCRIPT_WRITER.$show_mktsmd_events              S
-    # .pipe mktscript_tee
-    .pipe @MKTX.INLINE.$mark                              S
-    .pipe @MKTX.$show_unhandled_tags                      S
-    .pipe @MKTX.$show_warnings                            S
-    .pipe @$filter_tex                                    S
-    .pipe MD_READER.$show_illegal_chrs                    S
+    .pipe @MKTX.INLINE.$mark                                S
+    .pipe @MKTX.$show_unhandled_tags                        S
+    .pipe @MKTX.$show_warnings                              S
+    .pipe @$filter_tex                                      S
+    .pipe MD_READER.$show_illegal_chrs                      S
     .pipe writestream
   #.......................................................................................................
   settings =
