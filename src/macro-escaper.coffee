@@ -379,15 +379,15 @@ after it, thereby inhibiting any processing of those portions. ###
     R = R.replace pattern, ( _, start_markup, identifier, stop_markup ) =>
       markup  = if start_markup.length is 0 then stop_markup else start_markup
       id      = @_register_content S, 'region', markup, identifier
-      if identifier is 'keep-lines'
-        if start_markup is '('
-          return """
-            \x15#{id}\x13
-            ```keep-lines"""
-        else
-          return """
-            ```
-            \x15#{id}\x13"""
+      # if identifier is 'keep-lines'
+      #   if start_markup is '('
+      #     return """
+      #       \x15#{id}\x13
+      #       ```keep-lines"""
+      #   else
+      #     return """
+      #       ```
+      #       \x15#{id}\x13"""
       return "\x15#{id}\x13"
   #.........................................................................................................
   return R

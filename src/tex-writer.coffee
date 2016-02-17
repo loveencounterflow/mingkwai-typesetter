@@ -264,14 +264,64 @@ after = ( names..., method ) ->
   return [ 'tex', "\\end{multicols}\n\n" ]
 
 #-----------------------------------------------------------------------------------------------------------
-@MKTX.COMMAND.$multi_column = ( S ) =>
+@MKTX.COMMAND.$single_and_multi_column = ( S ) =>
   #.........................................................................................................
   return $ ( event, send ) =>
     if select event, '!', 'multi-column'
       [ type, name, parameters, meta, ] = event
-      send stamp hide [ '(', '!',       name, ( copy meta ), ]
+      send stamp hide copy event
       send [ '(', 'multi-column', parameters, ( copy meta ), ]
-      send stamp hide [ ')', '!',       name, ( copy meta ), ]
+      # send stamp hide [ ')', '!',       name, ( copy meta ), ]
+    #.......................................................................................................
+    else if select event, '!', 'single-column'
+      [ type, name, parameters, meta, ] = event
+      send stamp hide copy event
+      send [ '(', 'single-column', parameters, ( copy meta ), ]
+      # send stamp hide [ ')', '!',       name, ( copy meta ), ]
+    #.......................................................................................................
+    else
+      send event
+    #.......................................................................................................
+    return null
+
+#-----------------------------------------------------------------------------------------------------------
+@MKTX.CLEANUP.$single_and_multi_column = ( S ) =>
+  within_multi_column   = no
+  within_single_column  = no
+  stack                 = []
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    [ type, name, parameters, meta, ] = event
+    #.......................................................................................................
+    if select event, '(', [ 'single-column', 'multi-column', ]
+      #.....................................................................................................
+      if within_single_column
+        extra_event = stack.pop()
+        send copy [ ')', 'single-column', extra_event[ 2 ], meta, ]
+        within_single_column = no
+      #.....................................................................................................
+      else if within_multi_column
+        extra_event = stack.pop()
+        send copy [ ')', 'multi-column', extra_event[ 2 ], meta, ]
+        within_multi_column = no
+    #.......................................................................................................
+    if select event, '(', 'multi-column'
+      send event
+      stack.push event
+      within_multi_column = yes
+    #.......................................................................................................
+    else if select event, '(', 'single-column'
+      send event
+      stack.push event
+      within_single_column = yes
+    #.......................................................................................................
+    else if select event, ')', 'multi-column'
+      send event
+      within_multi_column = no
+    #.......................................................................................................
+    else if select event, ')', 'single-column'
+      send event
+      within_single_column = no
     #.......................................................................................................
     else
       send event
@@ -395,18 +445,18 @@ after = ( names..., method ) ->
       send [ type, name, text, meta, ]
     #.......................................................................................................
     else if select event, [ '(', ')', ], 'code'
-      send stamp event
-      [ type, name, language, meta, ] = event
-      ### We insert a code block fenced with `\`\`\`keep-lines ... \`\`\`` to make the Markdown parser
-      respect all whitespace. Here we discard that event: ###
-      return send stamp hide copy event if language is 'keep-lines'
+      [ type, name, parameters, meta, ] = event
+      [ language, settings, ]           = parameters
+      keeplines_parameters              = if settings? then [ settings, ] else []
       #.....................................................................................................
       if type is '('
-        send [ '(', 'keep-lines', null, ( copy meta ), ]
-        send [ 'tex', "\n\n{\\mktsStyleCode{}", ]
+        send stamp event
+        send [ '(', 'keep-lines', keeplines_parameters, ( copy meta ), ]
+        send [ 'tex', "\n\n{\\mktsStyleCode{}", ] unless language is 'keep-lines'
       else
-        send [ 'tex', "}\n\n", ]
-        send [ ')', 'keep-lines', null, ( copy meta ), ]
+        send [ 'tex', "}\n\n", ] unless language is 'keep-lines'
+        send [ ')', 'keep-lines', keeplines_parameters, ( copy meta ), ]
+        send stamp event
     #.......................................................................................................
     else
       send event
@@ -506,7 +556,7 @@ before '@MKTX.BLOCK.$heading', '@MKTX.COMMAND.$toc', \
       column_count = parameters?[ 0 ] ? S.document.column_count
       send event
     #.......................................................................................................
-    if select event, '(', 'h'
+    else if select event, '(', 'h'
       [ type, name, level, meta, ] = event
       h_idx                += +1
       h_key                 = "h-#{h_idx}"
@@ -1388,41 +1438,42 @@ before '@MKTX.REGION.$single_column', '@MKTX.REGION.$multi_column', \
     # .pipe CUSTOM.JZR.$main                                S
     # .pipe CUSTOM.JZR.$most_frequent.with_fncrs            S
     .pipe plugins_tee
-    .pipe MACRO_ESCAPER.$expand.$remove_backslashes       S
-    .pipe @$document                                      S
-    .pipe @MKTX.INLINE.$link                              S
-    .pipe @MKTX.MIXED.$footnote                           S
-    .pipe @MKTX.MIXED.$footnote.$remove_extra_paragraphs  S
-    .pipe @MKTX.COMMAND.$new_page                         S
-    .pipe @MKTX.COMMAND.$comment                          S
+    .pipe MACRO_ESCAPER.$expand.$remove_backslashes         S
+    .pipe @$document                                        S
+    .pipe @MKTX.INLINE.$link                                S
+    .pipe @MKTX.MIXED.$footnote                             S
+    .pipe @MKTX.MIXED.$footnote.$remove_extra_paragraphs    S
+    .pipe @MKTX.COMMAND.$new_page                           S
+    .pipe @MKTX.COMMAND.$comment                            S
     # .pipe @MKTX.REGION.$correct_p_tags_before_regions     S
-    .pipe @MKTX.COMMAND.$multi_column                     S
-    .pipe @MKTX.COMMAND.$slash                            S
-    .pipe @MKTX.MIXED.$table                              S
-    .pipe @MKTX.BLOCK.$hr                                 S
-    .pipe @MKTX.REGION.$multi_column                      S
-    .pipe @MKTX.REGION.$single_column                     S
-    .pipe @MKTX.REGION.$code                              S
-    .pipe @MKTX.REGION.$keep_lines                        S
+    .pipe @MKTX.COMMAND.$single_and_multi_column            S
+    .pipe @MKTX.COMMAND.$slash                              S
+    .pipe @MKTX.MIXED.$table                                S
+    .pipe @MKTX.BLOCK.$hr                                   S
+    .pipe @MKTX.CLEANUP.$single_and_multi_column            S
+    .pipe @MKTX.REGION.$multi_column                        S
+    .pipe @MKTX.REGION.$single_column                       S
+    .pipe @MKTX.REGION.$code                                S
+    .pipe @MKTX.REGION.$keep_lines                          S
+    .pipe @MKTX.REGION.$toc                                 S
+    .pipe @MKTX.BLOCK.$heading                              S
     # .pipe D.$show()
-    .pipe @MKTX.REGION.$toc                               S
-    .pipe @MKTX.BLOCK.$heading                            S
-    .pipe @MKTX.MIXED.$collect_headings_for_toc           S
-    .pipe @MKTX.COMMAND.$toc                              S
-    .pipe @MKTX.BLOCK.$unordered_list                     S
-    .pipe @MKTX.INLINE.$code_span                         S
-    .pipe @MKTX.INLINE.$url                               S
-    .pipe @MKTX.INLINE.$translate_i_and_b                 S
-    .pipe @MKTX.INLINE.$em_and_strong                     S
-    .pipe @MKTX.INLINE.$image                             S
+    .pipe @MKTX.MIXED.$collect_headings_for_toc             S
+    .pipe @MKTX.COMMAND.$toc                                S
+    .pipe @MKTX.BLOCK.$unordered_list                       S
+    .pipe @MKTX.INLINE.$code_span                           S
+    .pipe @MKTX.INLINE.$url                                 S
+    .pipe @MKTX.INLINE.$translate_i_and_b                   S
+    .pipe @MKTX.INLINE.$em_and_strong                       S
+    .pipe @MKTX.INLINE.$image                               S
     # .pipe @MKTX.CLEANUP.$drop_empty_p_tags                S
-    .pipe @MKTX.BLOCK.$yadda                              S
-    .pipe @MKTX.BLOCK.$paragraph                          S
-    .pipe @MKTX.MIXED.$raw                                S
-    .pipe @MKTX.CLEANUP.$remove_empty_texts               S
-    .pipe @MKTX.CLEANUP.$consolidate_texts                S
-    .pipe @MKTX.TEX.$fix_typography_for_tex               S
-    .pipe MKTSCRIPT_WRITER.$show_mktsmd_events            S
+    .pipe @MKTX.BLOCK.$yadda                                S
+    .pipe @MKTX.BLOCK.$paragraph                            S
+    .pipe @MKTX.MIXED.$raw                                  S
+    .pipe @MKTX.CLEANUP.$remove_empty_texts                 S
+    .pipe @MKTX.CLEANUP.$consolidate_texts                  S
+    .pipe @MKTX.TEX.$fix_typography_for_tex                 S
+    .pipe MKTSCRIPT_WRITER.$show_mktsmd_events              S
     # .pipe mktscript_tee
     .pipe @MKTX.INLINE.$mark                              S
     .pipe @MKTX.$show_unhandled_tags                      S
@@ -1534,8 +1585,8 @@ before '@MKTX.REGION.$single_column', '@MKTX.REGION.$multi_column', \
   #.........................................................................................................
   md_readstream       = MD_READER.create_md_read_tee md_source
   tex_writestream     = @create_tex_write_tee S
-  md_input            =  md_readstream.tee[ 'input'  ]
-  md_output           =  md_readstream.tee[ 'output' ]
+  md_input            =   md_readstream.tee[ 'input'  ]
+  md_output           =   md_readstream.tee[ 'output' ]
   tex_input           = tex_writestream.tee[ 'input'  ]
   tex_output          = tex_writestream.tee[ 'output' ]
   #.........................................................................................................

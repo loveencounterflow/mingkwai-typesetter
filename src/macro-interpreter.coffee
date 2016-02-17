@@ -195,7 +195,6 @@ MKTS                      = require './main'
   #.........................................................................................................
   return $ ( event, send ) =>
     ### TAINT code duplication ###
-    debug '©18567', event
     if select event, '('
       [ _, call_signature, extra, meta, ] = event
       [ _, identifier, parameters_txt,  ] = call_signature.match /^\s*([^\s]*)\s*(.*)$/
@@ -269,6 +268,31 @@ MKTS                      = require './main'
     #.......................................................................................................
     else
       # debug '©88225', JSON.stringify event
+      send event
+
+#-----------------------------------------------------------------------------------------------------------
+@$process_code_blocks = ( S ) =>
+  copy      = MKTS.MD_READER.copy.bind    MKTS.MD_READER
+  stamp     = MKTS.MD_READER.stamp.bind   MKTS.MD_READER
+  hide      = MKTS.MD_READER.hide.bind    MKTS.MD_READER
+  select    = MKTS.MD_READER.select.bind  MKTS.MD_READER
+  #.........................................................................................................
+  throw new Error "internal error: need S.sandbox, must use `$process_actions`" unless S.sandbox?
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    ### TAINT code duplication ###
+    if select event, [ '(', ')', ], 'code'
+      [ type, _, call_signature, meta, ]     = event
+      { line_nr, }                        = meta
+      [ _, identifier, parameters_txt,  ] = call_signature.match /^\s*([^\s]*)\s*(.*)$/
+      #.....................................................................................................
+      [ error_message, parameters, ]      = @_parameters_from_text S, line_nr, parameters_txt
+      parameters.unshift identifier
+      #.....................................................................................................
+      send [ '.', 'warning', error_message, meta, ] if error_message?
+      send [ type, 'code', parameters, meta, ]
+    #.......................................................................................................
+    else
       send event
 
 #-----------------------------------------------------------------------------------------------------------
