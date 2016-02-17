@@ -47,7 +47,7 @@ is_hidden                 = MD_READER.is_hidden.bind   MD_READER
 is_stamped                = MD_READER.is_stamped.bind  MD_READER
 MACRO_ESCAPER             = require './macro-escaper'
 LINEBREAKER               = require './linebreaker'
-
+@COLUMNS                  = require './tex-writer-columns'
 
 #===========================================================================================================
 #
@@ -223,9 +223,7 @@ after = ( names..., method ) ->
     return send event unless select event, '!', 'new-page'
     send stamp event
     [ type, name, text, meta, ] = event
-    # send [ ')', 'multi-column', text, ( copy meta ), ]
     send [ 'tex', "\\null\\newpage{}", ]
-    # send [ '(', 'multi-column', text, ( copy meta ), ]
 
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.COMMAND.$comment = ( S ) =>
@@ -251,183 +249,6 @@ after = ( names..., method ) ->
     #.......................................................................................................
     else
       send event
-
-#-----------------------------------------------------------------------------------------------------------
-@MKTX.REGION._begin_multi_column = ( S, column_count = 2 ) =>
-  ### TAINT Column count must come from layout / options / MKTS-MD command ###
-  ### TAINT make `\raggedcolumns` optional? ###
-  column_count ?= S.document.column_count
-  return [ 'tex', "\n\n\\vspace{\\mktsLineheight}\\begin{multicols}{#{column_count}}\\raggedcolumns{}" ]
-
-#-----------------------------------------------------------------------------------------------------------
-@MKTX.REGION._end_multi_column = ( S, column_count = 2 ) =>
-  return [ 'tex', "\\end{multicols}\n\n" ]
-
-#-----------------------------------------------------------------------------------------------------------
-@MKTX.COMMAND.$single_and_multi_column = ( S ) =>
-  #.........................................................................................................
-  return $ ( event, send ) =>
-    if select event, '!', 'multi-column'
-      [ type, name, parameters, meta, ] = event
-      send stamp hide copy event
-      send [ '(', 'multi-column', parameters, ( copy meta ), ]
-      # send stamp hide [ ')', '!',       name, ( copy meta ), ]
-    #.......................................................................................................
-    else if select event, '!', 'single-column'
-      [ type, name, parameters, meta, ] = event
-      send stamp hide copy event
-      send [ '(', 'single-column', parameters, ( copy meta ), ]
-      # send stamp hide [ ')', '!',       name, ( copy meta ), ]
-    #.......................................................................................................
-    else
-      send event
-    #.......................................................................................................
-    return null
-
-#-----------------------------------------------------------------------------------------------------------
-@MKTX.CLEANUP.$single_and_multi_column = ( S ) =>
-  within_multi_column   = no
-  within_single_column  = no
-  stack                 = []
-  #.........................................................................................................
-  return $ ( event, send ) =>
-    [ type, name, parameters, meta, ] = event
-    #.......................................................................................................
-    if select event, '(', [ 'single-column', 'multi-column', ]
-      #.....................................................................................................
-      if within_single_column
-        extra_event = stack.pop()
-        send copy [ ')', 'single-column', extra_event[ 2 ], meta, ]
-        within_single_column = no
-      #.....................................................................................................
-      else if within_multi_column
-        extra_event = stack.pop()
-        send copy [ ')', 'multi-column', extra_event[ 2 ], meta, ]
-        within_multi_column = no
-    #.......................................................................................................
-    if select event, '(', 'multi-column'
-      send event
-      stack.push event
-      within_multi_column = yes
-    #.......................................................................................................
-    else if select event, '(', 'single-column'
-      send event
-      stack.push event
-      within_single_column = yes
-    #.......................................................................................................
-    else if select event, ')', 'multi-column'
-      send event
-      within_multi_column = no
-    #.......................................................................................................
-    else if select event, ')', 'single-column'
-      send event
-      within_single_column = no
-    #.......................................................................................................
-    else
-      send event
-    #.......................................................................................................
-    return null
-
-#-----------------------------------------------------------------------------------------------------------
-@MKTX.COMMAND.$slash = ( S ) =>
-  track   = MD_READER.TRACKER.new_tracker '(multi-column)'
-  remark  = MD_READER._get_remark()
-  #.........................................................................................................
-  return $ ( event, send ) =>
-    within_multi_column = track.within '(multi-column)'
-    track event
-    if select event, '!', 'slash'
-      [ type, name, text, meta, ] = event
-      send stamp event
-      if within_multi_column
-        send [ ')', 'multi-column', null, ( copy meta ), ]
-        ### TAINT consider to send MKTS macro ###
-        send [ 'tex', "\\mktsEmptyLine\n" ]
-        send [ '(', 'multi-column', null, ( copy meta ), ]
-      else
-        send remark 'drop', "`!slash` because not within `(multi-column)`", ( copy meta )
-    #.......................................................................................................
-    else
-      send event
-    #.......................................................................................................
-    return null
-
-#-----------------------------------------------------------------------------------------------------------
-@MKTX.REGION.$multi_column = ( S ) =>
-  track         = MD_READER.TRACKER.new_tracker '(multi-column)'
-  remark        = MD_READER._get_remark()
-  column_count  = 1
-  #.........................................................................................................
-  return $ ( event, send ) =>
-    within_multi_column = track.within '(multi-column)'
-    track event
-    #.......................................................................................................
-    if select event, [ '(', ')', ], 'multi-column'
-      send stamp event
-      [ type, name, parameters, meta, ] = event
-      column_count                      = parameters?[ 0 ] ? S.document.column_count
-      #.....................................................................................................
-      if type is '('
-        if within_multi_column
-          send remark 'drop', "`(multi-column` because already within `(multi-column)`", ( copy meta )
-        else
-          send track @MKTX.REGION._begin_multi_column S, column_count
-      #.....................................................................................................
-      else
-        if within_multi_column
-          send track @MKTX.REGION._end_multi_column S, column_count
-        else
-          send remark 'drop', "`multi-column)` because not within `(multi-column)`", ( copy meta )
-    #.......................................................................................................
-    else if select event, ')', 'document'
-      send track @MKTX.REGION._end_multi_column S, column_count if within_multi_column
-      send event
-    #.......................................................................................................
-    else
-      send event
-    #.......................................................................................................
-    return null
-
-#-----------------------------------------------------------------------------------------------------------
-@MKTX.REGION.$single_column = ( S ) =>
-  ### TAINT consider to implement command `change_column_count = ( send, n )` ###
-  track         = MD_READER.TRACKER.new_tracker '(multi-column)'
-  remark        = MD_READER._get_remark()
-  column_count  = 1
-  #.........................................................................................................
-  return $ ( event, send ) =>
-    within_multi_column = track.within '(multi-column)'
-    track event
-    #.......................................................................................................
-    if select event, [ '(', ')', ], 'multi-column'
-      send event
-      [ type, name, parameters, meta, ] = event
-      column_count                      = parameters?[ 0 ] ? S.document.column_count
-    #.......................................................................................................
-    else if select event, [ '(', ')', ], 'single-column'
-      [ type, name, text, meta, ] = event
-      #.....................................................................................................
-      if type is '('
-        if within_multi_column
-          send remark 'insert', "`multi-column)`", copy meta
-          send track @MKTX.REGION._end_multi_column S, column_count
-          send stamp event
-        else
-          # send stamp event
-          send remark 'drop', "`single-column` because not within `(multi-column)`", copy meta
-      #.....................................................................................................
-      else
-        if within_multi_column
-          send stamp event
-          send remark 'insert', "`(multi-column`", copy meta
-          send track @MKTX.REGION._begin_multi_column S, column_count
-        else
-          send remark 'drop', "`single-column` because not within `(multi-column)`", copy meta
-    #.......................................................................................................
-    else
-      send event
-    #.......................................................................................................
-    return null
 
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.REGION.$code = ( S ) =>
@@ -1446,13 +1267,14 @@ before '@MKTX.REGION.$single_column', '@MKTX.REGION.$multi_column', \
     .pipe @MKTX.COMMAND.$new_page                           S
     .pipe @MKTX.COMMAND.$comment                            S
     # .pipe @MKTX.REGION.$correct_p_tags_before_regions     S
-    .pipe @MKTX.COMMAND.$single_and_multi_column            S
-    .pipe @MKTX.COMMAND.$slash                              S
+    # .pipe @MKTX.COMMAND.$single_and_multi_column            S
+    # .pipe @MKTX.COMMAND.$slash                              S
     .pipe @MKTX.MIXED.$table                                S
     .pipe @MKTX.BLOCK.$hr                                   S
-    .pipe @MKTX.CLEANUP.$single_and_multi_column            S
-    .pipe @MKTX.REGION.$multi_column                        S
-    .pipe @MKTX.REGION.$single_column                       S
+    .pipe @COLUMN.$main                                     S
+    # .pipe @MKTX.CLEANUP.$single_and_multi_column            S
+    # .pipe @MKTX.REGION.$multi_column                        S
+    # .pipe @MKTX.REGION.$single_column                       S
     .pipe @MKTX.REGION.$code                                S
     .pipe @MKTX.REGION.$keep_lines                          S
     .pipe @MKTX.REGION.$toc                                 S
