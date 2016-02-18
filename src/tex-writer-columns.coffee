@@ -80,13 +80,14 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
   return $ ( event, send ) =>
     if select event, '!', 'slash'
       [ type, name, parameters, meta, ] = event
-      send stamp event
+      send stamp hide copy event
       #.....................................................................................................
       # send [ '!', 'columns', [ 'push', ], ( copy meta ), ]
-      send [ '!', 'columns', [      1, ], ( copy meta ), ]
+      send [ '!', 'columns', [ 1, ], ( copy meta ), ]
       #.....................................................................................................
       if CND.isa_list parameters
         for x in parameters
+          ### TAINT should formally check for `event`ness of value ###
           if CND.isa_list x
             send x
           else
@@ -106,25 +107,34 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
   return $ ( event, send ) =>
     #.......................................................................................................
     if select event, '!', 'columns'
-      send stamp event
       [ type, name, parameters, meta, ] = event
-      unless parameters.length is 0
-        [ parameter, ] = parameters
-        switch parameter_type = CND.type_of parameter
-          when 'text'
-            switch parameter
-              # when 'push'
-              #   null
-              when 'pop'
-                null
-          when 'number'
-            unless ( parameter > 0 ) and ( ( Math.floor parameter ) is parameter )
-              message = "expected non-zero positive integer, got #{rpr parameter}"
-              return send [ '.', 'warning', message, ( copy meta ), ]
-            @_change_column_count S, event, send, parameter
-          else
-            message = "expected a text or a number, got a #{parameter_type}"
-            send [ '.', 'warning', message, ( copy meta ), ]
+      parameters.push S.COLUMNS.count if parameters.length is 0
+      [ parameter, ] = parameters
+      #.....................................................................................................
+      switch parameter_type = CND.type_of parameter
+        #...................................................................................................
+        when 'text'
+          switch parameter
+            when 'pop'
+              send stamp hide copy event
+              @_restore_column_count S, event, send
+            else
+              send stamp hide copy event
+              message = "unknown text argument #{rpr parameter}"
+              send [ '.', 'warning', message, ( copy meta ), ]
+        #...................................................................................................
+        when 'number'
+          unless ( parameter > 0 ) and ( ( Math.floor parameter ) is parameter )
+            send stamp hide copy event
+            message = "expected non-zero positive integer, got #{rpr parameter}"
+            return send [ '.', 'warning', message, ( copy meta ), ]
+          send stamp hide copy event
+          @_change_column_count S, event, send, parameter
+        #...................................................................................................
+        else
+          send stamp hide copy event
+          message = "expected a text or a number, got a #{parameter_type}"
+          send [ '.', 'warning', message, ( copy meta ), ]
     #.......................................................................................................
     else
       send event
@@ -137,31 +147,47 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
 #-----------------------------------------------------------------------------------------------------------
 @_new_setting = ( P... ) ->
   R =
-    count = 1
+    count: 1 # number of columns at current point
   return Object.assign R, P...
 
 #-----------------------------------------------------------------------------------------------------------
 @_initialize_state = ( S ) ->
   throw new Error "namespace collision: `S.COLUMNS` already defined" if S.COLUMNS?
   S.COLUMNS         = {}
-  S.COLUMNS.stack   = []
+  base_setting      = @_new_setting()
+  S.COLUMNS.count   = 2 # default number of columns in document **when using multiple columns**
+  S.COLUMNS.stack   = [ base_setting, ]
+  return null
 
 #-----------------------------------------------------------------------------------------------------------
-@_push              = ( S, setting ) -> S.COLUMNS.stack.push setting
-@_pop               = ( S )          -> S.COLUMNS.stack.pop()
-@_get_column_count  = ( S )          -> S.COLUMNS.stack[ @_get_stack_idx S ][ 'count' ]
+@_push              = ( S, setting ) ->
+  S.COLUMNS.stack.push setting
+@_pop               = ( S )          ->
+  S.COLUMNS.stack.pop()
+@_get_column_count  = ( S )          ->
+  S.COLUMNS.stack[ @_get_stack_idx S ][ 'count' ]
 @_get_stack_idx     = ( S )          -> S.COLUMNS.stack.length - 1
 
 #-----------------------------------------------------------------------------------------------------------
 @_change_column_count = ( S, event, send, column_count ) ->
-  warn '321', '_stop_column_region'
   @_stop_column_region  S, event, send
-  help '321', '_start_column_region', column_count
   @_start_column_region S, event, send, column_count
 
 #-----------------------------------------------------------------------------------------------------------
+@_restore_column_count = ( S, event, send ) ->
+  debug '©25119-1', S.COLUMNS.stack
+  @_stop_column_region  S, event, send
+  debug '©25119-2', S.COLUMNS.stack
+  column_count = @_get_column_count S
+  @_start_column_region S, event, send, column_count
+  debug '©25119-3', S.COLUMNS.stack
+
+#-----------------------------------------------------------------------------------------------------------
 @_start_column_region = ( S, event, send, column_count ) ->
+  # send stamp hide copy event
   @_push S, @_new_setting { count: column_count, }
+  debug '©66343', event, column_count
+  debug '©66343', S.COLUMNS.stack
   if column_count isnt 1
     [ ..., meta, ]  = event
     ### TAINT this event should be namespaced and handled only right before output ###
@@ -171,7 +197,8 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
 #-----------------------------------------------------------------------------------------------------------
 @_stop_column_region = ( S, event, send ) ->
   ### No-op in case we're in base ('ambient', 'document') state ###
-  urge '77262', S.COLUMNS.stack
+  # urge '77262', S.COLUMNS.stack
+  # send stamp hide copy event
   return if ( @_get_stack_idx S ) is 0
   column_count    = @_get_column_count S
   last_state      = @_pop S

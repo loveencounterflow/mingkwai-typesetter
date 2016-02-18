@@ -609,12 +609,13 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
           send stamp copy event
           send swell_rule
         when '='
-          send stamp copy event
+          send stamp hide copy event
           send [ '!', 'slash', [], ( copy meta ), ]
         when '#'
-          send stamp copy event
+          send stamp hide copy event
           send [ '!', 'slash', [ swell_rule, ], ( copy meta ), ]
         else
+          send stamp hide copy event
           send remark 'drop', "`[hr] because markup unknown #{rpr text}", copy meta
     #.......................................................................................................
     else
