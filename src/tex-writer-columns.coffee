@@ -46,43 +46,28 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
 
 
 #-----------------------------------------------------------------------------------------------------------
-@$main = ( S ) =>
-  S.COLUMNS ?= {}
+@$main = ( S ) ->
+  @_initialize_state S
   #.........................................................................................................
   return D.TEE.from_pipeline [
-    @$regions_from_commands     S
-    @$consolidate_columns       S
+    @$end_columns_with_document S
     @$slash                     S
-    @$multi_column              S
-    @$single_column             S
+    @$columns                   S
+    @$transform_to_tex          S
     ]
 
+#===========================================================================================================
+# STREAM TRANSFORMS
 #-----------------------------------------------------------------------------------------------------------
-@_begin_multi_column = ( S, column_count = 2 ) =>
-  ### TAINT Column count must come from layout / options / MKTS-MD command ###
-  ### TAINT make `\raggedcolumns` optional? ###
-  column_count ?= S.document.column_count
-  return [ 'tex', "\n\n\\vspace{\\mktsLineheight}\\begin{multicols}{#{column_count}}\\raggedcolumns{}" ]
-
-#-----------------------------------------------------------------------------------------------------------
-@_end_multi_column = ( S, column_count = 2 ) =>
-  return [ 'tex', "\\end{multicols}\n\n" ]
-
-#-----------------------------------------------------------------------------------------------------------
-@$regions_from_commands = ( S ) =>
+@$end_columns_with_document = ( S ) ->
+  remark = MK.TS.MD_READER._get_remark()
   #.........................................................................................................
   return $ ( event, send ) =>
-    if select event, '!', 'multi-column'
-      [ type, name, parameters, meta, ] = event
-      send stamp hide copy event
-      send [ '(', 'multi-column', parameters, ( copy meta ), ]
-      # send stamp hide [ ')', '!',       name, ( copy meta ), ]
     #.......................................................................................................
-    else if select event, '!', 'single-column'
-      [ type, name, parameters, meta, ] = event
-      send stamp hide copy event
-      send [ '(', 'single-column', parameters, ( copy meta ), ]
-      # send stamp hide [ ')', '!',       name, ( copy meta ), ]
+    if select event, ')', 'document'
+      [ ..., meta, ] = event
+      send [ '!', 'columns', [ 1, ], ( copy meta ), ]
+      send event
     #.......................................................................................................
     else
       send event
@@ -90,149 +75,159 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
     return null
 
 #-----------------------------------------------------------------------------------------------------------
-@$consolidate_columns = ( S ) =>
-  within_multi_column   = no
-  within_single_column  = no
-  stack                 = []
+@$slash = ( S ) ->
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    if select event, '!', 'slash'
+      [ type, name, parameters, meta, ] = event
+      send stamp event
+      #.....................................................................................................
+      # send [ '!', 'columns', [ 'push', ], ( copy meta ), ]
+      send [ '!', 'columns', [      1, ], ( copy meta ), ]
+      #.....................................................................................................
+      if CND.isa_list parameters
+        for x in parameters
+          if CND.isa_list x
+            send x
+          else
+            send [ '.', 'warning', "ignoring argument to <<!slash>>: #{rpr x}", ( copy meta ), ]
+      #.....................................................................................................
+      send [ '!', 'columns', [  'pop', ], ( copy meta ), ]
+    #.......................................................................................................
+    else
+      send event
+    #.......................................................................................................
+    return null
+
+#-----------------------------------------------------------------------------------------------------------
+@$columns = ( S ) ->
+  remark = MK.TS.MD_READER._get_remark()
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    #.......................................................................................................
+    if select event, '!', 'columns'
+      send stamp event
+      [ type, name, parameters, meta, ] = event
+      unless parameters.length is 0
+        [ parameter, ] = parameters
+        switch parameter_type = CND.type_of parameter
+          when 'text'
+            switch parameter
+              # when 'push'
+              #   null
+              when 'pop'
+                null
+          when 'number'
+            unless ( parameter > 0 ) and ( ( Math.floor parameter ) is parameter )
+              message = "expected non-zero positive integer, got #{rpr parameter}"
+              return send [ '.', 'warning', message, ( copy meta ), ]
+            @_change_column_count S, event, send, parameter
+          else
+            message = "expected a text or a number, got a #{parameter_type}"
+            send [ '.', 'warning', message, ( copy meta ), ]
+    #.......................................................................................................
+    else
+      send event
+    #.......................................................................................................
+    return null
+
+
+#===========================================================================================================
+# HELPERS
+#-----------------------------------------------------------------------------------------------------------
+@_new_setting = ( P... ) ->
+  R =
+    count = 1
+  return Object.assign R, P...
+
+#-----------------------------------------------------------------------------------------------------------
+@_initialize_state = ( S ) ->
+  throw new Error "namespace collision: `S.COLUMNS` already defined" if S.COLUMNS?
+  S.COLUMNS         = {}
+  S.COLUMNS.stack   = []
+
+#-----------------------------------------------------------------------------------------------------------
+@_push              = ( S, setting ) -> S.COLUMNS.stack.push setting
+@_pop               = ( S )          -> S.COLUMNS.stack.pop()
+@_get_column_count  = ( S )          -> S.COLUMNS.stack[ @_get_stack_idx S ][ 'count' ]
+@_get_stack_idx     = ( S )          -> S.COLUMNS.stack.length - 1
+
+#-----------------------------------------------------------------------------------------------------------
+@_change_column_count = ( S, event, send, column_count ) ->
+  warn '321', '_stop_column_region'
+  @_stop_column_region  S, event, send
+  help '321', '_start_column_region', column_count
+  @_start_column_region S, event, send, column_count
+
+#-----------------------------------------------------------------------------------------------------------
+@_start_column_region = ( S, event, send, column_count ) ->
+  @_push S, @_new_setting { count: column_count, }
+  if column_count isnt 1
+    [ ..., meta, ]  = event
+    ### TAINT this event should be namespaced and handled only right before output ###
+    send [ '(', 'multi-columns', [ column_count, ], ( copy meta ), ]
+  return null
+
+#-----------------------------------------------------------------------------------------------------------
+@_stop_column_region = ( S, event, send ) ->
+  ### No-op in case we're in base ('ambient', 'document') state ###
+  urge '77262', S.COLUMNS.stack
+  return if ( @_get_stack_idx S ) is 0
+  column_count    = @_get_column_count S
+  last_state      = @_pop S
+  ### No-op in case we're already in single-column state ###
+  return if column_count is 1
+  [ ..., meta, ]  = event
+  ### TAINT this event should be namespaced and handled only right before output ###
+  send [ ')', 'multi-columns', [ column_count, ], ( copy meta ), ]
+
+
+#===========================================================================================================
+# TRANSFORM TO TEX
+#-----------------------------------------------------------------------------------------------------------
+@$transform_to_tex = ( S ) ->
   #.........................................................................................................
   return $ ( event, send ) =>
     [ type, name, parameters, meta, ] = event
     #.......................................................................................................
-    if select event, '(', [ 'single-column', 'multi-column', ]
-      #.....................................................................................................
-      if within_single_column
-        extra_event = stack.pop()
-        send copy [ ')', 'single-column', extra_event[ 2 ], meta, ]
-        within_single_column = no
-      #.....................................................................................................
-      else if within_multi_column
-        extra_event = stack.pop()
-        send copy [ ')', 'multi-column', extra_event[ 2 ], meta, ]
-        within_multi_column = no
-    #.......................................................................................................
-    if select event, '(', 'multi-column'
-      send event
-      stack.push event
-      within_multi_column = yes
-    #.......................................................................................................
-    else if select event, '(', 'single-column'
-      send event
-      stack.push event
-      within_single_column = yes
-    #.......................................................................................................
-    else if select event, ')', 'multi-column'
-      send event
-      within_multi_column = no
-    #.......................................................................................................
-    else if select event, ')', 'single-column'
-      send event
-      within_single_column = no
-    #.......................................................................................................
-    else
-      send event
-    #.......................................................................................................
-    return null
-
-#-----------------------------------------------------------------------------------------------------------
-@$slash = ( S ) =>
-  track   = MK.TS.MD_READER.TRACKER.new_tracker '(multi-column)'
-  remark  = MK.TS.MD_READER._get_remark()
-  #.........................................................................................................
-  return $ ( event, send ) =>
-    within_multi_column = track.within '(multi-column)'
-    track event
-    if select event, '!', 'slash'
-      [ type, name, text, meta, ] = event
+    if select event, '(', 'multi-columns'
       send stamp event
-      if within_multi_column
-        send [ ')', 'multi-column', null, ( copy meta ), ]
-        ### TAINT consider to send MKTS macro ###
-        send [ 'tex', "\\mktsEmptyLine\n" ]
-        send [ '(', 'multi-column', null, ( copy meta ), ]
-      else
-        send remark 'drop', "`!slash` because not within `(multi-column)`", ( copy meta )
+      [ column_count, ] = parameters
+      send [ 'tex', "\n\n\\vspace{\\mktsLineheight}\\begin{multicols}{#{column_count}}\\raggedcolumns{}" ]
     #.......................................................................................................
-    else
-      send event
-    #.......................................................................................................
-    return null
-
-#-----------------------------------------------------------------------------------------------------------
-@$multi_column = ( S ) =>
-  track         = MK.TS.MD_READER.TRACKER.new_tracker '(multi-column)'
-  remark        = MK.TS.MD_READER._get_remark()
-  column_count  = 1
-  #.........................................................................................................
-  return $ ( event, send ) =>
-    within_multi_column = track.within '(multi-column)'
-    track event
-    #.......................................................................................................
-    if select event, [ '(', ')', ], 'multi-column'
+    else if select event, ')', 'multi-columns'
       send stamp event
-      [ type, name, parameters, meta, ] = event
-      column_count                      = parameters?[ 0 ] ? S.document.column_count
-      #.....................................................................................................
-      if type is '('
-        if within_multi_column
-          send remark 'drop', "`(multi-column` because already within `(multi-column)`", ( copy meta )
-        else
-          send track @_begin_multi_column S, column_count
-      #.....................................................................................................
-      else
-        if within_multi_column
-          send track @_end_multi_column S, column_count
-        else
-          send remark 'drop', "`multi-column)` because not within `(multi-column)`", ( copy meta )
-    #.......................................................................................................
-    else if select event, ')', 'document'
-      send track @_end_multi_column S, column_count if within_multi_column
-      send event
+      [ column_count, ] = parameters
+      send [ 'tex', "\\end{multicols}\n\n" ]
     #.......................................................................................................
     else
       send event
     #.......................................................................................................
     return null
 
-#-----------------------------------------------------------------------------------------------------------
-@$single_column = ( S ) =>
-  ### TAINT consider to implement command `change_column_count = ( send, n )` ###
-  track         = MK.TS.MD_READER.TRACKER.new_tracker '(multi-column)'
-  remark        = MK.TS.MD_READER._get_remark()
-  column_count  = 1
-  #.........................................................................................................
-  return $ ( event, send ) =>
-    within_multi_column = track.within '(multi-column)'
-    track event
-    #.......................................................................................................
-    if select event, [ '(', ')', ], 'multi-column'
-      send event
-      [ type, name, parameters, meta, ] = event
-      column_count                      = parameters?[ 0 ] ? S.document.column_count
-    #.......................................................................................................
-    else if select event, [ '(', ')', ], 'single-column'
-      [ type, name, text, meta, ] = event
-      #.....................................................................................................
-      if type is '('
-        if within_multi_column
-          send remark 'insert', "`multi-column)`", copy meta
-          send track @_end_multi_column S, column_count
-          send stamp event
-        else
-          # send stamp event
-          send remark 'drop', "`single-column` because not within `(multi-column)`", copy meta
-      #.....................................................................................................
-      else
-        if within_multi_column
-          send stamp event
-          send remark 'insert', "`(multi-column`", copy meta
-          send track @_begin_multi_column S, column_count
-        else
-          send remark 'drop', "`single-column` because not within `(multi-column)`", copy meta
-    #.......................................................................................................
-    else
-      send event
-    #.......................................................................................................
-    return null
+
+
+# #-----------------------------------------------------------------------------------------------------------
+# @_begin_multi_column = ( S, column_count = 2 ) ->
+#   ### TAINT Column count must come from layout / options / MKTS-MD command ###
+#   ### TAINT make `\raggedcolumns` optional? ###
+#   column_count ?= S.document.column_count
+
+# #-----------------------------------------------------------------------------------------------------------
+# @_end_multi_column = ( S, column_count = 2 ) ->
+
+# #-----------------------------------------------------------------------------------------------------------
+# @_is_single_column = ( S ) ->
+#   return ( @_get_column_count S ) is 1
+
+# #-----------------------------------------------------------------------------------------------------------
+# @_column_count_would_change = ( S, column_count ) ->
+#   return @( _get_column_count S ) isnt column_count
+
+# #-----------------------------------------------------------------------------------------------------------
+# @_get_last_column_count = ( S ) ->
+#   return 1 if S.COLUMNS.stack.length is 1
+#   return S.COLUMNS.stack[ S.COLUMNS.stack.length - 2 ][ 'count' ]
 
 
 ###
@@ -243,8 +238,8 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
 <<!columns 1>>                            (single-column
 <<!columns 1>>                            (multi-column 1
 <<!columns>>                              (multi-column
+
 <<!columns 'push'>>
-<<!columns 'pop'>>
 <<!columns 'pop'>>
 
 

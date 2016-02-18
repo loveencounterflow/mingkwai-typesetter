@@ -594,7 +594,8 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
 #-----------------------------------------------------------------------------------------------------------
 # before '@MKTX.REGION.$single_column', '@MKTX.REGION.$multi_column', \
 @MKTX.BLOCK.$hr = ( S ) =>
-  remark = MD_READER._get_remark()
+  plain_rule  = [ 'tex', "\\mktsRulePlain{}", ]
+  swell_rule  = [ 'tex', "\\mktsRuleSwell{}", ]
   #.........................................................................................................
   return $ ( event, send ) =>
     #.......................................................................................................
@@ -603,19 +604,16 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       switch chr = text[ 0 ]
         when '-'
           send stamp copy event
-          send [ 'tex', '\\mktsRulePlain{}' ]
+          send plain_rule
         when '*'
           send stamp copy event
-          send [ 'tex', '\\mktsRuleSwell{}' ]
+          send swell_rule
         when '='
-          send [ '(', 'single-column', null, ( copy meta ), ]
           send stamp copy event
-          send [ ')', 'single-column', null, ( copy meta ), ]
+          send [ '!', 'slash', [], ( copy meta ), ]
         when '#'
-          send [ '(', 'single-column', null, ( copy meta ), ]
           send stamp copy event
-          send [ 'tex', '\\mktsRuleSwell{}' ]
-          send [ ')', 'single-column', null, ( copy meta ), ]
+          send [ '!', 'slash', [ swell_rule, ], ( copy meta ), ]
         else
           send remark 'drop', "`[hr] because markup unknown #{rpr text}", copy meta
     #.......................................................................................................
