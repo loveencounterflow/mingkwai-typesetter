@@ -29,7 +29,8 @@
   },
   "homepage": "https://github.com/loveencounterflow/mingkwai-typesetter",
   "dependencies": {
-    "async": "^1.5.0",
+    "async": "^1.5.2",
+    "changeset": "^0.1.0",
     "cnd": "^1.0.9",
     "coffee-script": "^1.10.0",
     "coffeenode-chr": "^1.0.2",
@@ -41,7 +42,6 @@
     "htmlparser2": "^3.9.0",
     "hyphenation.en-us": "^0.2.1",
     "hypher": "^0.2.4",
-    "jsondiffpatch": "^0.1.41",
     "linebreak": "^0.3.0",
     "lorem-ipsum": "^1.0.3",
     "markdown-it": "^5.0.2",
@@ -51,12 +51,12 @@
     "markdown-it-regexp": "^0.4.0",
     "markdown-it-sub": "^1.0.0",
     "markdown-it-sup": "^1.0.0",
-    "parse5": "^2.0.2",
-    "pipedreams": "^3.0.4",
+    "parse5": "^2.1.5",
+    "pipedreams": "^3.0.5",
     "source-map-support": "^0.4.0"
   },
   "devDependencies": {
-    "gulp": "^3.9.0",
+    "gulp": "^3.9.1",
     "gulp-coffee": "^2.3.1",
     "gulp-sourcemaps": "^1.5.2",
     "guy-test": "^1.1.2"

@@ -28,6 +28,7 @@ echo                      = CND.echo.bind CND
 @TEX_WRITER               = require './tex-writer'
 @MKTSCRIPT_WRITER         = require './mktscript-writer'
 @XNCHR                    = require './xnchr'
+@DIFFPATCH                = require './diffpatch'
 
 
 

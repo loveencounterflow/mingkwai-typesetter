@@ -157,6 +157,7 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
 @_initialize_state = ( S ) ->
   throw new Error "namespace collision: `S.COLUMNS` already defined" if S.COLUMNS?
   S.COLUMNS         = {}
+  debug '©06119', S.COLUMNS
   base_setting      = @_new_setting()
   S.COLUMNS.count   = 2 # default number of columns in document **when using multiple columns**
   S.COLUMNS.stack   = [ base_setting, ]
