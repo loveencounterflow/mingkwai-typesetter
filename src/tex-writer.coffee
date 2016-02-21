@@ -383,6 +383,7 @@ before '@MKTX.BLOCK.$heading', '@MKTX.COMMAND.$toc', \
           send [ 'tex', "{\\mktsHOne{}", ]
           send [ 'tex', "\\zlabel{#{h_key}}", { toc: 'omit' }, ]
         when 2
+          send [ '!', 'columns', [ 1, ], ( copy meta, { toc: 'omit' }, ), ]
           send [ 'tex', "{\\mktsHTwo{}", ]
           send [ 'tex', "\\zlabel{#{h_key}}", { toc: 'omit' }, ]
         when 3
@@ -398,6 +399,7 @@ before '@MKTX.BLOCK.$heading', '@MKTX.COMMAND.$toc', \
           send [ 'tex', "\\mktsHOneBeg}%\n",          ]
         when 2
           send [ 'tex', "\\mktsHTwoBeg}%\n",          ]
+          send [ '!', 'columns', [ 'pop', ], ( copy meta, { toc: 'omit' } ), ]
         when 3
           send [ 'tex', "\\mktsHThreeBeg}%\n",        ]
         else return send [ '.', 'warning', "heading level #{level} not implemented", ( copy meta ), ]

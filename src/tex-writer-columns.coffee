@@ -106,6 +106,9 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
   #.........................................................................................................
   return $ ( event, send ) =>
     #.......................................................................................................
+    if select event, '~', 'update'
+      urge event
+    #.......................................................................................................
     if select event, '!', 'columns'
       [ type, name, parameters, meta, ] = event
       parameters.push S.COLUMNS.count if parameters.length is 0
@@ -175,19 +178,17 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
 
 #-----------------------------------------------------------------------------------------------------------
 @_restore_column_count = ( S, event, send ) ->
-  debug '©25119-1', S.COLUMNS.stack
   @_stop_column_region  S, event, send
-  debug '©25119-2', S.COLUMNS.stack
+  @_pop S
   column_count = @_get_column_count S
   @_start_column_region S, event, send, column_count
-  debug '©25119-3', S.COLUMNS.stack
 
 #-----------------------------------------------------------------------------------------------------------
 @_start_column_region = ( S, event, send, column_count ) ->
   # send stamp hide copy event
   @_push S, @_new_setting { count: column_count, }
-  debug '©66343', event, column_count
-  debug '©66343', S.COLUMNS.stack
+  # debug '©66343', event, column_count
+  # debug '©66343', S.COLUMNS.stack
   if column_count isnt 1
     [ ..., meta, ]  = event
     ### TAINT this event should be namespaced and handled only right before output ###
@@ -201,7 +202,7 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
   # send stamp hide copy event
   return if ( @_get_stack_idx S ) is 0
   column_count    = @_get_column_count S
-  last_state      = @_pop S
+  # last_state      = @_pop S
   ### No-op in case we're already in single-column state ###
   return if column_count is 1
   [ ..., meta, ]  = event

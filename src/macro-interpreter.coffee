@@ -58,7 +58,7 @@ MKTS                      = require './main'
       help:             CND.get_logger 'help', local_filename
       setImmediate:     setImmediate
       # document:         S.document
-      S:                S
+      # S:                S
       echo:             ( P... ) -> macro_output.push CND.pen P...
       mkts:
         signature_reader: ( P... ) -> P
@@ -117,9 +117,12 @@ MKTS                      = require './main'
           when 'silent'
             null
           when 'vocal'
+          else
             ### TAINT send `tex` or `text`??? ###
             action_value_rpr = if CND.isa_text action_value then action_value else rpr action_value
             send [ '.', 'text', action_value_rpr, ( copy meta ), ]
+        action_value_rpr = if CND.isa_text action_value then action_value else rpr action_value
+        send [ '~', 'update', action_value_rpr, ( copy meta ), ]
     #.......................................................................................................
     else
       send event

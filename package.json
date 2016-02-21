@@ -41,6 +41,7 @@
     "htmlparser2": "^3.9.0",
     "hyphenation.en-us": "^0.2.1",
     "hypher": "^0.2.4",
+    "jsondiffpatch": "^0.1.41",
     "linebreak": "^0.3.0",
     "lorem-ipsum": "^1.0.3",
     "markdown-it": "^5.0.2",
