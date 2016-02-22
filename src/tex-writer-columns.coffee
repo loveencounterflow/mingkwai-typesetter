@@ -111,7 +111,7 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
     #.......................................................................................................
     if select event, '!', 'columns'
       [ type, name, parameters, meta, ] = event
-      parameters.push S.COLUMNS.count if parameters.length is 0
+      parameters.push S.sandbox.COLUMNS.count if parameters.length is 0
       [ parameter, ] = parameters
       #.....................................................................................................
       switch parameter_type = CND.type_of parameter
@@ -155,22 +155,22 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
 
 #-----------------------------------------------------------------------------------------------------------
 @_initialize_state = ( S ) ->
-  throw new Error "namespace collision: `S.COLUMNS` already defined" if S.COLUMNS?
-  S.COLUMNS         = {}
-  debug '©06119', S.COLUMNS
+  throw new Error "namespace collision: `S.sandbox.COLUMNS` already defined" if S.sandbox.COLUMNS?
+  S.sandbox.COLUMNS         = {}
+  debug '©06119', S.sandbox.COLUMNS
   base_setting      = @_new_setting()
-  S.COLUMNS.count   = 2 # default number of columns in document **when using multiple columns**
-  S.COLUMNS.stack   = [ base_setting, ]
+  S.sandbox.COLUMNS.count   = 2 # default number of columns in document **when using multiple columns**
+  S.sandbox.COLUMNS.stack   = [ base_setting, ]
   return null
 
 #-----------------------------------------------------------------------------------------------------------
 @_push              = ( S, setting ) ->
-  S.COLUMNS.stack.push setting
+  S.sandbox.COLUMNS.stack.push setting
 @_pop               = ( S )          ->
-  S.COLUMNS.stack.pop()
+  S.sandbox.COLUMNS.stack.pop()
 @_get_column_count  = ( S )          ->
-  S.COLUMNS.stack[ @_get_stack_idx S ][ 'count' ]
-@_get_stack_idx     = ( S )          -> S.COLUMNS.stack.length - 1
+  S.sandbox.COLUMNS.stack[ @_get_stack_idx S ][ 'count' ]
+@_get_stack_idx     = ( S )          -> S.sandbox.COLUMNS.stack.length - 1
 
 #-----------------------------------------------------------------------------------------------------------
 @_change_column_count = ( S, event, send, column_count ) ->
@@ -189,7 +189,7 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
   # send stamp hide copy event
   @_push S, @_new_setting { count: column_count, }
   # debug '©66343', event, column_count
-  # debug '©66343', S.COLUMNS.stack
+  # debug '©66343', S.sandbox.COLUMNS.stack
   if column_count isnt 1
     [ ..., meta, ]  = event
     ### TAINT this event should be namespaced and handled only right before output ###
@@ -199,7 +199,7 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
 #-----------------------------------------------------------------------------------------------------------
 @_stop_column_region = ( S, event, send ) ->
   ### No-op in case we're in base ('ambient', 'document') state ###
-  # urge '77262', S.COLUMNS.stack
+  # urge '77262', S.sandbox.COLUMNS.stack
   # send stamp hide copy event
   return if ( @_get_stack_idx S ) is 0
   column_count    = @_get_column_count S
@@ -255,8 +255,8 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
 
 # #-----------------------------------------------------------------------------------------------------------
 # @_get_last_column_count = ( S ) ->
-#   return 1 if S.COLUMNS.stack.length is 1
-#   return S.COLUMNS.stack[ S.COLUMNS.stack.length - 2 ][ 'count' ]
+#   return 1 if S.sandbox.COLUMNS.stack.length is 1
+#   return S.sandbox.COLUMNS.stack[ S.sandbox.COLUMNS.stack.length - 2 ][ 'count' ]
 
 
 ###

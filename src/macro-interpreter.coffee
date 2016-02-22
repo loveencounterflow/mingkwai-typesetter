@@ -47,30 +47,35 @@ MKTS                      = require './main'
   local_filename            = 'XXXXXXXXXXXXX'
   macro_output              = []
   #.........................................................................................................
-  do =>
-    S.compiled          = {}
-    S.compiled.coffee   = {}
-    # S.document          =
-    #   column_count:       2
-    S.sandbox           =
-      'rpr':            CND.rpr
-      urge:             CND.get_logger 'urge', local_filename
-      help:             CND.get_logger 'help', local_filename
-      setImmediate:     setImmediate
-      # document:         S.document
-      # S:                S
-      echo:             ( P... ) -> macro_output.push CND.pen P...
-      mkts:
-        signature_reader: ( P... ) -> P
-        output:           macro_output
-        reserved_names:   []
-        __filename:       local_filename
-    S.sandbox[ 'here' ] = S.sandbox
-    for name of S.sandbox
-      S.sandbox.mkts.reserved_names.push name
-    VM.createContext S.sandbox
+  S.sandbox           =
+    'rpr':            CND.rpr
+    urge:             CND.get_logger 'urge', local_filename
+    help:             CND.get_logger 'help', local_filename
+    setImmediate:     setImmediate
+    echo:             ( P... ) -> macro_output.push CND.pen P...
+    mkts:
+      signature_reader: ( P... ) -> P
+      output:           macro_output
+      # reserved_names:   []
+      __filename:       local_filename
+  # S.sandbox[ 'here' ] = S.sandbox
+  #.........................................................................................................
+  # do =>
+  #   for name of S.sandbox
+  #     S.sandbox.mkts.reserved_names.push name
+  VM.createContext S.sandbox
+  #.........................................................................................................
+  sandbox_backup  = MKTS.DIFFPATCH.snapshot S.sandbox
+  is_first        = yes
   #.........................................................................................................
   return $ ( event, send ) =>
+    if is_first
+      is_first = no
+      [ ..., meta, ] = event
+      send event
+      changeset = MKTS.DIFFPATCH.diff {}, S.sandbox
+      send stamp [ '~', 'change', changeset, ( copy meta ), ]
+    #.......................................................................................................
     if MKTS.MD_READER.select event, '.', 'action'
       [ _, _, raw_source, meta, ]     = event
       send stamp hide event
@@ -81,14 +86,11 @@ MKTS                      = require './main'
         when 'js'
           js_source = raw_source
         when 'coffee'
-          unless ( js_source = S.compiled.coffee[ raw_source ] )?
-            wrapped_source  = "do =>\n  " + raw_source.replace /\n/g, "\n  "
-            try
-              js_source     = CS.compile wrapped_source, { bare: true, filename: local_filename, }
-            catch error
-              error_message = error[ 'message' ] ? rpr error
-            unless error_message?
-              S.compiled.coffee[ raw_source ] = js_source
+          wrapped_source  = "do =>\n  " + raw_source.replace /\n/g, "\n  "
+          try
+            js_source     = CS.compile wrapped_source, { bare: true, filename: local_filename, }
+          catch error
+            error_message = error[ 'message' ] ? rpr error
         else
           error_message = "unknown language #{rpr language}"
       #.....................................................................................................
@@ -121,25 +123,15 @@ MKTS                      = require './main'
             ### TAINT send `tex` or `text`??? ###
             action_value_rpr = if CND.isa_text action_value then action_value else rpr action_value
             send [ '.', 'text', action_value_rpr, ( copy meta ), ]
-        action_value_rpr = if CND.isa_text action_value then action_value else rpr action_value
-        send [ '~', 'update', action_value_rpr, ( copy meta ), ]
+        # action_value_rpr = if CND.isa_text action_value then action_value else rpr action_value
+        # send [ '~', 'update', action_value_rpr, ( copy meta ), ]
+        changeset = MKTS.DIFFPATCH.diff sandbox_backup, S.sandbox
+        send [ '~', 'change', changeset, ( copy meta ), ] if changeset.length > 0
+        # sandbox_backup = MKTS.DIFFPATCH.snapshot S.sandbox
+        sandbox_backup = MKTS.DIFFPATCH.patch changeset, sandbox_backup
     #.......................................................................................................
     else
       send event
-
-        # # for sub_name, sub_value of S.sandbox
-        # #   continue if sub_name in S.sandbox.mkts.reserved_names
-        # #   S.sandbox.mkts.definitions[ sub_name ] = sub_value
-        # #.....................................................................................................
-        # do =>
-        #   # debug '©Y action: source:    ', rpr source
-        #   # debug '©Y action: js_source: ', rpr js_source
-        #   # debug '©Y action: language:  ', rpr language
-        #   # debug '©Y action: mode:      ', rpr mode
-        #   # debug '©Y action: S.sandbox: ', rpr S.sandbox
-        #   debug '©Y action: value:     ', rpr action_value
-        #   for name, value of S.sandbox
-        #     whisper "#{name}: #{rpr value}"
 
 #-----------------------------------------------------------------------------------------------------------
 @$process_values = ( S ) =>
