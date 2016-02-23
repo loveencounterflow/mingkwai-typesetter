@@ -47,7 +47,8 @@ MKTS                      = require './main'
   local_filename            = 'XXXXXXXXXXXXX'
   macro_output              = []
   #.........................................................................................................
-  S.sandbox           =
+  sandbox_backup  = null
+  sandbox         =
     'rpr':            CND.rpr
     urge:             CND.get_logger 'urge', local_filename
     help:             CND.get_logger 'help', local_filename
@@ -58,22 +59,44 @@ MKTS                      = require './main'
       output:           macro_output
       # reserved_names:   []
       __filename:       local_filename
-  # S.sandbox[ 'here' ] = S.sandbox
   #.........................................................................................................
-  # do =>
-  #   for name of S.sandbox
-  #     S.sandbox.mkts.reserved_names.push name
-  VM.createContext S.sandbox
+  S.sandbox =
+    #.......................................................................................................
+    get: ( name ) ->
+      return sandbox[ name ]
+    #.......................................................................................................
+    set: ( name, value ) ->
+      sandbox[ name ] = value
+      return null
+    #.......................................................................................................
+    snapshot: ->
+      debug '131-1 sandbox       ',        sandbox?[ 'COLUMNS' ]
+      debug '131-2 sandbox_backup', sandbox_backup?[ 'COLUMNS' ]
+      sandbox_backup = MKTS.DIFFPATCH.snapshot sandbox
+      debug '131-3 sandbox       ',        sandbox?[ 'COLUMNS' ]
+      debug '131-4 sandbox_backup', sandbox_backup?[ 'COLUMNS' ]
+      return null
+    #.......................................................................................................
+    get_context: ->
+      return sandbox
+    #.......................................................................................................
+    new_change_event: ->
+      debug '131-5 sandbox       ',        sandbox?[ 'COLUMNS' ]
+      debug '131-6 sandbox_backup', sandbox_backup?[ 'COLUMNS' ]
+      changeset = MKTS.DIFFPATCH.diff sandbox_backup, sandbox
+      @snapshot()
+      return null if changeset.length > 0
+      return [ '~', 'change', changeset, {}, ]
   #.........................................................................................................
-  sandbox_backup  = MKTS.DIFFPATCH.snapshot S.sandbox
-  is_first        = yes
+  VM.createContext sandbox
+  is_first = yes
   #.........................................................................................................
   return $ ( event, send ) =>
     if is_first
       is_first = no
       [ ..., meta, ] = event
       send event
-      changeset = MKTS.DIFFPATCH.diff {}, S.sandbox
+      changeset = MKTS.DIFFPATCH.diff {}, sandbox
       send stamp [ '~', 'change', changeset, ( copy meta ), ]
     #.......................................................................................................
     if MKTS.MD_READER.select event, '.', 'action'
@@ -81,6 +104,7 @@ MKTS                      = require './main'
       send stamp hide event
       { mode, language, line_nr, }    = meta
       error_message                   = null
+      S.sandbox.snapshot()
       #.....................................................................................................
       switch language
         when 'js'
@@ -95,7 +119,7 @@ MKTS                      = require './main'
           error_message = "unknown language #{rpr language}"
       #.....................................................................................................
       try
-        action_value = VM.runInContext js_source, S.sandbox, { filename: local_filename, }
+        action_value = VM.runInContext js_source, sandbox, { filename: local_filename, }
       #.....................................................................................................
       catch error
         error_message = error[ 'message' ] ? rpr error
@@ -125,10 +149,12 @@ MKTS                      = require './main'
             send [ '.', 'text', action_value_rpr, ( copy meta ), ]
         # action_value_rpr = if CND.isa_text action_value then action_value else rpr action_value
         # send [ '~', 'update', action_value_rpr, ( copy meta ), ]
-        changeset = MKTS.DIFFPATCH.diff sandbox_backup, S.sandbox
-        send [ '~', 'change', changeset, ( copy meta ), ] if changeset.length > 0
-        # sandbox_backup = MKTS.DIFFPATCH.snapshot S.sandbox
-        sandbox_backup = MKTS.DIFFPATCH.patch changeset, sandbox_backup
+        ### TAINT use more specific change event ('change sandbox')? ###
+        # debug '34821', sandbox.COLUMNS
+        change_event = S.sandbox.new_change_event()
+        debug '34821', change_event
+        send change_event if change_event
+        # send change_event if ( change_event = S.sandbox.new_change_event() )?
     #.......................................................................................................
     else
       send event
@@ -310,7 +336,7 @@ MKTS                      = require './main'
   #.....................................................................................................
   unless error_message?
     try
-      R = VM.runInContext js_source, S.sandbox, { filename: 'parameter resolution', }
+      R = VM.runInContext js_source, S.sandbox.get_context(), { filename: 'parameter resolution', }
     catch error
       error_message = error[ 'message' ] ? rpr error
   #.....................................................................................................

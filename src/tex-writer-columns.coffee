@@ -27,6 +27,7 @@ D                         = require 'pipedreams'
 $                         = D.remit.bind D
 $async                    = D.remit_async.bind D
 #...........................................................................................................
+MKTS                      = require './main'
 MD_READER                 = require './md-reader'
 hide                      = MD_READER.hide.bind        MD_READER
 copy                      = MD_READER.copy.bind        MD_READER
@@ -102,19 +103,21 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
 
 #-----------------------------------------------------------------------------------------------------------
 @$columns = ( S ) ->
-  remark = MK.TS.MD_READER._get_remark()
+  remark  = MK.TS.MD_READER._get_remark()
+  s       = {}
   #.........................................................................................................
   return $ ( event, send ) =>
     #.......................................................................................................
-    if select event, '~', 'update'
-      urge event
+    if select event, '~', 'change'
+      [ _, _, changeset, _, ] = event
+      s                       = MK.TS.DIFFPATCH.patch changeset, s
+      send event
     #.......................................................................................................
-    if select event, '!', 'columns'
+    else if select event, '!', 'columns'
       [ type, name, parameters, meta, ] = event
-      parameters.push S.sandbox.COLUMNS.count if parameters.length is 0
+      parameters.push s.COLUMNS.count if parameters.length is 0
       [ parameter, ] = parameters
-      #.....................................................................................................
-      switch parameter_type = CND.type_of parameter
+      switch type = CND.type_of parameter
         #...................................................................................................
         when 'text'
           switch parameter
@@ -144,7 +147,6 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
     #.......................................................................................................
     return null
 
-
 #===========================================================================================================
 # HELPERS
 #-----------------------------------------------------------------------------------------------------------
@@ -155,22 +157,17 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
 
 #-----------------------------------------------------------------------------------------------------------
 @_initialize_state = ( S ) ->
-  throw new Error "namespace collision: `S.sandbox.COLUMNS` already defined" if S.sandbox.COLUMNS?
-  S.sandbox.COLUMNS         = {}
-  debug '©06119', S.sandbox.COLUMNS
-  base_setting      = @_new_setting()
-  S.sandbox.COLUMNS.count   = 2 # default number of columns in document **when using multiple columns**
-  S.sandbox.COLUMNS.stack   = [ base_setting, ]
+  throw new Error "namespace collision: `S.sandbox.COLUMNS` already defined" if ( S.sandbox.get 'COLUMNS' )?
+  S.sandbox.set 'COLUMNS',
+    count: 2 # default number of columns in document **when using multiple columns**
+    stack: [ @_new_setting(), ]
   return null
 
 #-----------------------------------------------------------------------------------------------------------
-@_push              = ( S, setting ) ->
-  S.sandbox.COLUMNS.stack.push setting
-@_pop               = ( S )          ->
-  S.sandbox.COLUMNS.stack.pop()
-@_get_column_count  = ( S )          ->
-  S.sandbox.COLUMNS.stack[ @_get_stack_idx S ][ 'count' ]
-@_get_stack_idx     = ( S )          -> S.sandbox.COLUMNS.stack.length - 1
+@_push              = ( S, setting ) -> ( S.sandbox.get 'COLUMNS' ).stack.push setting
+@_pop               = ( S )          -> ( S.sandbox.get 'COLUMNS' ).stack.pop()
+@_get_column_count  = ( S )          -> ( S.sandbox.get 'COLUMNS' ).stack[ @_get_stack_idx S ][ 'count' ]
+@_get_stack_idx     = ( S )          -> ( S.sandbox.get 'COLUMNS' ).stack.length - 1
 
 #-----------------------------------------------------------------------------------------------------------
 @_change_column_count = ( S, event, send, column_count ) ->
