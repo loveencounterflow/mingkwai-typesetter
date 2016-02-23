@@ -1221,6 +1221,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
   readstream
     .pipe plugins_tee
     .pipe MACRO_ESCAPER.$expand.$remove_backslashes         S
+    .pipe D.$show()
     .pipe @$document                                        S
     .pipe @MKTX.INLINE.$link                                S
     .pipe @MKTX.MIXED.$footnote                             S

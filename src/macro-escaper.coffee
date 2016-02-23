@@ -241,7 +241,7 @@ after it, thereby inhibiting any processing of those portions. ###
 @end_command_patterns = [
   ///                           # Then end command macro
   ( ^ |                         # starts either at the first chr
-    ^ [ \s\S ]+? [^ \\ ] )      # or a minimal number of chrs whose last one is not a backslash
+    ^ [ \s\S ]*? [^ \\ ] )      # or a minimal number of chrs whose last one is not a backslash
   <<!end>>                      # then: the `<<!end>>` literal.
   ///                           # NB that this pattern is not global.
   ]

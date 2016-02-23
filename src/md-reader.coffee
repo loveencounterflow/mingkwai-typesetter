@@ -358,19 +358,13 @@ tracker_pattern = /// ^
     _send = send
     #.......................................................................................................
     if token is end_token
-      # whisper "encountered `end` token"
       if unknown_tokens.length > 0
         send remark 'warn', "unknown tokens: #{unknown_tokens.sort().join ', '}", {}
       if is_first
         is_first = no
         send [ '(', 'document', null, {}, ]
-        send [ '.', 'command', 'empty-document', {}, ]
-      # debug '©76885', [ ')', 'document', null, {}, ]
       send [ ')', 'document', null, {}, ]
-      setImmediate =>
-        # whisper "ending input stream"
-        send.end()
-      # setTimeout ( => send.end() ), 1000
+      setImmediate => send.end()
     else if CND.isa_list token
       ### TAINT this clause shouldn't be here; we should target resends (which could be source texts
       or MKTS events) to appropriate insertion points in the stream ###

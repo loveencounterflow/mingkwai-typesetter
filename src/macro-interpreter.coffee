@@ -89,17 +89,16 @@ MKTS                      = require './main'
       return [ '~', 'change', changeset, {}, ]
   #.........................................................................................................
   VM.createContext sandbox
-  is_first = yes
   #.........................................................................................................
   return $ ( event, send ) =>
-    if is_first
-      is_first = no
+    if MKTS.MD_READER.select '(', 'document'
       [ ..., meta, ] = event
       send event
       changeset = MKTS.DIFFPATCH.diff {}, sandbox
+      debug '©47846', 'initial changeset', changeset
       send stamp [ '~', 'change', changeset, ( copy meta ), ]
     #.......................................................................................................
-    if MKTS.MD_READER.select event, '.', 'action'
+    else if MKTS.MD_READER.select event, '.', 'action'
       [ _, _, raw_source, meta, ]     = event
       send stamp hide event
       { mode, language, line_nr, }    = meta
