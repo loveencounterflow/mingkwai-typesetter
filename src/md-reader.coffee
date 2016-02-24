@@ -851,11 +851,13 @@ tracker_pattern = /// ^
     .pipe @_PRE.$reinject_html_blocks                 S
     # .pipe D.$observe ( event ) => debug '©1', rpr event
     .pipe @_PRE.$rewrite_markdownit_tokens            S
+    .pipe @_PRE.$issue_administrative_events          S
     .pipe MKTS.MACRO_ESCAPER.$expand                  S
     .pipe @_PRE.$process_end_command                  S
     .pipe @_PRE.$consolidate_tables                   S
     .pipe @_PRE.$consolidate_footnotes                S
     .pipe @_PRE.$extra_hr                             S
+    .pipe MKTS.MACRO_INTERPRETER.$prepare_sandbox     S
     .pipe MKTS.MACRO_INTERPRETER.$process_actions     S
     .pipe MKTS.MACRO_INTERPRETER.$process_values      S
     .pipe MKTS.MACRO_INTERPRETER.$process_commands    S

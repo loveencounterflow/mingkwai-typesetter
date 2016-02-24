@@ -48,9 +48,9 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
 
 #-----------------------------------------------------------------------------------------------------------
 @$main = ( S ) ->
-  @_initialize_state S
   #.........................................................................................................
   return D.TEE.from_pipeline [
+    @$initialize_state          S
     @$end_columns_with_document S
     @$slash                     S
     @$columns                   S
@@ -59,6 +59,34 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
 
 #===========================================================================================================
 # STREAM TRANSFORMS
+#-----------------------------------------------------------------------------------------------------------
+@$initialize_state = ( S ) ->
+  sandbox = {}
+  return $ ( event, send ) =>
+    #.......................................................................................................
+    if select event, '~', 'change'
+      [ _, _, changeset, _, ] = event
+      sandbox                 = MK.TS.DIFFPATCH.patch changeset, sandbox
+      send event
+    #.......................................................................................................
+    else if select event, '(', 'document'
+      [ ..., meta, ] = event
+      sandbox_backup = MK.TS.DIFFPATCH.snapshot sandbox
+      throw new Error "namespace collision: `S.sandbox.COLUMNS` already defined" if sandbox[ 'COLUMNS' ]?
+      sandbox[ 'COLUMNS' ] =
+        count: 2 # default number of columns in document **when using multiple columns**
+        stack: [ @_new_setting(), ]
+      send event
+      changeset = MKTS.DIFFPATCH.diff {}, sandbox
+      debug '©47846', 'changeset', changeset
+      send stamp [ '~', 'change', changeset, ( copy meta ), ] if changeset.length > 0
+      send [ '!', 'columns', [ 1, ], ( copy meta ), ] # ???
+    #.......................................................................................................
+    else
+      send event
+    #.......................................................................................................
+    return null
+
 #-----------------------------------------------------------------------------------------------------------
 @$end_columns_with_document = ( S ) ->
   remark = MK.TS.MD_READER._get_remark()
@@ -104,18 +132,18 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
 #-----------------------------------------------------------------------------------------------------------
 @$columns = ( S ) ->
   remark  = MK.TS.MD_READER._get_remark()
-  s       = {}
+  sandbox = {}
   #.........................................................................................................
   return $ ( event, send ) =>
     #.......................................................................................................
     if select event, '~', 'change'
       [ _, _, changeset, _, ] = event
-      s                       = MK.TS.DIFFPATCH.patch changeset, s
+      sandbox                 = MK.TS.DIFFPATCH.patch changeset, sandbox
       send event
     #.......................................................................................................
     else if select event, '!', 'columns'
       [ type, name, parameters, meta, ] = event
-      parameters.push s.COLUMNS.count if parameters.length is 0
+      parameters.push sandbox.COLUMNS.count if parameters.length is 0
       [ parameter, ] = parameters
       switch type = CND.type_of parameter
         #...................................................................................................
@@ -123,7 +151,7 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
           switch parameter
             when 'pop'
               send stamp hide copy event
-              @_restore_column_count S, event, send
+              @_restore_column_count sandbox, event, send
             else
               send stamp hide copy event
               message = "unknown text argument #{rpr parameter}"
@@ -135,7 +163,7 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
             message = "expected non-zero positive integer, got #{rpr parameter}"
             return send [ '.', 'warning', message, ( copy meta ), ]
           send stamp hide copy event
-          @_change_column_count S, event, send, parameter
+          @_change_column_count sandbox, event, send, parameter
         #...................................................................................................
         else
           send stamp hide copy event
@@ -156,35 +184,27 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
   return Object.assign R, P...
 
 #-----------------------------------------------------------------------------------------------------------
-@_initialize_state = ( S ) ->
-  throw new Error "namespace collision: `S.sandbox.COLUMNS` already defined" if ( S.sandbox.get 'COLUMNS' )?
-  S.sandbox.set 'COLUMNS',
-    count: 2 # default number of columns in document **when using multiple columns**
-    stack: [ @_new_setting(), ]
-  return null
+@_push              = ( sandbox, setting ) -> sandbox.COLUMNS.stack.push setting
+@_pop               = ( sandbox )          -> sandbox.COLUMNS.stack.pop()
+@_get_column_count  = ( sandbox )          -> sandbox.COLUMNS.stack[ @_get_stack_idx sandbox ][ 'count' ]
+@_get_stack_idx     = ( sandbox )          -> sandbox.COLUMNS.stack.length - 1
 
 #-----------------------------------------------------------------------------------------------------------
-@_push              = ( S, setting ) -> ( S.sandbox.get 'COLUMNS' ).stack.push setting
-@_pop               = ( S )          -> ( S.sandbox.get 'COLUMNS' ).stack.pop()
-@_get_column_count  = ( S )          -> ( S.sandbox.get 'COLUMNS' ).stack[ @_get_stack_idx S ][ 'count' ]
-@_get_stack_idx     = ( S )          -> ( S.sandbox.get 'COLUMNS' ).stack.length - 1
+@_change_column_count = ( sandbox, event, send, column_count ) ->
+  @_stop_column_region  sandbox, event, send
+  @_start_column_region sandbox, event, send, column_count
 
 #-----------------------------------------------------------------------------------------------------------
-@_change_column_count = ( S, event, send, column_count ) ->
-  @_stop_column_region  S, event, send
-  @_start_column_region S, event, send, column_count
+@_restore_column_count = ( sandbox, event, send ) ->
+  @_stop_column_region  sandbox, event, send
+  @_pop sandbox
+  column_count = @_get_column_count sandbox
+  @_start_column_region sandbox, event, send, column_count
 
 #-----------------------------------------------------------------------------------------------------------
-@_restore_column_count = ( S, event, send ) ->
-  @_stop_column_region  S, event, send
-  @_pop S
-  column_count = @_get_column_count S
-  @_start_column_region S, event, send, column_count
-
-#-----------------------------------------------------------------------------------------------------------
-@_start_column_region = ( S, event, send, column_count ) ->
+@_start_column_region = ( sandbox, event, send, column_count ) ->
   # send stamp hide copy event
-  @_push S, @_new_setting { count: column_count, }
+  @_push sandbox, @_new_setting { count: column_count, }
   # debug '©66343', event, column_count
   # debug '©66343', S.sandbox.COLUMNS.stack
   if column_count isnt 1
@@ -194,13 +214,13 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
   return null
 
 #-----------------------------------------------------------------------------------------------------------
-@_stop_column_region = ( S, event, send ) ->
+@_stop_column_region = ( sandbox, event, send ) ->
   ### No-op in case we're in base ('ambient', 'document') state ###
-  # urge '77262', S.sandbox.COLUMNS.stack
+  # urge '77262', sandbox.sandbox.COLUMNS.stack
   # send stamp hide copy event
-  return if ( @_get_stack_idx S ) is 0
-  column_count    = @_get_column_count S
-  # last_state      = @_pop S
+  return if ( @_get_stack_idx sandbox ) is 0
+  column_count    = @_get_column_count sandbox
+  # last_state      = @_pop sandbox
   ### No-op in case we're already in single-column state ###
   return if column_count is 1
   [ ..., meta, ]  = event

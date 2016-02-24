@@ -34,21 +34,16 @@ MKTS                      = require './main'
 
 
 #===========================================================================================================
-#
+# PREPARE SANDBOX
 #-----------------------------------------------------------------------------------------------------------
-@$process_actions = ( S ) =>
-  ### TAINT this is an essentially synchronous solution that will not work for async code ###
-  copy  = MKTS.MD_READER.copy.bind  MKTS.MD_READER
-  stamp = MKTS.MD_READER.stamp.bind MKTS.MD_READER
-  hide  = MKTS.MD_READER.hide.bind  MKTS.MD_READER
+@$prepare_sandbox = ( S ) =>
+  local_filename    = 'XXXXXXXXXXXXX'
+  copy              = MKTS.MD_READER.copy.bind  MKTS.MD_READER
+  stamp             = MKTS.MD_READER.stamp.bind MKTS.MD_READER
+  hide              = MKTS.MD_READER.hide.bind  MKTS.MD_READER
+  select            = MKTS.MD_READER.select.bind  MKTS.MD_READER
   #.........................................................................................................
-  CS                        = require 'coffee-script'
-  VM                        = require 'vm'
-  local_filename            = 'XXXXXXXXXXXXX'
-  macro_output              = []
-  #.........................................................................................................
-  sandbox_backup  = null
-  sandbox         =
+  sandbox =
     'rpr':            CND.rpr
     urge:             CND.get_logger 'urge', local_filename
     help:             CND.get_logger 'help', local_filename
@@ -56,54 +51,51 @@ MKTS                      = require './main'
     echo:             ( P... ) -> macro_output.push CND.pen P...
     mkts:
       signature_reader: ( P... ) -> P
-      output:           macro_output
-      # reserved_names:   []
+      output:           []
       __filename:       local_filename
   #.........................................................................................................
-  S.sandbox =
-    #.......................................................................................................
-    get: ( name ) ->
-      return sandbox[ name ]
-    #.......................................................................................................
-    set: ( name, value ) ->
-      sandbox[ name ] = value
-      return null
-    #.......................................................................................................
-    snapshot: ->
-      debug '131-1 sandbox       ',        sandbox?[ 'COLUMNS' ]
-      debug '131-2 sandbox_backup', sandbox_backup?[ 'COLUMNS' ]
-      sandbox_backup = MKTS.DIFFPATCH.snapshot sandbox
-      debug '131-3 sandbox       ',        sandbox?[ 'COLUMNS' ]
-      debug '131-4 sandbox_backup', sandbox_backup?[ 'COLUMNS' ]
-      return null
-    #.......................................................................................................
-    get_context: ->
-      return sandbox
-    #.......................................................................................................
-    new_change_event: ->
-      debug '131-5 sandbox       ',        sandbox?[ 'COLUMNS' ]
-      debug '131-6 sandbox_backup', sandbox_backup?[ 'COLUMNS' ]
-      changeset = MKTS.DIFFPATCH.diff sandbox_backup, sandbox
-      @snapshot()
-      return null if changeset.length > 0
-      return [ '~', 'change', changeset, {}, ]
-  #.........................................................................................................
-  VM.createContext sandbox
-  #.........................................................................................................
   return $ ( event, send ) =>
-    if MKTS.MD_READER.select '(', 'document'
+    if MKTS.MD_READER.select event, '(', 'document'
       [ ..., meta, ] = event
       send event
       changeset = MKTS.DIFFPATCH.diff {}, sandbox
       debug '©47846', 'initial changeset', changeset
       send stamp [ '~', 'change', changeset, ( copy meta ), ]
     #.......................................................................................................
-    else if MKTS.MD_READER.select event, '.', 'action'
+    else
+      send event
+
+
+#===========================================================================================================
+#
+#-----------------------------------------------------------------------------------------------------------
+@$process_actions = ( S ) =>
+  ### TAINT this is an essentially synchronous solution that will not work for async code ###
+  copy    = MKTS.MD_READER.copy.bind  MKTS.MD_READER
+  stamp   = MKTS.MD_READER.stamp.bind MKTS.MD_READER
+  hide    = MKTS.MD_READER.hide.bind  MKTS.MD_READER
+  select  = MKTS.MD_READER.select.bind  MKTS.MD_READER
+  #.........................................................................................................
+  CS                        = require 'coffee-script'
+  VM                        = require 'vm'
+  local_filename            = 'XXXXXXXXXXXXX'
+  macro_output              = []
+  sandbox                   = {}
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    #.......................................................................................................
+    if select event, '~', 'change'
+      [ _, _, changeset, _, ] = event
+      sandbox                 = MK.TS.DIFFPATCH.patch    changeset, sandbox
+      send event
+    #.......................................................................................................
+    else if select event, '.', 'action'
       [ _, _, raw_source, meta, ]     = event
       send stamp hide event
       { mode, language, line_nr, }    = meta
       error_message                   = null
-      S.sandbox.snapshot()
+      sandbox_backup                  = MK.TS.DIFFPATCH.snapshot sandbox
+      VM.createContext sandbox unless VM.isContext sandbox
       #.....................................................................................................
       switch language
         when 'js'
@@ -150,10 +142,9 @@ MKTS                      = require './main'
         # send [ '~', 'update', action_value_rpr, ( copy meta ), ]
         ### TAINT use more specific change event ('change sandbox')? ###
         # debug '34821', sandbox.COLUMNS
-        change_event = S.sandbox.new_change_event()
-        debug '34821', change_event
-        send change_event if change_event
-        # send change_event if ( change_event = S.sandbox.new_change_event() )?
+        changeset = DIFFPATCH.diff sandbox_backup, sandbox
+        debug '34821', changeset
+        send [ '~', 'change', changeset, ( copy meta ), ] if changeset.length > 0
     #.......................................................................................................
     else
       send event
@@ -164,12 +155,12 @@ MKTS                      = require './main'
   stamp = MKTS.MD_READER.stamp.bind MKTS.MD_READER
   hide  = MKTS.MD_READER.hide.bind  MKTS.MD_READER
   #.........................................................................................................
-  throw new Error "internal error: need S.sandbox, must use `$process_actions`" unless S.sandbox?
+  # throw new Error "internal error: need S.SANDBOX, must use `$prepare_sandbox`" unless S.SANDBOX?
   #.........................................................................................................
   return $ ( event, send ) =>
     if MKTS.MD_READER.select event, '$'
       [ _, identifier, _, meta, ]     = event
-      action_value                    = S.sandbox[ identifier ]
+      action_value                    = S.SANDBOX[ identifier ]
       unless action_value is undefined
         action_value_rpr = rpr action_value unless CND.isa_text action_value
         send [ '.', 'text', action_value_rpr, ( copy meta ), ]
@@ -190,7 +181,7 @@ MKTS                      = require './main'
   stamp = MKTS.MD_READER.stamp.bind MKTS.MD_READER
   hide  = MKTS.MD_READER.hide.bind  MKTS.MD_READER
   #.........................................................................................................
-  throw new Error "internal error: need S.sandbox, must use `$process_actions`" unless S.sandbox?
+  # throw new Error "internal error: need S.SANDBOX, must use `$prepare_sandbox`" unless S.SANDBOX?
   #.........................................................................................................
   return $ ( event, send ) =>
     if MKTS.MD_READER.select event, '!'
@@ -211,7 +202,7 @@ MKTS                      = require './main'
   hide      = MKTS.MD_READER.hide.bind    MKTS.MD_READER
   select    = MKTS.MD_READER.select.bind  MKTS.MD_READER
   #.........................................................................................................
-  throw new Error "internal error: need S.sandbox, must use `$process_actions`" unless S.sandbox?
+  # throw new Error "internal error: need S.SANDBOX, must use `$prepare_sandbox`" unless S.SANDBOX?
   #.........................................................................................................
   return $ ( event, send ) =>
     ### TAINT code duplication ###
@@ -242,7 +233,7 @@ MKTS                      = require './main'
   select    = MKTS.MD_READER.select.bind  MKTS.MD_READER
   tag_stack = []
   #.........................................................................................................
-  throw new Error "internal error: need S.sandbox, must use `$process_actions`" unless S.sandbox?
+  # throw new Error "internal error: need S.SANDBOX, must use `$prepare_sandbox`" unless S.SANDBOX?
   #.........................................................................................................
   return $ ( event, send ) =>
     ### TAINT code duplication ###
@@ -297,7 +288,7 @@ MKTS                      = require './main'
   hide      = MKTS.MD_READER.hide.bind    MKTS.MD_READER
   select    = MKTS.MD_READER.select.bind  MKTS.MD_READER
   #.........................................................................................................
-  throw new Error "internal error: need S.sandbox, must use `$process_actions`" unless S.sandbox?
+  # throw new Error "internal error: need S.SANDBOX, must use `$prepare_sandbox`" unless S.SANDBOX?
   #.........................................................................................................
   return $ ( event, send ) =>
     ### TAINT code duplication ###
@@ -326,7 +317,7 @@ MKTS                      = require './main'
   source          = "@mkts.signature_reader #{text}"
   error_message   = null
   #.........................................................................................................
-  throw new Error "internal error: need S.sandbox, must use `$process_actions`" unless S.sandbox?
+  # throw new Error "internal error: need S.SANDBOX, must use `$prepare_sandbox`" unless S.SANDBOX?
   #.....................................................................................................
   try
     js_source = CS.compile source, { bare: true, filename: 'parameter resolution', }
@@ -335,7 +326,7 @@ MKTS                      = require './main'
   #.....................................................................................................
   unless error_message?
     try
-      R = VM.runInContext js_source, S.sandbox.get_context(), { filename: 'parameter resolution', }
+      R = VM.runInContext js_source, S.SANDBOX.get_context(), { filename: 'parameter resolution', }
     catch error
       error_message = error[ 'message' ] ? rpr error
   #.....................................................................................................

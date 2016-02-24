@@ -255,3 +255,8 @@ LODASH                    = require 'lodash'
 @snapshot = ( original )      -> LODASH.cloneDeep original
 @diff     = ( x, y )          -> diff x, y
 @patch    = ( changeset, x )  -> diff.apply changeset, x
+
+
+
+
+
