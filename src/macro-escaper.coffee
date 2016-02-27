@@ -207,7 +207,7 @@ MKTS                      = require './main'
 @command_and_value_patterns = [
   ///                           # A command macro
   <<                            # starts with two left pointy brackets,
-    ( [ ! $ ] )                 # then: an exclamation mark or a dollar sign,
+    ( [ ! @ ] )                 # then: an exclamation mark or a commerical-at sign,
     (
       (?:                       # then:
         [^ > ]             |    #   or: anything but a RPB
@@ -222,7 +222,7 @@ MKTS                      = require './main'
 @insert_command_patterns = [
   ///                           # An insert command macro
   <<                            # starts with two left pointy brackets,
-    ( [ ! $ ] )                 # then: an exclamation mark or a dollar sign,
+    ( ! )                       # then: an exclamation mark
     insert (?= [\s>] )          # then: an 'insert' literal (followed by WS or RPB)
     (
       (?:                       # then:

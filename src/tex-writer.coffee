@@ -46,6 +46,7 @@ select                    = MD_READER.select.bind      MD_READER
 is_hidden                 = MD_READER.is_hidden.bind   MD_READER
 is_stamped                = MD_READER.is_stamped.bind  MD_READER
 MACRO_ESCAPER             = require './macro-escaper'
+MACRO_INTERPRETER         = require './macro-interpreter'
 LINEBREAKER               = require './linebreaker'
 @COLUMNS                  = require './tex-writer-columns'
 
@@ -416,6 +417,7 @@ before '@MKTX.COMMAND.$toc', after '@MKTX.BLOCK.$heading', \
   this_heading    = null
   headings        = []
   buffer          = []
+  remark          = MD_READER._get_remark()
   #.........................................................................................................
   new_heading = ( level, meta ) ->
     R =
@@ -429,7 +431,13 @@ before '@MKTX.COMMAND.$toc', after '@MKTX.BLOCK.$heading', \
     # debug '8624', event
     [ type, name, text, meta, ] = event
     #.......................................................................................................
-    if select event, '(', 'document'
+    if select event, '~', [ 'flush', 'stop', ]
+      send remark name, "releasing #{buffer.length} events", ( copy meta, )
+      send sub_event for sub_event in buffer
+      buffer.length = 0
+      send event
+    #.......................................................................................................
+    else if select event, '(', 'document'
       send event
     #.......................................................................................................
     else if select event, ')', 'document'
@@ -1137,11 +1145,11 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
 @MKTX.$show_unhandled_tags = ( S ) =>
   return $ ( event, send ) =>
     ### TAINT selection could be simpler, less repetitive ###
-    if ( event[ 0 ] in [ 'tex', 'text', ] ) or select event, '.', [ 'text', 'raw', ]
+    [ type, name, text, meta, ] = event
+    if ( type is 'tex' ) or select event, '.', [ 'text', 'raw', ]
       send event
-    else if ( not is_stamped event ) and ( not select event, '.', 'warning' )
+    else if ( not is_stamped event ) and ( type isnt '~' ) and ( not select event, '.', 'warning' )
       # debug '©04210', JSON.stringify event
-      [ type, name, text, meta, ] = event
       # if text?
       #   if ( CND.isa_pod text )
       #     if ( Object.keys text ).length is 0
@@ -1187,11 +1195,12 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
 @$filter_tex = ( S ) ->
   ### TAINT reduce number of event types, shapes to simplify this ###
   return $ ( event, send ) =>
-    if select event, 'tex'
+    [ type, name, text, meta, ] = event
+    if type is 'tex'
       send event[ 1 ]
     else if select event, '.', [ 'text', 'raw', ]
       send event[ 2 ]
-    else unless is_stamped event
+    else unless ( type is '~' ) or ( is_stamped event )
       warn "unhandled event: #{JSON.stringify event}"
       send.error new Error "unhandled events not allowed at this point; got #{JSON.stringify event}"
 
@@ -1221,8 +1230,8 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
   readstream
     .pipe plugins_tee
     .pipe MACRO_ESCAPER.$expand.$remove_backslashes         S
-    .pipe D.$show()
     .pipe @$document                                        S
+    #.......................................................................................................
     .pipe @MKTX.INLINE.$link                                S
     .pipe @MKTX.MIXED.$footnote                             S
     .pipe @MKTX.MIXED.$footnote.$remove_extra_paragraphs    S
@@ -1246,6 +1255,8 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @MKTX.BLOCK.$paragraph                            S
     .pipe @MKTX.MIXED.$raw                                  S
     .pipe @COLUMNS.$main                                    S
+    #.......................................................................................................
+    .pipe MACRO_INTERPRETER.$capture_change_events          S
     .pipe @MKTX.CLEANUP.$remove_empty_texts                 S
     .pipe @MKTX.CLEANUP.$consolidate_texts                  S
     .pipe @MKTX.TEX.$fix_typography_for_tex                 S

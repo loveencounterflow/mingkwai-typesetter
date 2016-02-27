@@ -61,7 +61,8 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
 # STREAM TRANSFORMS
 #-----------------------------------------------------------------------------------------------------------
 @$initialize_state = ( S ) ->
-  sandbox = {}
+  sandbox   = {}
+  is_first  = yes
   return $ ( event, send ) =>
     #.......................................................................................................
     if select event, '~', 'change'
@@ -69,18 +70,18 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
       sandbox                 = MK.TS.DIFFPATCH.patch changeset, sandbox
       send event
     #.......................................................................................................
-    else if select event, '(', 'document'
-      [ ..., meta, ] = event
-      sandbox_backup = MK.TS.DIFFPATCH.snapshot sandbox
+    else if is_first and select event, '~', 'flush'
+      is_first        = no
+      [ ..., meta, ]  = event
+      sandbox_backup  = MK.TS.DIFFPATCH.snapshot sandbox
       throw new Error "namespace collision: `S.sandbox.COLUMNS` already defined" if sandbox[ 'COLUMNS' ]?
       sandbox[ 'COLUMNS' ] =
         count: 2 # default number of columns in document **when using multiple columns**
         stack: [ @_new_setting(), ]
-      send event
-      changeset = MKTS.DIFFPATCH.diff {}, sandbox
-      debug '©47846', 'changeset', changeset
-      send stamp [ '~', 'change', changeset, ( copy meta ), ] if changeset.length > 0
+      changeset = MKTS.DIFFPATCH.diff sandbox_backup, sandbox
+      send [ '~', 'change', changeset, ( copy meta ), ] if changeset.length > 0
       send [ '!', 'columns', [ 1, ], ( copy meta ), ] # ???
+      send event
     #.......................................................................................................
     else
       send event
