@@ -165,7 +165,6 @@ MKTS                      = require './main'
         ### TAINT use more specific change event ('change sandbox')? ###
         # debug '34821', sandbox.COLUMNS
         changeset = MK.TS.DIFFPATCH.diff sandbox_backup, sandbox
-        debug '34821', changeset
         send [ '~', 'change', changeset, ( copy meta ), ] if changeset.length > 0
     #.......................................................................................................
     else
@@ -182,7 +181,6 @@ MKTS                      = require './main'
     if MKTS.MD_READER.select event, '@'
       [ _, identifier, _, meta, ] = event
       sandbox                     = get_sandbox()
-      debug '99876', sandbox
       action_value                = sandbox
       for sub_identifier in identifier.split '.'
         action_value = action_value[ sub_identifier ]
@@ -338,10 +336,14 @@ MKTS                      = require './main'
   ### TAINT move to CND? COFFEESCRIPT? ###
   CS              = require 'coffee-script'
   VM              = require 'vm'
-  source          = "@mkts.signature_reader #{text}"
+  source          = "mkts.signature_reader #{text}"
   error_message   = null
   #.........................................................................................................
-  # throw new Error "internal error: need S.SANDBOX, must use `$prepare_sandbox`" unless S.SANDBOX?
+  warn "using makeshift solution for sandbox in `_parameters_from_text`"
+  sandbox =
+    mkts:
+      signature_reader: ( P... ) -> P
+  VM.createContext sandbox
   #.....................................................................................................
   try
     js_source = CS.compile source, { bare: true, filename: 'parameter resolution', }
@@ -350,7 +352,7 @@ MKTS                      = require './main'
   #.....................................................................................................
   unless error_message?
     try
-      R = VM.runInContext js_source, S.SANDBOX.get_context(), { filename: 'parameter resolution', }
+      R = VM.runInContext js_source, sandbox, { filename: 'parameter resolution', }
     catch error
       error_message = error[ 'message' ] ? rpr error
   #.....................................................................................................

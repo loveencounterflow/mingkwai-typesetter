@@ -381,6 +381,7 @@ before '@MKTX.BLOCK.$heading', '@MKTX.COMMAND.$toc', \
       #.....................................................................................................
       switch level
         when 1
+          send [ '!', 'columns', [ 1, ], ( copy meta, { toc: 'omit' }, ), ]
           send [ 'tex', "{\\mktsHOne{}", ]
           send [ 'tex', "\\zlabel{#{h_key}}", { toc: 'omit' }, ]
         when 2
@@ -398,6 +399,7 @@ before '@MKTX.BLOCK.$heading', '@MKTX.COMMAND.$toc', \
       switch level
         when 1
           send [ 'tex', "\\mktsHOneBeg}%\n",          ]
+          send [ '!', 'columns', [ 'pop', ], ( copy meta, { toc: 'omit' }, ), ]
         when 2
           send [ 'tex', "\\mktsHTwoBeg}%\n",          ]
           send [ '!', 'columns', [ 'pop', ], ( copy meta, { toc: 'omit' } ), ]
@@ -501,7 +503,8 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
           # debug '23432', h_event
           ### TAINT use library method to determine event category ###
           h_event = unstamp h_event if h_event.length is 4
-          send [ 'tex', " \\dotfill \\zpageref{#{key}}", ] if idx is last_idx
+          send [ 'tex', "{\\mktsStyleNormal \\dotfill \\zpageref{#{key}}}", ] if idx is last_idx
+          # send [ 'tex', " \\dotfill \\zpageref{#{key}}", ] if idx is last_idx
           send h_event
       send [ 'tex', '\\mktsTocBeg}%\n', ]
       # headings.length = 0
@@ -512,6 +515,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.BLOCK.$yadda = ( S ) =>
   generate_yadda  = require 'lorem-ipsum'
+  cache           = []
   settings        =
     count:                1                       # Number of words, sentences, or paragraphs to generate.
     # units:                'sentences'             # Generate words, sentences, or paragraphs.
@@ -527,10 +531,12 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
   #.........................................................................................................
   return $ ( event, send ) =>
     if select event, '!', 'yadda'
-      [ type, name, text, meta, ] = event
-      settings[ 'paragraphLowerBound' ] = 3
-      settings[ 'paragraphUpperBound' ] = 7
-      yadda = generate_yadda settings
+      [ type, name, parameters, meta, ] = event
+      debug parameters
+      [ yadda_idx, ]                    = parameters
+      yadda_idx                        ?= cache.length
+      cache.push generate_yadda settings while cache.length - 1 < yadda_idx
+      yadda = cache[ yadda_idx ]
       # yadda = @MKTX.TEX.fix_typography_for_tex yadda, S.options
       send stamp event
       send [ 'tex', yadda, ]

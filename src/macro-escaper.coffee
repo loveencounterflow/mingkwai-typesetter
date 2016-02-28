@@ -366,7 +366,9 @@ after it, thereby inhibiting any processing of those portions. ###
         else
           error_message = ( error_message ? '' ) + "\nneed file route for insert macro"
       if error_message?
-        return " XXXXXXXX #{error_message} XXXXXXXX "
+        ### TAINT provide proper location ###
+        # return [ '.', 'warning', error_message, {}, ]
+        return " ███ #{error_message} ███ "
       return content
   #.........................................................................................................
   return R
