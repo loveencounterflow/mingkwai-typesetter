@@ -389,6 +389,7 @@ before '@MKTX.BLOCK.$heading', '@MKTX.COMMAND.$toc', \
           send [ 'tex', "{\\mktsHTwo{}", ]
           send [ 'tex', "\\zlabel{#{h_key}}", { toc: 'omit' }, ]
         when 3
+          send [ '!', 'columns', [ 1, ], ( copy meta, { toc: 'omit' }, ), ]
           send [ 'tex', "{\\mktsHThree{}", ]
           send [ 'tex', "\\zlabel{#{h_key}}", { toc: 'omit' }, ]
         else return send [ '.', 'warning', "heading level #{level} not implemented", ( copy meta ), ]
@@ -405,6 +406,7 @@ before '@MKTX.BLOCK.$heading', '@MKTX.COMMAND.$toc', \
           send [ '!', 'columns', [ 'pop', ], ( copy meta, { toc: 'omit' } ), ]
         when 3
           send [ 'tex', "\\mktsHThreeBeg}%\n",        ]
+          send [ '!', 'columns', [ 'pop', ], ( copy meta, { toc: 'omit' } ), ]
         else return send [ '.', 'warning', "heading level #{level} not implemented", ( copy meta ), ]
       #.....................................................................................................
       send stamp event
