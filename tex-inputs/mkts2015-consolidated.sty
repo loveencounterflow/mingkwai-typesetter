@@ -71,6 +71,48 @@
 \usepackage[plain]{mkts-para-font-size}%        plain
 \usepackage[default]{mkts-headings-and-toc}%    default
 
+%  \newdimen\foobar%
+%  \setlength{\foobar}{\paperheight - \headheight - \headsep - \topmargin - \voffset - 1in}%
+%  \AddToShipoutPicture{%
+%    \begin{tikzpicture}[overlay,remember picture]
+%      \draw[ red, thin, xshift = \hoffset + 1in + \oddsidemargin ]
+%      %\draw[red!30!white,thin]
+%        ( 0mm,
+%           - \textheight )
+%        grid[ xstep = 1000mm, ystep = \mktsLineheight, yshift = -\mktsLineheight * 0.125 ]
+%        ( \textwidth,
+%          \paperheight - \headheight - \headsep - \topmargin - \voffset - 1in );
+%      \draw[ blue, thin, xshift = \hoffset + 1in + \oddsidemargin ]
+%      ( 0mm, 0mm ) -- ( 150mm, 150mm );
+%    \end{tikzpicture}%
+%  }%
+
+  \AddToShipoutPicture{%
+    \begin{tikzpicture}[overlay,remember picture]
+      \draw[ red, thin, xshift = \hoffset + 1in + \oddsidemargin ]
+      %\draw[red!30!white,thin]
+        ( 0mm,
+          \paperheight - \headheight - \headsep - \topmargin - \voffset - 1in - \textheight )
+        grid[ xstep = 1000mm, ystep = \mktsLineheight, yshift = -\mktsLineheight * 0.125 ]
+        ( \textwidth,
+          \paperheight - \headheight - \headsep - \topmargin - \voffset - 1in );
+      \draw[ blue, thin, xshift = \hoffset + 1in + \oddsidemargin ]
+      ( 0mm, 0mm ) -- ( 150mm, 150mm );
+    \end{tikzpicture}%
+  }%
+%
+%  \AddToShipoutPicture{%
+%    \begin{tikzpicture}[overlay,remember picture]
+%      \draw[ red, thin, xshift = \hoffset + 1in + \oddsidemargin ]
+%      %\draw[red!30!white,thin]
+%        ( 0mm,
+%          \paperheight - \headheight - \headsep - \topmargin - \voffset - 1in - \textheight )
+%        grid[ xstep = \textwidth * 0.25, ystep = \mktsLineheight, yshift = -\mktsLineheight * 0.125 ]
+%        ( \textwidth,
+%          \paperheight - \headheight - \headsep - \topmargin - \voffset - 1in );
+%    \end{tikzpicture}%
+%  }%
+
 
 
 \newcommand{\mktsJzrVerticalbarInfix}{}%
