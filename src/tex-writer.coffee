@@ -640,6 +640,19 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       send event
 
 #-----------------------------------------------------------------------------------------------------------
+@MKTX.BLOCK.$nl = ( S ) =>
+  nl = [ 'tex', "\\null\\\\\n", ]
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    #.......................................................................................................
+    if select event, '!', 'nl'
+      [ type, name, [ count, ], meta, ] = event
+      send nl for _ in [ 0 ... ( count ? 1 ) ] by +1
+    #.......................................................................................................
+    else
+      send event
+
+#-----------------------------------------------------------------------------------------------------------
 @MKTX.INLINE.$code_span = ( S ) =>
   track = MD_READER.TRACKER.new_tracker '(code-span)'
   #.........................................................................................................
@@ -1247,6 +1260,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @MKTX.COMMAND.$comment                            S
     .pipe @MKTX.MIXED.$table                                S
     .pipe @MKTX.BLOCK.$hr                                   S
+    .pipe @MKTX.BLOCK.$nl                                   S
     .pipe @MKTX.REGION.$code                                S
     .pipe @MKTX.REGION.$keep_lines                          S
     .pipe @MKTX.REGION.$toc                                 S

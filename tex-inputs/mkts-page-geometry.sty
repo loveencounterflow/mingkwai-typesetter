@@ -5,6 +5,8 @@
 % Page Layout
 % ----------------------------------------------------------------------------------------------------------
 \usepackage{geometry}
+\usepackage{tikz}
+\usepackage{eso-pic}
 
 % ----------------------------------------------------------------------------------------------------------
 \DeclareOption{null}{%
@@ -19,7 +21,7 @@
   \geometry{
     % asymmetric,% see http://tex.stackexchange.com/a/42051/28067
     driver=xetex,
-    % showframe,%
+    showframe,%
     % twoside,
     left=21mm,%
     right=21mm,%
@@ -37,7 +39,25 @@
     % paperheight=210mm,%
     paperwidth=210mm,%
     paperheight=297mm,%
-    }
+    }%
+  }
+
+% ----------------------------------------------------------------------------------------------------------
+\DeclareOption{grid}{%
+  % thx to http://tex.stackexchange.com/a/41153/28067
+  \AddToShipoutPicture{%
+      \begin{tikzpicture}[overlay,remember picture]
+          % \draw[thick,red]
+          %       (current page.north east)
+          %       rectangle (current page.south west);
+          \draw[red!30!white,thin]
+               (current page.south west) grid[xstep=52.5mm,ystep=\mktsLineheight]
+               (current page.north east);
+          % \draw[red!30!white,dotted]
+          %      (current page.south west) grid[step=1cm]
+          %      (current page.north east);
+      \end{tikzpicture}%
+    }%
   }
 
 

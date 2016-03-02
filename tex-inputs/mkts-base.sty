@@ -91,16 +91,12 @@
   \def\mktsMakeActive#1{\catcode`#113\relax}
 
   \def\mktsAdjustedPar{\par\mbox{}}
-  \newdimen\mktsAdjustedParIndent
-  \mktsAdjustedParIndent=0mm
-  \newskip\mktsAdjustedParSkip
-  \mktsAdjustedParSkip=0pt plus 1pt
 
   {\mktsMakeActive\^^M%
     \gdef\mktsObeyAllLines{%
       \def\cjkgKeepLines{true}%
-      \parindent=\mktsAdjustedParIndent%
-      \parskip=\mktsAdjustedParSkip%
+      \setlength{\parindent}{0mm}%
+      \setlength{\parskip}{0mm}%
       \mktsMakeActive\^^M%
       % \let^^M=\mktsAdjustedPar%
       \leavevmode\hbox{}}%
