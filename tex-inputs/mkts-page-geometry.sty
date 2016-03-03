@@ -7,6 +7,7 @@
 \usepackage{geometry}
 \usepackage{tikz}
 \usepackage{eso-pic}
+\usepackage{multicol}
 
 % ----------------------------------------------------------------------------------------------------------
 \makeatletter%
@@ -21,7 +22,7 @@
 
 % ----------------------------------------------------------------------------------------------------------
 \DeclareOption{a4}{%
-  \typeout{\trmIndigo{a4}}
+  \typeout{mkts-page-geometry: \trmIndigo{a4}}
   \setlength{\columnsep}{5mm}%
   \setlength{\columnseprule}{0.155mm}%
   \setlength{\multicolsep}{0mm}%
@@ -75,7 +76,7 @@
 
 % ----------------------------------------------------------------------------------------------------------
 \newcommand{\mkts@GridCaalculateLengths}{
-  \typeout{\trmIndigo{mkts@GridCaalculateLengths}}
+  \typeout{mkts-page-geometry: \trmIndigo{mkts@GridCaalculateLengths}}
   \setlength{\mkts@GridYmax}{\paperheight - \headheight - \headsep - \topmargin - \voffset - 1in}%
   \setlength{\mkts@GridXshift}{\hoffset + 1in + \oddsidemargin}%
   \setlength{\mkts@GridYshift}{\mkts@GridYmax - \textheight}%
@@ -106,12 +107,12 @@
 
 % ----------------------------------------------------------------------------------------------------------
 \DeclareOption{baselines}{%
-  \typeout{\trmIndigo{baselines}}
+  \typeout{mkts-page-geometry: \trmIndigo{baselines}}
   \mkts@GridCaalculateLengths%
   % thx to http://tex.stackexchange.com/a/41153/28067
   \AddToShipoutPicture{%
     \begin{tikzpicture}[overlay,remember picture]%
-      \draw[ red, thin, xshift = \mkts@GridXshift ]
+      \draw[ red!30, thin, xshift = \mkts@GridXshift ]
       %\draw[red!30!white,thin]
         ( 0mm,
           \mkts@GridYmax - \textheight )
@@ -124,11 +125,11 @@
 
 % ----------------------------------------------------------------------------------------------------------
 \DeclareOption{columns}{%
-  \typeout{\trmIndigo{columns}}
+  \typeout{mkts-page-geometry: \trmIndigo{columns}}
   \mkts@GridCaalculateLengths%
   % ........................................................................................................
   \AddToShipoutPicture{%
-    \begin{tikzpicture}[ overlay, remember picture, blue, thin, xshift = \mkts@GridXshift, yshift = \mkts@GridYshift ]%
+    \begin{tikzpicture}[ overlay, remember picture, blue!30, thin, xshift = \mkts@GridXshift, yshift = \mkts@GridYshift ]%
       \draw ( \mkts@TwoColumnsCenterLeft,  0mm ) -- ( \mkts@TwoColumnsCenterLeft,  \textheight );
       \draw ( \mkts@TwoColumnsCenterRight, 0mm ) -- ( \mkts@TwoColumnsCenterRight, \textheight );
       \draw ( \mkts@FourColumnsCenterOneLeft,  0mm ) -- ( \mkts@FourColumnsCenterOneLeft,  \textheight );
@@ -136,7 +137,7 @@
       \draw ( \mkts@FourColumnsCenterTwoLeft,  0mm ) -- ( \mkts@FourColumnsCenterTwoLeft,  \textheight );
       \draw ( \mkts@FourColumnsCenterTwoRight, 0mm ) -- ( \mkts@FourColumnsCenterTwoRight, \textheight );
     \end{tikzpicture}%
-    \begin{tikzpicture}[ overlay, remember picture, green, thin, xshift = \mkts@GridXshift, yshift = \mkts@GridYshift ]%
+    \begin{tikzpicture}[ overlay, remember picture, green!60, thin, xshift = \mkts@GridXshift, yshift = \mkts@GridYshift ]%
       \draw ( \mkts@ThreeColumnsCenterOneLeft,  0mm ) -- ( \mkts@ThreeColumnsCenterOneLeft,  \textheight );
       \draw ( \mkts@ThreeColumnsCenterOneRight, 0mm ) -- ( \mkts@ThreeColumnsCenterOneRight, \textheight );
       \draw ( \mkts@ThreeColumnsCenterTwoLeft,  0mm ) -- ( \mkts@ThreeColumnsCenterTwoLeft,  \textheight );
