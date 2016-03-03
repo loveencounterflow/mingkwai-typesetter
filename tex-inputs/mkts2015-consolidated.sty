@@ -101,6 +101,18 @@
   \setlength{\mkts@FourColumnsCenterTwoLeft}{\mkts@FourColumnsCenterTwo - \columnsep * \real{0.5}}%
   \setlength{\mkts@FourColumnsCenterTwoRight}{\mkts@FourColumnsCenterTwoLeft + \columnsep}%
   % ........................................................................................................
+  \newdimen\mkts@ThreeColumnsCenterOne%
+  \newdimen\mkts@ThreeColumnsCenterOneLeft%
+  \newdimen\mkts@ThreeColumnsCenterOneRight%
+  \setlength{\mkts@ThreeColumnsCenterOne}{( \textwidth - \columnsep * \real{0.5} ) * \real{0.33333}}%
+  \setlength{\mkts@ThreeColumnsCenterOneLeft}{\mkts@ThreeColumnsCenterOne - \columnsep * \real{0.5}}%
+  \setlength{\mkts@ThreeColumnsCenterOneRight}{\mkts@ThreeColumnsCenterOneLeft + \columnsep}%
+  % ........................................................................................................
+  \newdimen\mkts@ThreeColumnsCenterTwoLeft%
+  \newdimen\mkts@ThreeColumnsCenterTwoRight%
+  \setlength{\mkts@ThreeColumnsCenterTwoLeft}{\mkts@ThreeColumnsCenterOneRight + \mkts@ThreeColumnsCenterOneLeft}%
+  \setlength{\mkts@ThreeColumnsCenterTwoRight}{\mkts@ThreeColumnsCenterTwoLeft + \columnsep}%
+  % ........................................................................................................
   \AddToShipoutPicture{%
     \begin{tikzpicture}[overlay,remember picture]
       \draw[ red, thin, xshift = \mkts@GridXshift ]
@@ -118,6 +130,10 @@
       \draw ( \mkts@FourColumnsCenterOneRight, 0mm ) -- ( \mkts@FourColumnsCenterOneRight, \textheight );
       \draw ( \mkts@FourColumnsCenterTwoLeft,  0mm ) -- ( \mkts@FourColumnsCenterTwoLeft,  \textheight );
       \draw ( \mkts@FourColumnsCenterTwoRight, 0mm ) -- ( \mkts@FourColumnsCenterTwoRight, \textheight );
+      \draw ( \mkts@ThreeColumnsCenterOneLeft,  0mm ) -- ( \mkts@ThreeColumnsCenterOneLeft,  \textheight );
+      \draw ( \mkts@ThreeColumnsCenterOneRight, 0mm ) -- ( \mkts@ThreeColumnsCenterOneRight, \textheight );
+      \draw ( \mkts@ThreeColumnsCenterTwoLeft,  0mm ) -- ( \mkts@ThreeColumnsCenterTwoLeft,  \textheight );
+      \draw ( \mkts@ThreeColumnsCenterTwoRight, 0mm ) -- ( \mkts@ThreeColumnsCenterTwoRight, \textheight );
     \end{tikzpicture}%
   }%
   \makeatother%
