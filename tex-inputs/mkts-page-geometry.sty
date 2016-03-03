@@ -21,6 +21,7 @@
 
 % ----------------------------------------------------------------------------------------------------------
 \DeclareOption{a4}{%
+  \typeout{\trmIndigo{a4}}
   \geometry{
     % asymmetric,% see http://tex.stackexchange.com/a/42051/28067
     driver=xetex,
@@ -70,27 +71,12 @@
 \newdimen\mkts@ThreeColumnsCenterTwoRight%
 
 % ----------------------------------------------------------------------------------------------------------
-\DeclareOption{baselines}{%
+\newcommand{\mkts@GridCaalculateLengths}{
+  \typeout{\trmIndigo{mkts@GridCaalculateLengths}}
   \setlength{\mkts@GridYmax}{\paperheight - \headheight - \headsep - \topmargin - \voffset - 1in}%
   \setlength{\mkts@GridXshift}{\hoffset + 1in + \oddsidemargin}%
   \setlength{\mkts@GridYshift}{\mkts@GridYmax - \textheight}%
   % ........................................................................................................
-  % thx to http://tex.stackexchange.com/a/41153/28067
-  \AddToShipoutPicture{%
-    \begin{tikzpicture}[overlay,remember picture]
-      \draw[ red, thin, xshift = \mkts@GridXshift ]
-      %\draw[red!30!white,thin]
-        ( 0mm,
-          \mkts@GridYmax - \textheight )
-        grid[ xstep = \textwidth, ystep = \mktsLineheight, yshift = -\mktsLineheight * 0.125 ]
-        ( \textwidth,
-          \mkts@GridYmax );
-    \end{tikzpicture}%
-    }
-  }
-
-% ----------------------------------------------------------------------------------------------------------
-\DeclareOption{columns}{%
   \setlength{\mkts@GridYmax}{\paperheight - \headheight - \headsep - \topmargin - \voffset - 1in}%
   \setlength{\mkts@GridXshift}{\hoffset + 1in + \oddsidemargin}%
   \setlength{\mkts@GridYshift}{\mkts@GridYmax - \textheight}%
@@ -113,15 +99,41 @@
   % ........................................................................................................
   \setlength{\mkts@ThreeColumnsCenterTwoLeft}{\mkts@ThreeColumnsCenterOneRight + \mkts@ThreeColumnsCenterOneLeft}%
   \setlength{\mkts@ThreeColumnsCenterTwoRight}{\mkts@ThreeColumnsCenterTwoLeft + \columnsep}%
+  }
+
+% ----------------------------------------------------------------------------------------------------------
+\DeclareOption{baselines}{%
+  \typeout{\trmIndigo{baselines}}
+  \mkts@GridCaalculateLengths%
+  % thx to http://tex.stackexchange.com/a/41153/28067
+  \AddToShipoutPicture{%
+    \begin{tikzpicture}[overlay,remember picture]%
+      \draw[ red, thin, xshift = \mkts@GridXshift ]
+      %\draw[red!30!white,thin]
+        ( 0mm,
+          \mkts@GridYmax - \textheight )
+        grid[ xstep = \textwidth, ystep = \mktsLineheight, yshift = -\mktsLineheight * 0.125 ]
+        ( \textwidth,
+          \mkts@GridYmax );
+    \end{tikzpicture}%
+    }%
+  }
+
+% ----------------------------------------------------------------------------------------------------------
+\DeclareOption{columns}{%
+  \typeout{\trmIndigo{columns}}
+  \mkts@GridCaalculateLengths%
   % ........................................................................................................
   \AddToShipoutPicture{%
-    \begin{tikzpicture}[ overlay, remember picture, blue, thin, xshift = \mkts@GridXshift, yshift = \mkts@GridYshift ]
+    \begin{tikzpicture}[ overlay, remember picture, blue, thin, xshift = \mkts@GridXshift, yshift = \mkts@GridYshift ]%
       \draw ( \mkts@TwoColumnsCenterLeft,  0mm ) -- ( \mkts@TwoColumnsCenterLeft,  \textheight );
       \draw ( \mkts@TwoColumnsCenterRight, 0mm ) -- ( \mkts@TwoColumnsCenterRight, \textheight );
       \draw ( \mkts@FourColumnsCenterOneLeft,  0mm ) -- ( \mkts@FourColumnsCenterOneLeft,  \textheight );
       \draw ( \mkts@FourColumnsCenterOneRight, 0mm ) -- ( \mkts@FourColumnsCenterOneRight, \textheight );
       \draw ( \mkts@FourColumnsCenterTwoLeft,  0mm ) -- ( \mkts@FourColumnsCenterTwoLeft,  \textheight );
       \draw ( \mkts@FourColumnsCenterTwoRight, 0mm ) -- ( \mkts@FourColumnsCenterTwoRight, \textheight );
+    \end{tikzpicture}%
+    \begin{tikzpicture}[ overlay, remember picture, green, thin, xshift = \mkts@GridXshift, yshift = \mkts@GridYshift ]%
       \draw ( \mkts@ThreeColumnsCenterOneLeft,  0mm ) -- ( \mkts@ThreeColumnsCenterOneLeft,  \textheight );
       \draw ( \mkts@ThreeColumnsCenterOneRight, 0mm ) -- ( \mkts@ThreeColumnsCenterOneRight, \textheight );
       \draw ( \mkts@ThreeColumnsCenterTwoLeft,  0mm ) -- ( \mkts@ThreeColumnsCenterTwoLeft,  \textheight );
