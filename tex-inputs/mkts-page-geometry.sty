@@ -9,6 +9,9 @@
 \usepackage{eso-pic}
 
 % ----------------------------------------------------------------------------------------------------------
+\makeatletter%
+
+% ----------------------------------------------------------------------------------------------------------
 \DeclareOption{null}{%
   }
 
@@ -43,23 +46,92 @@
   }
 
 % ----------------------------------------------------------------------------------------------------------
-\DeclareOption{grid}{%
+\DeclareOption{frame}{%
+  \geometry{showframe}%
+  }
+
+% ----------------------------------------------------------------------------------------------------------
+\newdimen\mkts@GridYmax%
+\newdimen\mkts@GridXshift%
+\newdimen\mkts@GridYshift%
+\newdimen\mkts@TwoColumnsCenter%
+\newdimen\mkts@TwoColumnsCenterLeft%
+\newdimen\mkts@TwoColumnsCenterRight%
+\newdimen\mkts@FourColumnsCenterOne%
+\newdimen\mkts@FourColumnsCenterOneLeft%
+\newdimen\mkts@FourColumnsCenterOneRight%
+\newdimen\mkts@FourColumnsCenterTwo%
+\newdimen\mkts@FourColumnsCenterTwoLeft%
+\newdimen\mkts@FourColumnsCenterTwoRight%
+\newdimen\mkts@ThreeColumnsCenterOne%
+\newdimen\mkts@ThreeColumnsCenterOneLeft%
+\newdimen\mkts@ThreeColumnsCenterOneRight%
+\newdimen\mkts@ThreeColumnsCenterTwoLeft%
+\newdimen\mkts@ThreeColumnsCenterTwoRight%
+
+% ----------------------------------------------------------------------------------------------------------
+\DeclareOption{baselines}{%
+  \setlength{\mkts@GridYmax}{\paperheight - \headheight - \headsep - \topmargin - \voffset - 1in}%
+  \setlength{\mkts@GridXshift}{\hoffset + 1in + \oddsidemargin}%
+  \setlength{\mkts@GridYshift}{\mkts@GridYmax - \textheight}%
+  % ........................................................................................................
   % thx to http://tex.stackexchange.com/a/41153/28067
   \AddToShipoutPicture{%
-      \begin{tikzpicture}[overlay,remember picture]
-          % \draw[thick,red]
-          %       (current page.north east)
-          %       rectangle (current page.south west);
-          \draw[red!30!white,thin]
-               (current page.south west) grid[xstep=52.5mm,ystep=\mktsLineheight]
-               (current page.north east);
-          % \draw[red!30!white,dotted]
-          %      (current page.south west) grid[step=1cm]
-          %      (current page.north east);
-      \end{tikzpicture}%
+    \begin{tikzpicture}[overlay,remember picture]
+      \draw[ red, thin, xshift = \mkts@GridXshift ]
+      %\draw[red!30!white,thin]
+        ( 0mm,
+          \mkts@GridYmax - \textheight )
+        grid[ xstep = \textwidth, ystep = \mktsLineheight, yshift = -\mktsLineheight * 0.125 ]
+        ( \textwidth,
+          \mkts@GridYmax );
+    \end{tikzpicture}%
+    }
+  }
+
+% ----------------------------------------------------------------------------------------------------------
+\DeclareOption{columns}{%
+  \setlength{\mkts@GridYmax}{\paperheight - \headheight - \headsep - \topmargin - \voffset - 1in}%
+  \setlength{\mkts@GridXshift}{\hoffset + 1in + \oddsidemargin}%
+  \setlength{\mkts@GridYshift}{\mkts@GridYmax - \textheight}%
+  % ........................................................................................................
+  \setlength{\mkts@TwoColumnsCenter}{\textwidth * \real{0.5}}%
+  \setlength{\mkts@TwoColumnsCenterLeft}{\mkts@TwoColumnsCenter - \columnsep * \real{0.5}}%
+  \setlength{\mkts@TwoColumnsCenterRight}{\mkts@TwoColumnsCenterLeft + \columnsep}%
+  % ........................................................................................................
+  \setlength{\mkts@FourColumnsCenterOne}{\mkts@TwoColumnsCenterLeft * \real{0.5}}%
+  \setlength{\mkts@FourColumnsCenterOneLeft}{\mkts@FourColumnsCenterOne - \columnsep * \real{0.5}}%
+  \setlength{\mkts@FourColumnsCenterOneRight}{\mkts@FourColumnsCenterOneLeft + \columnsep}%
+  % ........................................................................................................
+  \setlength{\mkts@FourColumnsCenterTwo}{\mkts@FourColumnsCenterOne + \textwidth * \real{0.5} + \columnsep * \real{0.5}}%
+  \setlength{\mkts@FourColumnsCenterTwoLeft}{\mkts@FourColumnsCenterTwo - \columnsep * \real{0.5}}%
+  \setlength{\mkts@FourColumnsCenterTwoRight}{\mkts@FourColumnsCenterTwoLeft + \columnsep}%
+  % ........................................................................................................
+  \setlength{\mkts@ThreeColumnsCenterOne}{( \textwidth - \columnsep * \real{0.5} ) * \real{0.33333}}%
+  \setlength{\mkts@ThreeColumnsCenterOneLeft}{\mkts@ThreeColumnsCenterOne - \columnsep * \real{0.5}}%
+  \setlength{\mkts@ThreeColumnsCenterOneRight}{\mkts@ThreeColumnsCenterOneLeft + \columnsep}%
+  % ........................................................................................................
+  \setlength{\mkts@ThreeColumnsCenterTwoLeft}{\mkts@ThreeColumnsCenterOneRight + \mkts@ThreeColumnsCenterOneLeft}%
+  \setlength{\mkts@ThreeColumnsCenterTwoRight}{\mkts@ThreeColumnsCenterTwoLeft + \columnsep}%
+  % ........................................................................................................
+  \AddToShipoutPicture{%
+    \begin{tikzpicture}[ overlay, remember picture, blue, thin, xshift = \mkts@GridXshift, yshift = \mkts@GridYshift ]
+      \draw ( \mkts@TwoColumnsCenterLeft,  0mm ) -- ( \mkts@TwoColumnsCenterLeft,  \textheight );
+      \draw ( \mkts@TwoColumnsCenterRight, 0mm ) -- ( \mkts@TwoColumnsCenterRight, \textheight );
+      \draw ( \mkts@FourColumnsCenterOneLeft,  0mm ) -- ( \mkts@FourColumnsCenterOneLeft,  \textheight );
+      \draw ( \mkts@FourColumnsCenterOneRight, 0mm ) -- ( \mkts@FourColumnsCenterOneRight, \textheight );
+      \draw ( \mkts@FourColumnsCenterTwoLeft,  0mm ) -- ( \mkts@FourColumnsCenterTwoLeft,  \textheight );
+      \draw ( \mkts@FourColumnsCenterTwoRight, 0mm ) -- ( \mkts@FourColumnsCenterTwoRight, \textheight );
+      \draw ( \mkts@ThreeColumnsCenterOneLeft,  0mm ) -- ( \mkts@ThreeColumnsCenterOneLeft,  \textheight );
+      \draw ( \mkts@ThreeColumnsCenterOneRight, 0mm ) -- ( \mkts@ThreeColumnsCenterOneRight, \textheight );
+      \draw ( \mkts@ThreeColumnsCenterTwoLeft,  0mm ) -- ( \mkts@ThreeColumnsCenterTwoLeft,  \textheight );
+      \draw ( \mkts@ThreeColumnsCenterTwoRight, 0mm ) -- ( \mkts@ThreeColumnsCenterTwoRight, \textheight );
+    \end{tikzpicture}%
     }%
   }
 
+% ----------------------------------------------------------------------------------------------------------
+\makeatother%
 
 % ----------------------------------------------------------------------------------------------------------
 \ExecuteOptions{default}
