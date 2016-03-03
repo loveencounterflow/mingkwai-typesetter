@@ -71,48 +71,33 @@
 \usepackage[plain]{mkts-para-font-size}%        plain
 \usepackage[default]{mkts-headings-and-toc}%    default
 
-%  \newdimen\foobar%
-%  \setlength{\foobar}{\paperheight - \headheight - \headsep - \topmargin - \voffset - 1in}%
-%  \AddToShipoutPicture{%
-%    \begin{tikzpicture}[overlay,remember picture]
-%      \draw[ red, thin, xshift = \hoffset + 1in + \oddsidemargin ]
-%      %\draw[red!30!white,thin]
-%        ( 0mm,
-%           - \textheight )
-%        grid[ xstep = 1000mm, ystep = \mktsLineheight, yshift = -\mktsLineheight * 0.125 ]
-%        ( \textwidth,
-%          \paperheight - \headheight - \headsep - \topmargin - \voffset - 1in );
-%      \draw[ blue, thin, xshift = \hoffset + 1in + \oddsidemargin ]
-%      ( 0mm, 0mm ) -- ( 150mm, 150mm );
-%    \end{tikzpicture}%
-%  }%
-
+  \makeatletter%
+  \newdimen\mkts@GridYmax%
+  \newdimen\mkts@GridXshift%
+  \newdimen\mkts@GridYshift%
+  \setlength{\mkts@GridYmax}{\paperheight - \headheight - \headsep - \topmargin - \voffset - 1in}%
+  \setlength{\mkts@GridXshift}{\hoffset + 1in + \oddsidemargin}%
+  \setlength{\mkts@GridYshift}{\mkts@GridYmax - \textheight}%
   \AddToShipoutPicture{%
     \begin{tikzpicture}[overlay,remember picture]
-      \draw[ red, thin, xshift = \hoffset + 1in + \oddsidemargin ]
+      \draw[ red, thin, xshift = \mkts@GridXshift ]
       %\draw[red!30!white,thin]
         ( 0mm,
-          \paperheight - \headheight - \headsep - \topmargin - \voffset - 1in - \textheight )
+          \mkts@GridYmax - \textheight )
         grid[ xstep = 1000mm, ystep = \mktsLineheight, yshift = -\mktsLineheight * 0.125 ]
         ( \textwidth,
-          \paperheight - \headheight - \headsep - \topmargin - \voffset - 1in );
-      \draw[ blue, thin, xshift = \hoffset + 1in + \oddsidemargin ]
-      ( 0mm, 0mm ) -- ( 150mm, 150mm );
+          \mkts@GridYmax );
+      \draw[ blue, thin, xshift = \mkts@GridXshift, yshift = \mkts@GridYshift ]
+        ( 0mm, 0mm ) -- ( \textwidth, \textheight );
+      \draw[ blue, thin, xshift = \mkts@GridXshift, yshift = \mkts@GridYshift ]
+        ( 10mm, 10mm ) -- ( \textwidth, \textheight );
+      \draw[ blue, thin, xshift = \mkts@GridXshift, yshift = \mkts@GridYshift ]
+        ( \textwidth * 0.5 - \columnsep * 0.5, 0mm ) -- ( \textwidth * 0.5 - \columnsep * 0.5, \textheight );
+      \draw[ blue, thin, xshift = \mkts@GridXshift, yshift = \mkts@GridYshift ]
+        ( \textwidth * 0.5 + \columnsep * 0.5, 0mm ) -- ( \textwidth * 0.5 + \columnsep * 0.5, \textheight );
     \end{tikzpicture}%
   }%
-%
-%  \AddToShipoutPicture{%
-%    \begin{tikzpicture}[overlay,remember picture]
-%      \draw[ red, thin, xshift = \hoffset + 1in + \oddsidemargin ]
-%      %\draw[red!30!white,thin]
-%        ( 0mm,
-%          \paperheight - \headheight - \headsep - \topmargin - \voffset - 1in - \textheight )
-%        grid[ xstep = \textwidth * 0.25, ystep = \mktsLineheight, yshift = -\mktsLineheight * 0.125 ]
-%        ( \textwidth,
-%          \paperheight - \headheight - \headsep - \topmargin - \voffset - 1in );
-%    \end{tikzpicture}%
-%  }%
-
+  \makeatother%
 
 
 \newcommand{\mktsJzrVerticalbarInfix}{}%
