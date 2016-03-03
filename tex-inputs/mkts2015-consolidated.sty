@@ -72,12 +72,35 @@
 \usepackage[default]{mkts-headings-and-toc}%    default
 
   \makeatletter%
+  % ........................................................................................................
   \newdimen\mkts@GridYmax%
   \newdimen\mkts@GridXshift%
   \newdimen\mkts@GridYshift%
   \setlength{\mkts@GridYmax}{\paperheight - \headheight - \headsep - \topmargin - \voffset - 1in}%
   \setlength{\mkts@GridXshift}{\hoffset + 1in + \oddsidemargin}%
   \setlength{\mkts@GridYshift}{\mkts@GridYmax - \textheight}%
+  % ........................................................................................................
+  \newdimen\mkts@TwoColumnsCenter%
+  \newdimen\mkts@TwoColumnsCenterLeft%
+  \newdimen\mkts@TwoColumnsCenterRight%
+  \setlength{\mkts@TwoColumnsCenter}{\textwidth * \real{0.5}}%
+  \setlength{\mkts@TwoColumnsCenterLeft}{\mkts@TwoColumnsCenter - \columnsep * \real{0.5}}%
+  \setlength{\mkts@TwoColumnsCenterRight}{\mkts@TwoColumnsCenterLeft + \columnsep}%
+  % ........................................................................................................
+  \newdimen\mkts@FourColumnsCenterOne%
+  \newdimen\mkts@FourColumnsCenterOneLeft%
+  \newdimen\mkts@FourColumnsCenterOneRight%
+  \setlength{\mkts@FourColumnsCenterOne}{\mkts@TwoColumnsCenterLeft * \real{0.5}}%
+  \setlength{\mkts@FourColumnsCenterOneLeft}{\mkts@FourColumnsCenterOne - \columnsep * \real{0.5}}%
+  \setlength{\mkts@FourColumnsCenterOneRight}{\mkts@FourColumnsCenterOneLeft + \columnsep}%
+  % ........................................................................................................
+  \newdimen\mkts@FourColumnsCenterTwo%
+  \newdimen\mkts@FourColumnsCenterTwoLeft%
+  \newdimen\mkts@FourColumnsCenterTwoRight%
+  \setlength{\mkts@FourColumnsCenterTwo}{\mkts@FourColumnsCenterOne + \textwidth * \real{0.5} + \columnsep * \real{0.5}}%
+  \setlength{\mkts@FourColumnsCenterTwoLeft}{\mkts@FourColumnsCenterTwo - \columnsep * \real{0.5}}%
+  \setlength{\mkts@FourColumnsCenterTwoRight}{\mkts@FourColumnsCenterTwoLeft + \columnsep}%
+  % ........................................................................................................
   \AddToShipoutPicture{%
     \begin{tikzpicture}[overlay,remember picture]
       \draw[ red, thin, xshift = \mkts@GridXshift ]
@@ -87,14 +110,14 @@
         grid[ xstep = 1000mm, ystep = \mktsLineheight, yshift = -\mktsLineheight * 0.125 ]
         ( \textwidth,
           \mkts@GridYmax );
-      \draw[ blue, thin, xshift = \mkts@GridXshift, yshift = \mkts@GridYshift ]
-        ( 0mm, 0mm ) -- ( \textwidth, \textheight );
-      \draw[ blue, thin, xshift = \mkts@GridXshift, yshift = \mkts@GridYshift ]
-        ( 10mm, 10mm ) -- ( \textwidth, \textheight );
-      \draw[ blue, thin, xshift = \mkts@GridXshift, yshift = \mkts@GridYshift ]
-        ( \textwidth * 0.5 - \columnsep * 0.5, 0mm ) -- ( \textwidth * 0.5 - \columnsep * 0.5, \textheight );
-      \draw[ blue, thin, xshift = \mkts@GridXshift, yshift = \mkts@GridYshift ]
-        ( \textwidth * 0.5 + \columnsep * 0.5, 0mm ) -- ( \textwidth * 0.5 + \columnsep * 0.5, \textheight );
+    \end{tikzpicture}%
+    \begin{tikzpicture}[ overlay, remember picture, blue, thin, xshift = \mkts@GridXshift, yshift = \mkts@GridYshift ]
+      \draw ( \mkts@TwoColumnsCenterLeft,  0mm ) -- ( \mkts@TwoColumnsCenterLeft,  \textheight );
+      \draw ( \mkts@TwoColumnsCenterRight, 0mm ) -- ( \mkts@TwoColumnsCenterRight, \textheight );
+      \draw ( \mkts@FourColumnsCenterOneLeft,  0mm ) -- ( \mkts@FourColumnsCenterOneLeft,  \textheight );
+      \draw ( \mkts@FourColumnsCenterOneRight, 0mm ) -- ( \mkts@FourColumnsCenterOneRight, \textheight );
+      \draw ( \mkts@FourColumnsCenterTwoLeft,  0mm ) -- ( \mkts@FourColumnsCenterTwoLeft,  \textheight );
+      \draw ( \mkts@FourColumnsCenterTwoRight, 0mm ) -- ( \mkts@FourColumnsCenterTwoRight, \textheight );
     \end{tikzpicture}%
   }%
   \makeatother%
