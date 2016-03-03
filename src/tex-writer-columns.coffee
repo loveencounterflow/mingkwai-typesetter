@@ -208,10 +208,10 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
   @_push sandbox, @_new_setting { count: column_count, }
   # debug '©66343', event, column_count
   # debug '©66343', S.sandbox.COLUMNS.stack
-  if column_count isnt 1
-    [ ..., meta, ]  = event
-    ### TAINT this event should be namespaced and handled only right before output ###
-    send [ '(', 'multi-columns', [ column_count, ], ( copy meta ), ]
+  # if column_count isnt 1
+  [ ..., meta, ]  = event
+  ### TAINT this event should be namespaced and handled only right before output ###
+  send [ '(', 'multi-columns', [ column_count, ], ( copy meta ), ]
   return null
 
 #-----------------------------------------------------------------------------------------------------------
@@ -223,7 +223,7 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
   column_count    = @_get_column_count sandbox
   # last_state      = @_pop sandbox
   ### No-op in case we're already in single-column state ###
-  return if column_count is 1
+  # return if column_count is 1
   [ ..., meta, ]  = event
   ### TAINT this event should be namespaced and handled only right before output ###
   send [ ')', 'multi-columns', [ column_count, ], ( copy meta ), ]
@@ -240,12 +240,18 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
     if select event, '(', 'multi-columns'
       send stamp event
       [ column_count, ] = parameters
-      send [ 'tex', "\n\n\\vspace{\\mktsLineheight}\\begin{multicols}{#{column_count}}\\raggedcolumns{}" ]
+      # send [ 'tex', "\n\n\\vspace{\\mktsLineheight}" ]
+      # send [ '!', 'nl', [ 1, ], ( copy meta ), ]
+      ### TAINT code duplication with `TEX-WRITER/$nl` ###
+      send [ 'tex', "~\\\\%TEX-WRITER/COLUMNS/$transform-to-tex\n" ]
+      if column_count > 1
+        send [ 'tex', "\\begin{multicols}{#{column_count}}\\raggedcolumns{}" ]
     #.......................................................................................................
     else if select event, ')', 'multi-columns'
       send stamp event
       [ column_count, ] = parameters
-      send [ 'tex', "\\end{multicols}\n\n" ]
+      if column_count > 1
+        send [ 'tex', "\\end{multicols}\n\n" ]
     #.......................................................................................................
     else
       send event
