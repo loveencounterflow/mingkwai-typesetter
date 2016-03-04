@@ -23,15 +23,18 @@
   \renewcommand{\mktsHOne}{%
     % \newpage%
     \Needspace{7.5\mktsLineheight}% ???
-    \clearpage%
-    \centering%
+    % \clearpage%
+    % \centering%
+    \null\par%
+    \null\par%
+    \null\par%
     \mktsStyleBold%
-    \setlength{\baselineskip}{2\mktsLineheight}%
-    \mktsScaleFont{2}%
+    \mktsScaleFont{2.0}%
+    % \setlength{\baselineskip}{2\mktsLineheight}%
+    % \mktsScaleFont{2}%
     % TEXT BEFORE HEADING GOES HERE %
     % \nopagebreak% ???
     \AfterGroup{%
-      \null\par%
       \null\par%
       }%
     }
@@ -42,7 +45,7 @@
     \null\par%
     \null\par%
     \mktsStyleBold%
-    \mktsScaleFont{1.5}%
+    \mktsScaleFont{1.25}%
     % TEXT BEFORE HEADING GOES HERE %
     \AfterGroup{%
       \null\par%
