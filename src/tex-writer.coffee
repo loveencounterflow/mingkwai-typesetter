@@ -198,7 +198,7 @@ after = ( names..., method ) ->
     write "\\input{#{content_locator}}"
     write ""
     #-------------------------------------------------------------------------------------------------------
-    write "~\\end{document}"
+    write "\\end{document}"
     #-------------------------------------------------------------------------------------------------------
     text = lines.join '\n'
     # whisper text
@@ -405,7 +405,7 @@ before '@MKTX.BLOCK.$heading', '@MKTX.COMMAND.$toc', \
           send [ 'tex', "\\mktsHTwoBeg}%\n",          ]
           send [ '!', 'columns', [ 'pop', ], ( copy meta, { toc: 'omit' } ), ]
         when 3
-          send [ 'tex', "\\mktsHThreeBeg}%\n",        ]
+          send [ 'tex', "\\mktsHThreeBeg}%\n\n",        ]
           send [ '!', 'columns', [ 'pop', ], ( copy meta, { toc: 'omit' } ), ]
         else return send [ '.', 'warning', "heading level #{level} not implemented", ( copy meta ), ]
       #.....................................................................................................

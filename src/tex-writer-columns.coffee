@@ -80,7 +80,6 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
         stack: [ @_new_setting(), ]
       changeset = MKTS.DIFFPATCH.diff sandbox_backup, sandbox
       send [ '~', 'change', changeset, ( copy meta ), ] if changeset.length > 0
-      send [ '!', 'columns', [ 1, ], ( copy meta ), ] # ???
       send event
     #.......................................................................................................
     else
@@ -240,11 +239,8 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
     if select event, '(', 'multi-columns'
       send stamp event
       [ column_count, ] = parameters
-      # send [ 'tex', "\n\n\\vspace{\\mktsLineheight}" ]
-      # send [ '!', 'nl', [ 1, ], ( copy meta ), ]
-      ### TAINT code duplication with `TEX-WRITER/$nl` ###
-      send [ 'tex', "~\\\\%TEX-WRITER/COLUMNS/$transform-to-tex\n" ]
       if column_count > 1
+        send [ 'tex', "{\\setlength{\\parskip}{0mm}~\\par}%TEX-WRITER/COLUMNS/$transform-to-tex\n" ]
         send [ 'tex', "\\begin{multicols}{#{column_count}}\\raggedcolumns{}" ]
     #.......................................................................................................
     else if select event, ')', 'multi-columns'
@@ -257,48 +253,5 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
       send event
     #.......................................................................................................
     return null
-
-
-
-# #-----------------------------------------------------------------------------------------------------------
-# @_begin_multi_column = ( S, column_count = 2 ) ->
-#   ### TAINT Column count must come from layout / options / MKTS-MD command ###
-#   ### TAINT make `\raggedcolumns` optional? ###
-#   column_count ?= S.document.column_count
-
-# #-----------------------------------------------------------------------------------------------------------
-# @_end_multi_column = ( S, column_count = 2 ) ->
-
-# #-----------------------------------------------------------------------------------------------------------
-# @_is_single_column = ( S ) ->
-#   return ( @_get_column_count S ) is 1
-
-# #-----------------------------------------------------------------------------------------------------------
-# @_column_count_would_change = ( S, column_count ) ->
-#   return @( _get_column_count S ) isnt column_count
-
-# #-----------------------------------------------------------------------------------------------------------
-# @_get_last_column_count = ( S ) ->
-#   return 1 if S.sandbox.COLUMNS.stack.length is 1
-#   return S.sandbox.COLUMNS.stack[ S.sandbox.COLUMNS.stack.length - 2 ][ 'count' ]
-
-
-###
-
-<<(.>>@document.column_count = 3<<)>>
-
-
-<<!columns 1>>                            (single-column
-<<!columns 1>>                            (multi-column 1
-<<!columns>>                              (multi-column
-
-<<!columns 'push'>>
-<<!columns 'pop'>>
-
-
-
-
-###
-
 
 
