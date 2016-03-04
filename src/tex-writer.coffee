@@ -534,7 +534,6 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
   return $ ( event, send ) =>
     if select event, '!', 'yadda'
       [ type, name, parameters, meta, ] = event
-      debug parameters
       [ yadda_idx, ]                    = parameters
       yadda_idx                        ?= cache.length
       cache.push generate_yadda settings while cache.length - 1 < yadda_idx

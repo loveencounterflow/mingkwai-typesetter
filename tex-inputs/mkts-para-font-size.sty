@@ -13,6 +13,8 @@
 \mktsLineheight=4.6667mm%
 \newcommand{\mktsTightParagraphs}{}%
 
+% http://tex.stackexchange.com/a/86902/28067
+% <<<\setlength{\lineskiplimit}{-1000mm}>>>
 
 % ==========================================================================================================
 %
@@ -26,7 +28,7 @@
   % \setlength{\parskip}{\mktsLineheight}
 
   % thx to http://www.tug.org/TUGboat/tb28-1/tb88bazargan.pdf for the next:
-  \setlength\lineskiplimit{-10pt}%
+  \setlength\lineskiplimit{-1000mm}%
   \setlength\lineskip{0pt}%
   \setlength\parskip{\mktsLineheight}%
   % \lineskiplimit=-10pt%
@@ -34,10 +36,9 @@
   \topskip=\baselineskip%
 
   \renewcommand{\mktsTightParagraphs}{%
-    \setlength\lineskiplimit{0mm}%
+    \setlength\lineskiplimit{-1000mm}%
     \setlength\parskip{0mm}%
     }%
-
   }
 
 

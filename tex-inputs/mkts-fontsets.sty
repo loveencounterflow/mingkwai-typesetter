@@ -73,14 +73,18 @@
   \renewcommand{\mktsStyleFontDefault}{\mktsFontfileEbgaramondtwelveregular}%
   \renewcommand{\mktsStyleFontItalic}{\mktsFontfileEbgaramondtwelveitalic}%
   \renewcommand{\mktsStyleFontSc}{\mktsFontfileEbgaramondtwelvesc}%
-  \renewcommand{\mktsStyleFontBold}{\relscale{0.8}\mktsFontfileUbuntub}%
+  \renewcommand{\mktsStyleFontBold}{%
+    \mktsFontfileUbuntub%
+    \mktsScaleFont{0.8}%
+    }%
+  % \renewcommand{\mktsStyleFontBold}{\mktsScaleFont{0.8}\mktsFontfileUbuntub}%
   % \renewcommand{\mktsStyleFontBoldItalic}{\mktsStyleFontThrowUndefined{BoldItalic}}%
   % \renewcommand{\mktsStyleFontItalicBold}{\mktsStyleFontThrowUndefined{ItalicBold}}%
   \renewcommand{\mktsStyleFontSymbol}{\mktsFontfileSunexta}%
   \renewcommand{\mktsStyleFontCode}{\mktsFontfileFiracoderegular}%
   \renewcommand{\mktsStyleFontFncr}{\mktsFontfileFandolheibold}%
   \renewcommand{\mktsStyleFontGloss}{\mktsFontfileEbgaramondtwelveitalic}%
-  \renewcommand{\mktsStyleFontUrl}{\relscale{0.8}\mktsFontfileUbuntuc}%
+  \renewcommand{\mktsStyleFontUrl}{\mktsScaleFont{0.8}\mktsFontfileUbuntuc}%
   \renewcommand{\mktsStyleFontCjkDefault}{\mktsFontfileSunexta}%
   % \renewcommand{\mktsStyleFontCjkDefault}{\mktsFontfileFandolkairegular}%
   \renewcommand{\mktsStyleFontCjkBold}{\mktsFontfileSourcehansansbold}%
