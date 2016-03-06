@@ -21,45 +21,36 @@
 
   % ........................................................................................................
   \renewcommand{\mktsHOne}{%
-    % \newpage%
     \Needspace{7.5\mktsLineheight}% ???
     % \clearpage%
     % \centering%
-    \null\par%
-    \null\par%
-    \null\par%
+    \vspace{3\parskip}
     \mktsStyleBold%
     \mktsScaleFont{2.0}%
-    % \setlength{\baselineskip}{2\mktsLineheight}%
-    % \mktsScaleFont{2}%
-    % TEXT BEFORE HEADING GOES HERE %
-    % \nopagebreak% ???
     \AfterGroup{%
-      \null\par%
+      \vspace{1\parskip}
       }%
     }
   % ........................................................................................................
   \renewcommand{\mktsHTwo}{%
     \Needspace{7.5\mktsLineheight}% ???
     % \centering%
-    \null\par%
-    \null\par%
+    \vspace{2\parskip}
     \mktsStyleBold%
-    \mktsScaleFont{1.25}%
-    % TEXT BEFORE HEADING GOES HERE %
+    \mktsScaleFont{1.5}%
     \AfterGroup{%
-      \null\par%
+      \vspace{1\parskip}
       }%
     }
   % ........................................................................................................
   \renewcommand{\mktsHThree}{%
     \Needspace{7.5\mktsLineheight}% ???
-    \null\par%
-    \mktsScaleFont{1.15}%
+    \vspace{1\parskip}
     \mktsStyleBold{}%
-    % TEXT BEFORE HEADING GOES HERE %
-    % \AfterGroup{%
-    %   \null\par}%
+    \mktsScaleFont{1.25}%
+    \AfterGroup{%
+      \vspace{1\parskip}
+      }%
     }
 
   % ........................................................................................................

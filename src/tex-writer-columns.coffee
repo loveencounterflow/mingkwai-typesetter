@@ -95,7 +95,7 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
     #.......................................................................................................
     if select event, ')', 'document'
       [ ..., meta, ] = event
-      send [ '!', 'columns', [ 1, ], ( copy meta ), ]
+      send [ '!', 'columns', [ 1, ], ( copy meta, 'multi-columns': 'omit-open', ), ]
       send event
     #.......................................................................................................
     else
@@ -210,7 +210,9 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
   # if column_count isnt 1
   [ ..., meta, ]  = event
   ### TAINT this event should be namespaced and handled only right before output ###
-  send [ '(', 'multi-columns', [ column_count, ], ( copy meta ), ]
+  debug '8871112', [ '(', 'multi-columns', [ column_count, ], ( copy meta ), ]
+  unless meta[ 'multi-columns' ] is 'omit-open'
+    send [ '(', 'multi-columns', [ column_count, ], ( copy meta ), ]
   return null
 
 #-----------------------------------------------------------------------------------------------------------
@@ -225,6 +227,7 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
   # return if column_count is 1
   [ ..., meta, ]  = event
   ### TAINT this event should be namespaced and handled only right before output ###
+  debug '928772', [ ')', 'multi-columns', [ column_count, ], ( copy meta ), ]
   send [ ')', 'multi-columns', [ column_count, ], ( copy meta ), ]
 
 
@@ -232,25 +235,37 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
 # TRANSFORM TO TEX
 #-----------------------------------------------------------------------------------------------------------
 @$transform_to_tex = ( S ) ->
+  last_was_heading = no
   #.........................................................................................................
   return $ ( event, send ) =>
     [ type, name, parameters, meta, ] = event
+    # debug '34211', event
     #.......................................................................................................
-    if select event, '(', 'multi-columns'
+    if select event, ')', 'h'
+      send event
+      urge '12331', "last_was_heading"
+      last_was_heading = yes
+    #.......................................................................................................
+    else if select event, '(', 'multi-columns'
       send stamp event
       [ column_count, ] = parameters
       if column_count > 1
-        send [ 'tex', "{\\setlength{\\parskip}{0mm}~\\par}%TEX-WRITER/COLUMNS/$transform-to-tex\n" ]
+        # send [ 'tex', "{\\setlength{\\parskip}{0mm}~\\par}%TEX-WRITER/COLUMNS/$transform-to-tex\n" ]
+        unless last_was_heading
+          send [ 'tex', "\\vspace{\\parskip}%TEX-WRITER/COLUMNS/$transform-to-tex\n" ]
         send [ 'tex', "\\begin{multicols}{#{column_count}}\\raggedcolumns{}" ]
+      last_was_heading = no
     #.......................................................................................................
     else if select event, ')', 'multi-columns'
       send stamp event
       [ column_count, ] = parameters
       if column_count > 1
         send [ 'tex', "\\end{multicols}\n\n" ]
+      last_was_heading = no
     #.......................................................................................................
     else
       send event
+      last_was_heading = no
     #.......................................................................................................
     return null
 
