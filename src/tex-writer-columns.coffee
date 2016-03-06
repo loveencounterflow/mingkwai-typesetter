@@ -210,7 +210,6 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
   # if column_count isnt 1
   [ ..., meta, ]  = event
   ### TAINT this event should be namespaced and handled only right before output ###
-  debug '8871112', [ '(', 'multi-columns', [ column_count, ], ( copy meta ), ]
   unless meta[ 'multi-columns' ] is 'omit-open'
     send [ '(', 'multi-columns', [ column_count, ], ( copy meta ), ]
   return null
