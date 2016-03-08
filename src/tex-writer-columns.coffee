@@ -54,6 +54,12 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
     @$end_columns_with_document S
     @$slash                     S
     @$columns                   S
+    # $ ( event, send ) =>
+    #   if select event, [ '(', ')', ], 'multi-columns'
+    #     [ _, _, [ column_count, ], _, ] = event
+    #     send event unless column_count is 1
+    #   else
+    #     send event
     @$transform_to_tex          S
     ]
 
@@ -226,7 +232,7 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
   # return if column_count is 1
   [ ..., meta, ]  = event
   ### TAINT this event should be namespaced and handled only right before output ###
-  debug '928772', [ ')', 'multi-columns', [ column_count, ], ( copy meta ), ]
+  # debug '928772', [ ')', 'multi-columns', [ column_count, ], ( copy meta ), ]
   send [ ')', 'multi-columns', [ column_count, ], ( copy meta ), ]
 
 
@@ -243,24 +249,24 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
     #.......................................................................................................
     if select event, ')', 'h'
       send event
-      # urge '12331', "last_was_heading"
+      urge '12331', "last_was_heading"
       last_was_heading = yes
     #.......................................................................................................
     else if select event, '(', 'multi-columns'
-      send stamp event
+      send hide stamp event
       [ column_count, ] = parameters
       if column_count > 1
         # send [ 'tex', "{\\setlength{\\parskip}{0mm}~\\par}%TEX-WRITER/COLUMNS/$transform-to-tex\n" ]
         unless last_was_heading
-          debug '11234', "sending vspace b/c last wasnt heading"
+          # debug '11234', "sending vspace b/c last wasnt heading"
           send [ 'tex', "\\vspace{\\parskip}%TEX-WRITER/COLUMNS/$transform-to-tex\n" ]
         else
-          debug '11234', "omitting vspace b/c last was heading"
+          # debug '11234', "omitting vspace b/c last was heading"
         send [ 'tex', "\\begin{multicols}{#{column_count}}\\raggedcolumns{}" ]
       last_was_heading = no
     #.......................................................................................................
     else if select event, ')', 'multi-columns'
-      send stamp event
+      # send stamp event
       [ column_count, ] = parameters
       if column_count > 1
         send [ 'tex', "\\end{multicols}\n\n" ]
