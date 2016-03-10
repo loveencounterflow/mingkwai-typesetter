@@ -1221,6 +1221,9 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       send event[ 1 ]
     else if select event, '.', [ 'text', 'raw', ]
       send event[ 2 ]
+    else if meta?[ 'tex' ] is 'pass-through'
+      # debug '82341', event
+      send event
     else unless ( type is '~' ) or ( is_stamped event )
       warn "unhandled event: #{JSON.stringify event}"
       send.error new Error "unhandled events not allowed at this point; got #{JSON.stringify event}"
@@ -1282,11 +1285,14 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @MKTX.CLEANUP.$remove_empty_texts                 S
     .pipe @MKTX.CLEANUP.$consolidate_texts                  S
     .pipe @MKTX.TEX.$fix_typography_for_tex                 S
-    .pipe MKTSCRIPT_WRITER.$show_mktsmd_events              S
+    # .pipe MKTSCRIPT_WRITER.$show_mktsmd_events              S
     .pipe @MKTX.INLINE.$mark                                S
     .pipe @MKTX.$show_unhandled_tags                        S
     .pipe @MKTX.$show_warnings                              S
     .pipe @$filter_tex                                      S
+    # ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ?
+    .pipe @COLUMNS.$XXX_transform_pretex_to_tex             S
+    # ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ?
     .pipe MD_READER.$show_illegal_chrs                      S
     .pipe writestream
   #.......................................................................................................

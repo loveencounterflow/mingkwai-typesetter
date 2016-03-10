@@ -54,13 +54,8 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
     @$end_columns_with_document S
     @$slash                     S
     @$columns                   S
-    # $ ( event, send ) =>
-    #   if select event, [ '(', ')', ], 'multi-columns'
-    #     [ _, _, [ column_count, ], _, ] = event
-    #     send event unless column_count is 1
-    #   else
-    #     send event
-    @$transform_to_tex          S
+    @$transform_to_pretex       S
+    # @$transform_pretex_to_tex   S
     ]
 
 #===========================================================================================================
@@ -239,7 +234,7 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
 #===========================================================================================================
 # TRANSFORM TO TEX
 #-----------------------------------------------------------------------------------------------------------
-@$transform_to_tex = ( S ) ->
+@$transform_to_pretex = ( S ) ->
   #.........................................................................................................
   return $ ( event, send ) =>
     [ type, name, parameters, meta, ] = event
@@ -248,18 +243,72 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
       send hide stamp event
       [ column_count, ] = parameters
       if column_count > 1
-        send [ 'tex', "\\vspace{\\parskip}%TEX-WRITER/COLUMNS/$transform-to-tex\n" ]
-        send [ 'tex', "\\begin{multicols}{#{column_count}}\\raggedcolumns{}" ]
+        send stamp [ '(', 'COLUMNS/group', null, ( copy meta, tex: 'pass-through', ), ]
+        send stamp [ '.', 'COLUMNS/tex', "\\vspace{\\parskip}%TEX-WRITER/COLUMNS/$transform-to-tex\n", ( copy meta, tex: 'pass-through', ), ]
+        send stamp [ '.', 'COLUMNS/tex', "\\begin{multicols}{#{column_count}}\\raggedcolumns{}", ( copy meta, tex: 'pass-through', ), ]
     #.......................................................................................................
     else if select event, ')', 'multi-columns'
       # send stamp event
       [ column_count, ] = parameters
       if column_count > 1
-        send [ 'tex', "\\end{multicols}\n\n" ]
+        send stamp [ '.', 'COLUMNS/tex', "\\end{multicols}\n\n", ( copy meta, tex: 'pass-through', ), ]
+        send stamp [ ')', 'COLUMNS/group', null, ( copy meta, tex: 'pass-through', ), ]
     #.......................................................................................................
     else
       send event
     #.......................................................................................................
     return null
+
+#-----------------------------------------------------------------------------------------------------------
+@$XXX_transform_pretex_to_tex = ( S ) ->
+  buffer          = []
+  within_group    = no
+  all_whitespace  = yes
+  ws_pattern      = /// ^ [ \x20 \t \n ]* $ ///
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    # urge '99876', event
+    if CND.isa_text event
+      type  = null
+      name  = null
+      text  = event
+      meta  = null
+    else
+      [ type, name, text, meta, ] = event
+    #.......................................................................................................
+    if select event, '(', 'COLUMNS/group'
+      help '975', ( JSON.stringify event )[ .. 50 ]
+      within_group = yes
+    #.......................................................................................................
+    else if select event, ')', 'COLUMNS/group'
+      warn '975', ( JSON.stringify event )[ .. 50 ]
+      if all_whitespace
+        whisper "ignoring multicols b/c group only contains whitespace"
+      else
+        send sub_text for sub_text in buffer
+      ### TAINT code duplication with the above ###
+      buffer.length   = 0
+      within_group    = no
+      all_whitespace  = yes
+    #.......................................................................................................
+    else if select event, '.', 'COLUMNS/tex'
+      urge '975', ( JSON.stringify event )[ .. 50 ]
+      buffer.push text
+      # send text
+    #.......................................................................................................
+    else
+      if within_group
+        all_whitespace = all_whitespace and ws_pattern.test text
+        buffer.push text
+        # debug '975', event if text is undefined
+        whisper '975', all_whitespace, rpr text
+      else
+        info '975', ( JSON.stringify event )[ .. 50 ]
+        send event
+    #.......................................................................................................
+    return null
+
+
+
 
 
