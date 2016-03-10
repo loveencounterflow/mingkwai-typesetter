@@ -240,41 +240,25 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
 # TRANSFORM TO TEX
 #-----------------------------------------------------------------------------------------------------------
 @$transform_to_tex = ( S ) ->
-  last_was_heading  = no
-  buffer            = []
   #.........................................................................................................
   return $ ( event, send ) =>
     [ type, name, parameters, meta, ] = event
-    # debug '34211', event
     #.......................................................................................................
-    if select event, ')', 'h'
-      send event
-      urge '12331', "last_was_heading"
-      last_was_heading = yes
-    #.......................................................................................................
-    else if select event, '(', 'multi-columns'
+    if select event, '(', 'multi-columns'
       send hide stamp event
       [ column_count, ] = parameters
       if column_count > 1
-        # send [ 'tex', "{\\setlength{\\parskip}{0mm}~\\par}%TEX-WRITER/COLUMNS/$transform-to-tex\n" ]
-        unless last_was_heading
-          # debug '11234', "sending vspace b/c last wasnt heading"
-          send [ 'tex', "\\vspace{\\parskip}%TEX-WRITER/COLUMNS/$transform-to-tex\n" ]
-        else
-          # debug '11234', "omitting vspace b/c last was heading"
+        send [ 'tex', "\\vspace{\\parskip}%TEX-WRITER/COLUMNS/$transform-to-tex\n" ]
         send [ 'tex', "\\begin{multicols}{#{column_count}}\\raggedcolumns{}" ]
-      last_was_heading = no
     #.......................................................................................................
     else if select event, ')', 'multi-columns'
       # send stamp event
       [ column_count, ] = parameters
       if column_count > 1
         send [ 'tex', "\\end{multicols}\n\n" ]
-      last_was_heading = no
     #.......................................................................................................
     else
       send event
-      last_was_heading = no
     #.......................................................................................................
     return null
 
