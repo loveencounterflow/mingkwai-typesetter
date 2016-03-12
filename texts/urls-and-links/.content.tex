@@ -1,55 +1,93 @@
 
 % begin of MD document
+{\mktsHTwo{}\zlabel{h-0}URLs, Footnotes, and Links\mktsHTwoBeg}%
+{\mktsHThree{}\zlabel{h-1}Code Samples\mktsHThreeBeg}%
 
+\vspace{\parskip}%TEX-WRITER/COLUMNS/$transform-to-tex
+\begin{multicols}{2}\raggedcolumns{}\null\par{\mktsTightParagraphs{}
 
-\vspace{\myLineheight}\begin{multicols}{2}\raggedcolumns{}
+{\mktsStyleCode{}helo world\par
+}
+
+}
+\end{multicols}
+
+{\mktsHThree{}\zlabel{h-2}URLs\mktsHThreeBeg}%
+
+\vspace{\parskip}%TEX-WRITER/COLUMNS/$transform-to-tex
+\begin{multicols}{2}\raggedcolumns{}{\mktsStyleUrl{}https:\g/\g/\allowbreak{}link.com/2\allowbreak{}}
+
+{\mktsStyleUrl{}https:\g/\g/\allowbreak{}example.com\g/\allowbreak{}a\g/\allowbreak{}uniform\g/\allowbreak{}resource\allowbreak{}}
+
+Yadda yadda {\mktsStyleUrl{}https:\g/\g/\allowbreak{}example.com\g/\allowbreak{}a\g/\allowbreak{}uniform\g/\allowbreak{}resource\g/\allowbreak{}locator?\allowbreak{}x=42\&y=108\allowbreak{}} yadda yadda yadda yadda yadda yadda.
+
+An example {\mktsStyleUrl{}https:\g/\g/\allowbreak{}example.com\g/\allowbreak{}a\g/\allowbreak{}uniform\g/\allowbreak{}resource\allowbreak{}} for a URL.
+And yet {\mktsStyleUrl{}http:\g/\g/\allowbreak{}x.com\allowbreak{}} another one.
+
+When URLs get longer, they can quickly interfere with line breaking. In order
+to mitigate unsightly effects, two measures have been taken. For one thing,
+breakpoints are inserted{\mktsEnStyleMarkMain{}1}
+
+{\mktsStyleUrl{}https:\g/\g/\allowbreak{}example.com\g/\allowbreak{}a\g/\allowbreak{}uniform\g/\allowbreak{}resource\g/\allowbreak{}locator\g/\allowbreak{}commonly\g/\allowbreak{}informally\g/\allowbreak{}termed\g/\allowbreak{}a\g/\allowbreak{}web\g/\allowbreak{}address\g/\allowbreak{}is\g/\allowbreak{}a\g/\allowbreak{}reference\g/\allowbreak{}to\g/\allowbreak{}a\g/\allowbreak{}web\g/\allowbreak{}resource\g/\allowbreak{}that\g/\allowbreak{}specifies\g/\allowbreak{}its\g/\allowbreak{}location\g/\allowbreak{}on\g/\allowbreak{}a\g/\allowbreak{}computer\g/\allowbreak{}network\g/\allowbreak{}and\g/\allowbreak{}a\g/\allowbreak{}mechanism\g/\allowbreak{}for\g/\allowbreak{}retrieving\g/\allowbreak{}it\allowbreak{}}
+
 
 \end{multicols}
 
+{\mktsHThree{}\zlabel{h-3}Footnotes\mktsHThreeBeg}%
 
-{\mktsHTwo{}\zlabel{h-0}URLs, Footnotes, and Links\mktsHTwoBEG}%
+\vspace{\parskip}%TEX-WRITER/COLUMNS/$transform-to-tex
+\begin{multicols}{2}\raggedcolumns{}Two ways to markup footnotes
 
+get realized as footnotes or endnotes; in the latter case, use {\mktsStyleCode{}<<!\textbackslash{}allowbreak\{\}footnotes>>}
+command to place them
 
-\vspace{\myLineheight}\begin{multicols}{2}\raggedcolumns{}
-{\mktsHThree{}\zlabel{h-1}URLs\mktsHThreeBEG}%
-{\mktsStyleUrl{}https:\g/\g/\g\allowbreak{}link.com/2}
+\null\par{\mktsTightParagraphs{}
 
-{\mktsStyleUrl{}https:\g/\g/\g\allowbreak{}example.com\g/\g\allowbreak{}a\g/\g\allowbreak{}uniform\g/\g\allowbreak{}resource}
+{\mktsStyleCode{}your main text\textasciicircum{}[the annotation]\par
+}
 
-An example {\mktsStyleUrl{}https:\g/\g/\g\allowbreak{}example.com\g/\g\allowbreak{}a\g/\g\allowbreak{}uniform\g/\g\allowbreak{}resource} for a URL.
-And yet {\mktsStyleUrl{}http:\g/\g/\g\allowbreak{}x.com} another one.
-
-{\mktsStyleUrl{}https:\g/\g/\g\allowbreak{}example.com\g/\g\allowbreak{}a\g/\g\allowbreak{}uniform\g/\g\allowbreak{}resource\g/\g\allowbreak{}locator\g/\g\allowbreak{}commonly\g/\g\allowbreak{}informally\g/\g\allowbreak{}termed\g/\g\allowbreak{}a\g/\g\allowbreak{}web\g/\g\allowbreak{}address\g/\g\allowbreak{}is\g/\g\allowbreak{}a\g/\g\allowbreak{}reference\g/\g\allowbreak{}to\g/\g\allowbreak{}a\g/\g\allowbreak{}web\g/\g\allowbreak{}resource\g/\g\allowbreak{}that\g/\g\allowbreak{}specifies\g/\g\allowbreak{}its\g/\g\allowbreak{}location\g/\g\allowbreak{}on\g/\g\allowbreak{}a\g/\g\allowbreak{}computer\g/\g\allowbreak{}network\g/\g\allowbreak{}and\g/\g\allowbreak{}a\g/\g\allowbreak{}mechanism\g/\g\allowbreak{}for\g/\g\allowbreak{}retrieving\g/\g\allowbreak{}it}
-
-
-{\mktsHThree{}\zlabel{h-2}Footnotes\mktsHThreeBEG}%
-foo{\mktsEnStyleMarkMain{}1}
+}your main text{\mktsEnStyleMarkMain{}2}
 
 
-{\mktsHThree{}\zlabel{h-3}Links\mktsHThreeBEG}%
-When MD link syntax is used {\mktsStyleCode{}[like \allowbreak{}here]\allowbreak{}(https://\allowbreak{}example.com/\allowbreak{}\#like)}
-like here{\mktsEnStyleMarkMain{}2}, a footnote is generated; a footnote mark
+\end{multicols}
+
+{\mktsHThree{}\zlabel{h-4}Links\mktsHThreeBeg}%
+
+\vspace{\parskip}%TEX-WRITER/COLUMNS/$transform-to-tex
+\begin{multicols}{2}\raggedcolumns{}
+When MD link syntax is used {\mktsStyleCode{}[like \textbackslash{}allowbreak\{\}here]\textbackslash{}allowbreak\{\}(https://\textbackslash{}allowbreak\{\}example.com/\textbackslash{}allowbreak\{\}like)}
+{\mktsStyleLinklabel{}like here}{\mktsEnStyleMarkMain{}3}, a footnote is generated; a footnote mark
 (a superscript number) is placed after the linked text, and the URL will appear in
-the footnotes wherever they will be generated. Since the anchor text is in no way
+the footnotes wherever they will be generated.
+
+Since the anchor text is in no way
 marked, it is possible to achieve the same effect by leaving the anchor text
 empty; however, if you intend to use the same source for other output formats,
-it would probably be a good idea to always use a non-empty anchor text.{\mktsEnStyleMarkMain{}3}
+it would probably be a good idea to always use a non-empty anchor text.{\mktsEnStyleMarkMain{}4}
+
+\end{multicols}
+
+\mktsRuleSwell{}\vspace{\parskip}%TEX-WRITER/COLUMNS/$transform-to-tex
+\begin{multicols}{2}\raggedcolumns{}
 
 
 
-\begin{mktsEnNotes}{\mktsEnStyleMarkNotes\mktsEnMarkBefore1\mktsEnMarkAfter{}}bar
+\begin{mktsEnNotes}{\mktsEnStyleMarkNotes\mktsEnMarkBefore1\mktsEnMarkAfter{}}breakpoints in URLs follow the rules of the Unicode
+Line Breaking Algorithm  ({\mktsStyleUrl{}http:\g/\g/\allowbreak{}www.unicode.org\g/\allowbreak{}reports\g/\allowbreak{}tr14\g/\allowbreak{}\#SampleCode\allowbreak{}}) as implemented by the
+NodeJS {\mktsStyleCode{}linebreak} module ({\mktsStyleUrl{}https:\g/\g/\allowbreak{}github.com\g/\allowbreak{}devongovett\g/\allowbreak{}linebreak\allowbreak{}}).
 
-{\mktsEnStyleMarkNotes\mktsEnMarkBefore2\mktsEnMarkAfter{}}{\mktsStyleUrl{}https:\g/\g/\g\allowbreak{}example.com\g/\g\allowbreak{}\#like
+{\mktsEnStyleMarkNotes\mktsEnMarkBefore2\mktsEnMarkAfter{}}the annotation
 
-}{\mktsEnStyleMarkNotes\mktsEnMarkBefore3\mktsEnMarkAfter{}}... and not
+{\mktsEnStyleMarkNotes\mktsEnMarkBefore3\mktsEnMarkAfter{}}{\mktsStyleUrl{}https:\g/\g/\allowbreak{}example.com\g/\allowbreak{}like\allowbreak{}}
+
+{\mktsEnStyleMarkNotes\mktsEnMarkBefore4\mktsEnMarkAfter{}}... and not
 to use 'click here' and similar wordings that only make sense in an interactive setting.
 
 \end{mktsEnNotes}
 
 
-\end{multicols}
-
-
 
 
 % end of MD document
+\end{multicols}
+

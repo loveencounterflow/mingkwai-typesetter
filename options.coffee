@@ -79,16 +79,16 @@ module.exports = options =
       { texname: 'mktsFontfileDejavuserifitalic',              filename: 'DejaVuSerif-Italic.ttf',              }
       { texname: 'mktsFontfileDroidsansfallbackfull',          filename: 'DroidSansFallbackFull.ttf',           }
       { texname: 'mktsFontfileDroidsansjapanese',              filename: 'DroidSansJapanese.ttf',               }
-      { texname: 'mktsFontfileEbgaramondeightitalic',          filename: 'EBGaramond08-Italic.otf',             }
-      { texname: 'mktsFontfileEbgaramondeightregular',         filename: 'EBGaramond08-Regular.otf',            }
-      { texname: 'mktsFontfileEbgaramondeightsc',              filename: 'EBGaramond08-SC.otf',                 }
-      { texname: 'mktsFontfileEbgaramondinitials',             filename: 'EBGaramond-Initials.otf',             }
-      { texname: 'mktsFontfileEbgaramondinitialsfone',         filename: 'EBGaramond-InitialsF1.otf',           }
-      { texname: 'mktsFontfileEbgaramondinitialsftwo',         filename: 'EBGaramond-InitialsF2.otf',           }
-      { texname: 'mktsFontfileEbgaramondtwelveallsc',          filename: 'EBGaramond12-AllSC.otf',              }
-      { texname: 'mktsFontfileEbgaramondtwelveitalic',         filename: 'EBGaramond12-Italic.otf',             }
-      { texname: 'mktsFontfileEbgaramondtwelveregular', otf: 'Numbers=Monospaced', filename: 'EBGaramond12-Regular.otf',            }
-      { texname: 'mktsFontfileEbgaramondtwelvesc',             filename: 'EBGaramond12-SC.otf',                 }
+      { texname: 'mktsFontfileEbgaramondeightitalic',   otf: 'Numbers=Monospaced,Ligatures={Rare,Historic}', filename: 'EBGaramond08-Italic.otf',             }
+      { texname: 'mktsFontfileEbgaramondeightregular',  otf: 'Numbers=Monospaced,Ligatures={Rare,Historic}', filename: 'EBGaramond08-Regular.otf',            }
+      { texname: 'mktsFontfileEbgaramondeightsc',       otf: 'Numbers=Monospaced,Ligatures={Rare,Historic}', filename: 'EBGaramond08-SC.otf',                 }
+      { texname: 'mktsFontfileEbgaramondinitials',      otf: 'Numbers=Monospaced,Ligatures={Rare,Historic}', filename: 'EBGaramond-Initials.otf',             }
+      { texname: 'mktsFontfileEbgaramondinitialsfone',  otf: 'Numbers=Monospaced,Ligatures={Rare,Historic}', filename: 'EBGaramond-InitialsF1.otf',           }
+      { texname: 'mktsFontfileEbgaramondinitialsftwo',  otf: 'Numbers=Monospaced,Ligatures={Rare,Historic}', filename: 'EBGaramond-InitialsF2.otf',           }
+      { texname: 'mktsFontfileEbgaramondtwelveallsc',   otf: 'Numbers=Monospaced,Ligatures={Rare,Historic}', filename: 'EBGaramond12-AllSC.otf',              }
+      { texname: 'mktsFontfileEbgaramondtwelvesc',      otf: 'Numbers=Monospaced,Ligatures={Rare,Historic}', filename: 'EBGaramond12-SC.otf',                 }
+      { texname: 'mktsFontfileEbgaramondtwelveitalic',  otf: 'Numbers=Monospaced,Ligatures={Rare,Historic}', filename: 'EBGaramond12-Italic.otf',             }
+      { texname: 'mktsFontfileEbgaramondtwelveregular', otf: 'Numbers=Monospaced,Ligatures={Rare,Historic}', filename: 'EBGaramond12-Regular.otf',            }
       { texname: 'mktsFontfileEpgyobld',                       filename: 'EPGYOBLD.TTF',                        }
       { texname: 'mktsFontfileEpgyosho',                       filename: 'EPGYOSHO.TTF',                        }
       { texname: 'mktsFontfileEpkaisho',                       filename: 'EPKAISHO.TTF',                        }

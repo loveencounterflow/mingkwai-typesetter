@@ -14,6 +14,32 @@
 0123456789012345678901234567890123456789
 <<keep-lines)>>
 
+
+
+<<!columns>>
+
+
+ſing, hiſſing, ſhy, fluffy, shy, official; Additionally in italic: Q and g + descending character:
+egg, nagy, gjuha, Qyteti Historical Ligatures (feature hlig): historical
+ligatures for s+t and c+t and for s+p and s+k (the latter two italic only):
+standard, acta, speak, skies, standard, select Contextual Ligatures* (feature
+clig, italic only): ligatures for final s after a, e, i and u: finalis,
+ligatures, humus, rosas Discretionary Ligatures (feature dlig): T+h ligature:
+Théatre, Theorie
+<<!nl 10>>
+
+==========================================================================
+
+*ſing, hiſſing, ſhy, fluffy, shy, official; Additionally in italic: Q and g + descending
+character: egg, nagy, gjuha, Qyteti Historical Ligatures (feature hlig):
+historical ligatures for s+t and c+t and for s+p and s+k (the latter two
+italic only): standard, acta, speak, skies, standard, select Contextual
+Ligatures (feature clig, italic only): ligatures for final s after a, e, i
+and u: finalis, ligatures, humus, rosas Discretionary Ligatures (feature
+dlig): T+h ligature: Théatre, Theorie*
+<<!nl 10>>
+
+
 <<!end>>
 おもて表おもて u-cjk-8868; biǎo; おもて, あらわ·(す|れる); ヒョウ
 

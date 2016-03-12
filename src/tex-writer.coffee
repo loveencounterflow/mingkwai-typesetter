@@ -374,7 +374,6 @@ before '@MKTX.BLOCK.$heading', '@MKTX.COMMAND.$toc', \
   return $ ( event, send ) =>
     #.......................................................................................................
     if select event, '(', 'h'
-      debug '3752', event
       [ type, name, level, meta, ] = event
       h_idx                += +1
       h_key                 = "h-#{h_idx}"
@@ -1073,20 +1072,56 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       unless url?
         return send [ '.', 'warning', "missing required argument for `<<!url>>`", ( copy meta ), ]
       #.....................................................................................................
-      fragments = LINEBREAKER.fragmentize url
-      last_idx  = fragments.length - 1
-      for fragment, idx in fragments
-        unless idx is last_idx
-          if      fragment.endsWith '//' then fragment = fragment[ .. fragment.length - 3 ] + "\\g/\\g/"
-          else if fragment.endsWith '/'  then fragment = fragment[ .. fragment.length - 2 ] + "\\g/"
-        fragments[ idx ] = fragment
-      url_tex = fragments.join "\\g\\allowbreak{}"
+      fragments     = LINEBREAKER.fragmentize url
+      last_idx      = fragments.length - 1
+      # out_fragments = []
+      debug fragments
+      #.....................................................................................................
       send [ 'tex', "{\\mktsStyleUrl{}", ]
-      send [ 'tex', url_tex, ]
+      #.....................................................................................................
+      for fragment, idx in fragments
+        [ segment, slashes, ] = fragment.split /(\/+)$/
+        send [ '.', 'text', segment, ( copy meta ), ]
+        # unless idx is last_idx
+        # send [ 'tex', "\\g\\allowbreak{}", ]
+        if slashes?
+          slashes = '\\g' + ( Array.from slashes ).join '\\g'
+          send [ 'tex', slashes, ]
+        send [ 'tex', "\\allowbreak{}", ]
+      #.....................................................................................................
       send [ 'tex', "}", ]
     #.......................................................................................................
     else
       send event
+    #.......................................................................................................
+    return null
+
+# #-----------------------------------------------------------------------------------------------------------
+# @MKTX.COMMAND.$url = ( S ) =>
+#   #.........................................................................................................
+#   return $ ( event, send ) =>
+#     #.......................................................................................................
+#     if select event, '!', 'url'
+#       [ type, name, parameters, meta, ] = event
+#       send stamp event
+#       [ url, ] = parameters
+#       unless url?
+#         return send [ '.', 'warning', "missing required argument for `<<!url>>`", ( copy meta ), ]
+#       #.....................................................................................................
+#       fragments = LINEBREAKER.fragmentize url
+#       last_idx  = fragments.length - 1
+#       for fragment, idx in fragments
+#         unless idx is last_idx
+#           if      fragment.endsWith '//' then fragment = fragment[ .. fragment.length - 3 ] + "\\g/\\g/"
+#           else if fragment.endsWith '/'  then fragment = fragment[ .. fragment.length - 2 ] + "\\g/"
+#         fragments[ idx ] = fragment
+#       url_tex = fragments.join "\\g\\allowbreak{}"
+#       send [ 'tex', "{\\mktsStyleUrl{}", ]
+#       send [ 'tex', url_tex, ]
+#       send [ 'tex', "}", ]
+#     #.......................................................................................................
+#     else
+#       send event
 
 
 #===========================================================================================================
