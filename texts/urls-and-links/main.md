@@ -1,14 +1,18 @@
 
-
 <<!columns>>
 
 ## URLs, Footnotes, and Links
 
 ### Code Samples
 
+<<!columns 1>>
 ```
 helo world
+\<<(url>>https://link.com/2\<<)>>
+\<<(url>>https://example.com/a/uniform/resource\<<)>>
+your main text^[the annotation]
 ```
+<<!columns 'pop'>>
 
 ### URLs
 
@@ -36,7 +40,7 @@ NodeJS `linebreak` module (<<!url 'https://github.com/devongovett/linebreak'>>).
 
 Two ways to markup footnotes
 
-get realized as footnotes or endnotes; in the latter case, use `<\<!footnotes>>`
+get realized as footnotes or endnotes; in the latter case, use `\<<!footnotes>>`
 command to place them
 
 ```
@@ -49,9 +53,8 @@ your main text^[the annotation]
 
 ### Links
 
-<!-- When MD link syntax is used `[like here](https://example.com/#like)` -->
-When MD link syntax is used `[like here](https://example.com/like)`
-[like here](https://example.com/like), a footnote is generated; a footnote mark
+When MD link syntax is used `[like here](https://example.com/#like)`
+[like here](https://example.com/#like), a footnote is generated; a footnote mark
 (a superscript number) is placed after the linked text, and the URL will appear in
 the footnotes wherever they will be generated. 
 

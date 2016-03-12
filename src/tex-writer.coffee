@@ -672,13 +672,17 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     else if select event, ')', 'code-span'
       send [ 'tex', "}", ]
     #.......................................................................................................
-    else if within_code_span
-      [ type, name, text, meta, ] = event
-      if text?
-        fragments = LINEBREAKER.fragmentize text
-        # text      = fragments.join "\\g\\allowbreak{}"
-        text      = fragments.join "\\allowbreak{}"
-      send [ type, name, text, meta, ]
+    else if within_code_span and select event, '.', 'text'
+      # send event
+      [ _, _, text, meta, ] = event
+      #.....................................................................................................
+      ### TAINT sort-of code duplication with command url ###
+      fragments     = LINEBREAKER.fragmentize text
+      last_idx      = fragments.length - 1
+      #.....................................................................................................
+      for fragment, idx in fragments
+        send [ '.', 'text', fragment, ( copy meta ), ]
+        send [ 'tex', "\\allowbreak{}", ] unless idx is last_idx
     #.......................................................................................................
     else
       send event
@@ -1072,18 +1076,15 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       unless url?
         return send [ '.', 'warning', "missing required argument for `<<!url>>`", ( copy meta ), ]
       #.....................................................................................................
+      ### TAINT sort-of code duplication with inline code ###
       fragments     = LINEBREAKER.fragmentize url
       last_idx      = fragments.length - 1
-      # out_fragments = []
-      debug fragments
       #.....................................................................................................
       send [ 'tex', "{\\mktsStyleUrl{}", ]
       #.....................................................................................................
       for fragment, idx in fragments
         [ segment, slashes, ] = fragment.split /(\/+)$/
         send [ '.', 'text', segment, ( copy meta ), ]
-        # unless idx is last_idx
-        # send [ 'tex', "\\g\\allowbreak{}", ]
         if slashes?
           slashes = '\\g' + ( Array.from slashes ).join '\\g'
           send [ 'tex', slashes, ]

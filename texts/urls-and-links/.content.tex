@@ -3,16 +3,17 @@
 {\mktsHTwo{}\zlabel{h-0}URLs, Footnotes, and Links\mktsHTwoBeg}%
 {\mktsHThree{}\zlabel{h-1}Code Samples\mktsHThreeBeg}%
 
-\vspace{\parskip}%TEX-WRITER/COLUMNS/$transform-to-tex
-\begin{multicols}{2}\raggedcolumns{}\null\par{\mktsTightParagraphs{}
+
+
+\null\par{\mktsTightParagraphs{}
 
 {\mktsStyleCode{}helo world\par
+<<(url>>https://link.com/2<<)>>\par
+<<(url>>https://example.com/a/uniform/resource<<)>>\par
+your main text\textasciicircum{}[the annotation]\par
 }
 
-}
-\end{multicols}
-
-{\mktsHThree{}\zlabel{h-2}URLs\mktsHThreeBeg}%
+}{\mktsHThree{}\zlabel{h-2}URLs\mktsHThreeBeg}%
 
 \vspace{\parskip}%TEX-WRITER/COLUMNS/$transform-to-tex
 \begin{multicols}{2}\raggedcolumns{}{\mktsStyleUrl{}https:\g/\g/\allowbreak{}link.com/2\allowbreak{}}
@@ -38,7 +39,7 @@ breakpoints are inserted{\mktsEnStyleMarkMain{}1}
 \vspace{\parskip}%TEX-WRITER/COLUMNS/$transform-to-tex
 \begin{multicols}{2}\raggedcolumns{}Two ways to markup footnotes
 
-get realized as footnotes or endnotes; in the latter case, use {\mktsStyleCode{}<<!\textbackslash{}allowbreak\{\}footnotes>>}
+get realized as footnotes or endnotes; in the latter case, use {\mktsStyleCode{}<<!\allowbreak{}footnotes>>}
 command to place them
 
 \null\par{\mktsTightParagraphs{}
@@ -54,8 +55,7 @@ command to place them
 {\mktsHThree{}\zlabel{h-4}Links\mktsHThreeBeg}%
 
 \vspace{\parskip}%TEX-WRITER/COLUMNS/$transform-to-tex
-\begin{multicols}{2}\raggedcolumns{}
-When MD link syntax is used {\mktsStyleCode{}[like \textbackslash{}allowbreak\{\}here]\textbackslash{}allowbreak\{\}(https://\textbackslash{}allowbreak\{\}example.com/\textbackslash{}allowbreak\{\}like)}
+\begin{multicols}{2}\raggedcolumns{}When MD link syntax is used {\mktsStyleCode{}[like \allowbreak{}here]\allowbreak{}(https://\allowbreak{}example.com/\allowbreak{}\#like)}
 {\mktsStyleLinklabel{}like here}{\mktsEnStyleMarkMain{}3}, a footnote is generated; a footnote mark
 (a superscript number) is placed after the linked text, and the URL will appear in
 the footnotes wherever they will be generated.
@@ -78,7 +78,7 @@ NodeJS {\mktsStyleCode{}linebreak} module ({\mktsStyleUrl{}https:\g/\g/\allowbre
 
 {\mktsEnStyleMarkNotes\mktsEnMarkBefore2\mktsEnMarkAfter{}}the annotation
 
-{\mktsEnStyleMarkNotes\mktsEnMarkBefore3\mktsEnMarkAfter{}}{\mktsStyleUrl{}https:\g/\g/\allowbreak{}example.com\g/\allowbreak{}like\allowbreak{}}
+{\mktsEnStyleMarkNotes\mktsEnMarkBefore3\mktsEnMarkAfter{}}{\mktsStyleUrl{}https:\g/\g/\allowbreak{}example.com\g/\allowbreak{}\#like\allowbreak{}}
 
 {\mktsEnStyleMarkNotes\mktsEnMarkBefore4\mktsEnMarkAfter{}}... and not
 to use 'click here' and similar wordings that only make sense in an interactive setting.
