@@ -2,12 +2,12 @@
 
 
 ############################################################################################################
-# njs_path                  = require 'path'
+njs_path                  = require 'path'
 njs_fs                    = require 'fs'
 #...........................................................................................................
 CND                       = require 'cnd'
 rpr                       = CND.rpr
-badge                     = 'MKTS/MACRO-ESCAPER'
+badge                     = 'MK/TS/MACRO-ESCAPER'
 log                       = CND.get_logger 'plain',     badge
 info                      = CND.get_logger 'info',      badge
 whisper                   = CND.get_logger 'whisper',   badge
@@ -358,9 +358,11 @@ after it, thereby inhibiting any processing of those portions. ###
       ### TAINT what kind of error handling is this? ###
       if result?
         [ route, ] = result
+        locator = njs_path.resolve S.layout_info[ 'source-home' ], route
         if route?
+          whisper "resolved route: #{route} -> #{locator}"
           try
-            content = njs_fs.readFileSync route, encoding: 'utf-8'
+            content = njs_fs.readFileSync locator, encoding: 'utf-8'
           catch error
             error_message = ( error_message ? '' ) + "\n" + error[ 'message' ]
         else

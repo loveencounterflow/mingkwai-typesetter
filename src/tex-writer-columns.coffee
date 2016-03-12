@@ -277,11 +277,11 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
       [ type, name, text, meta, ] = event
     #.......................................................................................................
     if select event, '(', 'COLUMNS/group'
-      help '975', ( JSON.stringify event )[ .. 50 ]
+      # help '975', ( JSON.stringify event )[ .. 50 ]
       within_group = yes
     #.......................................................................................................
     else if select event, ')', 'COLUMNS/group'
-      warn '975', ( JSON.stringify event )[ .. 50 ]
+      # warn '975', ( JSON.stringify event )[ .. 50 ]
       if all_whitespace
         whisper "ignoring multicols b/c group only contains whitespace"
       else
@@ -292,7 +292,7 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
       all_whitespace  = yes
     #.......................................................................................................
     else if select event, '.', 'COLUMNS/tex'
-      urge '975', ( JSON.stringify event )[ .. 50 ]
+      # urge '975', ( JSON.stringify event )[ .. 50 ]
       buffer.push text
       # send text
     #.......................................................................................................
@@ -300,10 +300,10 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
       if within_group
         all_whitespace = all_whitespace and ws_pattern.test text
         buffer.push text
-        # debug '975', event if text is undefined
-        whisper '975', all_whitespace, rpr text
+        debug '975', event if text is undefined
+        # whisper '975', all_whitespace, rpr text
       else
-        info '975', ( JSON.stringify event )[ .. 50 ]
+        # info '975', ( JSON.stringify event )[ .. 50 ]
         send event
     #.......................................................................................................
     return null

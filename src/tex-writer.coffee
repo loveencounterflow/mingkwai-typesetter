@@ -165,18 +165,23 @@ after = ( names..., method ) ->
     write "% assuming fontspec@#{fontspec_version}"
     write "\\usepackage{fontspec}"
     #.......................................................................................................
-    for { texname, home, filename, } in @options[ 'fonts' ][ 'files' ]
-      home ?= fonts_home
+    for { texname, otf, home, subfolder, filename, } in @options[ 'fonts' ][ 'files' ]
+      home              ?= fonts_home
+      home              = njs_path.join home, subfolder if subfolder?
+      home              = "#{home}/" unless home.endsWith '/'
+      font_settings     = [ "Path=#{home}", ]
+      font_settings.push otf if otf?
+      font_settings_txt = font_settings.join ','
       if use_new_syntax
         ### TAINT should properly escape values ###
-        write "\\newfontface{\\#{texname}}{#{filename}}[Path=#{home}/]"
+        write "\\newfontface{\\#{texname}}{#{filename}}[#{font_settings_txt}]"
         # write "\\newcommand{\\#{texname}}{"
         # write "\\typeout{\\trmWhite{redefining #{texname}}}"
-        # write "\\newfontface{\\#{texname}XXX}{#{filename}}[Path=#{home}/]"
+        # write "\\newfontface{\\#{texname}XXX}{#{filename}}[#{font_settings_txt}/]"
         # write "\\renewcommand{\\#{texname}}{\\#{texname}XXX}"
         # write "}"
       else
-        write "\\newfontface\\#{texname}[Path=#{home}/]{#{filename}}"
+        write "\\newfontface\\#{texname}[#{font_settings_txt}]{#{filename}}"
     write ""
     #-------------------------------------------------------------------------------------------------------
     # STYLES
@@ -369,6 +374,7 @@ before '@MKTX.BLOCK.$heading', '@MKTX.COMMAND.$toc', \
   return $ ( event, send ) =>
     #.......................................................................................................
     if select event, '(', 'h'
+      debug '3752', event
       [ type, name, level, meta, ] = event
       h_idx                += +1
       h_key                 = "h-#{h_idx}"
@@ -541,7 +547,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       # yadda = @MKTX.TEX.fix_typography_for_tex yadda, S.options
       send stamp event
       send [ 'tex', yadda, ]
-      send [ '.', 'p', null, ( copy meta ), ]
+      # send [ '.', 'p', null, ( copy meta ), ]
     #.......................................................................................................
     else
       send event
@@ -996,28 +1002,42 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     #.......................................................................................................
     else if select event, ')', 'link'
       # debug '©97721', event
-      send stamp event
+      # debug '©97721', cache
+      send [ 'tex', '{\\mktsStyleLinklabel{}', ]
       for cached_event in cache
         send cached_event
-      # last_href = @MKTX.TEX.fix_typography_for_tex last_href, S.options
-      send [ '(', 'footnote', null,       ( copy meta ), ]
-      send [ '(', 'url',      null,       ( copy meta ), ]
-      send [ '.', 'text',     last_href,  ( copy meta ), ]
-      send [ '.', 'p',        null,       ( copy meta ), ]
-      send [ ')', 'url',      null,       ( copy meta ), ]
-      send [ ')', 'footnote', null,       ( copy meta ), ]
+      send [ 'tex', '}', ]
+      # send [ '(', 'footnote', null,       ( copy meta ), ]
+      # send [ '(', 'url',      null,       ( copy meta ), ]
+      # send [ '.', 'text',     last_href,  ( copy meta ), ]
+      # send [ '.', 'p',        null,       ( copy meta ), ]
+      # send [ ')', 'url',      null,       ( copy meta ), ]
+      # send [ ')', 'footnote', null,       ( copy meta ), ]
+      send [ '(', 'footnote', null,           ( copy meta ), ]
+      send [ '!', 'url',      [ last_href, ], ( copy meta ), ]
+      send [ '.', 'p',        null,           ( copy meta ), ]
+      send [ ')', 'footnote', null,           ( copy meta ), ]
       cache.length  = 0
       last_href     = null
+      send stamp event
+    #.......................................................................................................
+    else if cache.length > 0 and select event, ')', 'document'
+      send [ '.', 'warning', "missing closing region 'link'", ( copy meta ), ]
+      send cached_event for cached_event in cache
+      send event
     #.......................................................................................................
     else if within_link
       cache.push event
     #.......................................................................................................
     else
       send event
+    #.......................................................................................................
+    return null
 
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.INLINE.$url = ( S ) =>
-  track = MD_READER.TRACKER.new_tracker '(url)'
+  track   = MD_READER.TRACKER.new_tracker '(url)'
+  buffer  = []
   #.........................................................................................................
   return $ ( event, send ) =>
     within_url = track.within '(url)'
@@ -1025,24 +1045,45 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     [ type, name, text, meta, ] = event
     #.......................................................................................................
     if select event, '(', 'url'
-      send stamp event
-      send [ 'tex', "{\\mktsStyleUrl{}", ]
+      send stamp hide copy event
     #.......................................................................................................
     else if select event, ')', 'url'
-      send stamp event
-      send [ 'tex', "}", ]
+      send [ '!', 'url', [ buffer.join '' ], ( copy meta ), ]
+      buffer.length = 0
+      send stamp hide copy event
     #.......................................................................................................
     else if within_url and select event, '.', 'text'
-      # text = ( LINEBREAKER.fragmentize text ).join " \u200b"
-      fragments = LINEBREAKER.fragmentize text
+      buffer.push text
+    #.......................................................................................................
+    else if within_url
+      send [ '.', 'warning', "ignoring non-text event inside `(url)`: #{rpr event}"]
+    #.......................................................................................................
+    else
+      send event
+
+#-----------------------------------------------------------------------------------------------------------
+@MKTX.COMMAND.$url = ( S ) =>
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    #.......................................................................................................
+    if select event, '!', 'url'
+      [ type, name, parameters, meta, ] = event
+      send stamp event
+      [ url, ] = parameters
+      unless url?
+        return send [ '.', 'warning', "missing required argument for `<<!url>>`", ( copy meta ), ]
+      #.....................................................................................................
+      fragments = LINEBREAKER.fragmentize url
       last_idx  = fragments.length - 1
       for fragment, idx in fragments
         unless idx is last_idx
           if      fragment.endsWith '//' then fragment = fragment[ .. fragment.length - 3 ] + "\\g/\\g/"
           else if fragment.endsWith '/'  then fragment = fragment[ .. fragment.length - 2 ] + "\\g/"
         fragments[ idx ] = fragment
-      text = fragments.join "\\g\\allowbreak{}"
-      send [ type, name, text, meta, ]
+      url_tex = fragments.join "\\g\\allowbreak{}"
+      send [ 'tex', "{\\mktsStyleUrl{}", ]
+      send [ 'tex', url_tex, ]
+      send [ 'tex', "}", ]
     #.......................................................................................................
     else
       send event
@@ -1256,6 +1297,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe MACRO_ESCAPER.$expand.$remove_backslashes         S
     .pipe @$document                                        S
     #.......................................................................................................
+    # .pipe D.$show()
     .pipe @MKTX.INLINE.$link                                S
     .pipe @MKTX.MIXED.$footnote                             S
     .pipe @MKTX.MIXED.$footnote.$remove_extra_paragraphs    S
@@ -1273,6 +1315,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @MKTX.BLOCK.$unordered_list                       S
     .pipe @MKTX.INLINE.$code_span                           S
     .pipe @MKTX.INLINE.$url                                 S
+    .pipe @MKTX.COMMAND.$url                                S
     .pipe @MKTX.INLINE.$translate_i_and_b                   S
     .pipe @MKTX.INLINE.$em_and_strong                       S
     .pipe @MKTX.INLINE.$image                               S
@@ -1285,7 +1328,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @MKTX.CLEANUP.$remove_empty_texts                 S
     .pipe @MKTX.CLEANUP.$consolidate_texts                  S
     .pipe @MKTX.TEX.$fix_typography_for_tex                 S
-    # .pipe MKTSCRIPT_WRITER.$show_mktsmd_events              S
+    .pipe MKTSCRIPT_WRITER.$show_mktsmd_events              S
     .pipe @MKTX.INLINE.$mark                                S
     .pipe @MKTX.$show_unhandled_tags                        S
     .pipe @MKTX.$show_warnings                              S
@@ -1325,7 +1368,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
   ### TAIN only works with docs in the filesystem, not with literal texts ###
   #---------------------------------------------------------------------------------------------------------
   f = => step ( resume ) =>
-    handler                ?= ->
+    # handler                ?= ->
     layout_info             = HELPERS.new_layout_info @options, source_route
     yield @write_mkts_master layout_info, resume
     source_locator          = layout_info[ 'source-locator'  ]

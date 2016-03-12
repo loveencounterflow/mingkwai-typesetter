@@ -8,7 +8,7 @@
 #...........................................................................................................
 CND                       = require 'cnd'
 rpr                       = CND.rpr
-badge                     = 'MKTS/MACRO-INTERPRETER'
+badge                     = 'MK/TS/MACRO-INTERPRETER'
 log                       = CND.get_logger 'plain',     badge
 info                      = CND.get_logger 'info',      badge
 whisper                   = CND.get_logger 'whisper',   badge
@@ -259,49 +259,44 @@ MKTS                      = require './main'
   #.........................................................................................................
   return $ ( event, send ) =>
     ### TAINT code duplication ###
-    debug '©18567', event
     if select event, '('
       [ _, call_signature, extra, meta, ] = event
       [ _, identifier, parameters_txt,  ] = call_signature.match /^\s*([^\s]*)\s*(.*)$/
       #.....................................................................................................
       ### Refuse to overwrite 3rd event parameter when already set. This is a makeshift solution that will
       be removed when we implement a simplified and more unified event syntax. ###
-      if extra?
+      if extra? # and extra.length > 0
         warn "encountered start region event with parameters and extra" if parameters_txt.length > 0
+        tag_stack.push identifier
         return send event
       #.....................................................................................................
-      { mode, language, line_nr, }        = meta
-      [ error_message, parameters, ]      = @_parameters_from_text S, line_nr, parameters_txt
+      { line_nr, }                    = meta
+      [ error_message, parameters, ]  = @_parameters_from_text S, line_nr, parameters_txt
       #.....................................................................................................
       send [ '.', 'warning', error_message, meta, ] if error_message?
       send [ '(', identifier, parameters, meta, ]
       tag_stack.push identifier
     #.......................................................................................................
     else if select event, ')'
-      # debug '©01840', JSON.stringify event
-      # debug '©01840', select event, ')'
       [ _, identifier, extra, meta, ] = event
       #.....................................................................................................
       if tag_stack.length < 1
-        warn '34-1', [ '.', 'warning', "too many closing regions", ( copy meta ), ]
         return send [ '.', 'warning', "too many closing regions", ( copy meta ), ]
       #.....................................................................................................
       expected = tag_stack.pop()
       #.....................................................................................................
       if ( identifier.length > 0 ) and ( expected isnt identifier )
         message = "expected closing region #{rpr expected}, got #{rpr identifier}"
-        warn '34-2', [ '.', 'warning', message, ( copy meta ), ]
         send [ '.', 'warning', message, ( copy meta ), ]
         send event if identifier is 'document'
       #.....................................................................................................
       identifier = expected
       send [ ')', identifier, extra, ( copy meta ), ]
-      # send [ ')', 'document', extra, ( copy meta ), ]
-      urge '443', [ ')', identifier, extra, ( copy meta ), ]
     #.......................................................................................................
     else
-      # debug '©88225', JSON.stringify event
       send event
+    #.......................................................................................................
+    return null
 
 #-----------------------------------------------------------------------------------------------------------
 @$process_code_blocks = ( S ) =>

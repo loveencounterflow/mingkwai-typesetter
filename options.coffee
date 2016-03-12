@@ -87,7 +87,7 @@ module.exports = options =
       { texname: 'mktsFontfileEbgaramondinitialsftwo',         filename: 'EBGaramond-InitialsF2.otf',           }
       { texname: 'mktsFontfileEbgaramondtwelveallsc',          filename: 'EBGaramond12-AllSC.otf',              }
       { texname: 'mktsFontfileEbgaramondtwelveitalic',         filename: 'EBGaramond12-Italic.otf',             }
-      { texname: 'mktsFontfileEbgaramondtwelveregular',        filename: 'EBGaramond12-Regular.otf',            }
+      { texname: 'mktsFontfileEbgaramondtwelveregular', otf: 'Numbers=Monospaced', filename: 'EBGaramond12-Regular.otf',            }
       { texname: 'mktsFontfileEbgaramondtwelvesc',             filename: 'EBGaramond12-SC.otf',                 }
       { texname: 'mktsFontfileEpgyobld',                       filename: 'EPGYOBLD.TTF',                        }
       { texname: 'mktsFontfileEpgyosho',                       filename: 'EPGYOSHO.TTF',                        }
@@ -167,6 +167,27 @@ module.exports = options =
       { texname: 'mktsFontfileUbunturi',                       filename: 'Ubuntu-RI.ttf',                       }
       { texname: 'mktsFontfileUkai',                           filename: 'ukai.ttc',                            }
       { texname: 'mktsFontfileUming',                          filename: 'uming.ttc',                           }
+      { texname: 'mktsFontfileIosevkaslabbold',                subfolder: 'iosevska', filename: 'iosevka-slab-bold.ttf',              }
+      { texname: 'mktsFontfileIosevkaslabbolditalic',          subfolder: 'iosevska', filename: 'iosevka-slab-bolditalic.ttf',        }
+      { texname: 'mktsFontfileIosevkaslabboldoblique',         subfolder: 'iosevska', filename: 'iosevka-slab-boldoblique.ttf',       }
+      { texname: 'mktsFontfileIosevkaslabextralight',          subfolder: 'iosevska', filename: 'iosevka-slab-extralight.ttf',        }
+      { texname: 'mktsFontfileIosevkaslabextralightitalic',    subfolder: 'iosevska', filename: 'iosevka-slab-extralightitalic.ttf',  }
+      { texname: 'mktsFontfileIosevkaslabextralightoblique',   subfolder: 'iosevska', filename: 'iosevka-slab-extralightoblique.ttf', }
+      { texname: 'mktsFontfileIosevkaslabheavy',               subfolder: 'iosevska', filename: 'iosevka-slab-heavy.ttf',             }
+      { texname: 'mktsFontfileIosevkaslabheavyitalic',         subfolder: 'iosevska', filename: 'iosevka-slab-heavyitalic.ttf',       }
+      { texname: 'mktsFontfileIosevkaslabheavyoblique',        subfolder: 'iosevska', filename: 'iosevka-slab-heavyoblique.ttf',      }
+      { texname: 'mktsFontfileIosevkaslabitalic',              subfolder: 'iosevska', filename: 'iosevka-slab-italic.ttf',            }
+      { texname: 'mktsFontfileIosevkaslablight',               subfolder: 'iosevska', filename: 'iosevka-slab-light.ttf',             }
+      { texname: 'mktsFontfileIosevkaslablightitalic',         subfolder: 'iosevska', filename: 'iosevka-slab-lightitalic.ttf',       }
+      { texname: 'mktsFontfileIosevkaslablightoblique',        subfolder: 'iosevska', filename: 'iosevka-slab-lightoblique.ttf',      }
+      { texname: 'mktsFontfileIosevkaslabmedium',              subfolder: 'iosevska', filename: 'iosevka-slab-medium.ttf',            }
+      { texname: 'mktsFontfileIosevkaslabmediumitalic',        subfolder: 'iosevska', filename: 'iosevka-slab-mediumitalic.ttf',      }
+      { texname: 'mktsFontfileIosevkaslabmediumoblique',       subfolder: 'iosevska', filename: 'iosevka-slab-mediumoblique.ttf',     }
+      { texname: 'mktsFontfileIosevkaslaboblique',             subfolder: 'iosevska', filename: 'iosevka-slab-oblique.ttf',           }
+      { texname: 'mktsFontfileIosevkaslabregular',             subfolder: 'iosevska', filename: 'iosevka-slab-regular.ttf',           }
+      { texname: 'mktsFontfileIosevkaslabthin',                subfolder: 'iosevska', filename: 'iosevka-slab-thin.ttf',              }
+      { texname: 'mktsFontfileIosevkaslabthinitalic',          subfolder: 'iosevska', filename: 'iosevka-slab-thinitalic.ttf',        }
+      { texname: 'mktsFontfileIosevkaslabthinoblique',         subfolder: 'iosevska', filename: 'iosevka-slab-thinoblique.ttf',       }
       ]
 
   #.........................................................................................................

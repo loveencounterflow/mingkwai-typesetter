@@ -6,6 +6,9 @@
 % ==========================================================================================================
 % MKTS STYLES
 % ----------------------------------------------------------------------------------------------------------
+% \usepackage[normalem]{ulem}% -> command \uline
+
+% ----------------------------------------------------------------------------------------------------------
 \newcommand{\mktsStyleBold}{}%
 \newcommand{\mktsStyleFncr}{}%
 \newcommand{\mktsStyleGloss}{}%
@@ -14,11 +17,9 @@
 \newcommand{\mktsStyleNormal}{}%
 \newcommand{\mktsStyleSymbol}{}%
 \newcommand{\mktsStyleUrl}{}%
+\newcommand{\mktsStyleLinklabel}{}%
 \newcommand{\mktsStyleCode}{}%
-% ........................................................................................................
-\makeatletter
-\def\mktsStyleUrl@Glue{}%
-\makeatother
+\def\mktsStyleUrlGlue{}%
 
 
 % ----------------------------------------------------------------------------------------------------------
@@ -65,13 +66,19 @@
     }
 
   % ........................................................................................................
-  \makeatletter
-  \def\mktsStyleUrl@Glue{\hskip 0mm plus 0.7mm minus 0mm}%
+  \def\mktsStyleUrlGlue{\hskip 0mm plus 0.7mm minus 0mm}%
   \renewcommand{\mktsStyleUrl}{%
-    \let\g\mktsStyleUrl@Glue%
+    \let\g\mktsStyleUrlGlue%
     \mktsStyleFontUrl%
     }
-  \makeatother
+
+  % ........................................................................................................
+  \renewcommand{\mktsStyleLinklabel}{%
+    % [%
+    % \AfterGroup{%
+    %   ]%
+    %   }%
+    }
 
   % ........................................................................................................
   \renewcommand{\mktsStyleCode}{%
@@ -96,11 +103,9 @@
   \renewcommand{\mktsStyleNormal}{}%
   \renewcommand{\mktsStyleSymbol}{}%
   \renewcommand{\mktsStyleUrl}{}%
+  \renewcommand{\mktsStyleLinklabel}{}%
   \renewcommand{\mktsStyleCode}{}%
-  % ........................................................................................................
-  \makeatletter
-  \def\mktsStyleUrl@Glue{}%
-  \makeatother
+  \def\mktsStyleUrlGlue{}%
   }
 
 

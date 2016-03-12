@@ -419,6 +419,7 @@ tracker_pattern = /// ^
           #.................................................................................................
           when 'heading_open'
             h_level = parseInt token[ 'tag' ][ 1 ], 10
+            # urge '44356', [ '(', 'h', h_level, meta, ]
             send [ '(', 'h', h_level, meta, ]
           #.................................................................................................
           when 'heading_close'
@@ -882,7 +883,7 @@ tracker_pattern = /// ^
     .pipe MKTS.MACRO_INTERPRETER.$process_values      S
     .pipe MKTS.MACRO_INTERPRETER.$process_commands    S
     .pipe MKTS.MACRO_INTERPRETER.$process_regions     S
-    # .pipe MKTS.MACRO_INTERPRETER.$consolidate_regions S
+    .pipe MKTS.MACRO_INTERPRETER.$consolidate_regions S
     .pipe MKTS.MACRO_INTERPRETER.$process_code_blocks S
     .pipe @_PRE.$close_dangling_open_tags             S
     # .pipe D.$show '47594-B'
