@@ -260,11 +260,11 @@ after it, thereby inhibiting any processing of those portions. ###
   # debug '©II6XI', rpr text
   [ R, discard_count, ] = @escape.truncate_text_at_end_command_macro S, text
   whisper "detected <<!end>> macro; discarding approx. #{discard_count} characters" if discard_count > 0
+  R = @escape.insert_macros             S, R
   R = @escape.escape_chrs               S, R
   R = @escape.html_comments             S, R
   # R = @escape.sensitive_ws              S, R
   R = @escape.bracketed_raw_macros      S, R
-  R = @escape.insert_macros             S, R
   R = @escape.action_macros             S, R
   R = @escape.region_macros             S, R
   R = @escape.comma_macros              S, R
