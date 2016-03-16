@@ -306,7 +306,7 @@ after = ( names..., method ) ->
       ### TAINT U+00A0 (nbsp) might be too wide ###
       # text = text.replace /\n\n/g, "{\\mktsTightParagraphs\\null\\par\n"
       text    = text.replace /\u0020/g, '\u00a0'
-      text    = text.replace /^\n/,     ''
+      # text    = text.replace /^\n/,     ''
       chunks  = text.split /(\n)/g
       for chunk in chunks
         if chunk is '\n'
@@ -1364,7 +1364,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @MKTX.CLEANUP.$remove_empty_texts                 S
     .pipe @MKTX.CLEANUP.$consolidate_texts                  S
     .pipe @MKTX.TEX.$fix_typography_for_tex                 S
-    .pipe MKTSCRIPT_WRITER.$show_mktsmd_events              S
+    # .pipe MKTSCRIPT_WRITER.$show_mktsmd_events              S
     .pipe @MKTX.INLINE.$mark                                S
     .pipe @MKTX.$show_unhandled_tags                        S
     .pipe @MKTX.$show_warnings                              S

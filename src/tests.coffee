@@ -1,10 +1,5 @@
 
 
-############################################################################################################
-### This is a mock for the `MK` global normally instantiated by `mingkwai/lib/main.js`. ###
-unless global.MK?
-  global.MK                 = {}
-  global.MK.TS              = require './main'
 
 
 ############################################################################################################
@@ -38,7 +33,17 @@ D                         = require 'pipedreams'
 $                         = D.remit.bind D
 $async                    = D.remit_async.bind D
 #...........................................................................................................
+### TAINT to be replaced by global `MK.TS`: ###
 MKTS                      = require './main'
+
+############################################################################################################
+### This is a mock for the `MK` global normally instantiated by `mingkwai/lib/main.js`. ###
+unless global.MK?
+  require '../../mingkwai'
+  # CND.dir MK
+  # CND.dir MK.TS
+  # global.MK                 = {}
+  # global.MK.TS              = require './main'
 
 
 #===========================================================================================================
@@ -139,6 +144,7 @@ nice_text_rpr = ( text ) ->
 @[ "MKTS.MACRO_ESCAPER.bracketed_raw_patterns matches raw macro" ] = ( T, done ) ->
   probes_and_matchers = [
     ["<<<...raw material...>>>",["<","...raw material..."]]
+    ["<<<...raw material...>>>\nxxx",["<","...raw material..."]]
     ["<<(.>>some code<<)>>",null]
     ["<<<>>>",["<",""]]
     ["abcdef<<<\\XeLaTeX{}>>>ghijklm",[ '<', '\u001088\u0011eLaTeX{}' ]]
@@ -451,12 +457,13 @@ nice_text_rpr = ( text ) ->
 
 #-----------------------------------------------------------------------------------------------------------
 @[ "MKTS.MACRO_ESCAPER.$expand.$raw_macros" ] = ( T, done ) ->
-  probes_and_matchers = [[
-    """<<(multi-column 3>>
+  probes_and_matchers = [
+    #.......................................................................................................
+    [ """<<(multi-column 3>>
       some text here<<<\\LaTeX{}>>> and some there
       <<)>>
       """
-  ,
+    ,
     [
       # [".","text","\u0015region1\u0013\nsome text here",{}]
       # [".","raw","\\LaTeX{}",{}]
@@ -465,8 +472,25 @@ nice_text_rpr = ( text ) ->
       [".","raw","\u001076\u0011aTeX{}",{}]
       [".","text"," and some there\n\u0015region2\u0013",{}]
       ]
-    ]]
+    ],
+    #.......................................................................................................
+    [ """some text here
+      <<<\\dotfill{}>>>
+      and some there
+      """
+    ,
+    [
+      [".","text","some text here\n",{}]
+      [".","raw","\u0010100\u0011otfill{}",{}]
+      [".","text","\nand some there",{}]
+      ]
+    ],
+    #.......................................................................................................
+    ]
+  #.........................................................................................................
+  count = 0
   for [ pre_probe, matcher, ] in probes_and_matchers
+    info '\n' + pre_probe
     S       = MKTS.MACRO_ESCAPER.initialize_state {}
     probe   = MKTS.MACRO_ESCAPER.escape S, pre_probe
     input   = D.stream_from_text probe
@@ -477,7 +501,8 @@ nice_text_rpr = ( text ) ->
       log CND.white JSON.stringify event for event in result
       T.eq result, matcher
       # T.fail "not ready"
-      done()
+      count += +1
+      done() if count >= probes_and_matchers.length
     input.resume()
 
 #-----------------------------------------------------------------------------------------------------------
@@ -886,6 +911,39 @@ nice_text_rpr = ( text ) ->
     done()
 
 #-----------------------------------------------------------------------------------------------------------
+@[ "MKTS.TEX_WRITER.tex_from_md (3)" ] = ( T, done ) ->
+  settings  = bare: yes
+  # probe     = """
+  #   ```keep-lines squish: yes
+  #   <<<\\dotfill>>>𠦝<<<\\dotfill>>>x
+  #   𠦝月 朝　　　　<<<\\hfill{}>>>1
+  #   ```
+  #   """
+  probe     = """
+    ```keep-lines squish: yes
+    1
+    2
+    <<<\\dotfill>>>
+    3
+    ```
+    """
+  matcher   = """
+    % begin of MD document
+    {\\mktsTightParagraphs{}1\\par
+    2\\par
+    \\dotfill\\null\\par
+    3\\par
+    }
+    % end of MD document\n"""
+  step ( resume ) =>
+    result = yield MKTS.TEX_WRITER.tex_from_md probe, settings, resume
+    # echo result
+    info nice_text_rpr result
+    T.eq matcher.trim(), result.trim()
+    # T.fail "review `CLEANUP.$remove_empty_p_tags` in tex-writer; can't work w/ present event structure"
+    done()
+
+#-----------------------------------------------------------------------------------------------------------
 @[ "MKTS.MKTSCRIPT_WRITER.mktscript_from_md (1)" ] = ( T, done ) ->
   settings  = bare: yes
   probe     = """
@@ -1078,8 +1136,61 @@ nice_text_rpr = ( text ) ->
 @_main = ( handler ) ->
   test @, 'timeout': 2500
 
+#-----------------------------------------------------------------------------------------------------------
+@_prune = ->
+  for name, value of @
+    continue if name.startsWith '_'
+    delete @[ name ] unless name in include
+  return null
 
 ############################################################################################################
 unless module.parent?
+  # debug '0980', JSON.stringify ( Object.keys @ ), null '  '
+  include = [
+    # 'MKTS.MACRO_ESCAPER.bracketed_raw_patterns matches raw macro'
+    # 'MKTS.MACRO_ESCAPER.escape.bracketed_raw_macros'
+    # 'MKTS.MACRO_ESCAPER.$expand.$raw_macros'
+    # 'MKTS.TEX_WRITER.tex_from_md (2)'
+    'MKTS.TEX_WRITER.tex_from_md (3)'
+    # 'MKTS.MACRO_ESCAPER.action_patterns match action macros'
+    # 'MKTS.MACRO_ESCAPER.region_patterns match region macros'
+    # 'MKTS.MACRO_ESCAPER.command_and_value_patterns matches command macro'
+    # 'MKTS.MACRO_ESCAPER.illegal_patterns matches consecutive unescaped LPBs'
+    # 'MKTS.MACRO_ESCAPER.end_command_patterns matches end command macro'
+    # 'MKTS.MACRO_ESCAPER.escape.truncate_text_at_end_command_macro'
+    # 'MKTS.MACRO_ESCAPER.escape.html_comments'
+    # 'MKTS.MACRO_ESCAPER.escape.action_macros'
+    # 'MKTS.MACRO_ESCAPER.escape.command_and_value_macros'
+    # 'MKTS.MACRO_ESCAPER.escape 2'
+    # 'MKTS.MACRO_ESCAPER.$expand.$html_comments'
+    # 'MKTS.MACRO_ESCAPER.$expand.$action_macros'
+    # 'MKTS.MACRO_ESCAPER.$expand.$command_and_value_macros'
+    # 'MKTS.MD_READER.FENCES.parse accepts dot patterns'
+    # 'MKTS.MD_READER.FENCES.parse accepts empty fenced patterns'
+    # 'MKTS.MD_READER.FENCES.parse accepts unfenced named patterns'
+    # 'MKTS.MD_READER.FENCES.parse accepts fenced named patterns'
+    # 'MKTS.MD_READER.FENCES.parse rejects empty string'
+    # 'MKTS.MD_READER.FENCES.parse rejects non-matching fences etc'
+    # 'MKTS.MD_READER.FENCES.parse accepts non-matching fences when so configured'
+    # 'MKTS.MD_READER.TRACKER.new_tracker().track rejects unregistered pattern'
+    # 'MKTS.MD_READER.TRACKER.new_tracker (short comprehensive test)'
+    # 'MKTS.MKTSCRIPT_WRITER.mkts_events_from_md (1)'
+    # 'MKTS.MKTSCRIPT_WRITER.mkts_events_from_md (2)'
+    # 'MKTS.MKTSCRIPT_WRITER.mkts_events_from_md (3)'
+    # 'MKTS.MKTSCRIPT_WRITER.mkts_events_from_md (4)'
+    # 'MKTS.MKTSCRIPT_WRITER.mkts_events_from_md (5)'
+    # 'MKTS.MKTSCRIPT_WRITER.mkts_events_from_md (6)'
+    # 'MKTS.MKTSCRIPT_WRITER.mkts_events_from_md (6a) auto-close dangling tags'
+    # 'MKTS.MKTSCRIPT_WRITER.mkts_events_from_md (7)'
+    # 'MKTS.MKTSCRIPT_WRITER.mkts_events_from_md (8)'
+    # 'MKTS.MKTSCRIPT_WRITER.mkts_events_from_md: footnotes'
+    # 'MKTS.TEX_WRITER.tex_from_md (1)'
+    # 'MKTS.MKTSCRIPT_WRITER.mktscript_from_md (1)'
+    # 'MKTS.MKTSCRIPT_WRITER.mktscript_from_md (2) auto-close dangling tags'
+    # 'MKTS.MACRO_ESCAPER.escape.region_macros'
+    # 'MKTS.MACRO_ESCAPER.$expand.$region_macros'
+    # 'TEX_WRITER_TYPOFIX.fix_typography_for_tex'
+    ]
+  @_prune()
   @_main()
 
