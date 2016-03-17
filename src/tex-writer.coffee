@@ -702,19 +702,22 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     #.......................................................................................................
     if select event, '(', 'image'
       send stamp event
-      src                         = njs_path.resolve S.layout_info[ 'source-home' ], meta[ 'src' ]
+      src = njs_path.resolve S.layout_info[ 'source-home' ], meta[ 'src' ]
+      # src = njs_path.resolve S.layout_info[ 'source-home' ], meta[ 'src' ]
     #.......................................................................................................
     else if select event, ')', 'image'
       alt = alt_cache.join ''
       send [ 'tex', '\\begin{figure}%\n', ]
       ### TAINT escape `src`? ###
-      send [ 'tex', "\\includegraphics[width=0.5\\textwidth]{#{src}}%\n", ]
+      send [ 'tex', "\\includegraphics[width=\\textwidth]{#{src}}%\n", ]
+      # send [ 'tex', "\\includegraphics[width=0.5\\textwidth]{#{src}}%\n", ]
       send [ 'tex', "\\caption[#{alt}]{%\n", ]
       send cached_event for cached_event in event_cache
       send [ 'tex', '}%\n', ]
       send [ 'tex', '\\end{figure}%\n', ]
       src               = null
       alt_cache.length  = 0
+      send stamp event
     #.......................................................................................................
     else if within_image
       event_cache.push event
@@ -1364,7 +1367,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @MKTX.CLEANUP.$remove_empty_texts                 S
     .pipe @MKTX.CLEANUP.$consolidate_texts                  S
     .pipe @MKTX.TEX.$fix_typography_for_tex                 S
-    # .pipe MKTSCRIPT_WRITER.$show_mktsmd_events              S
+    .pipe MKTSCRIPT_WRITER.$show_mktsmd_events              S
     .pipe @MKTX.INLINE.$mark                                S
     .pipe @MKTX.$show_unhandled_tags                        S
     .pipe @MKTX.$show_warnings                              S
