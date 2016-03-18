@@ -74,14 +74,16 @@
 \newcommand{\mktsStyleFontsetDefault}{
   \mktsStyleFontsetNone%
   \renewcommand{\mktsStyleFontDefault}{\mktsFontfileEbgaramondtwelveregular}%
-  \renewcommand{\mktsStyleFontItalic}{\mktsFontfileEbgaramondtwelveitalic}%
   \renewcommand{\mktsStyleFontSmallcapslower}{\mktsFontfileEbgaramondtwelveregularSclower}%
   \renewcommand{\mktsStyleFontSmallcapsall}{\mktsFontfileEbgaramondtwelveregularScall}%
   \renewcommand{\mktsStyleFontBold}{%
     \mktsFontfileUbuntub%
     \mktsScaleFont{0.8}%
     }%
-  % \renewcommand{\mktsStyleFontBold}{\mktsScaleFont{0.8}\mktsFontfileUbuntub}%
+  \renewcommand{\mktsStyleFontItalic}{
+    \mktsFontfileEbgaramondtwelveitalic%
+    \mktsScaleFont{1.0}%
+    }%
   % \renewcommand{\mktsStyleFontBoldItalic}{\mktsStyleFontThrowUndefined{BoldItalic}}%
   % \renewcommand{\mktsStyleFontItalicBold}{\mktsStyleFontThrowUndefined{ItalicBold}}%
   \renewcommand{\mktsStyleFontSymbol}{\mktsFontfileSunexta}%
