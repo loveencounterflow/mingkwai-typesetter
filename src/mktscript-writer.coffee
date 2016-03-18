@@ -131,15 +131,14 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
             line_color = CND.brown
         log line_color type, name, text
       else
-        if is_hidden event
-          line_color = CND.grey
-        else if select event, '.', 'warning'
-          line_color = CND.red
-        else if select event, '.', 'text'
-          line_color = CND.blue
-        else
-          line_color = CND.white
-        log line_color type, name, ( if text? then rpr text else '' )
+        if is_hidden event                   then line_color = CND.grey
+        else if select event, '.', 'warning' then line_color = CND.red
+        else if select event, '.', 'text'    then line_color = CND.blue
+        else                                      line_color = CND.white
+        #...................................................................................................
+        markup = meta[ 'markup' ] ? ''
+        markup = if markup.length > 0 then ( rpr markup ) else ''
+        log line_color type, name, ( if text? then rpr text else '' ), ( CND.grey markup )
     #.......................................................................................................
     if has_ended
       null

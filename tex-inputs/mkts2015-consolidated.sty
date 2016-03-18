@@ -101,42 +101,25 @@
     }%
   }
 
-% \newcommand{\mktsJzrGlyphdivider}{%
-%   {%
-%     \mktsFontfileUming%
-%     \color{red}%
-%     \relscale{1.5}%
-%     \tfRaise{-0.25}%
-%     \makebox[0mm]{∫}%
-%     }%
-%   }
-
-% \newcommand{\mktsJzrGlyphdivider}{%
-%   {%
-%     \mktsFontfileSunexta%
-%     % \color{red}%
-%     \relscale{0.75}%
-%     \tfRaise{-0.4}%
-%     \makebox[0mm]{⊥}%
-%     }%
-%   }
-
 \newcommand{\mktsJzrGlyphdivider}{%
   {%
     \mktsFontfileHanamina%
     % \color{red}%
     % {\makebox(0,0){\rule[0em]{0.1mm}{1em}}}%
-    \relscale{0.2}%
+    \mktsScaleFont{0.2}%
     {\tfRaise{+0.85}\makebox(0,0){▼}}%
     {\tfRaise{-0.35}\makebox(0,0){▲}}%
     }%
   }
 
-% ..........................................................................................................
-% \usepackage{pagegrid}\pagegridsetup{top-left,step=1mm,arrows=false}
-% \pagegridsetup{top-left,step=4.6667mm,arrows=false}
-% % \pagegridsetup{top-left,step=\mktsLineheight,arrows=false}
-% % \pagegridsetup{top-left,step=7mm,arrows=false}
+\newenvironment{mktsEnvBlockquote}{%
+  \par%
+  \mktsStyleItalic%
+  \setlength{\leftskip}{1em}%
+  \setlength{\rightskip}{1em}%
+  \ignorespaces}{%
+  \par%
+  }
 
 
 % ==========================================================================================================
@@ -165,7 +148,7 @@
 \newcommand{\latin}[1]{{\mktsFontfileEbgaramondtwelveregular#1}}
 % \newcommand{\setPlainLatin}{\renewcommand{\latin}[1]{{\mktsFontfileEbgaramondtwelveregular#1}}}
 % \newcommand{\setCodeLatin}{\renewcommand{\latin}[1]{{\mktsFontfileSunexta#1}}}
-\newcommand{\py}{\relscale{0.8}\mktsFontfileUbuntur{}}
+\newcommand{\py}{\mktsScaleFont{0.8}\mktsFontfileUbuntur{}}
 \newcommand{\ncr}[1]{{\mktsFontfileUbuntur#1}}
 \newcommand{\gloss}[1]{{\mktsFontfileEbgaramondtwelveregular#1}}
 % ..........................................................................................................
@@ -175,7 +158,7 @@
 \renewcommand{\cjkgGlue}{\hskip 0mm plus 0.7mm minus 0.0mm}
 \newcommand{\cjk}{%
   \cjkgUseCjkGlue%
-  \relscale{1.05}%
+  \mktsScaleFont{1.05}%
   % \tfRaise{-0.1}%
   \mktsStyleFontCjkDefault}
 % \newcommand{\cn}{\mktsStartCjk\mktsFontfileSunexta}
@@ -203,21 +186,21 @@
 % ### TAINT scaling given here is only for readings, not for ordinary mixed text ###
 \newcommand{\ka}{%
   \cjkgGlue%
-  \relscale{0.8}%
+  \mktsScaleFont{0.8}%
   % \tfRaise{-0.1}%
   \mktsFontfileIpamp%
   \aftergroup\cjkgGlue%
   }% \mktsFontfileNanummyeongjo
 \newcommand{\hi}{%
   \cjkgGlue%
-  \relscale{0.8}%
+  \mktsScaleFont{0.8}%
   % \tfRaise{-0.1}%
   \mktsFontfileIpamp%
   \aftergroup\cjkgGlue%
   }% \mktsFontfileNanummyeongjo
 \newcommand{\hg}{%
   \cjkgGlue%
-  \relscale{0.8}%
+  \mktsScaleFont{0.8}%
   \mktsFontfileNanummyeongjo%
   \aftergroup\cjkgGlue%
   }
