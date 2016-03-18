@@ -18,8 +18,7 @@
 \newcommand{\mktsStyleFontSmallcapslower}{\mktsStyleFontThrowUndefined{Sc}}%
 \newcommand{\mktsStyleFontSmallcapsall}{\mktsStyleFontThrowUndefined{Sc}}%
 \newcommand{\mktsStyleFontBold}{\mktsStyleFontThrowUndefined{Bold}}%
-\newcommand{\mktsStyleFontBoldItalic}{\mktsStyleFontThrowUndefined{BoldItalic}}%
-\newcommand{\mktsStyleFontItalicBold}{\mktsStyleFontThrowUndefined{ItalicBold}}%
+\newcommand{\mktsStyleFontBolditalic}{\mktsStyleFontThrowUndefined{BoldItalic}}%
 \newcommand{\mktsStyleFontSymbol}{\mktsStyleFontThrowUndefined{Symbol}}%
 \newcommand{\mktsStyleFontCode}{\mktsStyleFontThrowUndefined{Code}}%
 \newcommand{\mktsStyleFontFncr}{\mktsStyleFontThrowUndefined{Fncr}}%
@@ -37,8 +36,7 @@
   \renewcommand{\mktsStyleFontSmallcapslower}{\mktsStyleFontThrowUndefined{Sc}}%
   \renewcommand{\mktsStyleFontSmallcapsall}{\mktsStyleFontThrowUndefined{Sc}}%
   \renewcommand{\mktsStyleFontBold}{\mktsStyleFontThrowUndefined{Bold}}%
-  \renewcommand{\mktsStyleFontBoldItalic}{\mktsStyleFontThrowUndefined{BoldItalic}}%
-  \renewcommand{\mktsStyleFontItalicBold}{\mktsStyleFontThrowUndefined{ItalicBold}}%
+  \renewcommand{\mktsStyleFontBolditalic}{\mktsStyleFontThrowUndefined{BoldItalic}}%
   \renewcommand{\mktsStyleFontSymbol}{\mktsStyleFontThrowUndefined{Symbol}}%
   \renewcommand{\mktsStyleFontCode}{\mktsStyleFontThrowUndefined{Code}}%
   \renewcommand{\mktsStyleFontFncr}{\mktsStyleFontThrowUndefined{Fncr}}%
@@ -57,8 +55,7 @@
   \renewcommand{\mktsStyleFontSmallcapslower}{}%
   \renewcommand{\mktsStyleFontSmallcapsall}{}%
   \renewcommand{\mktsStyleFontBold}{}%
-  \renewcommand{\mktsStyleFontBoldItalic}{}%
-  \renewcommand{\mktsStyleFontItalicBold}{}%
+  \renewcommand{\mktsStyleFontBolditalic}{}%
   \renewcommand{\mktsStyleFontSymbol}{}%
   \renewcommand{\mktsStyleFontCode}{}%
   \renewcommand{\mktsStyleFontFncr}{}%
@@ -77,15 +74,19 @@
   \renewcommand{\mktsStyleFontSmallcapslower}{\mktsFontfileEbgaramondtwelveregularSclower}%
   \renewcommand{\mktsStyleFontSmallcapsall}{\mktsFontfileEbgaramondtwelveregularScall}%
   \renewcommand{\mktsStyleFontBold}{%
-    \mktsFontfileUbuntub%
-    \mktsScaleFont{0.8}%
+    % \mktsFontfileRobotoslabbold%
+    % \mktsFontfilePermianslabseriftypeface\mktsScaleFont{0.85}%
+    % \mktsFontfileAleobold\mktsScaleFont{0.8}%
+    \mktsFontfileBitterbold\mktsScaleFont{0.8}%
     }%
-  \renewcommand{\mktsStyleFontItalic}{
-    \mktsFontfileEbgaramondtwelveitalic%
-    \mktsScaleFont{1.0}%
+  \renewcommand{\mktsStyleFontBolditalic}{%
+    % \mktsFontfilePermianslabseriftypefaceitalic\mktsScaleFont{0.85}%
+    % \mktsFontfileAleobolditalic\mktsScaleFont{0.8}%
+    \mktsFontfileBitterbolditalic\mktsScaleFont{0.8}%
     }%
-  % \renewcommand{\mktsStyleFontBoldItalic}{\mktsStyleFontThrowUndefined{BoldItalic}}%
-  % \renewcommand{\mktsStyleFontItalicBold}{\mktsStyleFontThrowUndefined{ItalicBold}}%
+  \renewcommand{\mktsStyleFontItalic}{%
+    \mktsFontfileEbgaramondtwelveitalic\mktsScaleFont{1.0}%
+    }%
   \renewcommand{\mktsStyleFontSymbol}{\mktsFontfileSunexta}%
   \renewcommand{\mktsStyleFontCode}{\mktsScaleFont{0.8}\mktsFontfileIosevkaslabmedium}%
   \renewcommand{\mktsStyleFontFncr}{\mktsScaleFont{0.8}\mktsFontfileFandolheibold}%

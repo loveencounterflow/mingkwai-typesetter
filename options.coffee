@@ -190,7 +190,74 @@ module.exports = options =
       { texname: 'mktsFontfileIosevkaslabthin',                subfolder: 'iosevska', filename: 'iosevka-slab-thin.ttf',              }
       { texname: 'mktsFontfileIosevkaslabthinitalic',          subfolder: 'iosevska', filename: 'iosevka-slab-thinitalic.ttf',        }
       { texname: 'mktsFontfileIosevkaslabthinoblique',         subfolder: 'iosevska', filename: 'iosevka-slab-thinoblique.ttf',       }
+
+      { texname: 'mktsFontfileFjallaoneregular',                subfolder: 'Fjalla_One',              filename: 'FjallaOne-Regular.ttf'               }
+      { texname: 'mktsFontfileMerriweatherblack',               subfolder: 'Merriweather',            filename: 'Merriweather-Black.ttf'              }
+      { texname: 'mktsFontfileMerriweatherblackitalic',         subfolder: 'Merriweather',            filename: 'Merriweather-BlackItalic.ttf'        }
+      { texname: 'mktsFontfileMerriweatherbold',                subfolder: 'Merriweather',            filename: 'Merriweather-Bold.ttf'               }
+      { texname: 'mktsFontfileMerriweatherbolditalic',          subfolder: 'Merriweather',            filename: 'Merriweather-BoldItalic.ttf'         }
+      { texname: 'mktsFontfileMerriweatheritalic',              subfolder: 'Merriweather',            filename: 'Merriweather-Italic.ttf'             }
+      { texname: 'mktsFontfileMerriweatherlight',               subfolder: 'Merriweather',            filename: 'Merriweather-Light.ttf'              }
+      { texname: 'mktsFontfileMerriweatherlightitalic',         subfolder: 'Merriweather',            filename: 'Merriweather-LightItalic.ttf'        }
+      { texname: 'mktsFontfileMerriweatherregular',             subfolder: 'Merriweather',            filename: 'Merriweather-Regular.ttf'            }
+      { texname: 'mktsFontfileOswaldbold',                      subfolder: 'Oswald',                  filename: 'Oswald-Bold.ttf'                     }
+      { texname: 'mktsFontfileOswaldlight',                     subfolder: 'Oswald',                  filename: 'Oswald-Light.ttf'                    }
+      { texname: 'mktsFontfileOswaldregular',                   subfolder: 'Oswald',                  filename: 'Oswald-Regular.ttf'                  }
+      { texname: 'mktsFontfileRobotoblack',                     subfolder: 'Roboto',                  filename: 'Roboto-Black.ttf'                    }
+      { texname: 'mktsFontfileRobotoblackitalic',               subfolder: 'Roboto',                  filename: 'Roboto-BlackItalic.ttf'              }
+      { texname: 'mktsFontfileRobotobold',                      subfolder: 'Roboto',                  filename: 'Roboto-Bold.ttf'                     }
+      { texname: 'mktsFontfileRobotobolditalic',                subfolder: 'Roboto',                  filename: 'Roboto-BoldItalic.ttf'               }
+      { texname: 'mktsFontfileRobotoitalic',                    subfolder: 'Roboto',                  filename: 'Roboto-Italic.ttf'                   }
+      { texname: 'mktsFontfileRobotolight',                     subfolder: 'Roboto',                  filename: 'Roboto-Light.ttf'                    }
+      { texname: 'mktsFontfileRobotolightitalic',               subfolder: 'Roboto',                  filename: 'Roboto-LightItalic.ttf'              }
+      { texname: 'mktsFontfileRobotomedium',                    subfolder: 'Roboto',                  filename: 'Roboto-Medium.ttf'                   }
+      { texname: 'mktsFontfileRobotomediumitalic',              subfolder: 'Roboto',                  filename: 'Roboto-MediumItalic.ttf'             }
+      { texname: 'mktsFontfileRobotoregular',                   subfolder: 'Roboto',                  filename: 'Roboto-Regular.ttf'                  }
+      { texname: 'mktsFontfileRobotothin',                      subfolder: 'Roboto',                  filename: 'Roboto-Thin.ttf'                     }
+      { texname: 'mktsFontfileRobotothinitalic',                subfolder: 'Roboto',                  filename: 'Roboto-ThinItalic.ttf'               }
+      { texname: 'mktsFontfileRobotocondensedbold',             subfolder: 'Roboto_Condensed',        filename: 'RobotoCondensed-Bold.ttf'            }
+      { texname: 'mktsFontfileRobotocondensedbolditalic',       subfolder: 'Roboto_Condensed',        filename: 'RobotoCondensed-BoldItalic.ttf'      }
+      { texname: 'mktsFontfileRobotocondenseditalic',           subfolder: 'Roboto_Condensed',        filename: 'RobotoCondensed-Italic.ttf'          }
+      { texname: 'mktsFontfileRobotocondensedlight',            subfolder: 'Roboto_Condensed',        filename: 'RobotoCondensed-Light.ttf'           }
+      { texname: 'mktsFontfileRobotocondensedlightitalic',      subfolder: 'Roboto_Condensed',        filename: 'RobotoCondensed-LightItalic.ttf'     }
+      { texname: 'mktsFontfileRobotocondensedregular',          subfolder: 'Roboto_Condensed',        filename: 'RobotoCondensed-Regular.ttf'         }
+      { texname: 'mktsFontfileRobotoslabbold',                  subfolder: 'Roboto_Slab',             filename: 'RobotoSlab-Bold.ttf'                 }
+      { texname: 'mktsFontfileRobotoslablight',                 subfolder: 'Roboto_Slab',             filename: 'RobotoSlab-Light.ttf'                }
+      { texname: 'mktsFontfileRobotoslabregular',               subfolder: 'Roboto_Slab',             filename: 'RobotoSlab-Regular.ttf'              }
+      { texname: 'mktsFontfileRobotoslabthin',                  subfolder: 'Roboto_Slab',             filename: 'RobotoSlab-Thin.ttf'                 }
+      { texname: 'mktsFontfileSourcesansproblack',              subfolder: 'Source_Sans_Pro',         filename: 'SourceSansPro-Black.ttf'             }
+      { texname: 'mktsFontfileSourcesansproblackitalic',        subfolder: 'Source_Sans_Pro',         filename: 'SourceSansPro-BlackItalic.ttf'       }
+      { texname: 'mktsFontfileSourcesansprobold',               subfolder: 'Source_Sans_Pro',         filename: 'SourceSansPro-Bold.ttf'              }
+      { texname: 'mktsFontfileSourcesansprobolditalic',         subfolder: 'Source_Sans_Pro',         filename: 'SourceSansPro-BoldItalic.ttf'        }
+      { texname: 'mktsFontfileSourcesansproextralight',         subfolder: 'Source_Sans_Pro',         filename: 'SourceSansPro-ExtraLight.ttf'        }
+      { texname: 'mktsFontfileSourcesansproextralightitalic',   subfolder: 'Source_Sans_Pro',         filename: 'SourceSansPro-ExtraLightItalic.ttf'  }
+      { texname: 'mktsFontfileSourcesansproitalic',             subfolder: 'Source_Sans_Pro',         filename: 'SourceSansPro-Italic.ttf'            }
+      { texname: 'mktsFontfileSourcesansprolight',              subfolder: 'Source_Sans_Pro',         filename: 'SourceSansPro-Light.ttf'             }
+      { texname: 'mktsFontfileSourcesansprolightitalic',        subfolder: 'Source_Sans_Pro',         filename: 'SourceSansPro-LightItalic.ttf'       }
+      { texname: 'mktsFontfileSourcesansproregular',            subfolder: 'Source_Sans_Pro',         filename: 'SourceSansPro-Regular.ttf'           }
+      { texname: 'mktsFontfileSourcesansprosemibold',           subfolder: 'Source_Sans_Pro',         filename: 'SourceSansPro-Semibold.ttf'          }
+      { texname: 'mktsFontfileSourcesansprosemibolditalic',     subfolder: 'Source_Sans_Pro',         filename: 'SourceSansPro-SemiboldItalic.ttf'    }
+      { texname: 'mktsFontfileStintultracondensedregular',      subfolder: 'Stint_Ultra_Condensed',   filename: 'StintUltraCondensed-Regular.ttf'     }
+      { texname: 'mktsFontfileYanonekaffeesatzbold',            subfolder: 'Yanone_Kaffeesatz',       filename: 'YanoneKaffeesatz-Bold.ttf'           }
+      { texname: 'mktsFontfileYanonekaffeesatzextralight',      subfolder: 'Yanone_Kaffeesatz',       filename: 'YanoneKaffeesatz-ExtraLight.ttf'     }
+      { texname: 'mktsFontfileYanonekaffeesatzlight',           subfolder: 'Yanone_Kaffeesatz',       filename: 'YanoneKaffeesatz-Light.ttf'          }
+      { texname: 'mktsFontfileYanonekaffeesatzregular',         subfolder: 'Yanone_Kaffeesatz',       filename: 'YanoneKaffeesatz-Regular.ttf'        }
+      { texname: 'mktsFontfilePermianslabseriftypeface',        subfolder: 'Permian_Slab',            filename: 'PermianSlabSerifTypeface.otf',        }
+      { texname: 'mktsFontfilePermianslabseriftypefacebold',    subfolder: 'Permian_Slab',            filename: 'PermianSlabSerifTypeface-Bold.otf',   }
+      { texname: 'mktsFontfilePermianslabseriftypefaceitalic',  subfolder: 'Permian_Slab',            filename: 'PermianSlabSerifTypeface-Italic.otf', }
+      { texname: 'mktsFontfileBitterbold',                      subfolder: 'Bitter',                  filename: 'Bitter-Bold.otf',                     }
+      { texname: 'mktsFontfileBitterbolditalic',                subfolder: 'Bitter',                  filename: 'Bitter-BoldItalic.otf',               }
+      { texname: 'mktsFontfileBitteritalic',                    subfolder: 'Bitter',                  filename: 'Bitter-Italic.otf',                   }
+      { texname: 'mktsFontfileBitterregular',                   subfolder: 'Bitter',                  filename: 'Bitter-Regular.otf',                  }
+      { texname: 'mktsFontfileAleobold',                        subfolder: 'Aleo_font_v1.2.2/Desktop OTF', filename: 'Aleo-Bold.otf',        }
+      { texname: 'mktsFontfileAleobolditalic',                  subfolder: 'Aleo_font_v1.2.2/Desktop OTF', filename: 'Aleo-BoldItalic.otf',  }
+      { texname: 'mktsFontfileAleoitalic',                      subfolder: 'Aleo_font_v1.2.2/Desktop OTF', filename: 'Aleo-Italic.otf',      }
+      { texname: 'mktsFontfileAleolight',                       subfolder: 'Aleo_font_v1.2.2/Desktop OTF', filename: 'Aleo-Light.otf',       }
+      { texname: 'mktsFontfileAleolightitalic',                 subfolder: 'Aleo_font_v1.2.2/Desktop OTF', filename: 'Aleo-LightItalic.otf', }
+      { texname: 'mktsFontfileAleoregular',                     subfolder: 'Aleo_font_v1.2.2/Desktop OTF', filename: 'Aleo-Regular.otf',     }
+
       ]
+
 
   #.........................................................................................................
   styles:

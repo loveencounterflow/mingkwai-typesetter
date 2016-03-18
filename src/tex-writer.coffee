@@ -971,22 +971,34 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
 
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.INLINE.$em_and_strong = ( S ) =>
+  em_count      = 0
+  strong_count  = 0
   #.........................................................................................................
   return $ ( event, send ) =>
+    # [ type, name, text, meta, ] = event
     #.......................................................................................................
-    if select event, [ '(', ')', ], [ 'em', 'strong', ]
+    if select event, '(', 'em'
+      em_count += +1
       send stamp event
-      [ type, name, text, meta, ] = event
-      if type is '('
-        if name is 'em'
-          send [ 'tex', '{\\mktsStyleItalic{}', ]
-          ### TAINT must not be sent when in vertical mode ###
-          # send [ 'tex', '\\/', ]
-        else
-          send [ 'tex', '{\\mktsStyleBold{}', ]
-      else
-        send [ 'tex', '\\/', ] if name is 'em'
-        send [ 'tex', "}", ]
+      if strong_count > 0 then  send [ 'tex', "{\\mktsStyleBolditalic{}", ]
+      else                      send [ 'tex', "{\\mktsStyleItalic{}", ]
+    #.......................................................................................................
+    else if select event, ')', 'em'
+      em_count += -1
+      send stamp event
+      send [ 'tex', "\\/", ]
+      send [ 'tex', "}", ]
+    #.......................................................................................................
+    else if select event, '(', 'strong'
+      strong_count += +1
+      send stamp event
+      if em_count > 0 then  send [ 'tex', "{\\mktsStyleBolditalic{}", ]
+      else                  send [ 'tex', "{\\mktsStyleBold{}", ]
+    #.......................................................................................................
+    else if select event, ')', 'strong'
+      strong_count += -1
+      send stamp event
+      send [ 'tex', "}", ]
     #.......................................................................................................
     else
       send event

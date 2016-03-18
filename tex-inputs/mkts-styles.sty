@@ -13,6 +13,7 @@
 \newcommand{\mktsStyleFncr}{}%
 \newcommand{\mktsStyleGloss}{}%
 \newcommand{\mktsStyleItalic}{}%
+\newcommand{\mktsStyleBolditalic}{}%
 \newcommand{\mktsStyleSmallcapslower}{}%
 \newcommand{\mktsStyleSmallcapsall}{}%
 \newcommand{\mktsStyleMidashi}{}%
@@ -52,12 +53,18 @@
   \renewcommand{\mktsStyleNormal}{%
     % \frenchspacing%
     \mktsFontfileEbgaramondtwelveregular%
-    \fontsize{\mktsFontsize}{\mktsLineheight}\selectfont%
+    % \fontsize{\mktsFontsize}{\mktsLineheight}\selectfont%
+    \mktsScaleFont{1.0}%
     }
 
   % ........................................................................................................
   \renewcommand{\mktsStyleItalic}{%
     \mktsStyleFontItalic%
+    }
+
+  % ........................................................................................................
+  \renewcommand{\mktsStyleBolditalic}{%
+    \mktsStyleFontBolditalic%
     }
 
   % ........................................................................................................
@@ -109,6 +116,7 @@
   \renewcommand{\mktsStyleFncr}{}%
   \renewcommand{\mktsStyleGloss}{}%
   \renewcommand{\mktsStyleItalic}{}%
+  \renewcommand{\mktsStyleBolditalic}{}%
   \renewcommand{\mktsStyleSmallcapslower}{}%
   \renewcommand{\mktsStyleSmallcapsall}{}%
   \renewcommand{\mktsStyleMidashi}{}%

@@ -124,6 +124,23 @@
   }
 
 % ----------------------------------------------------------------------------------------------------------
+\DeclareOption{medians}{%
+  \typeout{mkts-page-geometry: \trmIndigo{medians}}
+  \mkts@GridCaalculateLengths%
+  % thx to http://tex.stackexchange.com/a/41153/28067
+  \AddToShipoutPicture{%
+    \begin{tikzpicture}[overlay,remember picture]%
+      \draw[ green!50, thin, xshift = \mkts@GridXshift ]
+        ( 0mm,
+          \mkts@GridYmax - \textheight )
+        grid[ xstep = \textwidth, ystep = \mktsLineheight, yshift = -\mktsLineheight * 0.125 + \mktsFontsize * 0.4 ]
+        ( \textwidth,
+          \mkts@GridYmax );
+    \end{tikzpicture}%
+    }%
+  }
+
+% ----------------------------------------------------------------------------------------------------------
 \DeclareOption{columns}{%
   \typeout{mkts-page-geometry: \trmIndigo{columns}}
   \mkts@GridCaalculateLengths%
