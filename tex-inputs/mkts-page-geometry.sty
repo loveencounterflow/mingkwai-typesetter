@@ -141,6 +141,40 @@
   }
 
 % ----------------------------------------------------------------------------------------------------------
+\DeclareOption{ascenders}{%
+  \typeout{mkts-page-geometry: \trmIndigo{ascenders}}
+  \mkts@GridCaalculateLengths%
+  % thx to http://tex.stackexchange.com/a/41153/28067
+  \AddToShipoutPicture{%
+    \begin{tikzpicture}[overlay,remember picture]%
+      \draw[ green!50, thin, xshift = \mkts@GridXshift ]
+        ( 0mm,
+          \mkts@GridYmax - \textheight )
+        grid[ xstep = \textwidth, ystep = \mktsLineheight, yshift = -\mktsLineheight * 0.125 + \mktsFontsize * 0.7 ]
+        ( \textwidth,
+          \mkts@GridYmax );
+    \end{tikzpicture}%
+    }%
+  }
+
+% ----------------------------------------------------------------------------------------------------------
+\DeclareOption{descenders}{%
+  \typeout{mkts-page-geometry: \trmIndigo{descenders}}
+  \mkts@GridCaalculateLengths%
+  % thx to http://tex.stackexchange.com/a/41153/28067
+  \AddToShipoutPicture{%
+    \begin{tikzpicture}[overlay,remember picture]%
+      \draw[ green!50, thin, xshift = \mkts@GridXshift ]
+        ( 0mm,
+          \mkts@GridYmax - \textheight )
+        grid[ xstep = \textwidth, ystep = \mktsLineheight, yshift = -\mktsLineheight * 0.125 - \mktsFontsize * 0.25 ]
+        ( \textwidth,
+          \mkts@GridYmax );
+    \end{tikzpicture}%
+    }%
+  }
+
+% ----------------------------------------------------------------------------------------------------------
 \DeclareOption{columns}{%
   \typeout{mkts-page-geometry: \trmIndigo{columns}}
   \mkts@GridCaalculateLengths%

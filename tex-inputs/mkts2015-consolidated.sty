@@ -62,9 +62,9 @@
 \usepackage[plain]{mkts-base}%                  plain
 \usepackage[default]{mkts-endnotes}%            default
 % \usepackage[a4,medians]{mkts-page-geometry}%            a4
-\usepackage[a4,baselines,medians]{mkts-page-geometry}%            a4
+% \usepackage[a4,ascenders,descenders]{mkts-page-geometry}%            a4
 % \usepackage[a4,baselines,columns]{mkts-page-geometry}%            a4
-% \usepackage[a4]{mkts-page-geometry}%            a4
+\usepackage[a4]{mkts-page-geometry}%            a4
 \usepackage[jizura]{mkts-headers-and-footers}%  jizura
 \usepackage[default]{mkts-fontsets}%            default
 \usepackage[default]{mkts-styles}%              default
@@ -160,9 +160,8 @@
 \renewcommand{\cjkgGlue}{\hskip 0mm plus 0.7mm minus 0.0mm}
 \newcommand{\cjk}{%
   \cjkgUseCjkGlue%
-  \mktsScaleFont{1.05}%
-  % \tfRaise{-0.1}%
-  \mktsStyleFontCjkDefault}
+  \mktsStyleFontCjkDefault\mktsScaleFont{1.1}\tfRaise{-0.175}%
+  }
 % \newcommand{\cn}{\mktsStartCjk\mktsFontfileSunexta}
 \newcommand{\cn}{}
 \newcommand{\mktsRsgFb}{\cjkgGlue\mktsFontfileSunexta\aftergroup\cjkgGlue}
