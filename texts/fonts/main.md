@@ -39,8 +39,8 @@ and u: finalis, ligatures, humus, rosas Discretionary Ligatures (feature
 dlig): T+h ligature: Théatre, Theorie*
 <<!nl 10>>
 
+<<!columns 1>>
 
-<<!end>>
 おもて表おもて u-cjk-8868; biǎo; おもて, あらわ·(す|れる); ヒョウ
 
 <<<{\mktsFontfileIpamp{}おもて表おもて u-cjk-8868; biǎo; おもて, あらわ·(す|れる); ヒョウ}>>>

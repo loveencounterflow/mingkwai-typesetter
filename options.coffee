@@ -89,6 +89,8 @@ module.exports = options =
       { texname: 'mktsFontfileEbgaramondtwelvesc',      otf: 'Numbers=Monospaced,Ligatures={Rare,Historic}', filename: 'EBGaramond12-SC.otf',                 }
       { texname: 'mktsFontfileEbgaramondtwelveitalic',  otf: 'Numbers=Monospaced,Ligatures={Rare,Historic}', filename: 'EBGaramond12-Italic.otf',             }
       { texname: 'mktsFontfileEbgaramondtwelveregular', otf: 'Numbers=Monospaced,Ligatures={Rare,Historic}', filename: 'EBGaramond12-Regular.otf',            }
+      { texname: 'mktsFontfileEbgaramondtwelveregularSclower', otf: 'Letters=SmallCaps,Numbers=Monospaced', filename: 'EBGaramond12-Regular.otf',            }
+      { texname: 'mktsFontfileEbgaramondtwelveregularScall',   otf: 'Letters={SmallCaps,UppercaseSmallCaps},Numbers=Monospaced', filename: 'EBGaramond12-Regular.otf',            }
       { texname: 'mktsFontfileEpgyobld',                       filename: 'EPGYOBLD.TTF',                        }
       { texname: 'mktsFontfileEpgyosho',                       filename: 'EPGYOSHO.TTF',                        }
       { texname: 'mktsFontfileEpkaisho',                       filename: 'EPKAISHO.TTF',                        }

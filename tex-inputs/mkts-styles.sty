@@ -13,6 +13,8 @@
 \newcommand{\mktsStyleFncr}{}%
 \newcommand{\mktsStyleGloss}{}%
 \newcommand{\mktsStyleItalic}{}%
+\newcommand{\mktsStyleSmallcapslower}{}%
+\newcommand{\mktsStyleSmallcapsall}{}%
 \newcommand{\mktsStyleMidashi}{}%
 \newcommand{\mktsStyleNormal}{}%
 \newcommand{\mktsStyleSymbol}{}%
@@ -61,6 +63,16 @@
     }
 
   % ........................................................................................................
+  \renewcommand{\mktsStyleSmallcapslower}{%
+    \mktsStyleFontSmallcapslower%
+    }
+
+  % ........................................................................................................
+  \renewcommand{\mktsStyleSmallcapsall}{%
+    \mktsStyleFontSmallcapsall%
+    }
+
+  % ........................................................................................................
   \renewcommand{\mktsStyleSymbol}{%
     \mktsStyleFontSymbol%
     }
@@ -99,6 +111,8 @@
   \renewcommand{\mktsStyleFncr}{}%
   \renewcommand{\mktsStyleGloss}{}%
   \renewcommand{\mktsStyleItalic}{}%
+  \renewcommand{\mktsStyleSmallcapslower}{}%
+  \renewcommand{\mktsStyleSmallcapsall}{}%
   \renewcommand{\mktsStyleMidashi}{}%
   \renewcommand{\mktsStyleNormal}{}%
   \renewcommand{\mktsStyleSymbol}{}%

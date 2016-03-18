@@ -15,7 +15,8 @@
 % ----------------------------------------------------------------------------------------------------------
 \newcommand{\mktsStyleFontDefault}{\mktsStyleFontThrowUndefined{Default}}%
 \newcommand{\mktsStyleFontItalic}{\mktsStyleFontThrowUndefined{Italic}}%
-\newcommand{\mktsStyleFontSc}{\mktsStyleFontThrowUndefined{Sc}}%
+\newcommand{\mktsStyleFontSmallcapslower}{\mktsStyleFontThrowUndefined{Sc}}%
+\newcommand{\mktsStyleFontSmallcapsall}{\mktsStyleFontThrowUndefined{Sc}}%
 \newcommand{\mktsStyleFontBold}{\mktsStyleFontThrowUndefined{Bold}}%
 \newcommand{\mktsStyleFontBoldItalic}{\mktsStyleFontThrowUndefined{BoldItalic}}%
 \newcommand{\mktsStyleFontItalicBold}{\mktsStyleFontThrowUndefined{ItalicBold}}%
@@ -33,7 +34,8 @@
 \newcommand{\mktsStyleFontsetNone}{
   \renewcommand{\mktsStyleFontDefault}{\mktsStyleFontThrowUndefined{Default}}%
   \renewcommand{\mktsStyleFontItalic}{\mktsStyleFontThrowUndefined{Italic}}%
-  \renewcommand{\mktsStyleFontSc}{\mktsStyleFontThrowUndefined{Sc}}%
+  \renewcommand{\mktsStyleFontSmallcapslower}{\mktsStyleFontThrowUndefined{Sc}}%
+  \renewcommand{\mktsStyleFontSmallcapsall}{\mktsStyleFontThrowUndefined{Sc}}%
   \renewcommand{\mktsStyleFontBold}{\mktsStyleFontThrowUndefined{Bold}}%
   \renewcommand{\mktsStyleFontBoldItalic}{\mktsStyleFontThrowUndefined{BoldItalic}}%
   \renewcommand{\mktsStyleFontItalicBold}{\mktsStyleFontThrowUndefined{ItalicBold}}%
@@ -52,7 +54,8 @@
 \newcommand{\mktsStyleFontsetNull}{
   \renewcommand{\mktsStyleFontDefault}{}%
   \renewcommand{\mktsStyleFontItalic}{}%
-  \renewcommand{\mktsStyleFontSc}{}%
+  \renewcommand{\mktsStyleFontSmallcapslower}{}%
+  \renewcommand{\mktsStyleFontSmallcapsall}{}%
   \renewcommand{\mktsStyleFontBold}{}%
   \renewcommand{\mktsStyleFontBoldItalic}{}%
   \renewcommand{\mktsStyleFontItalicBold}{}%
@@ -72,7 +75,8 @@
   \mktsStyleFontsetNone%
   \renewcommand{\mktsStyleFontDefault}{\mktsFontfileEbgaramondtwelveregular}%
   \renewcommand{\mktsStyleFontItalic}{\mktsFontfileEbgaramondtwelveitalic}%
-  \renewcommand{\mktsStyleFontSc}{\mktsFontfileEbgaramondtwelvesc}%
+  \renewcommand{\mktsStyleFontSmallcapslower}{\mktsFontfileEbgaramondtwelveregularSclower}%
+  \renewcommand{\mktsStyleFontSmallcapsall}{\mktsFontfileEbgaramondtwelveregularScall}%
   \renewcommand{\mktsStyleFontBold}{%
     \mktsFontfileUbuntub%
     \mktsScaleFont{0.8}%
