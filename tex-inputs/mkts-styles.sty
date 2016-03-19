@@ -15,6 +15,7 @@
 \newcommand{\mktsStyleItalic}{}%
 \newcommand{\mktsStyleBolditalic}{}%
 \newcommand{\mktsStyleSmallcapslower}{}%
+\newcommand{\mktsStyleSmallcapsupper}{}%
 \newcommand{\mktsStyleSmallcapsall}{}%
 \newcommand{\mktsStyleMidashi}{}%
 \newcommand{\mktsStyleNormal}{}%
@@ -73,6 +74,11 @@
     }
 
   % ........................................................................................................
+  \renewcommand{\mktsStyleSmallcapsupper}{%
+    \mktsStyleFontSmallcapsupper%
+    }
+
+  % ........................................................................................................
   \renewcommand{\mktsStyleSmallcapsall}{%
     \mktsStyleFontSmallcapsall%
     }
@@ -118,6 +124,7 @@
   \renewcommand{\mktsStyleItalic}{}%
   \renewcommand{\mktsStyleBolditalic}{}%
   \renewcommand{\mktsStyleSmallcapslower}{}%
+  \renewcommand{\mktsStyleSmallcapsupper}{}%
   \renewcommand{\mktsStyleSmallcapsall}{}%
   \renewcommand{\mktsStyleMidashi}{}%
   \renewcommand{\mktsStyleNormal}{}%

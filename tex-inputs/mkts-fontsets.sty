@@ -15,8 +15,9 @@
 % ----------------------------------------------------------------------------------------------------------
 \newcommand{\mktsStyleFontDefault}{\mktsStyleFontThrowUndefined{Default}}%
 \newcommand{\mktsStyleFontItalic}{\mktsStyleFontThrowUndefined{Italic}}%
-\newcommand{\mktsStyleFontSmallcapslower}{\mktsStyleFontThrowUndefined{Sc}}%
-\newcommand{\mktsStyleFontSmallcapsall}{\mktsStyleFontThrowUndefined{Sc}}%
+\newcommand{\mktsStyleFontSmallcapslower}{\mktsStyleFontThrowUndefined{Smallcapslower}}%
+\newcommand{\mktsStyleFontSmallcapsupper}{\mktsStyleFontThrowUndefined{Smallcapsupper}}%
+\newcommand{\mktsStyleFontSmallcapsall}{\mktsStyleFontThrowUndefined{Smallcapsall}}%
 \newcommand{\mktsStyleFontBold}{\mktsStyleFontThrowUndefined{Bold}}%
 \newcommand{\mktsStyleFontBolditalic}{\mktsStyleFontThrowUndefined{BoldItalic}}%
 \newcommand{\mktsStyleFontSymbol}{\mktsStyleFontThrowUndefined{Symbol}}%
@@ -33,8 +34,9 @@
 \newcommand{\mktsStyleFontsetNone}{
   \renewcommand{\mktsStyleFontDefault}{\mktsStyleFontThrowUndefined{Default}}%
   \renewcommand{\mktsStyleFontItalic}{\mktsStyleFontThrowUndefined{Italic}}%
-  \renewcommand{\mktsStyleFontSmallcapslower}{\mktsStyleFontThrowUndefined{Sc}}%
-  \renewcommand{\mktsStyleFontSmallcapsall}{\mktsStyleFontThrowUndefined{Sc}}%
+  \renewcommand{\mktsStyleFontSmallcapslower}{\mktsStyleFontThrowUndefined{Smallcapslower}}%
+  \renewcommand{\mktsStyleFontSmallcapsupper}{\mktsStyleFontThrowUndefined{Smallcapsupper}}%
+  \renewcommand{\mktsStyleFontSmallcapsall}{\mktsStyleFontThrowUndefined{Smallcapsall}}%
   \renewcommand{\mktsStyleFontBold}{\mktsStyleFontThrowUndefined{Bold}}%
   \renewcommand{\mktsStyleFontBolditalic}{\mktsStyleFontThrowUndefined{BoldItalic}}%
   \renewcommand{\mktsStyleFontSymbol}{\mktsStyleFontThrowUndefined{Symbol}}%
@@ -53,6 +55,7 @@
   \renewcommand{\mktsStyleFontDefault}{}%
   \renewcommand{\mktsStyleFontItalic}{}%
   \renewcommand{\mktsStyleFontSmallcapslower}{}%
+  \renewcommand{\mktsStyleFontSmallcapsupper}{}%
   \renewcommand{\mktsStyleFontSmallcapsall}{}%
   \renewcommand{\mktsStyleFontBold}{}%
   \renewcommand{\mktsStyleFontBolditalic}{}%
@@ -72,6 +75,7 @@
   \mktsStyleFontsetNone%
   \renewcommand{\mktsStyleFontDefault}{\mktsFontfileEbgaramondtwelveregular}%
   \renewcommand{\mktsStyleFontSmallcapslower}{\mktsFontfileEbgaramondtwelveregularSclower}%
+  \renewcommand{\mktsStyleFontSmallcapsupper}{\mktsFontfileEbgaramondtwelveregularScupper}%
   \renewcommand{\mktsStyleFontSmallcapsall}{\mktsFontfileEbgaramondtwelveregularScall}%
   \renewcommand{\mktsStyleFontBold}{%
     % \mktsFontfileRobotoslabbold%

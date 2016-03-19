@@ -1004,6 +1004,40 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       send event
 
 #-----------------------------------------------------------------------------------------------------------
+@MKTX.INLINE.$smallcaps = ( S ) =>
+  upper_count = 0
+  lower_count = 0
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    # [ type, name, text, meta, ] = event
+    #.......................................................................................................
+    if select event, '(', 'smallcaps-upper'
+      upper_count += +1
+      send stamp event
+      if lower_count > 0 then send [ 'tex', "{\\mktsStyleSmallcapsall{}", ]
+      else                    send [ 'tex', "{\\mktsStyleSmallcapsupper{}", ]
+    #.......................................................................................................
+    else if select event, ')', 'smallcaps-upper'
+      upper_count += -1
+      send stamp event
+      send [ 'tex', "\\/", ]
+      send [ 'tex', "}", ]
+    #.......................................................................................................
+    else if select event, '(', 'smallcaps-lower'
+      lower_count += +1
+      send stamp event
+      if upper_count > 0 then  send [ 'tex', "{\\mktsStyleSmallcapsall{}", ]
+      else                  send [ 'tex', "{\\mktsStyleSmallcapslower{}", ]
+    #.......................................................................................................
+    else if select event, ')', 'smallcaps-lower'
+      lower_count += -1
+      send stamp event
+      send [ 'tex', "}", ]
+    #.......................................................................................................
+    else
+      send event
+
+#-----------------------------------------------------------------------------------------------------------
 @MKTX.INLINE.$link = ( S ) =>
   cache     = []
   last_href = null
@@ -1368,6 +1402,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @MKTX.INLINE.$url                                 S
     .pipe @MKTX.COMMAND.$url                                S
     .pipe @MKTX.INLINE.$translate_i_and_b                   S
+    .pipe @MKTX.INLINE.$smallcaps                           S
     .pipe @MKTX.INLINE.$em_and_strong                       S
     .pipe @MKTX.INLINE.$image                               S
     .pipe @MKTX.BLOCK.$yadda                                S

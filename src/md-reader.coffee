@@ -407,16 +407,24 @@ tracker_pattern = /// ^
           when 'list_item_open'     then send [ '(', 'li',            null,                         meta, ]
           when 'list_item_close'    then send [ ')', 'li',            null,                         meta, ]
           # inlines
-          when 'strong_open'        then send [ '(', 'strong',        null,                         meta, ]
-          when 'strong_close'       then send [ ')', 'strong',        null,                         meta, ]
-          when 'em_open'            then send [ '(', 'em',            null,                         meta, ]
-          when 'em_close'           then send [ ')', 'em',            null,                         meta, ]
           # singles
           when 'text'               then send [ '.', 'text',          token[ 'content' ],           meta, ]
           when 'hr'                 then send [ '.', 'hr',            token[ 'markup' ],            meta, ]
           #.................................................................................................
           # specials
           #.................................................................................................
+          # when 'strong_open'        then send [ '(', 'strong',        null,                         meta, ]
+          # when 'strong_close'       then send [ ')', 'strong',        null,                         meta, ]
+          # when 'em_open'            then send [ '(', 'em',            null,                         meta, ]
+          # when 'em_close'           then send [ ')', 'em',            null,                         meta, ]
+          when 'strong_open', 'strong_close', 'em_open', 'em_close'
+            type = if token[ 'type' ].endsWith 'open' then '(' else ')'
+            name = switch token[ 'markup' ]
+              when '*'  then 'em'
+              when '**' then 'strong'
+              when '_'  then 'smallcaps-lower'
+              when '__' then 'smallcaps-upper'
+            send [ type, name, null, meta, ]
           when 'heading_open'
             h_level = parseInt token[ 'tag' ][ 1 ], 10
             # urge '44356', [ '(', 'h', h_level, meta, ]

@@ -33,6 +33,10 @@
   % \lineskiplimit=-10pt%
   % \lineskip=0pt%
   \topskip=\baselineskip%
+  % remove vertical space before and after `\begin{tabbing}...\end{tabbing}`
+  % thx to http://tex.stackexchange.com/a/16389/28067
+  \setlength{\topsep}{0pt}%
+  \setlength{\partopsep}{0pt}%
 
   \renewcommand{\mktsTightParagraphs}{%
     \setlength\lineskiplimit{-1000mm}%
