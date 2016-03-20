@@ -285,6 +285,7 @@ module.exports = options =
       'u-cyrl-s':               'latin'
       'u-cjk':                  'cn'
       'u-halfull':              'cn'
+      'u-cjk-enclett':          'cn'
       'u-dingb':                'cn'
       'u-cjk-xa':               'cnxa'
       'u-cjk-xb':               'cnxb'
@@ -323,6 +324,7 @@ module.exports = options =
       'u-cjk-kata'
       'u-cjk-hira'
       'u-hang-syl'
+      'u-cjk-enclett'
       ]
     #.......................................................................................................
     'glyph-styles':

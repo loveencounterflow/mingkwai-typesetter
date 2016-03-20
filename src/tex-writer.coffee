@@ -195,7 +195,7 @@ after = ( names..., method ) ->
     throw new Error "need entry options/fonts/name" unless main_font_name?
     write ""
     write "% CONTENT"
-    write "\\begin{document}\\mktsStyleNormal"
+    # write "\\begin{document}\\mktsStyleNormal"
     #-------------------------------------------------------------------------------------------------------
     # INCLUDES
     #.......................................................................................................
@@ -243,16 +243,39 @@ after = ( names..., method ) ->
 
 #-----------------------------------------------------------------------------------------------------------
 @$document = ( S ) =>
+  buffer                  = []
+  start_document_event    = null
+  before_document_command = yes
+  send_                   = null
+  #.........................................................................................................
+  flush_as = ( what ) =>
+    send_ [ 'tex', "\n% begin of MD document\n", ]
+    if what is 'preamble'
+      send_ [ 'tex', "% (inserted from MD document preamble)\n", ]
+      send_ event for event in buffer
+    send_ stamp start_document_event
+    send_ [ 'tex', "\\begin{document}\\mktsStyleNormal{}", ]
+    send_ event for event in buffer if what is 'document'
+    buffer.length           = 0
+    before_document_command = no
   #.........................................................................................................
   return $ ( event, send ) =>
+    send_ = send
     #.......................................................................................................
-    if select event, '(', 'document'
-      send stamp event
-      send [ 'tex', "\n% begin of MD document\n", ]
-    #.......................................................................................................
-    else if select event, ')', 'document'
+    if select event, ')', 'document'
+      flush_as 'document' if before_document_command
       send [ 'tex', "\n% end of MD document\n", ]
       send stamp event
+    #.......................................................................................................
+    else if select event, '!', 'document'
+      send stamp event
+      flush_as 'preamble'
+    #.......................................................................................................
+    else if before_document_command
+      if select event, '(', 'document'
+        start_document_event = event
+      else
+        buffer.push event
     #.......................................................................................................
     else
       send event
