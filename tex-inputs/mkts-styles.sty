@@ -31,7 +31,11 @@
 
   % ........................................................................................................
   \renewcommand{\mktsStyleBold}{%
-    \renewcommand{\mktsStyleFontCjkDefault}{\mktsStyleFontCjkBold}%
+    % \renewcommand{\mktsStyleFontCjkDefault}{\mktsStyleFontCjkBold}%
+    \renewcommand{\cjk}{%
+      \cjkgUseCjkGlue%
+      \mktsStyleFontCjkBold\mktsScaleFontRelative%{1.1}\tfRaise{-0.175}%
+      }
     \mktsStyleFontBold%
     }
 

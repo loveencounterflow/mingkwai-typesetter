@@ -9,6 +9,21 @@
 \usepackage{eso-pic}
 \usepackage{multicol}
 
+% \pgfdeclarelayer{mktsTikzLayerA}
+% \pgfdeclarelayer{mktsTikzLayerB}
+% \pgfdeclarelayer{mktsTikzLayerC}
+% \pgfdeclarelayer{mktsTikzLayerX}
+% \pgfdeclarelayer{mktsTikzLayerY}
+% \pgfdeclarelayer{mktsTikzLayerZ}
+% \pgfsetlayers{%
+%   mktsTikzLayerA,%
+%   mktsTikzLayerB,%
+%   mktsTikzLayerB,%
+%   main,%
+%   mktsTikzLayerX,%
+%   mktsTikzLayerY,%
+%   mktsTikzLayerZ}
+
 % ----------------------------------------------------------------------------------------------------------
 \makeatletter%
 
@@ -106,6 +121,26 @@
   }
 
 % ----------------------------------------------------------------------------------------------------------
+\DeclareOption{bands}{%
+  \typeout{mkts-page-geometry: \trmIndigo{descenders}}
+  \mkts@GridCaalculateLengths%
+  % thx to http://tex.stackexchange.com/a/41153/28067
+  \AddToShipoutPicture{%
+    % \begin{pgfonlayer}{mktsTikzLayerZ}
+    \begin{tikzpicture}[overlay,remember picture]%
+      \draw[ yellow!50, line width = \mktsLineheight - \mktsFontsize, xshift = \mkts@GridXshift ]
+        ( 0mm,
+          \mkts@GridYmax - \textheight + \mktsLineheight * 0.5 )
+        grid[ xstep = \textwidth, ystep = \mktsLineheight,
+          yshift = -\mktsLineheight * 0.125 - \mktsFontsize * 0.385 ]
+        ( \textwidth,
+          \mkts@GridYmax );
+    \end{tikzpicture}%
+    % \end{pgfonlayer}
+    }%
+  }
+
+% ----------------------------------------------------------------------------------------------------------
 \DeclareOption{baselines}{%
   \typeout{mkts-page-geometry: \trmIndigo{baselines}}
   \mkts@GridCaalculateLengths%
@@ -116,7 +151,8 @@
       %\draw[red!30!white,thin]
         ( 0mm,
           \mkts@GridYmax - \textheight )
-        grid[ xstep = \textwidth, ystep = \mktsLineheight, yshift = -\mktsLineheight * 0.125 ]
+        grid[ xstep = \textwidth, ystep = \mktsLineheight,
+          yshift = -\mktsLineheight * 0.125 ]
         ( \textwidth,
           \mkts@GridYmax );
     \end{tikzpicture}%
@@ -133,7 +169,8 @@
       \draw[ green!50, thin, xshift = \mkts@GridXshift ]
         ( 0mm,
           \mkts@GridYmax - \textheight )
-        grid[ xstep = \textwidth, ystep = \mktsLineheight, yshift = -\mktsLineheight * 0.125 + \mktsFontsize * 0.4 ]
+        grid[ xstep = \textwidth, ystep = \mktsLineheight,
+          yshift = -\mktsLineheight * 0.125 + \mktsFontsize * 0.4 ]
         ( \textwidth,
           \mkts@GridYmax );
     \end{tikzpicture}%
@@ -150,7 +187,8 @@
       \draw[ green!50, thin, xshift = \mkts@GridXshift ]
         ( 0mm,
           \mkts@GridYmax - \textheight )
-        grid[ xstep = \textwidth, ystep = \mktsLineheight, yshift = -\mktsLineheight * 0.125 + \mktsFontsize * 0.7 ]
+        grid[ xstep = \textwidth, ystep = \mktsLineheight,
+          yshift = -\mktsLineheight * 0.125 + \mktsFontsize * 0.7 ]
         ( \textwidth,
           \mkts@GridYmax );
     \end{tikzpicture}%
@@ -163,14 +201,17 @@
   \mkts@GridCaalculateLengths%
   % thx to http://tex.stackexchange.com/a/41153/28067
   \AddToShipoutPicture{%
+    % \begin{pgfonlayer}{mktsTikzLayerA}
     \begin{tikzpicture}[overlay,remember picture]%
       \draw[ green!50, thin, xshift = \mkts@GridXshift ]
         ( 0mm,
           \mkts@GridYmax - \textheight )
-        grid[ xstep = \textwidth, ystep = \mktsLineheight, yshift = -\mktsLineheight * 0.125 - \mktsFontsize * 0.25 ]
+        grid[ xstep = \textwidth, ystep = \mktsLineheight,
+          yshift = -\mktsLineheight * 0.125 - \mktsFontsize * 0.25 ]
         ( \textwidth,
           \mkts@GridYmax );
     \end{tikzpicture}%
+    % \end{pgfonlayer}
     }%
   }
 
