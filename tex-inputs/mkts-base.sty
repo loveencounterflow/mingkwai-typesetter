@@ -38,6 +38,7 @@
 \newcommand{\mktsRulePlain}{}%
 \newcommand{\mktsRuleSwell}{}%
 \newcommand{\mktsScaleFont}[1]{}%
+\newcommand{\mktsScaleFontRelative}[1]{}%
 
 
 % ==========================================================================================================
@@ -102,10 +103,15 @@
       % \let^^M=\mktsAdjustedPar%
       \leavevmode\hbox{}}%
       }
-
   % ........................................................................................................
   \renewcommand{\mktsScaleFont}[1]{%
-    \fontsize{#1\mktsFontsize}{\mktsLineheight}\selectfont%
+    \setlength{\mktsCurrentFontsize}{#1\mktsFontsize}%
+    \fontsize{\mktsCurrentFontsize}{\mktsLineheight}\selectfont%
+    }%
+  % ........................................................................................................
+  \renewcommand{\mktsScaleFontRelative}[1]{%
+    \setlength{\mktsCurrentFontsize}{#1\mktsCurrentFontsize}%
+    \fontsize{\mktsCurrentFontsize}{\mktsLineheight}\selectfont%
     }%
 
   }
@@ -121,6 +127,7 @@
   \renewcommand{\mktsRuleSwell}{}%
   \gdef\mktsObeyAllLines{}%
   \renewcommand{\mktsScaleFont}[1]{}%
+  \renewcommand{\mktsScaleFontRelative}[1]{}%
   }
 
 % ----------------------------------------------------------------------------------------------------------
