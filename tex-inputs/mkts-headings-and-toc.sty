@@ -28,6 +28,10 @@
     ~\\%
     \mktsStyleBold%
     \mktsScaleFont{2.0}%
+    \renewcommand{\cjk}{%
+      \cjkgUseCjkGlue%
+      \mktsStyleFontCjkBold\tfRaise{-0.3}\mktsScaleFontRelative{1.15}%
+      }
     \AfterGroup{%
       \vspace{1\parskip}%
       }%
