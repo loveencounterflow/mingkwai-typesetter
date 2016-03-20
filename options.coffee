@@ -281,6 +281,8 @@ module.exports = options =
       'u-punct':                'latin'
       'u-grek':                 'latin'
       'u-cdm':                  'latin' # combining diacritical marks
+      'u-cyrl':                 'latin'
+      'u-cyrl-s':               'latin'
       'u-cjk':                  'cn'
       'u-halfull':              'cn'
       'u-dingb':                'cn'
