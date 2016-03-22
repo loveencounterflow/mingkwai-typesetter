@@ -903,9 +903,11 @@ tracker_pattern = /// ^
   # R[ 'output' ].on  'end', -> debug '©zSMOc', "output ended"
   #.........................................................................................................
   input.on 'resume', =>
+    S.t0        = +new Date()
     md_parser   = @_new_markdown_parser()
     MKTS.MACRO_ESCAPER.initialize_state S
     md_source   = MKTS.MACRO_ESCAPER.escape S, md_source
+    S.chr_count = ( Array.from md_source ).length
     tokens      = md_parser.parse md_source, S.environment
     # debug '©78531', rpr tokens
     for token in tokens

@@ -247,22 +247,28 @@ after = ( names..., method ) ->
   start_document_event    = null
   before_document_command = yes
   send_                   = null
+  before_flush            = yes
   #.........................................................................................................
   flush_as = ( what ) =>
     send_ [ 'tex', "\n% begin of MD document\n", ]
-    if what is 'preamble'
-      send_ [ 'tex', "% (inserted from MD document preamble)\n", ]
+    if what is 'preamble' and buffer.length > 0
+      send_ [ 'tex', "% (extra preamble inserted from MD document)\n", ]
       send_ event for event in buffer
     send_ stamp start_document_event
     send_ [ 'tex', "\\begin{document}\\mktsStyleNormal{}", ]
-    send_ event for event in buffer if what is 'document'
+    if what is 'document'
+      send_ event for event in buffer
     buffer.length           = 0
     before_document_command = no
   #.........................................................................................................
   return $ ( event, send ) =>
     send_ = send
     #.......................................................................................................
-    if select event, ')', 'document'
+    if before_flush
+      send event
+      before_flush = no if select event, '~', 'flush'
+    #.......................................................................................................
+    else if select event, ')', 'document'
       flush_as 'document' if before_document_command
       send [ 'tex', "\n% end of MD document\n", ]
       send stamp event
@@ -1438,6 +1444,10 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @MKTX.CLEANUP.$consolidate_texts                  S
     .pipe @MKTX.TEX.$fix_typography_for_tex                 S
     .pipe MKTSCRIPT_WRITER.$show_mktsmd_events              S
+    .pipe do =>
+      S.event_count = 0
+      return D.$observe ( event ) =>
+        S.event_count += +1
     .pipe @MKTX.INLINE.$mark                                S
     .pipe @MKTX.$show_unhandled_tags                        S
     .pipe @MKTX.$show_warnings                              S
@@ -1490,6 +1500,19 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     file_output.on 'close', =>
       HELPERS.write_pdf layout_info, ( error ) =>
         throw error if error?
+    # .pipe D.$observe ( _, has_ended ) =>
+    #   if has_ended
+        S.t1          = +new Date()
+        dt            = S.t1 - S.t0
+        dt_s          = ( dt / 1000 ).toFixed 3
+        ( S.t1 - S.t0 ) / S.chr_count
+        bytes_per_s   = ( S.chr_count * 1000 / dt ).toFixed 3
+        events_per_s  = ( S.event_count    * 1000 / dt ).toFixed 3
+        help "#{ƒ S.chr_count} chrs"
+        help "#{dt_s} s"
+        help "#{events_per_s} chrs / s"
+        help "#{bytes_per_s} events / s"
+      # return null
         handler null if handler?
     #.......................................................................................................
     S =
