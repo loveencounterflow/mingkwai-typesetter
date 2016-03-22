@@ -34,6 +34,7 @@ options_route             = '../options.coffee'
 { CACHE, OPTIONS, }       = require './options'
 SEMVER                    = require 'semver'
 #...........................................................................................................
+TEXT                      = require 'coffeenode-text'
 XNCHR                     = require './xnchr'
 MKTS                      = require './main'
 MKTSCRIPT_WRITER          = require './mktscript-writer'
@@ -1500,19 +1501,18 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     file_output.on 'close', =>
       HELPERS.write_pdf layout_info, ( error ) =>
         throw error if error?
-    # .pipe D.$observe ( _, has_ended ) =>
-    #   if has_ended
-        S.t1          = +new Date()
-        dt            = S.t1 - S.t0
-        dt_s          = ( dt / 1000 ).toFixed 3
-        ( S.t1 - S.t0 ) / S.chr_count
-        bytes_per_s   = ( S.chr_count * 1000 / dt ).toFixed 3
-        events_per_s  = ( S.event_count    * 1000 / dt ).toFixed 3
-        help "#{ƒ S.chr_count} chrs"
-        help "#{dt_s} s"
-        help "#{events_per_s} chrs / s"
-        help "#{bytes_per_s} events / s"
-      # return null
+        S.t1              = +new Date()
+        dt_s              = ( S.t1 - S.t0 ) / 1000
+        dt_s_txt          = dt_s.toFixed 3
+        chrs_per_s_txt    = (   S.chr_count / dt_s ).toFixed 3
+        events_per_s_txt  = ( S.event_count / dt_s ).toFixed 3
+        chr_count_txt     = ƒ S.chr_count
+        event_count_txt   = ƒ S.event_count
+        help "#{TEXT.flush_right    chr_count_txt, 10}       chrs (approx.)"
+        help "#{TEXT.flush_right  event_count_txt, 10}     events (approx.)"
+        help "#{TEXT.flush_right         dt_s_txt, 14}          s"
+        help "#{TEXT.flush_right   chrs_per_s_txt, 14}   chrs / s"
+        help "#{TEXT.flush_right events_per_s_txt, 14} events / s"
         handler null if handler?
     #.......................................................................................................
     S =

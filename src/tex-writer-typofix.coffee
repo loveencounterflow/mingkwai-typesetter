@@ -107,7 +107,7 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
     message     = "unknown RSG #{rpr rsg}: #{fncr} #{chr} (using fallback #{rpr rsg_command})"
     if S.send? then S.send remark 'warn', message, {}
     else            warn message
-  rsg_command         = null if rsg_command in [ 'latin', 'cn', ]
+  rsg_command         = null if rsg_command in [ 'latin', ] # 'cn', ]
   style               = S.glyph_styles[ chr ]
   #.........................................................................................................
   # return null if ( not rsg_command? ) and ( not style? )

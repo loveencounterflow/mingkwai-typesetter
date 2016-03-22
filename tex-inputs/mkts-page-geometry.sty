@@ -121,14 +121,34 @@
   }
 
 % ----------------------------------------------------------------------------------------------------------
-\DeclareOption{bands}{%
+\DeclareOption{linebands}{%
   \typeout{mkts-page-geometry: \trmIndigo{descenders}}
   \mkts@GridCaalculateLengths%
   % thx to http://tex.stackexchange.com/a/41153/28067
   \AddToShipoutPicture{%
     % \begin{pgfonlayer}{mktsTikzLayerZ}
     \begin{tikzpicture}[overlay,remember picture]%
-      \draw[ yellow!50, line width = \mktsLineheight - \mktsFontsize, xshift = \mkts@GridXshift ]
+      \draw[ yellow!50, line width = \mktsFontsize * 0.9, xshift = \mkts@GridXshift ]
+        ( 0mm,
+          \mkts@GridYmax - \textheight + \mktsLineheight * 0.5 )
+        grid[ xstep = \textwidth, ystep = \mktsLineheight,
+          yshift = \mktsLineheight * 0.05 ]
+        ( \textwidth,
+          \mkts@GridYmax );
+    \end{tikzpicture}%
+    % \end{pgfonlayer}
+    }%
+  }
+
+% ----------------------------------------------------------------------------------------------------------
+\DeclareOption{interbands}{%
+  \typeout{mkts-page-geometry: \trmIndigo{descenders}}
+  \mkts@GridCaalculateLengths%
+  % thx to http://tex.stackexchange.com/a/41153/28067
+  \AddToShipoutPicture{%
+    % \begin{pgfonlayer}{mktsTikzLayerZ}
+    \begin{tikzpicture}[overlay,remember picture]%
+      \draw[ red!40, line width = \mktsLineheight - \mktsFontsize, xshift = \mkts@GridXshift ]
         ( 0mm,
           \mkts@GridYmax - \textheight + \mktsLineheight * 0.5 )
         grid[ xstep = \textwidth, ystep = \mktsLineheight,
