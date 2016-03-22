@@ -73,7 +73,10 @@
 % ----------------------------------------------------------------------------------------------------------
 \newdimen\mkts@GridYmax%
 \newdimen\mkts@GridXshift%
+\newdimen\mkts@GridXright%
 \newdimen\mkts@GridYshift%
+\newdimen\mkts@GridX%
+\newdimen\mkts@GridY%
 \newdimen\mkts@TwoColumnsCenter%
 \newdimen\mkts@TwoColumnsCenterLeft%
 \newdimen\mkts@TwoColumnsCenterRight%
@@ -94,11 +97,12 @@
   \typeout{mkts-page-geometry: \trmIndigo{mkts@GridCaalculateLengths}}
   \setlength{\mkts@GridYmax}{\paperheight - \headheight - \headsep - \topmargin - \voffset - 1in}%
   \setlength{\mkts@GridXshift}{\hoffset + 1in + \oddsidemargin}%
+  \setlength{\mkts@GridXright}{\mkts@GridXshift + \textwidth}%
   \setlength{\mkts@GridYshift}{\mkts@GridYmax - \textheight}%
-  % ........................................................................................................
-  \setlength{\mkts@GridYmax}{\paperheight - \headheight - \headsep - \topmargin - \voffset - 1in}%
-  \setlength{\mkts@GridXshift}{\hoffset + 1in + \oddsidemargin}%
-  \setlength{\mkts@GridYshift}{\mkts@GridYmax - \textheight}%
+  % % ........................................................................................................
+  % \setlength{\mkts@GridYmax}{\paperheight - \headheight - \headsep - \topmargin - \voffset - 1in}%
+  % \setlength{\mkts@GridXshift}{\hoffset + 1in + \oddsidemargin}%
+  % \setlength{\mkts@GridYshift}{\mkts@GridYmax - \textheight}%
   % ........................................................................................................
   \setlength{\mkts@TwoColumnsCenter}{\textwidth * \real{0.5}}%
   \setlength{\mkts@TwoColumnsCenterLeft}{\mkts@TwoColumnsCenter - \columnsep * \real{0.5}}%
@@ -122,6 +126,33 @@
 
 % ----------------------------------------------------------------------------------------------------------
 \DeclareOption{linebands}{%
+  \typeout{mkts-page-geometry: \trmIndigo{descenders}}
+  \mkts@GridCaalculateLengths%
+  % thx to http://tex.stackexchange.com/a/41153/28067
+  \AddToShipoutPicture{%
+    % \begin{pgfonlayer}{mktsTikzLayerZ}
+    \begin{tikzpicture}[overlay,remember picture]%
+      % ### TAINT should calculate number of lines ###
+      \foreach \y in { 0, ..., 53 }{
+        \setlength{\mkts@GridY}{\mkts@GridYshift + \y\mktsLineheight};
+        \draw[ yellow!50, line width = \mktsFontsize * 0.9 ]
+          ( \mkts@GridXshift, \mktsLineheight * 0.525 + \mkts@GridY ) -- ( \mkts@GridXright, \mktsLineheight * 0.525 + \mkts@GridY );
+        }
+
+      % \draw[ yellow!50, line width = \mktsFontsize * 0.9, xshift = \mkts@GridXshift ]
+      %   ( 0mm,
+      %     \mkts@GridYmax - \textheight + \mktsLineheight * 0.5 )
+      %   grid[ xstep = \textwidth, ystep = \mktsLineheight,
+      %     yshift = \mktsLineheight * 0.05 ]
+      %   ( \textwidth,
+      %     \mkts@GridYmax );
+    \end{tikzpicture}%
+    % \end{pgfonlayer}
+    }%
+  }
+
+% ----------------------------------------------------------------------------------------------------------
+\DeclareOption{linebandsOld}{%
   \typeout{mkts-page-geometry: \trmIndigo{descenders}}
   \mkts@GridCaalculateLengths%
   % thx to http://tex.stackexchange.com/a/41153/28067
