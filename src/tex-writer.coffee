@@ -344,7 +344,10 @@ after = ( names..., method ) ->
           else                   send [ 'tex',       "\\par\n", ]
         else
           unless last_was_empty = chunk.length is 0
+            # debug `0903`, rpr chunk
+            # chunk = @MKTX.TEX.fix_typography_for_tex chunk, S.options
             send [ '.', 'text', chunk, ( copy meta ), ]
+            # send [ 'tex', chunk, ]
     #.......................................................................................................
     else if select event, '(', 'keep-lines'
       send stamp event
