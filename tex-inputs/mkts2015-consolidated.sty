@@ -200,7 +200,11 @@
 \newcommand{\cnxHanaA}{\cjkgGlue\mktsFontfileHanamina\aftergroup\cjkgGlue}
 \newcommand{\cnxHanaB}{\cjkgGlue\mktsFontfileHanaminb\aftergroup\cjkgGlue}
 \newcommand{\cnxSunXA}{\cjkgGlue\mktsFontfileSunexta\aftergroup\cjkgGlue}
-\newcommand{\cnxJzr}{\cjkgGlue\mktsFontfileJizurathreeb\aftergroup\cjkgGlue}
+\newcommand{\cnxJzr}{%
+  \cn%
+  \renewcommand{\mktsStyleFontCjkDefault}{\mktsFontfileJizurathreeb}%
+  \mktsScaleFont{1.5}%
+  }
 % \newcommand{\missing}[1]{{\missingFont#1}}
 % ..........................................................................................................
 % ### TAINT scaling given here is only for readings, not for ordinary mixed text ###
