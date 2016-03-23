@@ -31,10 +31,12 @@
 
   % ........................................................................................................
   \renewcommand{\mktsStyleBold}{%
-    % \renewcommand{\mktsStyleFontCjkDefault}{\mktsStyleFontCjkBold}%
-    \renewcommand{\cjk}{%
-      \cjkgUseCjkGlue%
-      \mktsStyleFontCjkBold\tfRaise{-0.175}\mktsScaleFontRelative{1.2}%
+    \renewcommand{\mktsStyleFontCjkDefault}{\mktsStyleFontCjkBold}%
+    \renewcommand{\cn}{%
+      \cjkgGlue%
+      \mktsScaleFontRelative{1.1}%
+      \special{pdf:literal 1 0 0 1 0 -2 cm}%
+      \AfterGroup{\special{pdf:literal 1 0 0 1 0 2 cm}\cjkgGlue}%
       }
     \mktsStyleFontBold%
     }

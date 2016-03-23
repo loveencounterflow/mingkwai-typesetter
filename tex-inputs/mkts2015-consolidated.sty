@@ -68,7 +68,7 @@
 \usepackage[plain]{mkts-base}%                  plain
 \usepackage[default]{mkts-endnotes}%            default
 % \usepackage[a4,medians]{mkts-page-geometry}
-\usepackage[a4,linebands,ascenders,descenders]{mkts-page-geometry}
+\usepackage[a4,linebands,ascenders,descenders,columns]{mkts-page-geometry}
 % \usepackage[a4,ascenders,baselines,descenders]{mkts-page-geometry}
 % \usepackage[a4,ascenders,descenders,baselines,columns]{mkts-page-geometry}
 % \usepackage[a4,baselines,columns]{mkts-page-geometry}
@@ -174,37 +174,37 @@
 \newcommand{\cn}{%
   \cjkgGlue%
   \mktsScaleFontRelative{1.1}%
-  \mktsStyleFontCjkDefault%
+  % \mktsStyleFontCjkDefault%
   % \tfRaise{-0.175}%
   % \aftergroup\cjkgGlue%
-  % ### TAINT measurements might not scale with font sizes; we might use precalculated
-  % factors ###
+  % ### TAINT measurements might not scale with font sizes; we might use precalculated factors ###
   \special{pdf:literal 1 0 0 1 0 -2 cm}%
   \AfterGroup{\special{pdf:literal 1 0 0 1 0 2 cm}\cjkgGlue}%
   % \AfterGroup{\cjkgGlue}%
   }
-\newcommand{\mktsRsgFb}{\cjkgGlue\mktsFontfileSunexta\aftergroup\cjkgGlue}
-\newcommand{\cnxa}{\cjkgGlue\mktsFontfileSunexta\aftergroup\cjkgGlue}
-\newcommand{\cnxb}{\cjkgGlue\mktsFontfileSunflowerucjkxb\aftergroup\cjkgGlue}
-\newcommand{\cnxc}{\cjkgGlue\mktsFontfileHanaminb\aftergroup\cjkgGlue}
-\newcommand{\cnxd}{\cjkgGlue\mktsFontfileBabelstonehan\aftergroup\cjkgGlue}
-\newcommand{\cncone}{\cjkgGlue\mktsFontfileSunexta\aftergroup\cjkgGlue}       % CJK Compatibility 1
-\newcommand{\cnctwo}{\cjkgGlue\mktsFontfileHanamina\aftergroup\cjkgGlue}          % CJK Compatibility 2
-\newcommand{\cnrone}{\cjkgGlue\mktsFontfileSunexta\aftergroup\cjkgGlue}       % CJK Radicals 1
-\newcommand{\cnrtwo}{\cjkgGlue\mktsFontfileSunexta\aftergroup\cjkgGlue}       % CJK Radicals 2
-\newcommand{\cnsym}{\cjkgGlue\mktsFontfileHanamina\aftergroup\cjkgGlue}
-\newcommand{\cnstrk}{\cjkgGlue\mktsFontfileSunexta\aftergroup\cjkgGlue}
-\newcommand{\cnjzr}{\cjkgGlue\mktsFontfileJizurathreeb\aftergroup\cjkgGlue}
+\newcommand{\mktsRsgFb}{\cn\mktsFontfileSunexta}
+\newcommand{\cnxa}{\cn\mktsFontfileSunexta}
+\newcommand{\cnxb}{\cn\mktsFontfileSunflowerucjkxb}
+\newcommand{\cnxc}{\cn\mktsFontfileHanaminb}
+\newcommand{\cnxd}{\cn\mktsFontfileBabelstonehan}
+\newcommand{\cncone}{\cn\mktsFontfileSunexta}       % CJK Compatibility 1
+\newcommand{\cnctwo}{\cn\mktsFontfileHanamina}          % CJK Compatibility 2
+\newcommand{\cnrone}{\cn\mktsFontfileSunexta}       % CJK Radicals 1
+\newcommand{\cnrtwo}{\cn\mktsFontfileSunexta}       % CJK Radicals 2
+\newcommand{\cnsym}{\cn\mktsFontfileHanamina}
+\newcommand{\cnstrk}{\cn\mktsFontfileSunexta}
 % ..........................................................................................................
-\newcommand{\cnxBabel}{\cjkgGlue\mktsFontfileBabelstonehan\aftergroup\cjkgGlue}
-\newcommand{\cnxHanaA}{\cjkgGlue\mktsFontfileHanamina\aftergroup\cjkgGlue}
-\newcommand{\cnxHanaB}{\cjkgGlue\mktsFontfileHanaminb\aftergroup\cjkgGlue}
-\newcommand{\cnxSunXA}{\cjkgGlue\mktsFontfileSunexta\aftergroup\cjkgGlue}
-\newcommand{\cnxJzr}{%
+\newcommand{\cnxBabel}{\cn\mktsFontfileBabelstonehan}
+\newcommand{\cnxHanaA}{\cn\mktsFontfileHanamina}
+\newcommand{\cnxHanaB}{\cn\mktsFontfileHanaminb}
+\newcommand{\cnxSunXA}{\cn\mktsFontfileSunexta}
+% ..........................................................................................................
+\newcommand{\cnjzr}{%
   \cn%
-  \renewcommand{\mktsStyleFontCjkDefault}{\mktsFontfileJizurathreeb}%
-  \mktsScaleFont{1.5}%
-  }
+  \mktsFontfileJizurathreeb%
+  % \mktsScaleFont{1.1}
+  }%
+\newcommand{\cnxJzr}{\cnjzr}
 % \newcommand{\missing}[1]{{\missingFont#1}}
 % ..........................................................................................................
 % ### TAINT scaling given here is only for readings, not for ordinary mixed text ###
