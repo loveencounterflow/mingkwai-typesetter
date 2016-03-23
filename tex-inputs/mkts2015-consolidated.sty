@@ -68,7 +68,7 @@
 \usepackage[plain]{mkts-base}%                  plain
 \usepackage[default]{mkts-endnotes}%            default
 % \usepackage[a4,medians]{mkts-page-geometry}
-\usepackage[a4,linebands,interbands]{mkts-page-geometry}
+\usepackage[a4,linebands,ascenders,descenders]{mkts-page-geometry}
 % \usepackage[a4,ascenders,baselines,descenders]{mkts-page-geometry}
 % \usepackage[a4,ascenders,descenders,baselines,columns]{mkts-page-geometry}
 % \usepackage[a4,baselines,columns]{mkts-page-geometry}
@@ -177,6 +177,8 @@
   \mktsStyleFontCjkDefault%
   % \tfRaise{-0.175}%
   % \aftergroup\cjkgGlue%
+  % ### TAINT measurements might not scale with font sizes; we might use precalculated
+  % factors ###
   \special{pdf:literal 1 0 0 1 0 -2 cm}%
   \AfterGroup{\special{pdf:literal 1 0 0 1 0 2 cm}\cjkgGlue}%
   % \AfterGroup{\cjkgGlue}%
@@ -186,10 +188,10 @@
 \newcommand{\cnxb}{\cjkgGlue\mktsFontfileSunflowerucjkxb\aftergroup\cjkgGlue}
 \newcommand{\cnxc}{\cjkgGlue\mktsFontfileHanaminb\aftergroup\cjkgGlue}
 \newcommand{\cnxd}{\cjkgGlue\mktsFontfileBabelstonehan\aftergroup\cjkgGlue}
-\newcommand{\cncone}{\cjkgGlue\mktsFontfileSunexta\aftergroup\cjkgGlue}      	% CJK Compatibility 1
-\newcommand{\cnctwo}{\cjkgGlue\mktsFontfileHanamina\aftergroup\cjkgGlue}   				% CJK Compatibility 2
-\newcommand{\cnrone}{\cjkgGlue\mktsFontfileSunexta\aftergroup\cjkgGlue}      	% CJK Radicals 1
-\newcommand{\cnrtwo}{\cjkgGlue\mktsFontfileSunexta\aftergroup\cjkgGlue}      	% CJK Radicals 2
+\newcommand{\cncone}{\cjkgGlue\mktsFontfileSunexta\aftergroup\cjkgGlue}       % CJK Compatibility 1
+\newcommand{\cnctwo}{\cjkgGlue\mktsFontfileHanamina\aftergroup\cjkgGlue}          % CJK Compatibility 2
+\newcommand{\cnrone}{\cjkgGlue\mktsFontfileSunexta\aftergroup\cjkgGlue}       % CJK Radicals 1
+\newcommand{\cnrtwo}{\cjkgGlue\mktsFontfileSunexta\aftergroup\cjkgGlue}       % CJK Radicals 2
 \newcommand{\cnsym}{\cjkgGlue\mktsFontfileHanamina\aftergroup\cjkgGlue}
 \newcommand{\cnstrk}{\cjkgGlue\mktsFontfileSunexta\aftergroup\cjkgGlue}
 \newcommand{\cnjzr}{\cjkgGlue\mktsFontfileJizurathreeb\aftergroup\cjkgGlue}
@@ -203,24 +205,25 @@
 % ..........................................................................................................
 % ### TAINT scaling given here is only for readings, not for ordinary mixed text ###
 \newcommand{\ka}{%
-  \cjkgGlue%
-  \mktsScaleFont{0.9}%
-  % \tfRaise{-0.1}%
+  \cn%
+  \special{pdf:literal 1 0 0 1 0 0.5 cm}%
   \mktsFontfileIpamp%
-  \aftergroup\cjkgGlue%
-  }% \mktsFontfileNanummyeongjo
+  \mktsScaleFont{0.9}%
+  \AfterGroup{\special{pdf:literal 1 0 0 1 0 -0.5 cm}}%
+  }
 \newcommand{\hi}{%
-  \cjkgGlue%
-  \mktsScaleFont{0.9}%
-  % \tfRaise{-0.1}%
+  \cn%
+  \special{pdf:literal 1 0 0 1 0 0.5 cm}%
   \mktsFontfileIpamp%
-  \aftergroup\cjkgGlue%
-  }% \mktsFontfileNanummyeongjo
-\newcommand{\hg}{%
-  \cjkgGlue%
   \mktsScaleFont{0.9}%
+  \AfterGroup{\special{pdf:literal 1 0 0 1 0 -0.5 cm}}%
+  }
+\newcommand{\hg}{%
+  \cn%
+  \special{pdf:literal 1 0 0 1 0 0.5 cm}%
   \mktsFontfileNanummyeongjo%
-  \aftergroup\cjkgGlue%
+  \mktsScaleFont{0.9}%
+  \AfterGroup{\special{pdf:literal 1 0 0 1 0 -0.5 cm}}%
   }
 % ..........................................................................................................
 \newcommand{\jzrStrokeclassZZWBF}{\prPushRaise{-0.1}{-0.1}{{\mktsFontfileJizurathreeb{}}}}
@@ -243,7 +246,7 @@
 \newcommand{\jzrStrokeclassTextLeftHook}{\prPushRaise{0}{-0.15}{{\mktsFontfileJizurathreeb{}}}}
 \newcommand{\jzrStrokeclassTextRightHook}{\prPushRaise{0}{-0.15}{{\mktsFontfileJizurathreeb{}}}}
 % ..........................................................................................................
-\newcommand{\kai}[1]{{\mktsFontfileKai{}#1}}
+\newcommand{\kai}{\renewcommand{\mktsStyleFontCjkDefault}{\mktsFontfileBiaukai}}
 \newcommand{\jzrkai}[1]{{\mktsFontfileJizurathreeb{}#1}}
 % ..........................................................................................................
 \newcommand{\pageNr}[1]{{\fontsize{2.5mm}{2.5mm}\mktsFontfilePtsans#1}}

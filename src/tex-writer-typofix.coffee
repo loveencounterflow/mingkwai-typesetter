@@ -189,9 +189,9 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
   throw new Error "need setting 'tex-command-by-rsgs'" unless S.tex_command_by_rsgs?
   throw new Error "need setting 'cjk-rsgs'" unless S.cjk_rsgs?
   #.........................................................................................................
-  [ text, danglin_ws, ] = @_split_dangling_ws text
-  chrs                  = XNCHR.chrs_from_text text
-  last_idx              = chrs.length - 1
+  [ text, dangling_ws, ]  = @_split_dangling_ws text
+  chrs                    = XNCHR.chrs_from_text text
+  last_idx                = chrs.length - 1
   #.........................................................................................................
   for chr, idx in chrs
     A = @_analyze_chr S, chr, style, ( idx is last_idx )
@@ -226,7 +226,7 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
   `國 **b** 國` vs `國 **國** 國` ###
   @_push S
   @_push S, '}' if S.this_is_cjk
-  @_push S, danglin_ws
+  @_push S, dangling_ws
   #.........................................................................................................
   return S.collector.join ''
 
