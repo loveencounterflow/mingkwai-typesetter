@@ -126,7 +126,7 @@
 
 % ----------------------------------------------------------------------------------------------------------
 \DeclareOption{linebands}{%
-  \typeout{mkts-page-geometry: \trmIndigo{descenders}}
+  \typeout{mkts-page-geometry: \trmIndigo{linebands}}
   \mkts@GridCaalculateLengths%
   % thx to http://tex.stackexchange.com/a/41153/28067
   \AddToShipoutPicture{%
@@ -135,37 +135,9 @@
       % ### TAINT should calculate number of lines ###
       \foreach \y in { 0, ..., 53 }{
         \setlength{\mkts@GridY}{\mkts@GridYshift + \y\mktsLineheight};
-        \draw[ yellow!50, line width = \mktsFontsize * 0.9 ]
+        \draw[ yellow!20, line width = \mktsFontsize * 0.9 ]
           ( \mkts@GridXshift, \mktsLineheight * 0.525 + \mkts@GridY ) -- ( \mkts@GridXright, \mktsLineheight * 0.525 + \mkts@GridY );
         }
-
-      % \draw[ yellow!50, line width = \mktsFontsize * 0.9, xshift = \mkts@GridXshift ]
-      %   ( 0mm,
-      %     \mkts@GridYmax - \textheight + \mktsLineheight * 0.5 )
-      %   grid[ xstep = \textwidth, ystep = \mktsLineheight,
-      %     yshift = \mktsLineheight * 0.05 ]
-      %   ( \textwidth,
-      %     \mkts@GridYmax );
-    \end{tikzpicture}%
-    % \end{pgfonlayer}
-    }%
-  }
-
-% ----------------------------------------------------------------------------------------------------------
-\DeclareOption{linebandsOld}{%
-  \typeout{mkts-page-geometry: \trmIndigo{descenders}}
-  \mkts@GridCaalculateLengths%
-  % thx to http://tex.stackexchange.com/a/41153/28067
-  \AddToShipoutPicture{%
-    % \begin{pgfonlayer}{mktsTikzLayerZ}
-    \begin{tikzpicture}[overlay,remember picture]%
-      \draw[ yellow!50, line width = \mktsFontsize * 0.9, xshift = \mkts@GridXshift ]
-        ( 0mm,
-          \mkts@GridYmax - \textheight + \mktsLineheight * 0.5 )
-        grid[ xstep = \textwidth, ystep = \mktsLineheight,
-          yshift = \mktsLineheight * 0.05 ]
-        ( \textwidth,
-          \mkts@GridYmax );
     \end{tikzpicture}%
     % \end{pgfonlayer}
     }%
@@ -184,6 +156,53 @@
           \mkts@GridYmax - \textheight + \mktsLineheight * 0.5 )
         grid[ xstep = \textwidth, ystep = \mktsLineheight,
           yshift = -\mktsLineheight * 0.125 - \mktsFontsize * 0.385 ]
+        ( \textwidth,
+          \mkts@GridYmax );
+    \end{tikzpicture}%
+    % \end{pgfonlayer}
+    }%
+  }
+
+% ----------------------------------------------------------------------------------------------------------
+\DeclareOption{mmgrid}{%
+  \typeout{mkts-page-geometry: \trmIndigo{mmgrid}}
+  \mkts@GridCaalculateLengths%
+  % thx to http://tex.stackexchange.com/a/41153/28067
+  \AddToShipoutPicture{%
+    % \begin{pgfonlayer}{mktsTikzLayerZ}
+    \begin{tikzpicture}[overlay,remember picture]%
+      \draw[ red!25, line width = 0.1mm, xshift = \mkts@GridXshift ]
+        ( 0mm,
+          \mkts@GridYmax - \textheight + \mktsLineheight * 0.5 )
+        grid[ xstep = 1mm, ystep = 1mm,
+          yshift = \mktsLineheight * 0.05 ]
+        ( \textwidth,
+          \mkts@GridYmax );
+    \end{tikzpicture}%
+    % \end{pgfonlayer}
+    }%
+  }
+
+% ----------------------------------------------------------------------------------------------------------
+\DeclareOption{cmgrid}{%
+  \typeout{mkts-page-geometry: \trmIndigo{mmgrid}}
+  \mkts@GridCaalculateLengths%
+  % thx to http://tex.stackexchange.com/a/41153/28067
+  \AddToShipoutPicture{%
+    % \begin{pgfonlayer}{mktsTikzLayerZ}
+    \begin{tikzpicture}[overlay,remember picture]%
+      \draw[ red!25, line width = 0.2mm, xshift = \mkts@GridXshift ]
+        ( 0mm,
+          \mkts@GridYmax - \textheight + \mktsLineheight * 0.5 )
+        grid[ xstep = 1cm, ystep = 1cm,
+          yshift = \mktsLineheight * 0.05 - 1mm ]
+        ( \textwidth,
+          \mkts@GridYmax );
+      \draw[ red!50, line width = 0.1mm, xshift = \mkts@GridXshift ]
+        ( 0mm,
+          \mkts@GridYmax - \textheight + \mktsLineheight * 0.5 )
+        grid[ xstep = 5mm, ystep = 5mm,
+          yshift = \mktsLineheight * 0.05 - 1mm ]
         ( \textwidth,
           \mkts@GridYmax );
     \end{tikzpicture}%

@@ -67,7 +67,7 @@
 
 \usepackage[plain]{mkts-base}%                  plain
 \usepackage[default]{mkts-endnotes}%            default
-% \usepackage[a4,medians]{mkts-page-geometry}
+\usepackage[a4,mmgrid,cmgrid]{mkts-page-geometry}
 % \usepackage[a4,linebands]{mkts-page-geometry}
 % \usepackage[a4,ascenders,baselines,descenders]{mkts-page-geometry}
 % \usepackage[a4,ascenders,descenders,baselines,columns]{mkts-page-geometry}
@@ -165,7 +165,7 @@
 % \XeTeXlinebreaklocale "ja"% for Japanese
 % \XeTeXlinebreakskip 0pt plus 0.1pt% sets the skip
 % }
-\renewcommand{\cjkgGlue}{\hskip 0mm plus 0.7mm minus 0.0mm}
+\renewcommand{\cjkgGlue}{{\makebox[0mm]{\color{red}|}}\hskip 0mm plus 0.7mm minus 0.0mm}
 \newcommand{\cjk}{%
   \cjkgUseCjkGlue%
   \mktsStyleFontCjkDefault%
