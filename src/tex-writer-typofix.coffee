@@ -117,6 +117,7 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
     R         = []
     # R.push "\\cjkgGlue{"
     R.push "{"
+    R.push "\\cn{}" if is_cjk
     rpl_push  = style[ 'push'   ] ? null
     rpl_raise = style[ 'raise'  ] ? null
     rpl_chr   = style[ 'glyph'  ] ? chr_info[ 'uchr' ]
