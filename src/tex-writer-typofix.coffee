@@ -117,18 +117,25 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
     R         = []
     # R.push "\\cjkgGlue{"
     R.push "{"
-    R.push "\\cn{}" if is_cjk
+    R.push "\\cn" if is_cjk
     rpl_push  = style[ 'push'   ] ? null
     rpl_raise = style[ 'raise'  ] ? null
     rpl_chr   = style[ 'glyph'  ] ? chr_info[ 'uchr' ]
     rpl_cmd   = style[ 'cmd'    ] ? rsg_command
     rpl_cmd   = null if rpl_cmd is 'cn'
-    if      rpl_push? and rpl_raise?  then R.push "\\tfPushRaise{#{rpl_push}}{#{rpl_raise}}"
-    else if rpl_push?                 then R.push "\\tfPush{#{rpl_push}}"
-    else if               rpl_raise?  then R.push "\\tfRaise{#{rpl_raise}}"
+    ### TAINT using `prPushRaise` here in place of `tfPushRaise` because it gives better
+    results ###
+    if _XXX_use_cxltx_pushraise = yes
+      if      rpl_push? and rpl_raise?  then R.push "\\prPushRaise{#{rpl_push}}{#{rpl_raise}}{"
+      else if rpl_push?                 then R.push "\\prPush{#{rpl_push}}{"
+      else if               rpl_raise?  then R.push "\\prRaise{#{rpl_raise}}{"
+    else
+      if      rpl_push? and rpl_raise?  then R.push "\\tfPushRaise{#{rpl_push}}{#{rpl_raise}}"
+      else if rpl_push?                 then R.push "\\tfPush{#{rpl_push}}"
+      else if               rpl_raise?  then R.push "\\tfRaise{#{rpl_raise}}"
     if rpl_cmd?                       then R.push "\\#{rpl_cmd}{}"
     R.push rpl_chr
-    # R.push "}\\cjkgGlue{}"
+    R.push "}" if _XXX_use_cxltx_pushraise and ( rpl_push? or rpl_raise? )
     R.push "}"
     R = R.join ''
   #.........................................................................................................
@@ -137,7 +144,10 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
     # debug '©95429', chr_info
     # debug '12321', ( rpr chr_info[ 'uchr' ] ), S.last_rsg_command, rsg_command, is_last
     # if rsg_command
-    R = "{\\#{rsg_command}{}#{chr_info[ 'uchr' ]}}"
+    if is_cjk and rsg_command isnt 'cn'
+      R = "{\\cn\\#{rsg_command}{}#{chr_info[ 'uchr' ]}}"
+    else
+      R = "{\\#{rsg_command}{}#{chr_info[ 'uchr' ]}}"
     # R = "\\cjkgGlue#{R}\\cjkgGlue{}" if is_cjk
   #.........................................................................................................
   else

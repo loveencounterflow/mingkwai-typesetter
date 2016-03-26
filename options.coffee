@@ -389,6 +389,8 @@ module.exports = options =
       '牜':  push: 0.4
       '飠':  push: 0.4
       '扌':  push: 0.05
+      # '扌':  push: 0.5
+      '钅':  push: 0.3
       '犭':  push: 0.3
       '忄':  push: 0.4
       '礻':  push: 0.2
@@ -405,7 +407,6 @@ module.exports = options =
       '纟':  push: 0.4
       '𥫗':             raise: -0.2,       cmd: 'cnxb'
       '罓':             raise: -0.2
-      '钅':  push: 0.3
       '阝':  push: 0.4
       '龵':             raise: -0.1,       cmd: 'cnxBabel'
       '𩰊':  push: -0.15,                  cmd: 'cnxb'
