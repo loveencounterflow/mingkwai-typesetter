@@ -657,21 +657,43 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     if select event, '.', 'hr'
       [ type, name, text, meta, ] = event
       switch chr = text[ 0 ]
-        when '-'
+        when '.'
           send stamp copy event
           send plain_rule
-        when '*'
+        when '-'
           send stamp copy event
           send swell_rule
-        when '='
+        when '°'
           send stamp hide copy event
           send [ '!', 'slash', [], ( copy meta ), ]
-        when '#'
+        when ':'
+          send stamp hide copy event
+          send [ '!', 'slash', [ plain_rule, ], ( copy meta ), ]
+        when '='
           send stamp hide copy event
           send [ '!', 'slash', [ swell_rule, ], ( copy meta ), ]
+        when '^'
+          send stamp hide copy event
+          send [ '(', 'slash', [], ( copy meta ), ]
+        when 'v'
+          send stamp hide copy event
+          send [ ')', 'slash', [], ( copy meta ), ]
         else
           send stamp hide copy event
-          send remark 'drop', "`[hr] because markup unknown #{rpr text}", copy meta
+          send [ '.', 'warning', "horizontal rule with unknown markup #{rpr text}", ( copy meta ), ]
+    #.......................................................................................................
+    else
+      send event
+
+#-----------------------------------------------------------------------------------------------------------
+@MKTX.COMMAND.$echo = ( S ) =>
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    #.......................................................................................................
+    if select event, '!', 'echo'
+      [ _, _, parameters, meta, ] = event
+      send stamp event
+      send [ '.', 'text', ( rpr parameters ), ( copy meta ), ]
     #.......................................................................................................
     else
       send event
@@ -1422,6 +1444,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @MKTX.COMMAND.$new_page                           S
     .pipe @MKTX.COMMAND.$comment                            S
     .pipe @MKTX.MIXED.$table                                S
+    .pipe @MKTX.COMMAND.$echo                               S
     .pipe @MKTX.BLOCK.$hr                                   S
     .pipe @MKTX.BLOCK.$nl                                   S
     .pipe @MKTX.REGION.$code                                S

@@ -309,8 +309,9 @@ MKTS                      = require './main'
   #.........................................................................................................
   return $ ( event, send ) =>
     ### TAINT code duplication ###
+    # debug '0123', event
     if select event, [ '(', ')', ], 'code'
-      [ type, _, call_signature, meta, ]     = event
+      [ type, _, call_signature, meta, ]  = event
       { line_nr, }                        = meta
       [ _, identifier, parameters_txt,  ] = call_signature.match /^\s*([^\s]*)\s*(.*)$/
       #.....................................................................................................

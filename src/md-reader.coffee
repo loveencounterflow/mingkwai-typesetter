@@ -30,6 +30,7 @@ HELPERS                   = require './helpers'
 #...........................................................................................................
 misfit                    = Symbol 'misfit'
 MKTS                      = require './main'
+@TYPOFIX                  = require './md-reader-typofix'
 
 
 #-----------------------------------------------------------------------------------------------------------
@@ -103,7 +104,7 @@ MKTS                      = require './main'
     .enable 'block'
     .enable 'inline'
     # .enable 'linkify'
-    .enable 'replacements'
+    # .enable 'replacements'
     .enable 'smartquotes'
   #.......................................................................................................
   R.use require 'markdown-it-footnote'
@@ -703,11 +704,20 @@ tracker_pattern = /// ^
 
 #-----------------------------------------------------------------------------------------------------------
 @_PRE.$extra_hr = ( S ) =>
-  pattern = /// ^ ( \#{3,} | ={3,} ) $ ///gm
+  pattern     = /// ^ ( °{4,} | \.{4,} | :{4,} | -{4,} | ={4,} | \^{4,} | v{4,} ) $ ///gm
+  within_code = no
   #.........................................................................................................
   return $ ( event, send ) =>
     #.......................................................................................................
-    if @select event, '.', 'text'
+    if @select event, '(', [ 'code', 'code-span', ]
+      within_code = yes
+      send event
+    #.......................................................................................................
+    else if @select event, ')', [ 'code', 'code-span', ]
+      within_code = no
+      send event
+    #.......................................................................................................
+    else if ( not within_code ) and @select event, '.', 'text'
       [ type, name, text, meta, ] = event
       is_plain = no
       for stretch in text.split pattern
@@ -820,6 +830,7 @@ tracker_pattern = /// ^
     ### TAINT must handle data in environment ###
     if CND.isa_text md_source
       md_source   = MKTS.MACRO_ESCAPER.escape S, md_source
+      md_source   = @TYPOFIX.rewrite S, md_source
       environment = {}
       tokens      = md_parser.parse md_source, environment
       # tokens      = md_parser.parse md_source, S.environment
@@ -907,6 +918,7 @@ tracker_pattern = /// ^
     md_parser   = @_new_markdown_parser()
     MKTS.MACRO_ESCAPER.initialize_state S
     md_source   = MKTS.MACRO_ESCAPER.escape S, md_source
+    md_source   = @TYPOFIX.rewrite S, md_source
     S.chr_count = md_source.length
     tokens      = md_parser.parse md_source, S.environment
     # debug '©78531', rpr tokens

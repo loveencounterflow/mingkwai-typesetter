@@ -52,7 +52,8 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
   return D.TEE.from_pipeline [
     @$initialize_state          S
     @$end_columns_with_document S
-    @$slash                     S
+    @$region_slash              S
+    @$command_slash             S
     @$columns                   S
     @$transform_to_pretex       S
     # @$transform_pretex_to_tex   S
@@ -105,7 +106,34 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
     return null
 
 #-----------------------------------------------------------------------------------------------------------
-@$slash = ( S ) ->
+@$region_slash = ( S ) ->
+  track         = MD_READER.TRACKER.new_tracker '(slash)'
+  event_buffer  = null
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    within_slash = track.within '(slash)'
+    track event
+    #.......................................................................................................
+    if select event, '(', 'slash'
+      send stamp event
+      event_buffer = []
+    #.......................................................................................................
+    else if select event, ')', 'slash'
+      [ ..., meta, ] = event
+      send stamp copy event
+      send [ '!', 'slash', event_buffer, ( copy meta ), ]
+      event_buffer = null
+    #.......................................................................................................
+    else if within_slash
+      event_buffer.push event
+    #.......................................................................................................
+    else
+      send event
+    #.......................................................................................................
+    return null
+
+#-----------------------------------------------------------------------------------------------------------
+@$command_slash = ( S ) ->
   #.........................................................................................................
   return $ ( event, send ) =>
     if select event, '!', 'slash'
