@@ -36,6 +36,7 @@
 \newcommand{\mktsInsertblankpage}{}%
 \newcommand{\mktsCleartoleftpage}{}%
 \newcommand{\mktsRulePlain}{}%
+\newcommand{\mktsRulePlainTight}{}%
 \newcommand{\mktsRuleSwell}{}%
 \newcommand{\mktsScaleFont}[1]{}%
 \newcommand{\mktsScaleFontRelative}[1]{}%
@@ -80,6 +81,12 @@
   % ........................................................................................................
   \renewcommand{\mktsRulePlain}{%
     \par{\tfRaise{0.5}\hfil\swrulex{0.8\linewidth}{0.1mm}{0.1mm}}\hfill\par%
+    }
+
+  % ........................................................................................................
+  \renewcommand{\mktsRulePlainTight}{%
+    \def\mktsIgnoreNextVspace{true}%
+    {\setlength{\parskip}{0mm}\par{\tfRaise{0.3}\hfil\swrulex{\linewidth}{0.1mm}{0.1mm}}\hfill\par}%
     }
 
   % ........................................................................................................

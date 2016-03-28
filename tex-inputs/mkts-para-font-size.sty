@@ -16,6 +16,8 @@
 \setlength{\mktsCurrentFontsize}{\mktsFontsize}%
 \setlength{\mktsCurrentLineheight}{\mktsLineheight}%
 \newcommand{\mktsTightParagraphs}{}%
+\newcommand{\mktsVspace}{}%
+\def\mktsIgnoreNextVspace{false}%
 
 
 % ==========================================================================================================
@@ -45,6 +47,13 @@
   \renewcommand{\mktsTightParagraphs}{%
     \setlength\lineskiplimit{-1000mm}%
     \setlength\parskip{0mm}%
+    }%
+  \renewcommand{\mktsVspace}{%
+    \eqTextEquals{\mktsIgnoreNextVspace}{true}{%
+      \def\mktsIgnoreNextVspace{false}%
+      }{%
+      \vspace{\parskip}%
+      }
     }%
   }
 

@@ -280,7 +280,7 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
       [ column_count, ] = parameters
       if column_count > 1
         send stamp [ '(', 'COLUMNS/group', null, ( copy meta, tex: 'pass-through', ), ]
-        send stamp [ '.', 'COLUMNS/tex', "\\vspace{\\parskip}%TEX-WRITER/COLUMNS/$transform-to-tex\n", ( copy meta, tex: 'pass-through', ), ]
+        send stamp [ '.', 'COLUMNS/tex', "\\mktsVspace%TEX-WRITER/COLUMNS/$transform-to-tex\n", ( copy meta, tex: 'pass-through', ), ]
         send stamp [ '.', 'COLUMNS/tex', "\\begin{multicols}{#{column_count}}\\raggedcolumns{}", ( copy meta, tex: 'pass-through', ), ]
     #.......................................................................................................
     else if select event, ')', 'multi-columns'
