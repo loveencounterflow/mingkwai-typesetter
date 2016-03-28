@@ -160,7 +160,7 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
 
 #-----------------------------------------------------------------------------------------------------------
 @$columns = ( S ) ->
-  remark  = MK.TS.MD_READER._get_remark()
+  # remark  = MK.TS.MD_READER._get_remark()
   sandbox = {}
   #.........................................................................................................
   return $ ( event, send ) =>
@@ -169,8 +169,16 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
       [ _, _, changeset, _, ] = event
       sandbox                 = MK.TS.DIFFPATCH.patch changeset, sandbox
       send event
+      return null
     #.......................................................................................................
-    else if select event, '!', 'columns'
+    if select event, '(', 'columns'
+      [ type, name, parameters, meta, ] = event
+      event = [ '!', name, parameters, meta, ]
+    else if select event, ')', 'columns'
+      [ type, name, _, meta, ] = event
+      event = [ '!', name, [ 'pop', ], meta, ]
+    #.......................................................................................................
+    if select event, '!', 'columns'
       [ type, name, parameters, meta, ] = event
       parameters.push sandbox.COLUMNS.count if parameters.length is 0
       [ parameter, ] = parameters

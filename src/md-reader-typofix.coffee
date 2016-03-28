@@ -42,7 +42,6 @@ echo                      = CND.echo.bind CND
 
 #-----------------------------------------------------------------------------------------------------------
 @rewrite = ( S, text ) ->
-  debug '0982', rpr text
   R = text
   for name, [ matchers, replacement, ] of @replacements
     matchers = [ matchers, ] unless CND.isa_list matchers
