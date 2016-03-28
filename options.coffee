@@ -87,11 +87,14 @@ module.exports = options =
       { texname: 'mktsFontfileEbgaramondinitialsftwo',  otf: 'Numbers=Monospaced,Ligatures={Rare,Historic}', filename: 'EBGaramond-InitialsF2.otf',           }
       { texname: 'mktsFontfileEbgaramondtwelveallsc',   otf: 'Numbers=Monospaced,Ligatures={Rare,Historic}', filename: 'EBGaramond12-AllSC.otf',              }
       { texname: 'mktsFontfileEbgaramondtwelvesc',      otf: 'Numbers=Monospaced,Ligatures={Rare,Historic}', filename: 'EBGaramondSC12-Regular.otf',          }
-      { texname: 'mktsFontfileEbgaramondtwelveitalic',  otf: 'Numbers=Monospaced,Ligatures={Rare,Historic}', filename: 'EBGaramond12-Italic.otf',             }
       { texname: 'mktsFontfileEbgaramondtwelveregular', otf: 'Numbers=Monospaced,Ligatures={Rare,Historic}', filename: 'EBGaramond12-Regular.otf',            }
       { texname: 'mktsFontfileEbgaramondtwelveregularScupper', otf: 'Letters={UppercaseSmallCaps},Numbers=Monospaced',  filename: 'EBGaramond12-Regular.otf',            }
       { texname: 'mktsFontfileEbgaramondtwelveregularSclower', otf: 'Letters={SmallCaps},Numbers=Monospaced', filename: 'EBGaramond12-Regular.otf',            }
       { texname: 'mktsFontfileEbgaramondtwelveregularScall',   otf: 'Letters={SmallCaps,UppercaseSmallCaps},Numbers=Monospaced', filename: 'EBGaramond12-Regular.otf',            }
+      { texname: 'mktsFontfileEbgaramondtwelveitalic',  otf: 'Numbers=Monospaced,Ligatures={Rare,Historic}', filename: 'EBGaramond12-Italic.otf',             }
+      { texname: 'mktsFontfileEbgaramondtwelveitalicscupper', otf: 'Letters={UppercaseSmallCaps},Numbers=Monospaced',  filename: 'EBGaramond12-Italic.otf',            }
+      { texname: 'mktsFontfileEbgaramondtwelveitalicsclower', otf: 'Letters={SmallCaps},Numbers=Monospaced', filename: 'EBGaramond12-Italic.otf',            }
+      { texname: 'mktsFontfileEbgaramondtwelveitalicscall',   otf: 'Letters={SmallCaps,UppercaseSmallCaps},Numbers=Monospaced', filename: 'EBGaramond12-Italic.otf',            }
       { texname: 'mktsFontfileEpgyobld',                       filename: 'EPGYOBLD.TTF',                        }
       { texname: 'mktsFontfileEpgyosho',                       filename: 'EPGYOSHO.TTF',                        }
       { texname: 'mktsFontfileEpkaisho',                       filename: 'EPKAISHO.TTF',                        }

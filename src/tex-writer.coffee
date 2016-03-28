@@ -1093,6 +1093,13 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       send event
 
 #-----------------------------------------------------------------------------------------------------------
+@MKTX.INLINE.$em_strong_and_smallcaps = ( S ) =>
+  em_count      = 0
+  strong_count  = 0
+  upper_count   = 0
+  lower_count   = 0
+
+#-----------------------------------------------------------------------------------------------------------
 @MKTX.INLINE.$link = ( S ) =>
   cache     = []
   last_href = null
