@@ -726,6 +726,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     #.......................................................................................................
     else if select event, ')', 'code-span'
       send [ 'tex', "}", ]
+      send stamp event
     #.......................................................................................................
     else if within_code_span and select event, '.', 'text'
       # send event
@@ -1060,32 +1061,32 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
 
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.INLINE.$smallcaps = ( S ) =>
-  upper_count = 0
-  lower_count = 0
+  sc_upper_count = 0
+  sc_lower_count = 0
   #.........................................................................................................
   return $ ( event, send ) =>
     # [ type, name, text, meta, ] = event
     #.......................................................................................................
     if select event, '(', 'smallcaps-upper'
-      upper_count += +1
+      sc_upper_count += +1
       send stamp event
-      if lower_count > 0 then send [ 'tex', "{\\mktsStyleSmallcapsall{}", ]
+      if sc_lower_count > 0 then send [ 'tex', "{\\mktsStyleSmallcapsall{}", ]
       else                    send [ 'tex', "{\\mktsStyleSmallcapsupper{}", ]
     #.......................................................................................................
     else if select event, ')', 'smallcaps-upper'
-      upper_count += -1
+      sc_upper_count += -1
       send stamp event
       send [ 'tex', "\\/", ]
       send [ 'tex', "}", ]
     #.......................................................................................................
     else if select event, '(', 'smallcaps-lower'
-      lower_count += +1
+      sc_lower_count += +1
       send stamp event
-      if upper_count > 0 then  send [ 'tex', "{\\mktsStyleSmallcapsall{}", ]
+      if sc_upper_count > 0 then  send [ 'tex', "{\\mktsStyleSmallcapsall{}", ]
       else                  send [ 'tex', "{\\mktsStyleSmallcapslower{}", ]
     #.......................................................................................................
     else if select event, ')', 'smallcaps-lower'
-      lower_count += -1
+      sc_lower_count += -1
       send stamp event
       send [ 'tex', "}", ]
     #.......................................................................................................
@@ -1094,10 +1095,70 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
 
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.INLINE.$em_strong_and_smallcaps = ( S ) =>
-  em_count      = 0
-  strong_count  = 0
-  upper_count   = 0
-  lower_count   = 0
+  em_count        = 0
+  strong_count    = 0
+  sc_upper_count  = 0
+  sc_lower_count  = 0
+  code_count      = 0
+  #.........................................................................................................
+  tex_events_by_keys =
+    # ____: { start: [], stop: [], }
+    ___l: { start: [ "{\\mktsStyleSmallcapslower{}", ], stop: [ "}", ], }
+    __u_: { start: [ "{\\mktsStyleSmallcapsupper{}", ], stop: [ "}", ], }
+    __ul: { start: [ "{\\mktsStyleSmallcapsall{}", ], stop: [ "}", ], }
+    _s__: { start: [ "{\\mktsStyleBold{}", ],       stop: [ "}", ], }
+    _s_l: { start: [ "{\\mktsStyleBold{}", ],       stop: [ "}", ], }
+    _su_: { start: [ "{\\mktsStyleBold{}", ],       stop: [ "}", ], }
+    _sul: { start: [ "{\\mktsStyleBold{}", ],       stop: [ "}", ], }
+    e___: { start: [ "{\\mktsStyleItalic{}", ],     stop: [ "\\/", "}", ], }
+    e__l: { start: [ "{\\mktsStyleItalicsmallcapslower{}", ],     stop: [ "\\/", "}", ], }
+    e_u_: { start: [ "{\\mktsStyleItalicsmallcapsupper{}", ],     stop: [ "\\/", "}", ], }
+    e_ul: { start: [ "{\\mktsStyleItalicsmallcapsall{}", ],     stop: [ "\\/", "}", ], }
+    es__: { start: [ "{\\mktsStyleBolditalic{}", ], stop: [ "\\/", "}", ], }
+    es_l: { start: [ "{\\mktsStyleBolditalic{}", ], stop: [ "\\/", "}", ], }
+    esu_: { start: [ "{\\mktsStyleBolditalic{}", ], stop: [ "\\/", "}", ], }
+    esul: { start: [ "{\\mktsStyleBolditalic{}", ], stop: [ "\\/", "}", ], }
+# "{\\mktsStyleBold{}"
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    [ type, name, text, meta, ] = event
+    #.......................................................................................................
+    if select event, [ '(', ')', ], [ 'code', 'code-span', ]
+      code_count += if ( type is '(' ) then +1 else - 1
+      send event
+    #.......................................................................................................
+    else if select event, [ '(', ')', ], 'smallcaps-upper'
+      sc_upper_count += if ( type is '(' ) then +1 else - 1
+      send stamp event
+    #.......................................................................................................
+    else if select event, [ '(', ')', ], 'smallcaps-lower'
+      sc_lower_count += if ( type is '(' ) then +1 else - 1
+      send stamp event
+    #.......................................................................................................
+    else if select event, [ '(', ')', ], 'em'
+      em_count += if ( type is '(' ) then +1 else - 1
+      send stamp event
+    #.......................................................................................................
+    else if select event, [ '(', ')', ], 'strong'
+      strong_count += if ( type is '(' ) then +1 else - 1
+      send stamp event
+    #.......................................................................................................
+    else if code_count < 1 and select event, '.', 'text'
+      key = [
+        if (       em_count > 0 ) then 'e' else '_'
+        if (   strong_count > 0 ) then 's' else '_'
+        if ( sc_upper_count > 0 ) then 'u' else '_'
+        if ( sc_lower_count > 0 ) then 'l' else '_'
+        ].join ''
+      return send event if key is '____'
+      debug '3232', ( rpr key ), text
+      { start, stop, } = tex_events_by_keys[ key ]
+      send [ 'tex', sub_event, ] for sub_event in start
+      send event
+      send [ 'tex', sub_event, ] for sub_event in stop
+    #.......................................................................................................
+    else
+      send event
 
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.INLINE.$link = ( S ) =>
@@ -1465,8 +1526,9 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @MKTX.INLINE.$url                                 S
     .pipe @MKTX.COMMAND.$url                                S
     .pipe @MKTX.INLINE.$translate_i_and_b                   S
-    .pipe @MKTX.INLINE.$smallcaps                           S
-    .pipe @MKTX.INLINE.$em_and_strong                       S
+    # .pipe @MKTX.INLINE.$smallcaps                           S
+    # .pipe @MKTX.INLINE.$em_and_strong                       S
+    .pipe @MKTX.INLINE.$em_strong_and_smallcaps             S
     .pipe @MKTX.INLINE.$image                               S
     .pipe @MKTX.BLOCK.$yadda                                S
     .pipe @MKTX.BLOCK.$paragraph                            S
