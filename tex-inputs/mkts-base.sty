@@ -35,9 +35,11 @@
 \newcommand{\mktsShowpar}{}%
 \newcommand{\mktsInsertblankpage}{}%
 \newcommand{\mktsCleartoleftpage}{}%
-\newcommand{\mktsRulePlain}{}%
+\newcommand{\mktsHrulefill}[1]{}
 \newcommand{\mktsRulePlainTight}{}%
-\newcommand{\mktsRuleSwell}{}%
+\newcommand{\mktsRuleBoldTight}{}%
+\newcommand{\mktsRuleBlackTight}{}%
+\newcommand{\mktsRuleEnglish}{}%
 \newcommand{\mktsScaleFont}[1]{}%
 \newcommand{\mktsScaleFontRelative}[1]{}%
 
@@ -78,20 +80,38 @@
 
   % ========================================================================================================
   % RULES (SHOULD GO TO OWN MODULE)
+  % % ........................................................................................................
+  % \renewcommand{\mktsRulePlain}{%
+  %   \par{\tfRaise{0.5}\hfil\swrulex{0.8\linewidth}{0.1mm}{0.1mm}}\hfill\par%
+  %   }
+
+  % % ........................................................................................................
+  % \renewcommand{\mktsRulePlainTight}{%
+  %   {\setlength{\parskip}{0mm}\tfRaise{0.3}\hfil\swrulex{\linewidth}{0.1mm}{0.1mm}\hfill}%
+  %   }
+
   % ........................................................................................................
-  \renewcommand{\mktsRulePlain}{%
-    \par{\tfRaise{0.5}\hfil\swrulex{0.8\linewidth}{0.1mm}{0.1mm}}\hfill\par%
-    }
+  % thx to http://tex.stackexchange.com/a/65734/28067
+  \renewcommand{\mktsHrulefill}[1]{\leavevmode\leaders\hrule height #1\columnseprule\hfill\kern\z@}
 
   % ........................................................................................................
   \renewcommand{\mktsRulePlainTight}{%
-    \def\mktsIgnoreNextVspace{true}%
-    {\setlength{\parskip}{0mm}\par{\tfRaise{0.3}\hfil\swrulex{\linewidth}{0.1mm}{0.1mm}}\hfill\par}%
+    {\setlength{\parskip}{0mm}\tfRaise{0.3}\mktsHrulefill{1}}%
     }
 
   % ........................................................................................................
-  \renewcommand{\mktsRuleSwell}{%
-    \par{\tfRaise{0.5}\hfil\swrulex{0.8\linewidth}{0.1mm}{0.25mm}}\hfill\par%
+  \renewcommand{\mktsRuleBoldTight}{%
+    {\setlength{\parskip}{0mm}\tfRaise{0.3}\mktsHrulefill{2}}%
+    }
+
+  % ........................................................................................................
+  \renewcommand{\mktsRuleBlackTight}{%
+    {\setlength{\parskip}{0mm}\tfRaise{0.3}\mktsHrulefill{3}}%
+    }
+
+  % ........................................................................................................
+  \renewcommand{\mktsRuleEnglish}{%
+    {\setlength{\parskip}{0mm}\tfRaise{0.3}\swrulex{\linewidth}{0.1mm}{2\columnseprule}}%
     }
 
   % ........................................................................................................
@@ -130,8 +150,10 @@
   \renewcommand{\mktsShowpar}{}
   \renewcommand{\mktsInsertblankpage}{}
   \renewcommand{\mktsCleartoleftpage}{}
-  \renewcommand{\mktsRulePlain}{}%
-  \renewcommand{\mktsRuleSwell}{}%
+  \renewcommand{\mktsRulePlainTight}{}%
+  \renewcommand{\mktsRuleBoldTight}{}%
+  \renewcommand{\mktsRuleBlackTight}{}%
+  \renewcommand{\mktsRuleEnglish}{}%
   \gdef\mktsObeyAllLines{}%
   \renewcommand{\mktsScaleFont}[1]{}%
   \renewcommand{\mktsScaleFontRelative}[1]{}%

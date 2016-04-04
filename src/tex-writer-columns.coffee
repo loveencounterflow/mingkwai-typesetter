@@ -91,7 +91,6 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
 
 #-----------------------------------------------------------------------------------------------------------
 @$end_columns_with_document = ( S ) ->
-  remark = MK.TS.MD_READER._get_remark()
   #.........................................................................................................
   return $ ( event, send ) =>
     #.......................................................................................................
@@ -150,6 +149,17 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
             send x
           else
             send [ '.', 'warning', "ignoring argument to <<!slash>>: #{rpr x}", ( copy meta ), ]
+      else if CND.isa_pod parameters
+        { above, mid, below, } = parameters
+        # send [ 'tex', "%TEX-WRITER/COLUMNS/$command_slash\n", ]
+        # send [ 'tex', "\\gdef\\mktsNextVspaceCount{#{above}}%TEX-WRITER/COLUMNS/$command_slash\n", ]
+        # send [ 'tex', "\\mktsVspace{1}%TEX-WRITER/COLUMNS/$command_slash\n", ]
+        if mid?
+          send sub_event for sub_event in mid
+        # send [ 'tex', "\\gdef\\mktsNextVspaceCount{#{below}}%TEX-WRITER/COLUMNS/$command_slash\n", ]
+        # send [ 'tex', "\\mktsVspace{1}%TEX-WRITER/COLUMNS/$command_slash\n", ]
+      else if parameters?
+        send [ '.', 'warning', "ignoring argument to <<!slash>>: #{rpr parameters}", ( copy meta ), ]
       #.....................................................................................................
       send [ '!', 'columns', [  'pop', ], ( copy meta ), ]
     #.......................................................................................................
@@ -280,8 +290,10 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
       [ column_count, ] = parameters
       if column_count > 1
         send stamp [ '(', 'COLUMNS/group', null, ( copy meta, tex: 'pass-through', ), ]
-        send stamp [ '.', 'COLUMNS/tex', "\\mktsVspace%TEX-WRITER/COLUMNS/$transform-to-tex\n", ( copy meta, tex: 'pass-through', ), ]
-        send stamp [ '.', 'COLUMNS/tex', "\\begin{multicols}{#{column_count}}\\raggedcolumns{}", ( copy meta, tex: 'pass-through', ), ]
+        # send stamp [ '.', 'COLUMNS/tex', "\\mktsVspace{1}%TEX-WRITER/COLUMNS/$transform-to-tex\n", ( copy meta, tex: 'pass-through', ), ]
+        ### TAINt Here the layout design decision to separate multicols from surrounding paragraphs by
+        one bank line gets hardwired into the produced TeX code: ###
+        send stamp [ '.', 'COLUMNS/tex', "\\mktsVspace{1}\\begin{multicols}{#{column_count}}\\raggedcolumns{}", ( copy meta, tex: 'pass-through', ), ]
     #.......................................................................................................
     else if select event, ')', 'multi-columns'
       # send stamp event
@@ -301,6 +313,7 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
   within_group    = no
   all_whitespace  = yes
   ws_pattern      = /// ^ [ \x20 \t \n ]* $ ///
+  # remark          = MK.TS.MD_READER._get_remark()
   #.........................................................................................................
   return $ ( event, send ) =>
     # urge '99876', event
@@ -320,6 +333,8 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
       # warn '975', ( JSON.stringify event )[ .. 50 ]
       if all_whitespace
         whisper "ignoring multicols b/c group only contains whitespace"
+        ### remark not possible at this stage ###
+        # send remark 'drop', "multicols b/c group only contains whitespace", ( copy meta )
       else
         send sub_text for sub_text in buffer
       ### TAINT code duplication with the above ###

@@ -92,7 +92,7 @@ MKTS                      = require './main'
     # .enable 'code'
     .enable 'fence'
     .enable 'blockquote'
-    .enable 'hr'
+    # .enable 'hr'
     .enable 'list'
     .enable 'reference'
     .enable 'heading'
@@ -401,7 +401,7 @@ tracker_pattern = /// ^
         # urge '@a20g', token[ 'type' ]#, within_footnote_block
         switch type
           # blocks
-          when 'paragraph_open'     then null
+          when 'paragraph_open'     then send @hide [ '~', 'start-paragraph', null, meta, ]
           when 'paragraph_close'    then send [ '.', 'p',             null,                         meta, ]
           when 'bullet_list_open'   then send [ '(', 'ul',            null,                         meta, ]
           when 'bullet_list_close'  then send [ ')', 'ul',            null,                         meta, ]
@@ -702,29 +702,117 @@ tracker_pattern = /// ^
     send event
     return null
 
+# #-----------------------------------------------------------------------------------------------------------
+# @_PRE.$extra_hr = ( S ) =>
+#   pattern     = /// ^ ( °{4,} | \.{4,} | :{4,} | -{4,} | ={4,} | \^{4,} | v{4,} ) $ ///gm
+#   within_code = no
+#   #.........................................................................................................
+#   return $ ( event, send ) =>
+#     #.......................................................................................................
+#     if @select event, '(', [ 'code', 'code-span', ]
+#       within_code = yes
+#       send event
+#     #.......................................................................................................
+#     else if @select event, ')', [ 'code', 'code-span', ]
+#       within_code = no
+#       send event
+#     #.......................................................................................................
+#     else if ( not within_code ) and @select event, '.', 'text'
+#       [ type, name, text, meta, ] = event
+#       is_plain = no
+#       for stretch in text.split pattern
+#         if is_plain = not is_plain
+#           send [ '.', 'text', stretch, ( @copy meta ), ]
+#         else
+#           send [ '.', 'hr', stretch, ( @copy meta ), ]
+#     #.......................................................................................................
+#     else
+#       send event
+
 #-----------------------------------------------------------------------------------------------------------
-@_PRE.$extra_hr = ( S ) =>
-  pattern     = /// ^ ( °{4,} | \.{4,} | :{4,} | -{4,} | ={4,} | \^{4,} | v{4,} ) $ ///gm
-  within_code = no
+@_PRE.$hr2 = ( S ) =>
+  ###
+
+  / slash
+  - plain (line)
+  = bold (line)
+  -= plain with bold (2 stacked lines)
+  =- bold with plain (2 stacked lines)
+  -=- plain, bold, plain (3 stacked lines)
+  . dotted (line)
+  * asterisks (line)
+  + swole (line)
+  0 compress (above & below)
+  1 normal (spacing, one line above & below; default)
+  2,1 custom (2 above, 1 below)
+  2 splendid (2 above & below)
+
+  // <!-- just a slash -->
+  /0-------/
+  0-------
+  /2+++++2/
+  /0--------============1/
+  ###
+  # splitter    = /// ^ ( \/? [0-9]* [-=*+]{3,} [0-9]* \/? ) $ ///gm
+  analyzer    = /// ^
+    ( \/? )
+    ( [0-9]* )
+    ( -+ | =+ | \.+ | \*+ | \++ | \#+ )
+    ( -* | =* | \.* | \** | \+* | \#* )
+    ( -* | =* | \.* | \** | \+* | \#* )
+    ( [0-9]* )
+    ( \1 ) $
+    ///
+  code_count  = 0
+  buffer      = null
+  send_       = null
+  #.........................................................................................................
+  flush = ->
+    return unless buffer?
+    send_ sub_event for sub_event in buffer
+    buffer = null
   #.........................................................................................................
   return $ ( event, send ) =>
+    send_ = send
     #.......................................................................................................
     if @select event, '(', [ 'code', 'code-span', ]
-      within_code = yes
-      send event
+      flush()
+      code_count += +1
+      # send event
     #.......................................................................................................
     else if @select event, ')', [ 'code', 'code-span', ]
-      within_code = no
-      send event
+      code_count += -1
+      # send event
     #.......................................................................................................
-    else if ( not within_code ) and @select event, '.', 'text'
-      [ type, name, text, meta, ] = event
-      is_plain = no
-      for stretch in text.split pattern
-        if is_plain = not is_plain
-          send [ '.', 'text', stretch, ( @copy meta ), ]
-        else
-          send [ '.', 'hr', stretch, ( @copy meta ), ]
+    if code_count < 1 and @select event, '~', 'start-paragraph', yes
+      throw new Error 'XXXX' if buffer?
+      buffer = []
+      buffer.push event
+    #.......................................................................................................
+    else if buffer? and @select event, '.', 'p'
+      buffer.push event
+      return flush() unless ( buffer.length is 3 ) and @select buffer[ 1 ], '.', 'text'
+      [ type, name, text, meta, ] = buffer[ 1 ]
+      match = text.match analyzer
+      return flush() unless match?
+      buffer = null
+      [ _, start, above, one, two, three, below, stop, ] = match
+      if start isnt stop
+        return send [ '.', 'warning', "illegal HR markup #{rpr meta[ 'markup' ]}", ( copy meta ), ]
+      slash = start is '/'
+      above = '1' if above.length is 0
+      below = '1' if below.length is 0
+      above = parseInt above, 10
+      below = parseInt below, 10
+      one   = one[   0 ] ? ''
+      two   = two[   0 ] ? ''
+      three = three[ 0 ] ? ''
+      send [ '.', 'hr2', { slash, above, one, two, three, below, stop, }, ( @copy meta, markup: text ), ]
+          # send [ '.', 'hr2', stretch, ( @copy meta ), ]
+    #.......................................................................................................
+    else if buffer?
+      buffer.push event
+      flush() if buffer.length > 2
     #.......................................................................................................
     else
       send event
@@ -896,7 +984,8 @@ tracker_pattern = /// ^
     .pipe @_PRE.$process_end_command                  S
     .pipe @_PRE.$consolidate_tables                   S
     .pipe @_PRE.$consolidate_footnotes                S
-    .pipe @_PRE.$extra_hr                             S
+    # .pipe @_PRE.$extra_hr                             S
+    .pipe @_PRE.$hr2                                  S
     .pipe MKTS.MACRO_INTERPRETER.$prepare_sandbox     S
     .pipe MKTS.MACRO_INTERPRETER.$process_actions     S
     .pipe MKTS.MACRO_INTERPRETER.$process_values      S

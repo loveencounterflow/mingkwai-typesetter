@@ -646,41 +646,104 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     else
       send event
 
+# #-----------------------------------------------------------------------------------------------------------
+# # before '@MKTX.REGION.$single_column', '@MKTX.REGION.$multi_column', \
+# @MKTX.BLOCK.$hr = ( S ) =>
+#   plain_rule  = [ 'tex', "\\mktsRulePlain{}", ]
+#   swell_rule  = [ 'tex', "\\mktsRuleSwell{}", ]
+#   #.........................................................................................................
+#   return $ ( event, send ) =>
+#     #.......................................................................................................
+#     if select event, '.', 'hr'
+#       [ type, name, text, meta, ] = event
+#       switch chr = text[ 0 ]
+#         when '.'
+#           send stamp copy event
+#           send plain_rule
+#         when '-'
+#           send stamp copy event
+#           send swell_rule
+#         when '°'
+#           send stamp hide copy event
+#           send [ '!', 'slash', [], ( copy meta ), ]
+#         when ':'
+#           send stamp hide copy event
+#           send [ '!', 'slash', [ plain_rule, ], ( copy meta ), ]
+#         when '='
+#           send stamp hide copy event
+#           send [ '!', 'slash', [ swell_rule, ], ( copy meta ), ]
+#         when '^'
+#           send stamp hide copy event
+#           send [ '(', 'slash', [], ( copy meta ), ]
+#         when 'v'
+#           send stamp hide copy event
+#           send [ ')', 'slash', [], ( copy meta ), ]
+#         else
+#           send stamp hide copy event
+#           send [ '.', 'warning', "horizontal rule with unknown markup #{rpr text}", ( copy meta ), ]
+#     #.......................................................................................................
+#     else
+#       send event
+
 #-----------------------------------------------------------------------------------------------------------
 # before '@MKTX.REGION.$single_column', '@MKTX.REGION.$multi_column', \
-@MKTX.BLOCK.$hr = ( S ) =>
-  plain_rule  = [ 'tex', "\\mktsRulePlain{}", ]
-  swell_rule  = [ 'tex', "\\mktsRuleSwell{}", ]
+@MKTX.BLOCK.$hr2 = ( S ) =>
+  # plain_rule  = [ 'tex', "\\mktsRulePlain{}", ]
+  # swell_rule  = [ 'tex', "\\mktsRuleSwell{}", ]
+  # tight_rule  = [ 'tex', "\\mktsRulePlainTight{}", ]
+  ###
+
+  / slash
+  - plain (line)
+  = bold (line)
+  -= plain with bold (2 stacked lines)
+  =- bold with plain (2 stacked lines)
+  -=- plain, bold, plain (3 stacked lines)
+  . dotted (line)
+  * asterisks (line)
+  + swole (line)
+  0 compress (above & below)
+  1 normal (spacing, one line above & below; default)
+  2,1 custom (2 above, 1 below)
+  2 splendid (2 above & below)
+
+  // <!-- just a slash -->
+  /0-------/
+  0-------
+  /2+++++2/
+  /0--------============1/
+  ###
   #.........................................................................................................
   return $ ( event, send ) =>
     #.......................................................................................................
-    if select event, '.', 'hr'
-      [ type, name, text, meta, ] = event
-      switch chr = text[ 0 ]
-        when '.'
-          send stamp copy event
-          send plain_rule
-        when '-'
-          send stamp copy event
-          send swell_rule
-        when '°'
-          send stamp hide copy event
-          send [ '!', 'slash', [], ( copy meta ), ]
-        when ':'
-          send stamp hide copy event
-          send [ '!', 'slash', [ plain_rule, ], ( copy meta ), ]
-        when '='
-          send stamp hide copy event
-          send [ '!', 'slash', [ swell_rule, ], ( copy meta ), ]
-        when '^'
-          send stamp hide copy event
-          send [ '(', 'slash', [], ( copy meta ), ]
-        when 'v'
-          send stamp hide copy event
-          send [ ')', 'slash', [], ( copy meta ), ]
-        else
-          send stamp hide copy event
-          send [ '.', 'warning', "horizontal rule with unknown markup #{rpr text}", ( copy meta ), ]
+    if select event, '.', 'hr2'
+      send stamp event
+      [ type, name, parameters, meta, ]         = event
+      { slash, above, one, two, three, below, } = parameters
+
+      switch one
+        when '-' then rule_command = 'mktsRulePlainTight'
+        when '=' then rule_command = 'mktsRuleBoldTight'
+        when '#' then rule_command = 'mktsRuleBlackTight'
+        when '+' then rule_command = 'mktsRuleEnglish'
+        else return send [ '.', 'warning', "unknown hrule markup #{rpr one}", ( copy meta ), ]
+      below      += -1
+      sub_events  = []
+      sub_events.push [ 'tex', "\\mktsVspace{#{above}}", ] unless above is 0
+      sub_events.push [ 'tex', "\\#{rule_command}{}", ]
+      sub_events.push [ 'tex', "\\mktsVspace{#{below}}", ] unless below is 0
+      sub_events.push [ 'tex', "\n\n", ]
+      if slash
+        # send [ 'tex', "\\gdef\\mktsNextVspaceCount{#{above}}%TEX-WRITER/$hr2\n", ]
+        # send [ '!', 'slash', null, ( copy meta ), ]
+        mid = sub_events
+        send [ '!', 'slash', { above, mid, below, }, ( copy meta ), ]
+      else
+        # send [ 'tex', "\\gdef\\mktsNextVspaceCount{#{above}}\\mktsVspace{}" ] if above > 0
+        # send [ 'tex', "\\mktsRulePlainTight{}", ]
+        # send [ 'tex', "\\gdef\\mktsNextVspaceCount{#{below}}\\mktsVspace{}" ] if below > 0
+        # send [ 'tex', "\n\n" ]
+        send sub_event for sub_event in sub_events
     #.......................................................................................................
     else
       send event
@@ -1025,73 +1088,73 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     else
       send event
 
-#-----------------------------------------------------------------------------------------------------------
-@MKTX.INLINE.$em_and_strong = ( S ) =>
-  em_count      = 0
-  strong_count  = 0
-  #.........................................................................................................
-  return $ ( event, send ) =>
-    # [ type, name, text, meta, ] = event
-    #.......................................................................................................
-    if select event, '(', 'em'
-      em_count += +1
-      send stamp event
-      if strong_count > 0 then  send [ 'tex', "{\\mktsStyleBolditalic{}", ]
-      else                      send [ 'tex', "{\\mktsStyleItalic{}", ]
-    #.......................................................................................................
-    else if select event, ')', 'em'
-      em_count += -1
-      send stamp event
-      send [ 'tex', "\\/", ]
-      send [ 'tex', "}", ]
-    #.......................................................................................................
-    else if select event, '(', 'strong'
-      strong_count += +1
-      send stamp event
-      if em_count > 0 then  send [ 'tex', "{\\mktsStyleBolditalic{}", ]
-      else                  send [ 'tex', "{\\mktsStyleBold{}", ]
-    #.......................................................................................................
-    else if select event, ')', 'strong'
-      strong_count += -1
-      send stamp event
-      send [ 'tex', "}", ]
-    #.......................................................................................................
-    else
-      send event
+# #-----------------------------------------------------------------------------------------------------------
+# @MKTX.INLINE.$em_and_strong = ( S ) =>
+#   em_count      = 0
+#   strong_count  = 0
+#   #.........................................................................................................
+#   return $ ( event, send ) =>
+#     # [ type, name, text, meta, ] = event
+#     #.......................................................................................................
+#     if select event, '(', 'em'
+#       em_count += +1
+#       send stamp event
+#       if strong_count > 0 then  send [ 'tex', "{\\mktsStyleBolditalic{}", ]
+#       else                      send [ 'tex', "{\\mktsStyleItalic{}", ]
+#     #.......................................................................................................
+#     else if select event, ')', 'em'
+#       em_count += -1
+#       send stamp event
+#       send [ 'tex', "\\/", ]
+#       send [ 'tex', "}", ]
+#     #.......................................................................................................
+#     else if select event, '(', 'strong'
+#       strong_count += +1
+#       send stamp event
+#       if em_count > 0 then  send [ 'tex', "{\\mktsStyleBolditalic{}", ]
+#       else                  send [ 'tex', "{\\mktsStyleBold{}", ]
+#     #.......................................................................................................
+#     else if select event, ')', 'strong'
+#       strong_count += -1
+#       send stamp event
+#       send [ 'tex', "}", ]
+#     #.......................................................................................................
+#     else
+#       send event
 
-#-----------------------------------------------------------------------------------------------------------
-@MKTX.INLINE.$smallcaps = ( S ) =>
-  sc_upper_count = 0
-  sc_lower_count = 0
-  #.........................................................................................................
-  return $ ( event, send ) =>
-    # [ type, name, text, meta, ] = event
-    #.......................................................................................................
-    if select event, '(', 'smallcaps-upper'
-      sc_upper_count += +1
-      send stamp event
-      if sc_lower_count > 0 then send [ 'tex', "{\\mktsStyleSmallcapsall{}", ]
-      else                    send [ 'tex', "{\\mktsStyleSmallcapsupper{}", ]
-    #.......................................................................................................
-    else if select event, ')', 'smallcaps-upper'
-      sc_upper_count += -1
-      send stamp event
-      send [ 'tex', "\\/", ]
-      send [ 'tex', "}", ]
-    #.......................................................................................................
-    else if select event, '(', 'smallcaps-lower'
-      sc_lower_count += +1
-      send stamp event
-      if sc_upper_count > 0 then  send [ 'tex', "{\\mktsStyleSmallcapsall{}", ]
-      else                  send [ 'tex', "{\\mktsStyleSmallcapslower{}", ]
-    #.......................................................................................................
-    else if select event, ')', 'smallcaps-lower'
-      sc_lower_count += -1
-      send stamp event
-      send [ 'tex', "}", ]
-    #.......................................................................................................
-    else
-      send event
+# #-----------------------------------------------------------------------------------------------------------
+# @MKTX.INLINE.$smallcaps = ( S ) =>
+#   sc_upper_count = 0
+#   sc_lower_count = 0
+#   #.........................................................................................................
+#   return $ ( event, send ) =>
+#     # [ type, name, text, meta, ] = event
+#     #.......................................................................................................
+#     if select event, '(', 'smallcaps-upper'
+#       sc_upper_count += +1
+#       send stamp event
+#       if sc_lower_count > 0 then send [ 'tex', "{\\mktsStyleSmallcapsall{}", ]
+#       else                    send [ 'tex', "{\\mktsStyleSmallcapsupper{}", ]
+#     #.......................................................................................................
+#     else if select event, ')', 'smallcaps-upper'
+#       sc_upper_count += -1
+#       send stamp event
+#       send [ 'tex', "\\/", ]
+#       send [ 'tex', "}", ]
+#     #.......................................................................................................
+#     else if select event, '(', 'smallcaps-lower'
+#       sc_lower_count += +1
+#       send stamp event
+#       if sc_upper_count > 0 then  send [ 'tex', "{\\mktsStyleSmallcapsall{}", ]
+#       else                  send [ 'tex', "{\\mktsStyleSmallcapslower{}", ]
+#     #.......................................................................................................
+#     else if select event, ')', 'smallcaps-lower'
+#       sc_lower_count += -1
+#       send stamp event
+#       send [ 'tex', "}", ]
+#     #.......................................................................................................
+#     else
+#       send event
 
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.INLINE.$em_strong_and_smallcaps = ( S ) =>
@@ -1144,6 +1207,8 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       send stamp event
     #.......................................................................................................
     else if code_count < 1 and select event, '.', 'text'
+      ### skip markup when text is blank: ###
+      return send event if /^\s*$/.test event[ 2 ]
       key = [
         if (       em_count > 0 ) then 'e' else '_'
         if (   strong_count > 0 ) then 's' else '_'
@@ -1151,7 +1216,6 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
         if ( sc_lower_count > 0 ) then 'l' else '_'
         ].join ''
       return send event if key is '____'
-      debug '3232', ( rpr key ), text
       { start, stop, } = tex_events_by_keys[ key ]
       send [ 'tex', sub_event, ] for sub_event in start
       send event
@@ -1513,7 +1577,8 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @MKTX.COMMAND.$comment                            S
     .pipe @MKTX.MIXED.$table                                S
     .pipe @MKTX.COMMAND.$echo                               S
-    .pipe @MKTX.BLOCK.$hr                                   S
+    # .pipe @MKTX.BLOCK.$hr                                   S
+    .pipe @MKTX.BLOCK.$hr2                                  S
     .pipe @MKTX.BLOCK.$nl                                   S
     .pipe @MKTX.REGION.$code                                S
     .pipe @MKTX.REGION.$keep_lines                          S
