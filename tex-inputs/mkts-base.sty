@@ -40,6 +40,7 @@
 \newcommand{\mktsRuleBoldTight}{}%
 \newcommand{\mktsRuleBlackTight}{}%
 \newcommand{\mktsRuleEnglish}{}%
+\newcommand{\mktsRuleZero}{}%
 \newcommand{\mktsScaleFont}[1]{}%
 \newcommand{\mktsScaleFontRelative}[1]{}%
 
@@ -115,6 +116,11 @@
     }
 
   % ........................................................................................................
+  \renewcommand{\mktsRuleZero}{%
+    {\setlength{\parskip}{0mm}}%
+    }
+
+  % ........................................................................................................
   % https://groups.google.com/d/msg/comp.text.tex/J2qcZxgcR5M/3HyPquEDkcgJ
   % obeyalllines is like obeylines, excepts it also keeps blank lines
   \def\mktsMakeActive#1{\catcode`#113\relax}
@@ -154,6 +160,7 @@
   \renewcommand{\mktsRuleBoldTight}{}%
   \renewcommand{\mktsRuleBlackTight}{}%
   \renewcommand{\mktsRuleEnglish}{}%
+  \renewcommand{\mktsRuleZero}{}%
   \gdef\mktsObeyAllLines{}%
   \renewcommand{\mktsScaleFont}[1]{}%
   \renewcommand{\mktsScaleFontRelative}[1]{}%

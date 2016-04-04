@@ -491,7 +491,7 @@ module.exports = options =
       '𧀍':                                cmd: 'cnxHanaB'
       '覀':                                cmd: 'cnxJzr',      glyph: ''
       '⻗':                                cmd: 'cnxJzr',      glyph: ''
-      '𡗗':                                cmd: 'cnxJzr',      glyph: ''
+      '𡗗':                   raise: -0.1, cmd: 'cnxHanaA',    glyph: '𡗗'
       '丿':                                cmd: 'cnxJzr',      glyph: ''
       '𠥓':                                cmd: 'cnxJzr',      glyph: ''
       '龷':                                cmd: 'cnxJzr',      glyph: ''

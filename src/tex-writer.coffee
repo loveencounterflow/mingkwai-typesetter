@@ -720,12 +720,12 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       send stamp event
       [ type, name, parameters, meta, ]         = event
       { slash, above, one, two, three, below, } = parameters
-
       switch one
         when '-' then rule_command = 'mktsRulePlainTight'
         when '=' then rule_command = 'mktsRuleBoldTight'
         when '#' then rule_command = 'mktsRuleBlackTight'
         when '+' then rule_command = 'mktsRuleEnglish'
+        when '°' then rule_command = 'mktsRuleZero'
         else return send [ '.', 'warning', "unknown hrule markup #{rpr one}", ( copy meta ), ]
       below      += -1
       sub_events  = []
