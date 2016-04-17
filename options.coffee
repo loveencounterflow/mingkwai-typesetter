@@ -260,6 +260,9 @@ module.exports = options =
       { texname: 'mktsFontfileAleolightitalic',                 subfolder: 'Aleo_font_v1.2.2/Desktop OTF', filename: 'Aleo-LightItalic.otf', }
       { texname: 'mktsFontfileAleoregular',                     subfolder: 'Aleo_font_v1.2.2/Desktop OTF', filename: 'Aleo-Regular.otf',     }
 
+      { texname: 'mktsFontfileUnifrakturcook',                  subfolder: 'unifraktur',              filename: 'UnifrakturCook.ttf',        }
+      { texname: 'mktsFontfileUnifrakturcooklight',             subfolder: 'unifraktur',              filename: 'UnifrakturCook-Light.ttf',  }
+      { texname: 'mktsFontfileUnifrakturmaguntia',              subfolder: 'unifraktur',              filename: 'UnifrakturMaguntia.ttf',    }
       ]
 
 
