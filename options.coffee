@@ -337,6 +337,7 @@ module.exports = options =
       ### Other stuff: ###
       # '‰':          '{\\mktsFontfileOptima‰}'
       '·':                                cmd: 'mktsFontfileEbgaramondtwelveregular' # U+00B7 MIDDLE DOT
+      # '↕':      raise: -0.2,   cmd: 'cnxJzr',      glyph: ''
       ### Ideographic description characters: ###
       '↻':      raise: -0.2,   cmd: 'cnxJzr',      glyph: ''
       '↔':      raise: -0.2,   cmd: 'cnxJzr',      glyph: ''
