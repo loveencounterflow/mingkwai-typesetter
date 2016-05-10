@@ -1,0 +1,71 @@
+
+
+
+
+
+/* ---------------------------------------------------------------------------------------------------------
+  BOX MODEL
+  thx to http://www.paulirish.com/2012/box-sizing-border-box-ftw/ */
+html
+  box-sizing: border-box
+
+*, *:before, *:after
+  box-sizing: inherit
+
+
+/* ---------------------------------------------------------------------------------------------------------
+  FIXING LINE HEIGHTS / GRID
+  thx to http://webdesignandsuch.com/how-to-fix-sup-sub-line-height-problem-with-css/ */
+*
+  vertical-align:         bottom !important
+
+/* ---------------------------------------------------------------------------------------------------------
+  MINIMAL SPACING IN TEXT
+  sets word spacing to a minimum that is actually larger than zero (?) */
+html
+  letter-spacing:         0ex
+  word-spacing:           0em
+
+/* ---------------------------------------------------------------------------------------------------------
+  LIGATURES AND KERNING
+  cf. https://developer.mozilla.org/en-US/docs/Web/CSS/font-feature-settings
+  http://demosthenes.info/blog/547/Make-Your-Web-Pages-More-Legible-With-Ligatures-and-Kerning-Pairs
+  http://clagnut.com/sandbox/opentype/ligatures */
+
+/* ###################################################################################################### */
+/* TAINT these settings interact with `@font-face` rules, at least with those concerning Sun-ExtB
+such that at least codepoints from the latter are displayed as thin white spaces. */
+/* ###################################################################################################### */
+
+html
+  // font-variant:           small-caps
+  font-variant-ligatures:  common-ligatures
+//   // text-rendering:                 optimizeLegibility
+//   text-rendering:                 geometricPrecision
+//   // font-kerning:                   normal
+//   -webkit-font-feature-settings:  "liga" 1, "dlig" 1
+
+  // /* https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant-east-asian */
+  // font-variant-east-asian: normal
+  // font-variant-east-asian: ruby
+  // font-variant-east-asian: jis78              /* <east-asian-variant-values> */
+  // font-variant-east-asian: jis83              /* <east-asian-variant-values> */
+  // font-variant-east-asian: jis90              /* <east-asian-variant-values> */
+  // font-variant-east-asian: jis04              /* <east-asian-variant-values> */
+  // font-variant-east-asian: simplified         /* <east-asian-variant-values> */
+  // font-variant-east-asian: traditional        /* <east-asian-variant-values> */
+  // font-variant-east-asian: full-width         /* <east-asian-width-values> */
+  // font-variant-east-asian: proportional-width /* <east-asian-width-values> */
+  // font-variant-east-asian: ruby full-width jis83
+
+/* Apply this tag to all those characters that are affected by
+  https://productforums.google.com/forum/#!category-topic/chrome/report-a-problem-and-get-troubleshooting-help/mac/Stable/_bLJl0pNS4Y
+*/
+cjkxbfix
+  font-variant-ligatures: normal
+
+
+
+
+
+

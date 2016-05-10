@@ -1166,21 +1166,21 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
   #.........................................................................................................
   tex_events_by_keys =
     # ____: { start: [], stop: [], }
-    ___l: { start: [ "{\\mktsStyleSmallcapslower{}", ], stop: [ "}", ], }
-    __u_: { start: [ "{\\mktsStyleSmallcapsupper{}", ], stop: [ "}", ], }
-    __ul: { start: [ "{\\mktsStyleSmallcapsall{}", ], stop: [ "}", ], }
-    _s__: { start: [ "{\\mktsStyleBold{}", ],       stop: [ "}", ], }
-    _s_l: { start: [ "{\\mktsStyleBold{}", ],       stop: [ "}", ], }
-    _su_: { start: [ "{\\mktsStyleBold{}", ],       stop: [ "}", ], }
-    _sul: { start: [ "{\\mktsStyleBold{}", ],       stop: [ "}", ], }
-    e___: { start: [ "{\\mktsStyleItalic{}", ],     stop: [ "\\/", "}", ], }
+    ___l: { start: [ "{\\mktsStyleSmallcapslower{}", ],           stop: [        "}", ], }
+    __u_: { start: [ "{\\mktsStyleSmallcapsupper{}", ],           stop: [        "}", ], }
+    __ul: { start: [ "{\\mktsStyleSmallcapsall{}", ],             stop: [        "}", ], }
+    _s__: { start: [ "{\\mktsStyleBold{}", ],                     stop: [        "}", ], }
+    _s_l: { start: [ "{\\mktsStyleBold{}", ],                     stop: [        "}", ], }
+    _su_: { start: [ "{\\mktsStyleBold{}", ],                     stop: [        "}", ], }
+    _sul: { start: [ "{\\mktsStyleBold{}", ],                     stop: [        "}", ], }
+    e___: { start: [ "{\\mktsStyleItalic{}", ],                   stop: [ "\\/", "}", ], }
     e__l: { start: [ "{\\mktsStyleItalicsmallcapslower{}", ],     stop: [ "\\/", "}", ], }
     e_u_: { start: [ "{\\mktsStyleItalicsmallcapsupper{}", ],     stop: [ "\\/", "}", ], }
-    e_ul: { start: [ "{\\mktsStyleItalicsmallcapsall{}", ],     stop: [ "\\/", "}", ], }
-    es__: { start: [ "{\\mktsStyleBolditalic{}", ], stop: [ "\\/", "}", ], }
-    es_l: { start: [ "{\\mktsStyleBolditalic{}", ], stop: [ "\\/", "}", ], }
-    esu_: { start: [ "{\\mktsStyleBolditalic{}", ], stop: [ "\\/", "}", ], }
-    esul: { start: [ "{\\mktsStyleBolditalic{}", ], stop: [ "\\/", "}", ], }
+    e_ul: { start: [ "{\\mktsStyleItalicsmallcapsall{}", ],       stop: [ "\\/", "}", ], }
+    es__: { start: [ "{\\mktsStyleBolditalic{}", ],               stop: [ "\\/", "}", ], }
+    es_l: { start: [ "{\\mktsStyleBolditalic{}", ],               stop: [ "\\/", "}", ], }
+    esu_: { start: [ "{\\mktsStyleBolditalic{}", ],               stop: [ "\\/", "}", ], }
+    esul: { start: [ "{\\mktsStyleBolditalic{}", ],               stop: [ "\\/", "}", ], }
 # "{\\mktsStyleBold{}"
   #.........................................................................................................
   return $ ( event, send ) =>

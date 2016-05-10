@@ -17,6 +17,7 @@ info                      = CND.get_logger 'info',    badge
 gulp                      = require 'gulp'
 coffee                    = require 'gulp-coffee'
 sourcemaps                = require 'gulp-sourcemaps'
+stylus                    = require 'gulp-stylus'
 
 
 #-----------------------------------------------------------------------------------------------------------
@@ -31,6 +32,7 @@ get_timestamp = ->
 #-----------------------------------------------------------------------------------------------------------
 gulp.task 'build', [
   'build-coffee'
+  'build-stylus'
   ]
 
 #-----------------------------------------------------------------------------------------------------------
@@ -40,6 +42,15 @@ gulp.task 'build-coffee', ->
     .pipe coffee().on 'error', ( error ) -> throw error
     .pipe sourcemaps.write '../sourcemaps'
     .pipe gulp.dest './lib'
+
+#-----------------------------------------------------------------------------------------------------------
+gulp.task 'build-stylus', ->
+  return gulp.src 'src/styles/mkts-main.styl'
+    .pipe sourcemaps.init()
+    .pipe stylus().on 'error', ( error ) -> throw error
+    # .pipe stylus().on 'error', warn
+    .pipe sourcemaps.write '../sourcemaps'
+    .pipe gulp.dest 'lib/styles'
 
 #-----------------------------------------------------------------------------------------------------------
 gulp.task 'test', [ 'build-coffee', ], ->
