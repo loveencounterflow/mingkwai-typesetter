@@ -94,6 +94,19 @@ nice_text_rpr = ( text ) ->
   R = '\n"""' + R + '"""'
   return R
 
+#-----------------------------------------------------------------------------------------------------------
+@call_transform = ( stream, transform, handler ) ->
+  ### Given a `stream`, `transform` and a callback `handler`, pipe stream into transform, `D.$collect` all
+  results into a list, and call handler with that list as second argument. The callback is mandatory even
+  if the stream is synchronous because it may be paused, in which case you'll want to resume it at a
+  convenient point in time. ###
+  throw new Error "expected 2 or 3 arguments, got #{arity}" unless 2 <= ( arity = arguments.length ) <= 3
+  stream
+    .pipe transform()
+    .pipe @$collect ( result, send ) =>
+      return handler null, result
+  return null
+
 #===========================================================================================================
 # TESTS
 #-----------------------------------------------------------------------------------------------------------
