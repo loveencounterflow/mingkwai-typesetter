@@ -4,9 +4,13 @@
   "description": "A streaming MarkDown -> (Xe, Lua)LaTeX -> PDF typesetter",
   "main": "lib/main.js",
   "scripts": {
-    "build": "gulp --harmony build",
     "mkts": "node --harmony lib/cli.js mkts $2",
-    "test": "npm run build && node --harmony lib/tests.js"
+    "build": "coffee -c options.coffee && coffee --map -o lib -c src",
+    "push": "git add . && git commit -m'update' && git push",
+    "doctoc": "doctoc README.md README-plugin-tabulate.md README-plugin-tsv.md",
+    "pub": "npm run build && npm run doctoc && npm run push && npm version patch && npm publish",
+    "test-travis": "node lib/tests.js",
+    "test": "npm run build && node lib/tests.js"
   },
   "repository": {
     "type": "git",

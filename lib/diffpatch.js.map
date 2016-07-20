@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "file": "diffpatch.js",
+  "sourceRoot": "..",
+  "sources": [
+    "src/diffpatch.coffee"
+  ],
+  "names": [],
+  "mappings": ";;AAEA;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA,MAAA;;EAwPA,IAAA,GAA4B,OAAA,CAAQ,WAAR;;EAC5B,MAAA,GAA4B,OAAA,CAAQ,QAAR;;EAG5B,IAAC,CAAA,QAAD,GAAY,SAAE,QAAF;WAAqB,MAAM,CAAC,SAAP,CAAiB,QAAjB;EAArB;;EACZ,IAAC,CAAA,IAAD,GAAY,SAAE,CAAF,EAAK,CAAL;WAAqB,IAAA,CAAK,CAAL,EAAQ,CAAR;EAArB;;EACZ,IAAC,CAAA,KAAD,GAAY,SAAE,SAAF,EAAa,CAAb;WAAqB,IAAI,CAAC,KAAL,CAAW,SAAX,EAAsB,CAAtB;EAArB;AA9PZ"
+}
