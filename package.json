@@ -1,6 +1,6 @@
 {
   "name": "mingkwai-typesetter",
-  "version": "1.0.0",
+  "version": "0.2.0",
   "description": "A streaming MarkDown -> (Xe, Lua)LaTeX -> PDF typesetter",
   "main": "lib/main.js",
   "scripts": {
@@ -37,7 +37,7 @@
     "changeset": "^0.1.0",
     "cnd": "^4.1.1",
     "coffee-script": "^1.10.0",
-    "coffeenode-chr": "^1.0.3",
+    "coffeenode-chr": "^1.0.4",
     "coffeenode-suspend": "^0.1.11",
     "coffeenode-text": "^0.1.9",
     "commander": "^2.9.0",
@@ -56,7 +56,8 @@
     "markdown-it-sub": "^1.0.0",
     "markdown-it-sup": "^1.0.0",
     "parse5": "^2.1.5",
-    "pipedreams": "^3.0.8"
+    "pipedreams": "^3.0.8",
+    "semver": "^5.3.0"
   },
   "devDependencies": {
     "guy-test": "^1.2.3"
