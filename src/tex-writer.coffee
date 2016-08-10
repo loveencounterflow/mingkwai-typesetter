@@ -629,11 +629,12 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       ### TAINT make configurable ###
       item_markup_tex = tex_by_md_markup[ markup ] ? tex_by_md_markup[ 'fallback' ]
       send stamp event
-      send [ 'tex', '\\begin{itemize}' ]
+      # send [ 'tex', '\\begin{itemize}' ]
     #.......................................................................................................
     else if select event, '(', 'li'
       send stamp event
-      send [ 'tex', "\\item[#{item_markup_tex}] " ]
+      # send [ 'tex', "\\item[#{item_markup_tex}] " ]
+      send [ 'tex', "{\\cn{}⚫}\\hspace{3mm}x" ]
     #.......................................................................................................
     else if select event, ')', 'li'
       send stamp event
@@ -641,7 +642,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     #.......................................................................................................
     else if select event, ')', 'ul'
       send stamp event
-      send [ 'tex', '\\end{itemize}' ]
+      # send [ 'tex', '\\end{itemize}' ]
     #.......................................................................................................
     else
       send event
