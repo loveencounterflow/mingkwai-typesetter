@@ -130,7 +130,7 @@
           filename: 'EBGaramond08-Italic.otf'
         }, {
           texname: 'mktsFontfileEbgaramondeightregular',
-          otf: 'Numbers=Monospaced,Ligatures={Rare,Historic}',
+          otf: 'Numbers=Monospaced',
           filename: 'EBGaramond08-Regular.otf'
         }, {
           texname: 'mktsFontfileEbgaramondeightsc',
@@ -158,7 +158,7 @@
           filename: 'EBGaramondSC12-Regular.otf'
         }, {
           texname: 'mktsFontfileEbgaramondtwelveregular',
-          otf: 'Numbers=Monospaced,Ligatures={Rare,Historic}',
+          otf: 'Numbers=Monospaced',
           filename: 'EBGaramond12-Regular.otf'
         }, {
           texname: 'mktsFontfileEbgaramondtwelveregularScupper',

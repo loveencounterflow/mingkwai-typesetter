@@ -634,7 +634,9 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     else if select event, '(', 'li'
       send stamp event
       # send [ 'tex', "\\item[#{item_markup_tex}] " ]
-      send [ 'tex', "{\\cn{}⚫}\\hspace{3mm}x" ]
+      # send [ 'tex', "{\\mktsFontfileHanamina{}.⚫.▪.⏹.◼.⬛.}\\hspace{3mm}y" ]
+      ### TAINT Horizontal space should depned on other metrics ###
+      send [ 'tex', "{\\mktsFontfileHanamina{}\\prPushRaise{-0.4}{-0.1}{⚫}}\\hspace{0.1mm}" ]
     #.......................................................................................................
     else if select event, ')', 'li'
       send stamp event
