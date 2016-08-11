@@ -175,13 +175,8 @@
 \newcommand{\cn}{%
   \cjkgGlue%
   \mktsScaleFontRelative{1.1}%
-  % \mktsStyleFontCjkDefault%
-  % \tfRaise{-0.175}%
-  % \aftergroup\cjkgGlue%
-  % ### TAINT measurements might not scale with font sizes; we might use precalculated factors ###
   \special{pdf:literal 1 0 0 1 0 -2 cm}%
   \AfterGroup{\special{pdf:literal 1 0 0 1 0 2 cm}\cjkgGlue}%
-  % \AfterGroup{\cjkgGlue}%
   }
 \newcommand{\mktsRsgFb}{\mktsFontfileSunexta}
 \newcommand{\cnxa}{\mktsFontfileSunexta}
@@ -209,19 +204,22 @@
 \newcommand{\cnxJzr}{\cnjzr}
 % \newcommand{\missing}[1]{{\missingFont#1}}
 % ..........................................................................................................
-% ### TAINT scaling given here is only for readings, not for ordinary mixed text ###
+% ### TAINT should use single kana definition and differentiate between hiragana, katakan only iff and where
+% necessary; should *not* use font filename here but symbolic name ###
 \newcommand{\ka}{%
   \special{pdf:literal 1 0 0 1 0 0.5 cm}%
-  \mktsFontfileIpamp%
-  \mktsScaleFont{0.96}%
+  \mktsFontfileFandolfangregular%
+  % \mktsScaleFont{1.2523}%
   \AfterGroup{\special{pdf:literal 1 0 0 1 0 -0.5 cm}}%
   }
-\newcommand{\hi}{%
-  \special{pdf:literal 1 0 0 1 0 0.5 cm}%
-  \mktsFontfileIpamp%
-  \mktsScaleFont{1.0185}%
-  \AfterGroup{\special{pdf:literal 1 0 0 1 0 -0.5 cm}}%
-  }
+\newcommand{\hi}{\ka}
+
+% \newcommand{\hi}{%
+%   \special{pdf:literal 1 0 0 1 0 0.5 cm}%
+%   \mktsFontfileFandolfangregular%
+%   % \mktsScaleFont{1.2523}%
+%   \AfterGroup{\special{pdf:literal 1 0 0 1 0 -0.5 cm}}%
+%   }
 
 % \newcommand{\xxxFoo}{0.75}
 % \pgfmathsetmacro{\xxxBar}{0.9 * \xxxFoo}
@@ -229,10 +227,10 @@
   % \mktsScaleFont{\xxxBar}%
 
 \newcommand{\hg}{%
-  \special{pdf:literal 1 0 0 1 0 0.5 cm}%
-  \mktsFontfileNanummyeongjo%
-  \mktsScaleFont{0.9}%
-  \AfterGroup{\special{pdf:literal 1 0 0 1 0 -0.5 cm}}%
+  % \special{pdf:literal 1 0 0 1 0 0.5 cm}%
+  \mktsStyleFontHangeulDefault%
+  \mktsScaleFont{1.15625}%
+  % \AfterGroup{\special{pdf:literal 1 0 0 1 0 -0.5 cm}}%
   }
 % ..........................................................................................................
 \newcommand{\jzrStrokeclassZZWBF}{\prPushRaise{-0.1}{-0.1}{{\mktsFontfileJizurathreeb{}}}}
