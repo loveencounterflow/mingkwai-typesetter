@@ -342,6 +342,13 @@ module.exports = options =
       # '‰':          '{\\mktsFontfileOptima‰}'
       '·':                                cmd: 'mktsFontfileEbgaramondtwelveregular' # U+00B7 MIDDLE DOT
       # '↕':      raise: -0.2,   cmd: 'cnxJzr',      glyph: ''
+      ### ASCII Art / Box Drawing: ###
+      '─':      size: 1.2, cmd: 'mktsStyleBoxDrawing'
+      '│':      size: 1.2, cmd: 'mktsStyleBoxDrawing'
+      '└':      size: 1.2, cmd: 'mktsStyleBoxDrawing'
+      '├':      size: 1.2, cmd: 'mktsStyleBoxDrawing'
+
+
       ### Ideographic description characters: ###
       '↻':      raise: -0.2,   cmd: 'cnxJzr',      glyph: ''
       '↔':      raise: -0.2,   cmd: 'cnxJzr',      glyph: ''

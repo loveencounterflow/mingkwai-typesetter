@@ -79,7 +79,13 @@
 \usepackage[plain]{mkts-para-font-size}%        plain
 \usepackage[default]{mkts-headings-and-toc}%    default
 
-
+% ----------------------------------------------------------------------------------------------------------
+% consider this experimental; it doesn't do correct spacing, but lines look swell:
+\newcommand{\mktsStyleBoxDrawing}{%
+  \mktsFontfileDejavusansmono%
+  % \color{red}%
+  \mktsScaleFont{1.0}% looks strange, but is needed
+  }
 
 \newcommand{\mktsJzrVerticalbarInfix}{}%
 \newcommand{\mktsJzrVerticalbarGlyph}{}%
