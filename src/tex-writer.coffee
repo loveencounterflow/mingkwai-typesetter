@@ -1074,6 +1074,25 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       send event
 
 #-----------------------------------------------------------------------------------------------------------
+@MKTX.INLINE.$super_and_subscript = ( S ) =>
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    #.......................................................................................................
+    if select event, '(', [ 'sup', 'sub', ]
+      [ type, name, text, meta, ] = event
+      send stamp event
+      tex = if name is 'sup' then 'super' else 'sub'
+      send [ 'tex', "\\text#{tex}script{", ]
+    #.......................................................................................................
+    else if select event, ')', [ 'sup', 'sub', ]
+      [ type, name, text, meta, ] = event
+      send stamp event
+      send [ 'tex', "}", ]
+    #.......................................................................................................
+    else
+      send event
+
+#-----------------------------------------------------------------------------------------------------------
 @MKTX.INLINE.$mark = ( S ) =>
   mark_idx = 0
   #.........................................................................................................
@@ -1593,6 +1612,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @MKTX.INLINE.$code_span                           S
     .pipe @MKTX.INLINE.$url                                 S
     .pipe @MKTX.COMMAND.$url                                S
+    .pipe @MKTX.INLINE.$super_and_subscript                 S
     .pipe @MKTX.INLINE.$translate_i_and_b                   S
     # .pipe @MKTX.INLINE.$smallcaps                           S
     # .pipe @MKTX.INLINE.$em_and_strong                       S
