@@ -407,6 +407,8 @@ tracker_pattern = /// ^
           when 'bullet_list_close'  then send [ ')', 'ul',            null,                         meta, ]
           when 'list_item_open'     then send [ '(', 'li',            null,                         meta, ]
           when 'list_item_close'    then send [ ')', 'li',            null,                         meta, ]
+          when 'blockquote_open'    then send [ '(', 'blockquote',    null,                         meta, ]
+          when 'blockquote_close'   then send [ ')', 'blockquote',    null,                         meta, ]
           # inlines
           # singles
           when 'text'               then send [ '.', 'text',          token[ 'content' ],           meta, ]

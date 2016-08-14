@@ -343,11 +343,12 @@ module.exports = options =
       '·':                                cmd: 'mktsFontfileEbgaramondtwelveregular' # U+00B7 MIDDLE DOT
       # '↕':      raise: -0.2,   cmd: 'cnxJzr',      glyph: ''
       ### ASCII Art / Box Drawing: ###
-      '─':      size: 1.2, cmd: 'mktsStyleBoxDrawing'
-      '│':      size: 1.2, cmd: 'mktsStyleBoxDrawing'
-      '└':      size: 1.2, cmd: 'mktsStyleBoxDrawing'
-      '├':      size: 1.2, cmd: 'mktsStyleBoxDrawing'
-
+      '─':      cmd: 'mktsStyleBoxDrawing' # size: 1.2,
+      '│':      cmd: 'mktsStyleBoxDrawing' # size: 1.2,
+      '└':      cmd: 'mktsStyleBoxDrawing' # size: 1.2,
+      '├':      cmd: 'mktsStyleBoxDrawing' # size: 1.2,
+      ### Arrows ###
+      '⤾':      cmd: 'mktsFontfileDejavuserif'
 
       ### Ideographic description characters: ###
       '↻':      raise: -0.2,   cmd: 'cnxJzr',      glyph: ''
@@ -391,15 +392,65 @@ module.exports = options =
       #.....................................................................................................
       ### This glyph is damaged in Sun-ExtA; it happens to be included in HanaMinA: ###
       '䗍':                                cmd: 'cnxHanaA'
+
       #.....................................................................................................
-      ### Shifted glyphs: ###
+      ### Ideographic Space: ###
       '&#x3000;':                         cmd: 'cnjzr',       glyph: ''
-      '《':             raise: -0.2
-      '》':             raise: -0.2
-      '【':                                cmd: 'mktsFontfileNanummyeongjo'
-      '】':                                cmd: 'mktsFontfileNanummyeongjo'
+
+      #.....................................................................................................
+      ### Ideographic Punctuation, Fullwidth Forms: ###
+      # '《':             raise: -0.2
+      # '》':             raise: -0.2
+      # '《':                                cmd: 'mktsFontfileNanummyeongjo'
+      # '》':                                cmd: 'mktsFontfileNanummyeongjo'
+      # '【':                                cmd: 'mktsFontfileNanummyeongjo'
+      # '】':                                cmd: 'mktsFontfileNanummyeongjo'
+      # '。':  push: 0.5, raise: 0.25,       cmd: 'cn'
+      # '、':  push: 0.5, raise: 0.25,       cmd: 'cn'
+      # '，':  push: 0.5, raise: 0.25,       cmd: 'cn'
+      # '．':  null
+      # '：':  push: 0.5, raise: 0.25,       cmd: 'cn'
+      # '；':  null
+      # '！':  null
+      # '？':  null
+      # '＂':  null
+      # '＇':  null
+      # '｀':  null
+      # '＾':  null
+      # '～':  null
+      # '￣':  null
+      # '＿':  null
+      # '＆':  null
+      # '＠':  null
+      # '＃':  null
+      # '％':  null
+      # '＋':  null
+      # '－':  null
+      # '＊':  null
+      # '＝':  null
+      # '＜':  null
+      # '＞':  null
+      # '（':  push: -0.25
+      # '）':  push:  0.25
+      # '［':  null
+      # '］':  null
+      # '｛':  null
+      # '｝':  null
+      # '｟':  null
+      # '｠':  null
+      # '｜':  null
+      # '￤':  null
+      # '／':  null
+      # '＼':  null
+      # '￢':  null
+      # '＄':  null
+      # '￡':  null
+      # '￠':  null
+      # '￦':  null
+      # '￥':  null
+
+      #.....................................................................................................
       '囗':                                cmd: 'cnjzr',       glyph: ''
-      '。':  push: 0.5, raise: 0.25,       cmd: 'cn'
       '亻':  push: 0.4
       '釒':  push: 0.4
       '冫':  push: 0.5

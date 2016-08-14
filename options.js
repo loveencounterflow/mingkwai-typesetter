@@ -823,6 +823,25 @@
         '·': {
           cmd: 'mktsFontfileEbgaramondtwelveregular'
 
+          /* ASCII Art / Box Drawing: */
+        },
+        '─': {
+          cmd: 'mktsStyleBoxDrawing'
+        },
+        '│': {
+          cmd: 'mktsStyleBoxDrawing'
+        },
+        '└': {
+          cmd: 'mktsStyleBoxDrawing'
+        },
+        '├': {
+          cmd: 'mktsStyleBoxDrawing'
+
+          /* Arrows */
+        },
+        '⤾': {
+          cmd: 'mktsFontfileDejavuserif'
+
           /* Ideographic description characters: */
         },
         '↻': {
@@ -971,32 +990,17 @@
         '䗍': {
           cmd: 'cnxHanaA'
 
-          /* Shifted glyphs: */
+          /* Ideographic Space: */
         },
         '&#x3000;': {
           cmd: 'cnjzr',
           glyph: ''
-        },
-        '《': {
-          raise: -0.2
-        },
-        '》': {
-          raise: -0.2
-        },
-        '【': {
-          cmd: 'mktsFontfileNanummyeongjo'
-        },
-        '】': {
-          cmd: 'mktsFontfileNanummyeongjo'
+
+          /* Ideographic Punctuation, Fullwidth Forms: */
         },
         '囗': {
           cmd: 'cnjzr',
           glyph: ''
-        },
-        '。': {
-          push: 0.5,
-          raise: 0.25,
-          cmd: 'cn'
         },
         '亻': {
           push: 0.4

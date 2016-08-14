@@ -585,6 +585,25 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       send event
 
 #-----------------------------------------------------------------------------------------------------------
+@MKTX.BLOCK.$blockquote = ( S ) =>
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    if select event, '(', 'blockquote'
+      # [ type, name, parameters, meta, ] = event
+      send stamp event
+      # send [ 'tex', "{\\setlength{\\leftskip}{5mm}\\setlength{\\rightskip}{5mm}", ]
+      send [ 'tex', "\\begin{mktsEnvBlockquote}", ]
+    #.......................................................................................................
+    else if select event, ')', 'blockquote'
+      # [ type, name, parameters, meta, ] = event
+      send stamp event
+      # send [ 'tex', "}\n\n", ]
+      send [ 'tex', "\\end{mktsEnvBlockquote}\n\n", ]
+    #.......................................................................................................
+    else
+      send event
+
+#-----------------------------------------------------------------------------------------------------------
 @MKTX.BLOCK.$paragraph = ( S ) =>
   ### TAINT should unify the two observers ###
   track = MD_READER.TRACKER.new_tracker '(code)', '(keep-lines)'
@@ -1081,8 +1100,9 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     if select event, '(', [ 'sup', 'sub', ]
       [ type, name, text, meta, ] = event
       send stamp event
-      tex = if name is 'sup' then 'super' else 'sub'
-      send [ 'tex', "\\text#{tex}script{", ]
+      tex_style_name = if name is 'sup' then  'mktsStyleFontSuperscript'
+      else                                    'mktsStyleFontSubscript'
+      send [ 'tex', "{\\#{tex_style_name}{}", ]
     #.......................................................................................................
     else if select event, ')', [ 'sup', 'sub', ]
       [ type, name, text, meta, ] = event
@@ -1592,6 +1612,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @$document                                        S
     #.......................................................................................................
     # .pipe D.$show()
+    .pipe @MKTX.BLOCK.$blockquote                           S
     .pipe @MKTX.INLINE.$link                                S
     .pipe @MKTX.MIXED.$footnote                             S
     .pipe @MKTX.MIXED.$footnote.$remove_extra_paragraphs    S

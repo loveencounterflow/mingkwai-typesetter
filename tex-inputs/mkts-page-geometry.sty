@@ -1,5 +1,9 @@
 
 
+% I have no idea what has changed since when we didn't need this fudge factor,
+% but for some reason, either the types or the grid graphics have shifted by a millimeter or so:
+\newcommand{\mkts@GridVerticalFudgeFactor}{2}
+
 
 % ==========================================================================================================
 % Page Layout
@@ -92,12 +96,12 @@
 \newdimen\mkts@ThreeColumnsCenterTwoRight%
 
 % ----------------------------------------------------------------------------------------------------------
-\newcommand{\mkts@GridCaalculateLengths}{
-  \typeout{mkts-page-geometry: \trmIndigo{mkts@GridCaalculateLengths}}
+\newcommand{\mkts@GridCalculateLengths}{
+  \typeout{mkts-page-geometry: \trmIndigo{mkts@GridCalculateLengths}}
   \setlength{\mkts@GridYmax}{\paperheight - \headheight - \headsep - \topmargin - \voffset - 1in}%
   \setlength{\mkts@GridXshift}{\hoffset + 1in + \oddsidemargin}%
   \setlength{\mkts@GridXright}{\mkts@GridXshift + \textwidth}%
-  \setlength{\mkts@GridYshift}{\mkts@GridYmax - \textheight}%
+  \setlength{\mkts@GridYshift}{\mkts@GridYmax - \textheight - 15mm }%
   % % ........................................................................................................
   % \setlength{\mkts@GridYmax}{\paperheight - \headheight - \headsep - \topmargin - \voffset - 1in}%
   % \setlength{\mkts@GridXshift}{\hoffset + 1in + \oddsidemargin}%
@@ -126,7 +130,7 @@
 % ----------------------------------------------------------------------------------------------------------
 \DeclareOption{linebands}{%
   \typeout{mkts-page-geometry: \trmIndigo{linebands}}
-  \mkts@GridCaalculateLengths%
+  \mkts@GridCalculateLengths%
   % thx to http://tex.stackexchange.com/a/41153/28067
   \AddToShipoutPicture{%
     % \begin{pgfonlayer}{mktsTikzLayerZ}
@@ -145,7 +149,7 @@
 % ----------------------------------------------------------------------------------------------------------
 \DeclareOption{interbands}{%
   \typeout{mkts-page-geometry: \trmIndigo{descenders}}
-  \mkts@GridCaalculateLengths%
+  \mkts@GridCalculateLengths%
   % thx to http://tex.stackexchange.com/a/41153/28067
   \AddToShipoutPicture{%
     % \begin{pgfonlayer}{mktsTikzLayerZ}
@@ -165,7 +169,7 @@
 % ----------------------------------------------------------------------------------------------------------
 \DeclareOption{mmgrid}{%
   \typeout{mkts-page-geometry: \trmIndigo{mmgrid}}
-  \mkts@GridCaalculateLengths%
+  \mkts@GridCalculateLengths%
   % thx to http://tex.stackexchange.com/a/41153/28067
   \AddToShipoutPicture{%
     % \begin{pgfonlayer}{mktsTikzLayerZ}
@@ -185,7 +189,7 @@
 % ----------------------------------------------------------------------------------------------------------
 \DeclareOption{cmgrid}{%
   \typeout{mkts-page-geometry: \trmIndigo{mmgrid}}
-  \mkts@GridCaalculateLengths%
+  \mkts@GridCalculateLengths%
   % thx to http://tex.stackexchange.com/a/41153/28067
   \AddToShipoutPicture{%
     % \begin{pgfonlayer}{mktsTikzLayerZ}
@@ -212,7 +216,7 @@
 % ----------------------------------------------------------------------------------------------------------
 \DeclareOption{baselines}{%
   \typeout{mkts-page-geometry: \trmIndigo{baselines}}
-  \mkts@GridCaalculateLengths%
+  \mkts@GridCalculateLengths%
   % thx to http://tex.stackexchange.com/a/41153/28067
   \AddToShipoutPicture{%
     \begin{tikzpicture}[overlay,remember picture]%
@@ -221,7 +225,8 @@
         ( 0mm,
           \mkts@GridYmax - \textheight )
         grid[ xstep = \textwidth, ystep = \mktsLineheight,
-          yshift = -\mktsLineheight * 0.125 ]
+          yshift = -\mktsLineheight * 0.125 * \mkts@GridVerticalFudgeFactor ]
+          % yshift = -\mktsLineheight * 0.125 - 0.5mm ]
         ( \textwidth,
           \mkts@GridYmax );
     \end{tikzpicture}%
@@ -231,7 +236,7 @@
 % ----------------------------------------------------------------------------------------------------------
 \DeclareOption{medians}{%
   \typeout{mkts-page-geometry: \trmIndigo{medians}}
-  \mkts@GridCaalculateLengths%
+  \mkts@GridCalculateLengths%
   % thx to http://tex.stackexchange.com/a/41153/28067
   \AddToShipoutPicture{%
     \begin{tikzpicture}[overlay,remember picture]%
@@ -249,7 +254,7 @@
 % ----------------------------------------------------------------------------------------------------------
 \DeclareOption{ascenders}{%
   \typeout{mkts-page-geometry: \trmIndigo{ascenders}}
-  \mkts@GridCaalculateLengths%
+  \mkts@GridCalculateLengths%
   % thx to http://tex.stackexchange.com/a/41153/28067
   \AddToShipoutPicture{%
     \begin{tikzpicture}[overlay,remember picture]%
@@ -257,7 +262,7 @@
         ( 0mm,
           \mkts@GridYmax - \textheight )
         grid[ xstep = \textwidth, ystep = \mktsLineheight,
-          yshift = -\mktsLineheight * 0.125 + \mktsFontsize * 0.7 ]
+          yshift = -\mktsLineheight * 0.125 * \mkts@GridVerticalFudgeFactor + \mktsFontsize * 0.7 ]
         ( \textwidth,
           \mkts@GridYmax );
     \end{tikzpicture}%
@@ -267,7 +272,7 @@
 % ----------------------------------------------------------------------------------------------------------
 \DeclareOption{descenders}{%
   \typeout{mkts-page-geometry: \trmIndigo{descenders}}
-  \mkts@GridCaalculateLengths%
+  \mkts@GridCalculateLengths%
   % thx to http://tex.stackexchange.com/a/41153/28067
   \AddToShipoutPicture{%
     % \begin{pgfonlayer}{mktsTikzLayerA}
@@ -276,7 +281,7 @@
         ( 0mm,
           \mkts@GridYmax - \textheight )
         grid[ xstep = \textwidth, ystep = \mktsLineheight,
-          yshift = -\mktsLineheight * 0.125 - \mktsFontsize * 0.25 ]
+          yshift = -\mktsLineheight * 0.125 * \mkts@GridVerticalFudgeFactor - \mktsFontsize * 0.25 ]
         ( \textwidth,
           \mkts@GridYmax );
     \end{tikzpicture}%
@@ -287,7 +292,7 @@
 % ----------------------------------------------------------------------------------------------------------
 \DeclareOption{columns}{%
   \typeout{mkts-page-geometry: \trmIndigo{columns}}
-  \mkts@GridCaalculateLengths%
+  \mkts@GridCalculateLengths%
   % ........................................................................................................
   \AddToShipoutPicture{%
     \begin{tikzpicture}[ overlay, remember picture, blue!30, thin, xshift = \mkts@GridXshift, yshift = \mkts@GridYshift ]%
