@@ -91,6 +91,7 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
 
 #-----------------------------------------------------------------------------------------------------------
 @_style_chr = ( S, chr_info, chr, is_last ) ->
+  ### TAINT parts of this code will be replaced by `mingkwai-ncr.glyph_style_as_tex` ###
   { csg
     rsg
     fncr
