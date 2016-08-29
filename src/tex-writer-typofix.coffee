@@ -32,8 +32,7 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
 ### TAINT XNCHR will be phased out in favor of MKNCR ###
 XNCHR                     = require './xnchr'
 MKNCR                     = require '../../mingkwai-ncr'
-# reducers                  = {}
-# MKNCR_aggregate           = MKNCR._ISL.aggregate.use MKNCR.unicode_isl, reducers, memoize: yes
+
 
 #-----------------------------------------------------------------------------------------------------------
 @_tex_escape_replacements = [
@@ -213,7 +212,7 @@ MKNCR                     = require '../../mingkwai-ncr'
     ### ****************************** ###
     debug '21998', A
     { csg, cid, } = A
-    urge '21998', MKNCR._aggregate cid
+    urge '21998', description = MKNCR.describe chr
     ### ****************************** ###
     #.......................................................................................................
     ### Whitespace is ambiguous; it is treated as CJK when coming between two unambiguous CJK characters and
