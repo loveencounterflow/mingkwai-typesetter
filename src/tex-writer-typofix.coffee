@@ -19,7 +19,6 @@ help                      = CND.get_logger 'help',      badge
 urge                      = CND.get_logger 'urge',      badge
 echo                      = CND.echo.bind CND
 #...........................................................................................................
-XNCHR                     = require './xnchr'
 D                         = require 'pipedreams'
 $                         = D.remit.bind D
 MD_READER                 = require './md-reader'
@@ -29,8 +28,12 @@ stamp                     = MD_READER.stamp.bind       MD_READER
 select                    = MD_READER.select.bind      MD_READER
 is_hidden                 = MD_READER.is_hidden.bind   MD_READER
 is_stamped                = MD_READER.is_stamped.bind  MD_READER
-
-
+#...........................................................................................................
+### TAINT XNCHR will be phased out in favor of MKNCR ###
+XNCHR                     = require './xnchr'
+MKNCR                     = require '../../mingkwai-ncr'
+# reducers                  = {}
+# MKNCR_aggregate           = MKNCR._ISL.aggregate.use MKNCR.unicode_isl, reducers, memoize: yes
 
 #-----------------------------------------------------------------------------------------------------------
 @_tex_escape_replacements = [
@@ -207,6 +210,11 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
   #.........................................................................................................
   for chr, idx in chrs
     A = @_analyze_chr S, chr, style, ( idx is last_idx )
+    ### ****************************** ###
+    debug '21998', A
+    { csg, cid, } = A
+    urge '21998', MKNCR._aggregate cid
+    ### ****************************** ###
     #.......................................................................................................
     ### Whitespace is ambiguous; it is treated as CJK when coming between two unambiguous CJK characters and
     as non-CJK otherwise; to decide between these cases, we have to wait for the next non-whitespace
