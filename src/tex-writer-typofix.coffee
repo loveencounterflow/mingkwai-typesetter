@@ -210,7 +210,7 @@ MKNCR                     = require '../../mingkwai-ncr'
   for chr, idx in chrs
     A = @_analyze_chr S, chr, style, ( idx is last_idx )
     ### ****************************** ###
-    debug '21998', A
+    # debug '21998', A
     { csg, cid, } = A
     urge '21998', description = MKNCR.describe chr
     ### ****************************** ###
