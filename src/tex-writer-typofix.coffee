@@ -72,12 +72,10 @@ MKNCR                     = require '../../mingkwai-ncr'
       send event
 
 #-----------------------------------------------------------------------------------------------------------
-@is_cjk_rsg = ( rsg, options ) => rsg in options[ 'tex' ][ 'cjk-rsgs' ]
-
-#-----------------------------------------------------------------------------------------------------------
 @_analyze_chr = ( S, chr, style, is_last ) ->
   #.........................................................................................................
-  R = XNCHR.CHR.analyze chr, { input: if style is 'escape-ncrs' then 'plain' else 'xncr' }
+  input = if style is 'escape-ncrs' then 'plain' else 'xncr'
+  R     = MKNCR.describe chr, { input, }
   #.........................................................................................................
   switch R.rsg
     when 'jzr-fig'  then R.chr = R.uchr
@@ -86,9 +84,11 @@ MKNCR                     = require '../../mingkwai-ncr'
   #.........................................................................................................
   ### OBS `chr` has still the value this method was called with, so styling should work even for `u-latn`
   characters ###
-  R.is_whitespace = chr   in S.whitespace
-  R.is_cjk        = R.rsg in S.cjk_rsgs
+  R.is_whitespace = 'ascii-whitespace' in R.tag
+  if R.is_whitespace then R.is_cjk        = null
+  else                    R.is_cjk        = 'cjk' in R.tag
   R.styled_chr    = @_style_chr S, R, chr, is_last
+  # debug '77022', CND.rainbow JSON.stringify R
   return R
 
 #-----------------------------------------------------------------------------------------------------------
@@ -208,22 +208,22 @@ MKNCR                     = require '../../mingkwai-ncr'
   last_idx                = chrs.length - 1
   #.........................................................................................................
   for chr, idx in chrs
-    A = @_analyze_chr S, chr, style, ( idx is last_idx )
+    description = @_analyze_chr S, chr, style, ( idx is last_idx )
+    debug '79011', ( description[ 'tex' ]?[ 'block' ] ? '' ), ( description[ 'tex' ]?[ 'codepoint' ] ? '' ), description[ 'uchr' ]
     ### ****************************** ###
-    # debug '21998', A
-    { csg, cid, } = A
-    urge '21998', description = MKNCR.describe chr
+    # debug '21998', description
+    { csg, cid, } = description
     ### ****************************** ###
     #.......................................................................................................
     ### Whitespace is ambiguous; it is treated as CJK when coming between two unambiguous CJK characters and
     as non-CJK otherwise; to decide between these cases, we have to wait for the next non-whitespace
     character: ###
-    if A.is_whitespace
+    if description.is_whitespace
       @_push_whitespace S, chr
       continue
     #.......................................................................................................
     S.last_was_cjk  = S.this_is_cjk
-    S.this_is_cjk   = A.is_cjk
+    S.this_is_cjk   = description.is_cjk
     #.......................................................................................................
     ### In case we're entering a region of CJK characters, we have to start a group and issue a `\cjk`
     command; before we do that, any cached whitespace will be moved into the result. If we're leaving a
@@ -235,11 +235,11 @@ MKNCR                     = require '../../mingkwai-ncr'
       @_push S, "}", yes
       # @_push S, "}", yes
     #.......................................................................................................
-    if A.styled_chr?
+    if description.styled_chr?
       # @_push "\\cjkgGlue" if S.this_is_cjk
-      @_push S, A.styled_chr
+      @_push S, description.styled_chr
     else
-      @_push S, A.chr
+      @_push S, description.chr
   #.........................................................................................................
   ### TAINT here we should keep state across text chunks to decide on cases like
   `國 **b** 國` vs `國 **國** 國` ###
