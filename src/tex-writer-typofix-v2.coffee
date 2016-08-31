@@ -41,3 +41,19 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
 #...........................................................................................................
 MKNCR                     = require '../../mingkwai-ncr'
 
+
+#-----------------------------------------------------------------------------------------------------------
+@$fix_typography_for_tex = ( S ) =>
+  return $ ( event, send ) =>
+    if select event, '.', 'text'
+      # urge '12312', event
+      [ type, name, text, meta, ] = event
+      meta[ 'raw' ] = text
+      style         = meta[ 'typofix' ] ? 'basic' # 'escape-ncrs' ]
+      text          = @fix_typography_for_tex text, S.options, null, style
+      send [ type, name, text, meta, ]
+    else
+      send event
+
+
+

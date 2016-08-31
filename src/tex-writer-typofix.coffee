@@ -20,7 +20,7 @@ urge                      = CND.get_logger 'urge',      badge
 echo                      = CND.echo.bind CND
 #...........................................................................................................
 D                         = require 'pipedreams'
-{ $ }                     = D
+$                         = D.remit.bind D
 MD_READER                 = require './md-reader'
 hide                      = MD_READER.hide.bind        MD_READER
 copy                      = MD_READER.copy.bind        MD_READER
