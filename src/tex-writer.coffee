@@ -216,6 +216,7 @@ after = ( names..., method ) ->
 #-----------------------------------------------------------------------------------------------------------
 @MKTX =
   TEX:        require './tex-writer-typofix'
+  TEXv2:      require './tex-writer-typofix-v2'
   DOCUMENT:   {}
   COMMAND:    {}
   REGION:     {}
@@ -1647,7 +1648,8 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe MACRO_INTERPRETER.$capture_change_events          S
     .pipe @MKTX.CLEANUP.$remove_empty_texts                 S
     .pipe @MKTX.CLEANUP.$consolidate_texts                  S
-    .pipe @MKTX.TEX.$fix_typography_for_tex                 S
+    # .pipe @MKTX.TEX.$fix_typography_for_tex                 S
+    .pipe @MKTX.TEXv2.$fix_typography_for_tex               S
     .pipe MKTSCRIPT_WRITER.$show_mktsmd_events              S
     .pipe do =>
       S.event_count = 0

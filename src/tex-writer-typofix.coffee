@@ -20,7 +20,7 @@ urge                      = CND.get_logger 'urge',      badge
 echo                      = CND.echo.bind CND
 #...........................................................................................................
 D                         = require 'pipedreams'
-$                         = D.remit.bind D
+{ $ }                     = D
 MD_READER                 = require './md-reader'
 hide                      = MD_READER.hide.bind        MD_READER
 copy                      = MD_READER.copy.bind        MD_READER
@@ -170,15 +170,22 @@ MKNCR                     = require '../../mingkwai-ncr'
   last_idx                = chrs.length - 1
   open_bracket_count      = 0
   #.........................................................................................................
-  for chr, idx in chrs
-    description   = @_analyze_chr S, chr, style, ( idx is last_idx )
-    { chr
+  for chr, chr_idx in chrs
+    description   = @_analyze_chr S, chr, style, ( chr_idx is last_idx )
+    { chr: glyph
+      is_cjk
       csg
       cid
       tex }       = description
     tex_block     = tex?[ 'block'      ] ? null
     tex_codepoint = tex?[ 'codepoint'  ] ? null
-    debug '79011', ( description[ 'tex' ]?[ 'block' ] ? '' ), ( description[ 'tex' ]?[ 'codepoint' ] ? '' ), description[ 'uchr' ]
+    debug '79011', ( description[ 'tex' ]?[ 'block' ] ? '' ), ( description[ 'tex' ]?[ 'codepoint' ] ? '' ), glyph
+    #.......................................................................................................
+    if is_cjk # is true
+      open_bracket_count += +1
+      @_push S, "{"
+      @_push S, "\\cjk"
+      @_push S, "{}"
     #.......................................................................................................
     if tex_block?
       open_bracket_count += +1
@@ -190,7 +197,7 @@ MKNCR                     = require '../../mingkwai-ncr'
       @_push S, tex_codepoint
     #.......................................................................................................
     else
-      @_push S, chr
+      @_push S, glyph
     #.......................................................................................................
     while open_bracket_count > 0
       open_bracket_count += -1
