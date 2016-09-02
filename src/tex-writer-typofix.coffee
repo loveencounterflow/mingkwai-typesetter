@@ -76,11 +76,16 @@ MKNCR                     = require '../../mingkwai-ncr'
   #.........................................................................................................
   input = if style is 'escape-ncrs' then 'plain' else 'xncr'
   R     = MKNCR.describe chr, { input, }
+  debug '33002', style, input, R.rsg, ( rpr chr ), ( rpr R.uchr )
   #.........................................................................................................
   switch R.rsg
-    when 'jzr-fig'  then R.chr = R.uchr
-    when 'u-pua'    then R.rsg = 'jzr-fig'
-    when 'u-latn'   then R.chr = @escape_for_tex chr
+    when 'jzr', 'jzr-fig' then R.chr = R.uchr
+    when 'u-pua'          then R.rsg = 'jzr-fig'
+    when 'u-latn'         then R.chr = @escape_for_tex chr
+    else
+      R.chr         = @escape_for_tex chr
+      R.tex        ?= {}
+      R.tex.block   = '\\latin'
   #.........................................................................................................
   ### OBS `chr` has still the value this method was called with, so styling should work even for `u-latn`
   characters ###

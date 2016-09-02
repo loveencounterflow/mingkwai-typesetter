@@ -29,7 +29,7 @@ help                      = CND.get_logger 'help',      badge
 urge                      = CND.get_logger 'urge',      badge
 echo                      = CND.echo.bind CND
 #...........................................................................................................
-D                         = require 'pipedreams'
+D                         = require '../../../pipedreams'
 { $ }                     = D
 MD_READER                 = require './md-reader'
 hide                      = MD_READER.hide.bind        MD_READER
@@ -44,16 +44,41 @@ MKNCR                     = require '../../mingkwai-ncr'
 
 #-----------------------------------------------------------------------------------------------------------
 @$fix_typography_for_tex = ( S ) =>
+  #.........................................................................................................
+  pipeline = [
+    @_$f        S
+    ]
+  #.........................................................................................................
+  return D.new_stream { pipeline, }
+
+#-----------------------------------------------------------------------------------------------------------
+@_$f = ( S ) ->
   return $ ( event, send ) =>
+    #.......................................................................................................
     if select event, '.', 'text'
-      # urge '12312', event
+      urge '12312', event
+      return send event
+      #.....................................................................................................
       [ type, name, text, meta, ] = event
       meta[ 'raw' ] = text
-      style         = meta[ 'typofix' ] ? 'basic' # 'escape-ncrs' ]
+      ### NB `meta[ 'typofix' ]` is currently only used by mingkwai-typesetter-jizura to signal portions of
+      text where NCRs should appear verbatim ( when set to 'escape-ncrs'), rather than interpreted
+      (where possible) as Unicode glyphs. We leave the implementation of that feature as an exercise for
+      later, and simply emit a warning here in case `typofix_style` turns out to be anything but `basic`.
+      ###
+      typofix_style = meta[ 'typofix' ] ? 'basic'
       text          = @fix_typography_for_tex text, S.options, null, style
       send [ type, name, text, meta, ]
+    #.......................................................................................................
     else
       send event
+
+#-----------------------------------------------------------------------------------------------------------
+@_$process_text = ( S ) ->
+  return $ ( event, send ) =>
+    [ type, name, text, meta, ] = event
+    help '12313', event
+    send event
 
 
 
