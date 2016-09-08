@@ -42,43 +42,66 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
 MKNCR                     = require '../../mingkwai-ncr'
 
 
+#===========================================================================================================
+#
 #-----------------------------------------------------------------------------------------------------------
-@$fix_typography_for_tex = ( S ) =>
-  #.........................................................................................................
+@$escape_for_tex = ( S ) ->
+  ### TAINT should preserve raw text from before replacements ###
+  return $ ( event, send ) =>
+    return send event unless select event, '.', 'text'
+    [ type, name, raw_text, meta, ] = event
+    text = raw_text
+    for [ pattern, replacement, ] in @$escape_for_tex._replacements
+      text = text.replace pattern, replacement
+    send [ type, name, text, meta, ]
+
+#-----------------------------------------------------------------------------------------------------------
+@$escape_for_tex._replacements = [
+  [ /// \x01        ///g,  '\x01\x02',              ]
+  [ /// \x5c        ///g,  '\x01\x01',              ]
+  [ ///  \{         ///g,  '\\{',                   ]
+  [ ///  \}         ///g,  '\\}',                   ]
+  [ ///  \$         ///g,  '\\$',                   ]
+  [ ///  \#         ///g,  '\\#',                   ]
+  [ ///  %          ///g,  '\\%',                   ]
+  [ ///  _          ///g,  '\\_',                   ]
+  [ ///  \^         ///g,  '\\textasciicircum{}',   ]
+  [ ///  ~          ///g,  '\\textasciitilde{}',    ]
+  [ ///  &          ///g,  '\\&',                   ]
+  [ /// \x01\x01    ///g,  '\\textbackslash{}',     ]
+  [ /// \x01\x02    ///g,  '\x01',                  ]
+  ]
+
+#-----------------------------------------------------------------------------------------------------------
+@$format_cjk = ( S ) ->
+  ### TAINT should preserve raw text from before replacements ###
+  ### TAINT must look for stream end ###
+  ### TAINT use piped streams for logic ###
+  return $ ( event, send ) =>
+    return send event unless select event, '.', 'text'
+    [ type, name, raw_text, meta, ] = event
+    text    = raw_text
+    glyphs  = MKNCR.chrs_from_text text
+    for glyph in glyphs
+      description = MKNCR.describe glyph
+      { tag, }    = description
+      ### TAINT not the real thing ###
+      if tag? and 'cjk' in tag
+        send [ 'tex', "{\\cjk\\cn{}#{glyph}}", ]
+      else
+        send [ '.', 'text', glyph, meta, ]
+    return null
+
+
+#===========================================================================================================
+#
+#-----------------------------------------------------------------------------------------------------------
+@$fix_typography_for_tex = ( S ) ->
+  ### TAINT which one should come first? ###
   pipeline = [
-    @_$f        S
+    # @$split           S
+    @$format_cjk      S
+    @$escape_for_tex  S
     ]
-  #.........................................................................................................
   return D.new_stream { pipeline, }
-
-#-----------------------------------------------------------------------------------------------------------
-@_$f = ( S ) ->
-  return $ ( event, send ) =>
-    #.......................................................................................................
-    if select event, '.', 'text'
-      urge '12312', event
-      return send event
-      #.....................................................................................................
-      [ type, name, text, meta, ] = event
-      meta[ 'raw' ] = text
-      ### NB `meta[ 'typofix' ]` is currently only used by mingkwai-typesetter-jizura to signal portions of
-      text where NCRs should appear verbatim ( when set to 'escape-ncrs'), rather than interpreted
-      (where possible) as Unicode glyphs. We leave the implementation of that feature as an exercise for
-      later, and simply emit a warning here in case `typofix_style` turns out to be anything but `basic`.
-      ###
-      typofix_style = meta[ 'typofix' ] ? 'basic'
-      text          = @fix_typography_for_tex text, S.options, null, style
-      send [ type, name, text, meta, ]
-    #.......................................................................................................
-    else
-      send event
-
-#-----------------------------------------------------------------------------------------------------------
-@_$process_text = ( S ) ->
-  return $ ( event, send ) =>
-    [ type, name, text, meta, ] = event
-    help '12313', event
-    send event
-
-
 

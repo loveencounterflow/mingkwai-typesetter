@@ -29,8 +29,6 @@ select                    = MD_READER.select.bind      MD_READER
 is_hidden                 = MD_READER.is_hidden.bind   MD_READER
 is_stamped                = MD_READER.is_stamped.bind  MD_READER
 #...........................................................................................................
-### TAINT XNCHR will be phased out in favor of MKNCR ###
-XNCHR                     = require './xnchr'
 MKNCR                     = require '../../mingkwai-ncr'
 
 
@@ -52,14 +50,14 @@ MKNCR                     = require '../../mingkwai-ncr'
   ]
 
 #-----------------------------------------------------------------------------------------------------------
-@escape_for_tex = ( text ) =>
+@escape_for_tex = ( text ) ->
   R = text
   for [ pattern, replacement, ], idx in @_tex_escape_replacements
     R = R.replace pattern, replacement
   return R
 
 #-----------------------------------------------------------------------------------------------------------
-@$fix_typography_for_tex = ( S ) =>
+@$fix_typography_for_tex = ( S ) ->
   return $ ( event, send ) =>
     if select event, '.', 'text'
       # urge '12312', event
@@ -159,7 +157,7 @@ MKNCR                     = require '../../mingkwai-ncr'
 # @_split_dangling_ws.pattern = /^([\s\S]*?)(\s*)$/
 
 #-----------------------------------------------------------------------------------------------------------
-@fix_typography_for_tex = ( text, options, send = null, style ) =>
+@fix_typography_for_tex = ( text, options, send = null, style ) ->
   S =
     ws_collector:                 []
     collector:                    []
@@ -171,7 +169,7 @@ MKNCR                     = require '../../mingkwai-ncr'
     R:                            null
   #.........................................................................................................
   [ text, dangling_ws, ]  = @_split_dangling_ws text
-  chrs                    = XNCHR.chrs_from_text text
+  chrs                    = MKNCR.chrs_from_text text
   last_idx                = chrs.length - 1
   open_bracket_count      = 0
   #.........................................................................................................
