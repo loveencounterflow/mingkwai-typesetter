@@ -40,6 +40,7 @@ is_hidden                 = MD_READER.is_hidden.bind   MD_READER
 is_stamped                = MD_READER.is_stamped.bind  MD_READER
 #...........................................................................................................
 MKNCR                     = require '../../mingkwai-ncr'
+Σ_glyph_description       = Symbol 'glyph-description'
 
 
 #===========================================================================================================
@@ -48,29 +49,22 @@ MKNCR                     = require '../../mingkwai-ncr'
 @$escape_for_tex = ( S ) ->
   ### TAINT should preserve raw text from before replacements ###
   return $ ( event, send ) =>
-    return send event unless select event, '.', 'text'
-    [ type, name, raw_text, meta, ] = event
-    text = raw_text
-    for [ pattern, replacement, ] in @$escape_for_tex._replacements
-      text = text.replace pattern, replacement
-    send [ type, name, text, meta, ]
-
-#-----------------------------------------------------------------------------------------------------------
-@$escape_for_tex._replacements = [
-  [ /// \x01        ///g,  '\x01\x02',              ]
-  [ /// \x5c        ///g,  '\x01\x01',              ]
-  [ ///  \{         ///g,  '\\{',                   ]
-  [ ///  \}         ///g,  '\\}',                   ]
-  [ ///  \$         ///g,  '\\$',                   ]
-  [ ///  \#         ///g,  '\\#',                   ]
-  [ ///  %          ///g,  '\\%',                   ]
-  [ ///  _          ///g,  '\\_',                   ]
-  [ ///  \^         ///g,  '\\textasciicircum{}',   ]
-  [ ///  ~          ///g,  '\\textasciitilde{}',    ]
-  [ ///  &          ///g,  '\\&',                   ]
-  [ /// \x01\x01    ///g,  '\\textbackslash{}',     ]
-  [ /// \x01\x02    ///g,  '\x01',                  ]
-  ]
+    return send event unless select event, '.', Σ_glyph_description
+    [ type, name, description, meta, ]  = event
+    { uchr, rsg, }                      = description
+    return send event unless rsg is 'u-latn'
+    switch uchr
+      when '\\' then return send [ 'tex', '\\textbackslash{}',    ]
+      when '{'  then return send [ 'tex', '\\{',                  ]
+      when '}'  then return send [ 'tex', '\\}',                  ]
+      when '$'  then return send [ 'tex', '\\$',                  ]
+      when '#'  then return send [ 'tex', '\\#',                  ]
+      when '%'  then return send [ 'tex', '\\%',                  ]
+      when '_'  then return send [ 'tex', '\\_',                  ]
+      when '^'  then return send [ 'tex', '\\textasciicircum{}',  ]
+      when '~'  then return send [ 'tex', '\\textasciitilde{}',   ]
+      when '&'  then return send [ 'tex', '\\&',                  ]
+    return send event
 
 #-----------------------------------------------------------------------------------------------------------
 @$format_cjk = ( S ) ->
@@ -92,6 +86,35 @@ MKNCR                     = require '../../mingkwai-ncr'
         send [ '.', 'text', glyph, meta, ]
     return null
 
+#-----------------------------------------------------------------------------------------------------------
+@$split = ( S ) ->
+  return $ ( event, send ) =>
+    return send event unless select event, '.', 'text'
+    [ type, name, text, meta, ] = event
+    for glyph in MKNCR.chrs_from_text text
+      send [ '.', Σ_glyph_description, glyph, meta, ]
+    return null
+
+#-----------------------------------------------------------------------------------------------------------
+@$wrap = ( S ) ->
+  return $ ( event, send ) =>
+    return send event unless select event, '.', Σ_glyph_description
+    [ type, name, glyph, meta, ] = event
+    description = MKNCR.describe glyph
+    send [ type, name, description, meta, ]
+    return null
+
+#-----------------------------------------------------------------------------------------------------------
+@$unwrap = ( S ) ->
+  return $ ( event, send ) =>
+    return send event unless select event, '.', Σ_glyph_description
+    [ type, name, description, meta, ] = event
+    # debug '70333', description
+    glyph = description[ 'uchr' ]
+    ### TAINT send `tex` or `text` event? ###
+    send [ 'tex', glyph, ]
+    return null
+
 
 #===========================================================================================================
 #
@@ -99,9 +122,13 @@ MKNCR                     = require '../../mingkwai-ncr'
 @$fix_typography_for_tex = ( S ) ->
   ### TAINT which one should come first? ###
   pipeline = [
-    # @$split           S
-    @$format_cjk      S
+    @$split           S
+    @$wrap            S
+    # @$format_cjk      S
     @$escape_for_tex  S
+    $ ( data ) -> urge '67201', data
+    @$unwrap          S
+    $ ( data ) -> help '67202', data
     ]
   return D.new_stream { pipeline, }
 
