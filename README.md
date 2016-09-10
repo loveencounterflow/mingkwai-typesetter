@@ -68,3 +68,40 @@ presupposes that an HTML-to-TeX translation for the HTML tags has been implement
   * Value Interpolation:
     <!-- * Variables: `<<$variable>>` -->
     * Eval-Block: `<<(\$>>eval block<<\$)>>`
+
+
+
+# Fonts and Styles
+
+The MKTS design philosophy rejects the idea of there being stylistic variations of a given typeface;
+instead, it treats each font (German: Schriftschnitt) as an entity in its own right.
+
+* what can be done algorithmically vs what can only be done by conscious choice by the designer
+
+  * Italic: Nope—Oblique yes, but no Italic in the proper sense
+  * Bold: Easier than Italic, but no thanks
+  * Underline: In theory yes, in practice almost all underlines look ugly; the [Shady
+    Characters](http://www.shadycharacters.co.uk/) website is one of the rare exceptions where underlines
+    look well.
+
+Some (like Knuth) would argue that even mere font scaling produces another font (Schriftschnitt), and this
+was indeed, by and large, the matter of affairs with movable type, where you had one case with, say Times
+Roman @ 12pt and a separate one with Times Roman @ 10pt.
+
+But observe that (1)&nbsp;even Knuth probably did not provide hand-tailored separate masters for *each* of
+the envisioned type sizes, not even the several small and very small ones (citation needed); (2)&nbsp;Knuths
+multiple masters were probably done algorithmically with _MetaFont_ (citation needed); and that (3)&nbsp;even
+in the olden days, designers used mechanical devices like
+[pantographs](https://en.wikipedia.org/wiki/Pantograph) to be able to just-so produce multiple sizes from
+the exact same *urbild* (some adjustments notwithstanding, like keeping hairlines to a certain minimum
+required widths—that's what we have font hinting and ClearType for in the digital world).
+
+
+
+* Algorithmic Variation vs Hand-Picked Matches
+* Convenient Packaging vs Freedom of Choice
+* Helps Simplicity, Ease and Clarity of Implementation
+
+
+
+

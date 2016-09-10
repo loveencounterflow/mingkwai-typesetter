@@ -11,6 +11,19 @@ agfi {\cjk{}\cn{}{\tfRaise{-0.2}\cnxBabel{}癶}里\cnxb{}\cnxJzr{}\cn 里\cnx
 
 ###
 
+###
+
+typofix v1:
+{\cjk{}{\cn{}里}{\cn{}里}{\cn\cnxa{}䊷}{\cn\cnxa{}䊷}{\cn{}里}{\cn{}里}{\cn{}里}{\cn{}里}{\cn{}里}}\\
+
+typofix v2:
+{\cjk{}{\cn{}里里}{\cnxa{}䊷䊷}{\cn{}里里里里里}}
+
+typofix v2 intermediate:
+{\CJK{}{\CN{}里里}{\CNXA{}䊷䊷}{\CN{}里里里里里}}
+###
+
+
 
 ############################################################################################################
 # njs_path                  = require 'path'
@@ -80,7 +93,11 @@ MKNCR                     = require '../../mingkwai-ncr'
     return unless cjk_collector.length > 0
     cjk_collector.push "}" if last_texcmd_block?
     cjk_collector.push "}"
-    tex                   = "{\\cjk{}" + cjk_collector.join ''
+    ### TAINT that `\\cjk{}` part should come from the MKNCR Unicode InterSkipList ###
+    ### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ###
+    # tex                   = "{\\cjk{}" + cjk_collector.join ''
+    tex                   = "{\\CJK{}" + cjk_collector.join ''
+    ### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ###
     last_texcmd_block     = null
     cjk_collector.length  = 0
     _send [ 'tex', tex, ]
@@ -94,6 +111,9 @@ MKNCR                     = require '../../mingkwai-ncr'
         [ type, name, description, meta, ]              = event
         { uchr, rsg, tag, tex: texcmd, }                = description
         { block: texcmd_block, codepoint: texcmd_cp, }  = texcmd
+        ### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ###
+        texcmd_block = texcmd_block.toUpperCase()
+        ### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ###
         is_cjk                                          = 'cjk' in tag
         # debug '90708', { tex_cmd_block, tex_cmd_cp}
         # is_ascii_whistespace                = 'cjk' in tag
@@ -119,24 +139,6 @@ MKNCR                     = require '../../mingkwai-ncr'
     else
       flush()
     #.......................................................................................................
-    return null
-
-kw = ->
-  return $ ( event, send ) =>
-    return send event unless select event, '.', Σ_glyph_description
-    [ type, name, description, meta, ]  = event
-    { uchr, rsg, }                      = description
-    [ type, name, raw_text, meta, ] = event
-    text    = raw_text
-    glyphs  = MKNCR.chrs_from_text text
-    for glyph in glyphs
-      description = MKNCR.describe glyph
-      { tag, }    = description
-      ### TAINT not the real thing ###
-      if tag? and 'cjk' in tag
-        send [ 'tex', "{\\cjk\\cn{}#{glyph}}", ]
-      else
-        send [ '.', 'text', glyph, meta, ]
     return null
 
 
