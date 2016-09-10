@@ -829,14 +829,14 @@ tracker_pattern = /// ^
     throw new Error "expected at most 3 arguments, got #{arity}"
   if type?
     switch type_of_type = CND.type_of type
-      when 'text' then return false unless event[ 0 ] is type
-      when 'list' then return false unless event[ 0 ] in type
-      else throw new Error "expected text or list, got a #{type_of_type}"
+      when 'text', 'symbol' then return false unless event[ 0 ] is type
+      when 'list'           then return false unless event[ 0 ] in type
+      else throw new Error "expected a text, a symbol or a list, got a #{type_of_type}"
   if name?
     switch type_of_name = CND.type_of name
-      when 'text' then return false unless event[ 1 ] is name
-      when 'list' then return false unless event[ 1 ] in name
-      else throw new Error "expected text or list, got a #{type_of_name}"
+      when 'text', 'symbol' then return false unless event[ 1 ] is name
+      when 'list'           then return false unless event[ 1 ] in name
+      else throw new Error "expected a text, a symbol or a list, got a #{type_of_name}"
   return true
 
 

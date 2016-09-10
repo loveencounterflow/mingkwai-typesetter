@@ -46,7 +46,7 @@ MKNCR                     = require '../../mingkwai-ncr'
 #===========================================================================================================
 #
 #-----------------------------------------------------------------------------------------------------------
-@$escape_for_tex = ( S ) ->
+@$format_tex_specials = ( S ) ->
   ### TAINT should preserve raw text from before replacements ###
   return $ ( event, send ) =>
     return send event unless select event, '.', Σ_glyph_description
@@ -71,8 +71,61 @@ MKNCR                     = require '../../mingkwai-ncr'
   ### TAINT should preserve raw text from before replacements ###
   ### TAINT must look for stream end ###
   ### TAINT use piped streams for logic ###
+  cjk_collector       = []
+  _send               = null
+  last_texcmd_block   = null
+  #.........................................................................................................
+  ### TAINT code duplication ###
+  flush = =>
+    return unless cjk_collector.length > 0
+    cjk_collector.push "}" if last_texcmd_block?
+    cjk_collector.push "}"
+    tex                   = "{\\cjk{}" + cjk_collector.join ''
+    last_texcmd_block     = null
+    cjk_collector.length  = 0
+    _send [ 'tex', tex, ]
+    return null
+  #.........................................................................................................
+  return $ 'null', ( event, send ) =>
+    _send = send
+    #.......................................................................................................
+    if event?
+      if select event, '.', Σ_glyph_description
+        [ type, name, description, meta, ]              = event
+        { uchr, rsg, tag, tex: texcmd, }                = description
+        { block: texcmd_block, codepoint: texcmd_cp, }  = texcmd
+        is_cjk                                          = 'cjk' in tag
+        # debug '90708', { tex_cmd_block, tex_cmd_cp}
+        # is_ascii_whistespace                = 'cjk' in tag
+        if is_cjk
+          if last_texcmd_block isnt texcmd_block
+            ### close previous open TeX block command, if any: ###
+            cjk_collector.push '}' if last_texcmd_block?
+            cjk_collector.push '{'
+            cjk_collector.push texcmd_block
+            last_texcmd_block = texcmd_block
+          tex   = texcmd_cp
+          tex  ?= uchr
+          cjk_collector.push tex
+        #...................................................................................................
+        else
+          flush()
+          send event
+      #.....................................................................................................
+      else
+        flush()
+        send event
+    #.......................................................................................................
+    else
+      flush()
+    #.......................................................................................................
+    return null
+
+kw = ->
   return $ ( event, send ) =>
-    return send event unless select event, '.', 'text'
+    return send event unless select event, '.', Σ_glyph_description
+    [ type, name, description, meta, ]  = event
+    { uchr, rsg, }                      = description
     [ type, name, raw_text, meta, ] = event
     text    = raw_text
     glyphs  = MKNCR.chrs_from_text text
@@ -86,6 +139,9 @@ MKNCR                     = require '../../mingkwai-ncr'
         send [ '.', 'text', glyph, meta, ]
     return null
 
+
+#===========================================================================================================
+# SPLITTING, WRAPPING, UNWRAPPING
 #-----------------------------------------------------------------------------------------------------------
 @$split = ( S ) ->
   return $ ( event, send ) =>
@@ -96,7 +152,7 @@ MKNCR                     = require '../../mingkwai-ncr'
     return null
 
 #-----------------------------------------------------------------------------------------------------------
-@$wrap = ( S ) ->
+@$wrap_as_glyph_description = ( S ) ->
   return $ ( event, send ) =>
     return send event unless select event, '.', Σ_glyph_description
     [ type, name, glyph, meta, ] = event
@@ -105,7 +161,31 @@ MKNCR                     = require '../../mingkwai-ncr'
     return null
 
 #-----------------------------------------------------------------------------------------------------------
-@$unwrap = ( S ) ->
+@$consolidate_tex_events = ( S ) ->
+  collector     = []
+  _send         = null
+  #.........................................................................................................
+  flush = =>
+    return unless collector.length > 0
+    tex               = collector.join ''
+    collector.length  = 0
+    _send [ 'tex', tex, ]
+    return null
+  #.........................................................................................................
+  return $ 'null', ( event, send ) =>
+    _send = send
+    if event?
+      if select event, 'tex'
+        [ _, tex, ] = event
+        collector.push tex
+      else
+        flush()
+        send event
+    else
+      flush()
+
+#-----------------------------------------------------------------------------------------------------------
+@$unwrap_glyph_description = ( S ) ->
   return $ ( event, send ) =>
     return send event unless select event, '.', Σ_glyph_description
     [ type, name, description, meta, ] = event
@@ -122,13 +202,14 @@ MKNCR                     = require '../../mingkwai-ncr'
 @$fix_typography_for_tex = ( S ) ->
   ### TAINT which one should come first? ###
   pipeline = [
-    @$split           S
-    @$wrap            S
-    # @$format_cjk      S
-    @$escape_for_tex  S
-    $ ( data ) -> urge '67201', data
-    @$unwrap          S
-    $ ( data ) -> help '67202', data
+    @$split                     S
+    @$wrap_as_glyph_description S
+    @$format_cjk                S
+    @$format_tex_specials       S
+    # $ ( data ) -> urge '67201', data
+    @$unwrap_glyph_description  S
+    @$consolidate_tex_events    S
+    $ ( event ) -> help '65099', rpr event[ 1 ] if select event, 'tex'
     ]
   return D.new_stream { pipeline, }
 

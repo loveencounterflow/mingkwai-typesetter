@@ -29,6 +29,8 @@ select                    = MD_READER.select.bind      MD_READER
 is_hidden                 = MD_READER.is_hidden.bind   MD_READER
 is_stamped                = MD_READER.is_stamped.bind  MD_READER
 #...........................................................................................................
+### TAINT XNCHR will be phased out in favor of MKNCR ###
+XNCHR                     = require './xnchr'
 MKNCR                     = require '../../mingkwai-ncr'
 
 
@@ -50,14 +52,14 @@ MKNCR                     = require '../../mingkwai-ncr'
   ]
 
 #-----------------------------------------------------------------------------------------------------------
-@escape_for_tex = ( text ) ->
+@escape_for_tex = ( text ) =>
   R = text
   for [ pattern, replacement, ], idx in @_tex_escape_replacements
     R = R.replace pattern, replacement
   return R
 
 #-----------------------------------------------------------------------------------------------------------
-@$fix_typography_for_tex = ( S ) ->
+@$fix_typography_for_tex = ( S ) =>
   return $ ( event, send ) =>
     if select event, '.', 'text'
       # urge '12312', event
@@ -70,28 +72,23 @@ MKNCR                     = require '../../mingkwai-ncr'
       send event
 
 #-----------------------------------------------------------------------------------------------------------
+@is_cjk_rsg = ( rsg, options ) => rsg in options[ 'tex' ][ 'cjk-rsgs' ]
+
+#-----------------------------------------------------------------------------------------------------------
 @_analyze_chr = ( S, chr, style, is_last ) ->
   #.........................................................................................................
-  input = if style is 'escape-ncrs' then 'plain' else 'xncr'
-  R     = MKNCR.describe chr, { input, }
-  debug '33002', style, input, R.rsg, ( rpr chr ), ( rpr R.uchr )
+  R = XNCHR.CHR.analyze chr, { input: if style is 'escape-ncrs' then 'plain' else 'xncr' }
   #.........................................................................................................
   switch R.rsg
-    when 'jzr', 'jzr-fig' then R.chr = R.uchr
-    when 'u-pua'          then R.rsg = 'jzr-fig'
-    when 'u-latn'         then R.chr = @escape_for_tex chr
-    else
-      R.chr         = @escape_for_tex chr
-      R.tex        ?= {}
-      R.tex.block   = '\\latin'
+    when 'jzr-fig'  then R.chr = R.uchr
+    when 'u-pua'    then R.rsg = 'jzr-fig'
+    when 'u-latn'   then R.chr = @escape_for_tex chr
   #.........................................................................................................
   ### OBS `chr` has still the value this method was called with, so styling should work even for `u-latn`
   characters ###
-  R.is_whitespace = 'ascii-whitespace' in R.tag
-  if R.is_whitespace then R.is_cjk        = null
-  else                    R.is_cjk        = 'cjk' in R.tag
-  # R.styled_chr    = @_style_chr S, R, chr, is_last
-  # debug '77022', CND.rainbow JSON.stringify R
+  R.is_whitespace = chr   in S.whitespace
+  R.is_cjk        = R.rsg in S.cjk_rsgs
+  R.styled_chr    = @_style_chr S, R, chr, is_last
   return R
 
 #-----------------------------------------------------------------------------------------------------------
@@ -101,6 +98,8 @@ MKNCR                     = require '../../mingkwai-ncr'
     rsg
     fncr
     is_cjk    }       = chr_info
+  rsg_command         = S.tex_command_by_rsgs[ rsg ]
+  # debug '©28708', chr, rsg_command
   #.........................................................................................................
   unless csg in [ 'u', 'jzr', ]
     ### TAINT won't capture styling for `&`, `#` and so on ###
@@ -114,15 +113,45 @@ MKNCR                     = require '../../mingkwai-ncr'
   rsg_command         = null if rsg_command in [ 'latin', ] # 'cn', ]
   style               = S.glyph_styles[ chr ]
   #.........................................................................................................
+  # return null if ( not rsg_command? ) and ( not style? )
+  #.........................................................................................................
   if style?
-    null
+    ### TAINT use `cjkgGlue` only if `is_cjk` ###
+    R         = []
+    # R.push "\\cjkgGlue{"
+    R.push "{"
+    R.push "\\cn" if is_cjk
+    rpl_push  = style[ 'push'   ] ? null
+    rpl_raise = style[ 'raise'  ] ? null
+    rpl_chr   = style[ 'glyph'  ] ? chr_info[ 'uchr' ]
+    rpl_cmd   = style[ 'cmd'    ] ? rsg_command
+    rpl_cmd   = null if rpl_cmd is 'cn'
+    ### TAINT using `prPushRaise` here in place of `tfPushRaise` because it gives better
+    results ###
+    if _XXX_use_cxltx_pushraise = yes
+      if      rpl_push? and rpl_raise?  then R.push "\\prPushRaise{#{rpl_push}}{#{rpl_raise}}{"
+      else if rpl_push?                 then R.push "\\prPush{#{rpl_push}}{"
+      else if               rpl_raise?  then R.push "\\prRaise{#{rpl_raise}}{"
+    else
+      if      rpl_push? and rpl_raise?  then R.push "\\tfPushRaise{#{rpl_push}}{#{rpl_raise}}"
+      else if rpl_push?                 then R.push "\\tfPush{#{rpl_push}}"
+      else if               rpl_raise?  then R.push "\\tfRaise{#{rpl_raise}}"
+    if rpl_cmd?                       then R.push "\\#{rpl_cmd}{}"
+    R.push rpl_chr
+    R.push "}" if _XXX_use_cxltx_pushraise and ( rpl_push? or rpl_raise? )
+    R.push "}"
+    R = R.join ''
   #.........................................................................................................
   else if rsg_command?
     ### TAINT does not collect glyphs with same RSG ###
+    # debug '©95429', chr_info
+    # debug '12321', ( rpr chr_info[ 'uchr' ] ), S.last_rsg_command, rsg_command, is_last
+    # if rsg_command
     if is_cjk and rsg_command isnt 'cn'
       R = "{\\cn\\#{rsg_command}{}#{chr_info[ 'uchr' ]}}"
     else
       R = "{\\#{rsg_command}{}#{chr_info[ 'uchr' ]}}"
+    # R = "\\cjkgGlue#{R}\\cjkgGlue{}" if is_cjk
   #.........................................................................................................
   else
     R = null
@@ -157,8 +186,11 @@ MKNCR                     = require '../../mingkwai-ncr'
 # @_split_dangling_ws.pattern = /^([\s\S]*?)(\s*)$/
 
 #-----------------------------------------------------------------------------------------------------------
-@fix_typography_for_tex = ( text, options, send = null, style ) ->
+@fix_typography_for_tex = ( text, options, send = null, style ) =>
   S =
+    cjk_rsgs:                     options[ 'tex' ]?[ 'cjk-rsgs' ] ? null
+    glyph_styles:                 options[ 'tex' ]?[ 'glyph-styles'             ] ? {}
+    tex_command_by_rsgs:          options[ 'tex' ]?[ 'tex-command-by-rsgs'      ]
     ws_collector:                 []
     collector:                    []
     whitespace:                   '\x20\n\r\t'
@@ -168,76 +200,46 @@ MKNCR                     = require '../../mingkwai-ncr'
     # has_cjk_glue:                 no
     R:                            null
   #.........................................................................................................
+  throw new Error "need setting 'tex-command-by-rsgs'" unless S.tex_command_by_rsgs?
+  throw new Error "need setting 'cjk-rsgs'" unless S.cjk_rsgs?
+  #.........................................................................................................
   [ text, dangling_ws, ]  = @_split_dangling_ws text
-  chrs                    = MKNCR.chrs_from_text text
+  chrs                    = XNCHR.chrs_from_text text
   last_idx                = chrs.length - 1
-  open_bracket_count      = 0
   #.........................................................................................................
-  for chr, chr_idx in chrs
-    description   = @_analyze_chr S, chr, style, ( chr_idx is last_idx )
-    { chr: glyph
-      is_cjk
-      csg
-      cid
-      tex }       = description
-    tex_block     = tex?[ 'block'      ] ? null
-    tex_codepoint = tex?[ 'codepoint'  ] ? null
-    debug '79011', ( description[ 'tex' ]?[ 'block' ] ? '' ), ( description[ 'tex' ]?[ 'codepoint' ] ? '' ), glyph
+  for chr, idx in chrs
+    A = @_analyze_chr S, chr, style, ( idx is last_idx )
+    ### ****************************** ###
+    # debug '21998', A
+    { csg, cid, } = A
+    urge '21998', description = MKNCR.describe chr
+    ### ****************************** ###
     #.......................................................................................................
-    if is_cjk # is true
-      open_bracket_count += +1
-      @_push S, "{"
-      @_push S, "\\cjk"
-      @_push S, "{}"
+    ### Whitespace is ambiguous; it is treated as CJK when coming between two unambiguous CJK characters and
+    as non-CJK otherwise; to decide between these cases, we have to wait for the next non-whitespace
+    character: ###
+    if A.is_whitespace
+      @_push_whitespace S, chr
+      continue
     #.......................................................................................................
-    if tex_block?
-      open_bracket_count += +1
-      @_push S, "{"
-      @_push S, tex_block
-      @_push S, "{}"
+    S.last_was_cjk  = S.this_is_cjk
+    S.this_is_cjk   = A.is_cjk
     #.......................................................................................................
-    if tex_codepoint?
-      @_push S, tex_codepoint
+    ### In case we're entering a region of CJK characters, we have to start a group and issue a `\cjk`
+    command; before we do that, any cached whitespace will be moved into the result. If we're leaving a
+    CJK region, the group must be closed first and followed by any cached whitespace: ###
+    if ( not S.last_was_cjk ) and ( S.this_is_cjk )
+      @_push S, "{\\cjk{}"
+      # @_push S, "{\\cjk{}"
+    else if ( S.last_was_cjk ) and ( not S.this_is_cjk )
+      @_push S, "}", yes
+      # @_push S, "}", yes
     #.......................................................................................................
+    if A.styled_chr?
+      # @_push "\\cjkgGlue" if S.this_is_cjk
+      @_push S, A.styled_chr
     else
-      @_push S, glyph
-    #.......................................................................................................
-    while open_bracket_count > 0
-      open_bracket_count += -1
-      @_push S, "}"
-  #.........................................................................................................
-  return S.collector.join ''
-
-_X_ = ->
-
-  ### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  ###
-  ### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  ###
-  ### # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #  ###
-
-  #.......................................................................................................
-  ### Whitespace is ambiguous; it is treated as CJK when coming between two unambiguous CJK characters and
-  as non-CJK otherwise; to decide between these cases, we have to wait for the next non-whitespace
-  character: ###
-  if description.is_whitespace
-    @_push_whitespace S, chr
-    # continue
-  #.......................................................................................................
-  S.last_was_cjk  = S.this_is_cjk
-  S.this_is_cjk   = description.is_cjk
-  #.......................................................................................................
-  ### In case we're entering a region of CJK characters, we have to start a group and issue a `\cjk`
-  command; before we do that, any cached whitespace will be moved into the result. If we're leaving a
-  CJK region, the group must be closed first and followed by any cached whitespace: ###
-  if ( not S.last_was_cjk ) and ( S.this_is_cjk )
-    @_push S, "{\\cjk{}"
-  else if ( S.last_was_cjk ) and ( not S.this_is_cjk )
-    @_push S, "}", yes
-  #.......................................................................................................
-  if description.styled_chr?
-    # @_push "\\cjkgGlue" if S.this_is_cjk
-    @_push S, description.styled_chr
-  else
-    @_push S, description.chr
+      @_push S, A.chr
   #.........................................................................................................
   ### TAINT here we should keep state across text chunks to decide on cases like
   `國 **b** 國` vs `國 **國** 國` ###
@@ -246,7 +248,6 @@ _X_ = ->
   @_push S, dangling_ws
   #.........................................................................................................
   return S.collector.join ''
-
 
 
 
