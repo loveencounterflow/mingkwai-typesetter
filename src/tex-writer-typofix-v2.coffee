@@ -95,8 +95,8 @@ MKNCR                     = require '../../mingkwai-ncr'
     cjk_collector.push "}"
     ### TAINT that `\\cjk{}` part should come from the MKNCR Unicode InterSkipList ###
     ### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ###
-    # tex                   = "{\\cjk{}" + cjk_collector.join ''
-    tex                   = "{\\CJK{}" + cjk_collector.join ''
+    tex                   = "{\\cjk{}" + cjk_collector.join ''
+    # tex                   = "{\\CJK{}" + cjk_collector.join ''
     ### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ###
     last_texcmd_block     = null
     cjk_collector.length  = 0
@@ -112,7 +112,7 @@ MKNCR                     = require '../../mingkwai-ncr'
         { uchr, rsg, tag, tex: texcmd, }                = description
         { block: texcmd_block, codepoint: texcmd_cp, }  = texcmd
         ### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ###
-        texcmd_block = texcmd_block.toUpperCase()
+        # texcmd_block = texcmd_block.toUpperCase()
         ### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ###
         is_cjk                                          = 'cjk' in tag
         # debug '90708', { tex_cmd_block, tex_cmd_cp}

@@ -177,14 +177,14 @@
 % \renewcommand{\cjkgGlue}{{\makebox[0mm]{\color{red}|}}\hskip 0mm plus 0.7mm minus 0.0mm}
 \newcommand{\cjk}{%
   % \cjkgUseCjkGlue%
-  \mktsStyleFontCjkDefault%
-  }
-% \newcommand{\cn}{\mktsStartCjk\mktsFontfileSunexta}
-\newcommand{\cn}{%
   \cjkgGlue%
   \mktsScaleFontRelative{1.1}%
   \special{pdf:literal 1 0 0 1 0 -1.5 cm}%
   \AfterGroup{\special{pdf:literal 1 0 0 1 0 1.5 cm}\cjkgGlue}%
+  }
+% \newcommand{\cn}{\mktsStartCjk\mktsFontfileSunexta}
+\newcommand{\cn}{%
+  \mktsStyleFontCjkDefault%
   }
 \newcommand{\mktsRsgFb}{\mktsFontfileSunexta}
 \newcommand{\cnxa}{\mktsFontfileSunexta}

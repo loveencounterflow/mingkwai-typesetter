@@ -257,6 +257,7 @@ after = ( names..., method ) ->
       send_ [ 'tex', "% (extra preamble inserted from MD document)\n", ]
       send_ event for event in buffer
     send_ stamp start_document_event
+    debug '44321', S.bare
     send_ [ 'tex', "\\begin{document}\\mktsStyleNormal{}", ]
     if what is 'document'
       send_ event for event in buffer
@@ -1131,74 +1132,6 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     else
       send event
 
-# #-----------------------------------------------------------------------------------------------------------
-# @MKTX.INLINE.$em_and_strong = ( S ) =>
-#   em_count      = 0
-#   strong_count  = 0
-#   #.........................................................................................................
-#   return $ ( event, send ) =>
-#     # [ type, name, text, meta, ] = event
-#     #.......................................................................................................
-#     if select event, '(', 'em'
-#       em_count += +1
-#       send stamp event
-#       if strong_count > 0 then  send [ 'tex', "{\\mktsStyleBolditalic{}", ]
-#       else                      send [ 'tex', "{\\mktsStyleItalic{}", ]
-#     #.......................................................................................................
-#     else if select event, ')', 'em'
-#       em_count += -1
-#       send stamp event
-#       send [ 'tex', "\\/", ]
-#       send [ 'tex', "}", ]
-#     #.......................................................................................................
-#     else if select event, '(', 'strong'
-#       strong_count += +1
-#       send stamp event
-#       if em_count > 0 then  send [ 'tex', "{\\mktsStyleBolditalic{}", ]
-#       else                  send [ 'tex', "{\\mktsStyleBold{}", ]
-#     #.......................................................................................................
-#     else if select event, ')', 'strong'
-#       strong_count += -1
-#       send stamp event
-#       send [ 'tex', "}", ]
-#     #.......................................................................................................
-#     else
-#       send event
-
-# #-----------------------------------------------------------------------------------------------------------
-# @MKTX.INLINE.$smallcaps = ( S ) =>
-#   sc_upper_count = 0
-#   sc_lower_count = 0
-#   #.........................................................................................................
-#   return $ ( event, send ) =>
-#     # [ type, name, text, meta, ] = event
-#     #.......................................................................................................
-#     if select event, '(', 'smallcaps-upper'
-#       sc_upper_count += +1
-#       send stamp event
-#       if sc_lower_count > 0 then send [ 'tex', "{\\mktsStyleSmallcapsall{}", ]
-#       else                    send [ 'tex', "{\\mktsStyleSmallcapsupper{}", ]
-#     #.......................................................................................................
-#     else if select event, ')', 'smallcaps-upper'
-#       sc_upper_count += -1
-#       send stamp event
-#       send [ 'tex', "\\/", ]
-#       send [ 'tex', "}", ]
-#     #.......................................................................................................
-#     else if select event, '(', 'smallcaps-lower'
-#       sc_lower_count += +1
-#       send stamp event
-#       if sc_upper_count > 0 then  send [ 'tex', "{\\mktsStyleSmallcapsall{}", ]
-#       else                  send [ 'tex', "{\\mktsStyleSmallcapslower{}", ]
-#     #.......................................................................................................
-#     else if select event, ')', 'smallcaps-lower'
-#       sc_lower_count += -1
-#       send stamp event
-#       send [ 'tex', "}", ]
-#     #.......................................................................................................
-#     else
-#       send event
-
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.INLINE.$em_strong_and_smallcaps = ( S ) =>
   em_count        = 0
@@ -1228,25 +1161,26 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
   #.........................................................................................................
   return $ ( event, send ) =>
     [ type, name, text, meta, ] = event
+    delta = if ( type is '(' ) then +1 else - 1
     #.......................................................................................................
     if select event, [ '(', ')', ], [ 'code', 'code-span', ]
-      code_count += if ( type is '(' ) then +1 else - 1
+      code_count += delta
       send event
     #.......................................................................................................
     else if select event, [ '(', ')', ], 'smallcaps-upper'
-      sc_upper_count += if ( type is '(' ) then +1 else - 1
+      sc_upper_count += delta
       send stamp event
     #.......................................................................................................
     else if select event, [ '(', ')', ], 'smallcaps-lower'
-      sc_lower_count += if ( type is '(' ) then +1 else - 1
+      sc_lower_count += delta
       send stamp event
     #.......................................................................................................
     else if select event, [ '(', ')', ], 'em'
-      em_count += if ( type is '(' ) then +1 else - 1
+      em_count += delta
       send stamp event
     #.......................................................................................................
     else if select event, [ '(', ')', ], 'strong'
-      strong_count += if ( type is '(' ) then +1 else - 1
+      strong_count += delta
       send stamp event
     #.......................................................................................................
     else if code_count < 1 and select event, '.', 'text'
