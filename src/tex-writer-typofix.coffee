@@ -65,6 +65,7 @@ MKNCR                     = require '../../mingkwai-ncr'
     return send event unless select event, '.', Σ_glyph_description
     [ type, name, description, meta, ]  = event
     { uchr, rsg, }                      = description
+    debug '67400', description
     return send event unless rsg is 'u-latn'
     switch uchr
       when '\\' then return send [ 'tex', '\\textbackslash{}',    ]
@@ -159,7 +160,15 @@ MKNCR                     = require '../../mingkwai-ncr'
     return send event unless select event, '.', Σ_glyph_description
     [ type, name, glyph, meta, ] = event
     description = MKNCR.describe glyph
-    send [ type, name, description, meta, ]
+    { csg, }    = description
+    if csg in [ 'u', 'jzr', ]
+      send [ type, name, description, meta, ]
+    else
+      ### NOTE In case the CSG is not an 'inner' one (either Unicode or Jizura), the glyph can only
+      have been represented as an extended NCR (a string like `&morohashi#x12ab;`). In that case,
+      we send all the constituent US-ASCII glyphs separately so the NCR will be rendered literally. ###
+      for sub_glyph in Array.from glyph
+        send [ type, name, ( MKNCR.describe sub_glyph ), meta, ]
     return null
 
 #-----------------------------------------------------------------------------------------------------------
