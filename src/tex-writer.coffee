@@ -250,6 +250,7 @@ after = ( names..., method ) ->
   before_document_command = yes
   send_                   = null
   before_flush            = yes
+  bare                    = S.bare ? no
   #.........................................................................................................
   flush_as = ( what ) =>
     send_ [ 'tex', "\n% begin of MD document\n", ]
@@ -257,8 +258,7 @@ after = ( names..., method ) ->
       send_ [ 'tex', "% (extra preamble inserted from MD document)\n", ]
       send_ event for event in buffer
     send_ stamp start_document_event
-    debug '44321', S.bare
-    send_ [ 'tex', "\\begin{document}\\mktsStyleNormal{}", ]
+    send_ [ 'tex', "\\begin{document}\\mktsStyleNormal{}", ] unless bare
     if what is 'document'
       send_ event for event in buffer
     buffer.length           = 0
@@ -1712,6 +1712,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
   S =
     options:              @options
     layout_info:          layout_info
+    bare:                 settings[ 'bare' ] ? no
   #.........................................................................................................
   md_readstream       = MD_READER.create_md_read_tee md_source
   tex_writestream     = @create_tex_write_tee S
@@ -1725,7 +1726,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
   md_output
     .pipe tex_input
   tex_output
-    # .pipe D.$join()
+    .pipe D.$show '>>>>>>>>>>>>>>>>>>'
     .pipe $collect_and_call handler
   #.........................................................................................................
   D.run ( => md_input.resume() ), @_handle_error

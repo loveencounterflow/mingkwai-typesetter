@@ -1200,9 +1200,9 @@ unless module.parent?
     # "MKTS.MACRO_ESCAPER.escape.region_macros"
     # "MKTS.MACRO_ESCAPER.$expand.$region_macros"
     "MKTS.TEX_WRITER.tex_from_md (1)"
-    # "MKTS.TEX_WRITER.tex_from_md (2)"
-    # "MKTS.TEX_WRITER.tex_from_md (3)"
-    # "TEX_WRITER_TYPOFIX.fix_typography_for_tex"
+    "MKTS.TEX_WRITER.tex_from_md (2)"
+    "MKTS.TEX_WRITER.tex_from_md (3)"
+    "TEX_WRITER_TYPOFIX.fix_typography_for_tex"
     ]
   @_prune()
   @_main()
