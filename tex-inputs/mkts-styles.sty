@@ -34,15 +34,11 @@
 
   % ........................................................................................................
   \renewcommand{\mktsStyleBold}{%
-    \renewcommand{\mktsStyleFontCjkDefault}{\mktsStyleFontCjkBold}%
     \renewcommand{\mktsStyleFontHangeulDefault}{\mktsStyleFontHangeulBold}%
     % ### TAINT instad of redefining entire commands (\cn, \hg and so on), we should be
     % redefining key parameters such as CJK scale, Katakana scale, Hangeul scale, PushRaise &c.
     \renewcommand{\cn}{%
-      \cjkgGlue%
-      \mktsScaleFontRelative{1.222}%
-      \special{pdf:literal 1 0 0 1 0 -2 cm}%
-      \AfterGroup{\special{pdf:literal 1 0 0 1 0 2 cm}\cjkgGlue}%
+      \mktsStyleFontCjkBold%
       }%
     \renewcommand{\hg}{%
       % \special{pdf:literal 1 0 0 1 0 0.5 cm}%
@@ -83,6 +79,11 @@
   % ........................................................................................................
   \renewcommand{\mktsStyleItalic}{%
     \mktsStyleFontItalic%
+    % ### TAINT instad of redefining entire commands (\cn, \hg and so on), we should be
+    % redefining key parameters such as CJK scale, Katakana scale, Hangeul scale, PushRaise &c.
+    \renewcommand{\cn}{%
+      \mktsStyleFontCjkKaishu%
+      }%
     }%
 
   % ........................................................................................................

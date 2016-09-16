@@ -1485,20 +1485,20 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
 
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.$show_warnings = ( S ) =>
-  # pre               = '█'
-  # post              = '█'
-  return $ ( event, send ) =>
+  return $async ( event, done ) =>
     ### TAINT this makes clear why we should not use '.' as type here; `warning` is a meta-event, not
     primarily a formatting instruction ###
+    #.......................................................................................................
     if select event, '.', 'warning'
       [ type, name, text, meta, ] = event
-      message                     = @MKTX.TYPOFIX.fix_typography_for_tex text, S.options
-      # message                     = text
-      ### TAINT use location data ###
-      send [ 'tex', "\\begin{mktsEnvWarning}#{message}\\end{mktsEnvWarning}" ]
+      step ( resume ) =>
+        message = yield @MKTX.TYPOFIX.fix_typography_for_tex S, text, resume
+        done [ 'tex', "\\begin{mktsEnvWarning}#{message}\\end{mktsEnvWarning}" ]
+    #.......................................................................................................
     else
-      send event
-
+      done event
+    #.......................................................................................................
+    return null
 
 #===========================================================================================================
 #

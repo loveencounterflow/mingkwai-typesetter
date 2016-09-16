@@ -1106,31 +1106,32 @@ nice_text_rpr = ( text ) ->
   format                            = ( text ) => text.trim().replace /\x20/g, '∗'
   #.........................................................................................................
   probes_and_matchers = [
-    ["& \\ #癶乛國",'\\&∗\\textbackslash{}∗\\#{\\cjk{}{\\cn{}{\\tfRaise{-0.2}\\cnxBabel{}癶}}}{\\cjk{}{\\cn{}{\\tfRaise{-0.2}乛}國}}']
-    ["x𠇋𠇋𠇋x","x{\\cjk{}{\\cnxb{}𠇋𠇋𠇋}}x"]
-    ["Brick tea ! ","Brick∗tea∗!"]
-    ["&\\#","\\&\\textbackslash{}\\#"]
-    ["國","{\\cjk{}{\\cn{}國}}"]
-    ["x國x","x{\\cjk{}{\\cn{}國}}x"]
-    ["a 國 b","a∗{\\cjk{}{\\cn{}國}}∗b"]
-    ["國 國","{\\cjk{}{\\cn{}國}}∗{\\cjk{}{\\cn{}國}}"]
-    ["𠇋𠇋","{\\cjk{}{\\cnxb{}𠇋𠇋}}"]
-    ["x𠇋x","x{\\cjk{}{\\cnxb{}𠇋}}x"]
-    ["a 𠇋 b","a∗{\\cjk{}{\\cnxb{}𠇋}}∗b"]
-    ["卩","{\\cjk{}{\\cn{}{\\tfPush{-0.4}卩}}}"]
-    ["x卩x","x{\\cjk{}{\\cn{}{\\tfPush{-0.4}卩}}}x"]
-    ["x 卩 x","x∗{\\cjk{}{\\cn{}{\\tfPush{-0.4}卩}}}∗x"]
-    ["x 國𠇋國 x","x∗{\\cjk{}{\\cn{}國}{\\cnxb{}𠇋}{\\cn{}國}}∗x"]
-    ["x 國卩國𠇋 x","x∗{\\cjk{}{\\cn{}國{\\tfPush{-0.4}卩}國}{\\cnxb{}𠇋}}∗x"]
-    ["x𠇋𠇋𠇋x","x{\\cjk{}{\\cnxb{}𠇋𠇋𠇋}}x"]
-    ["Brick tea 紧压茶都是用红茶 is delicious","Brick∗tea∗{\\cjk{}{\\cn{}紧压茶都是用红茶}}∗is∗delicious"]
-    ["Brick tea\n紧压茶都 是\t\n用红茶 is\ndelicious","Brick∗tea\n{\\cjk{}{\\cn{}紧压茶都}}∗{\\cjk{}{\\cn{}是}}\t\n{\\cjk{}{\\cn{}用红茶}}∗is\ndelicious"]
-    ["Brick tea 紧压茶卩癶都是用红茶 is delicious","Brick∗tea∗{\\cjk{}{\\cn{}紧压茶{\\tfPush{-0.4}卩}{\\tfRaise{-0.2}\\cnxBabel{}癶}}}{\\cjk{}{\\cn{}都是用红茶}}∗is∗delicious"]
-    ["压茶卩红茶","{\\cjk{}{\\cn{}压茶{\\tfPush{-0.4}卩}红茶}}"]
-    ["压茶𠇋卩红茶","{\\cjk{}{\\cn{}压茶}{\\cnxb{}𠇋}{\\cn{}{\\tfPush{-0.4}卩}红茶}}"]
-    ["压茶𠇋卩","{\\cjk{}{\\cn{}压茶}{\\cnxb{}𠇋}{\\cn{}{\\tfPush{-0.4}卩}}}"]
-    ["&jzr#xe232;",""]
-    ["ℂ∪ℚ","ℂ∪ℚ"]
+    # ["x𠇋𠇋𠇋x","x{\\cjk{}{\\cnxb{}𠇋𠇋𠇋}}x"]
+    # ["Brick tea ! ","Brick∗tea∗!"]
+    # ["&\\#","\\&\\textbackslash{}\\#"]
+    # ["國","{\\cjk{}{\\cn{}國}}"]
+    # ["x國x","x{\\cjk{}{\\cn{}國}}x"]
+    # ["a 國 b","a∗{\\cjk{}{\\cn{}國}}∗b"]
+    # ["國 國","{\\cjk{}{\\cn{}國}}∗{\\cjk{}{\\cn{}國}}"]
+    # ["𠇋𠇋","{\\cjk{}{\\cnxb{}𠇋𠇋}}"]
+    # ["x𠇋x","x{\\cjk{}{\\cnxb{}𠇋}}x"]
+    # ["a 𠇋 b","a∗{\\cjk{}{\\cnxb{}𠇋}}∗b"]
+    # ["卩","{\\cjk{}{\\cn{}{\\tfPush{-0.4}卩}}}"]
+    # ["x卩x","x{\\cjk{}{\\cn{}{\\tfPush{-0.4}卩}}}x"]
+    # ["x 卩 x","x∗{\\cjk{}{\\cn{}{\\tfPush{-0.4}卩}}}∗x"]
+    # ["x 國𠇋國 x","x∗{\\cjk{}{\\cn{}國}{\\cnxb{}𠇋}{\\cn{}國}}∗x"]
+    # ["x 國卩國𠇋 x","x∗{\\cjk{}{\\cn{}國{\\tfPush{-0.4}卩}國}{\\cnxb{}𠇋}}∗x"]
+    # ["x𠇋𠇋𠇋x","x{\\cjk{}{\\cnxb{}𠇋𠇋𠇋}}x"]
+    # ["Brick tea 紧压茶都是用红茶 is delicious","Brick∗tea∗{\\cjk{}{\\cn{}紧压茶都是用红茶}}∗is∗delicious"]
+    # ["Brick tea\n紧压茶都 是\t\n用红茶 is\ndelicious","Brick∗tea\n{\\cjk{}{\\cn{}紧压茶都}}∗{\\cjk{}{\\cn{}是}}\t\n{\\cjk{}{\\cn{}用红茶}}∗is\ndelicious"]
+    # ["压茶卩红茶","{\\cjk{}{\\cn{}压茶{\\tfPush{-0.4}卩}红茶}}"]
+    # ["压茶𠇋卩红茶","{\\cjk{}{\\cn{}压茶}{\\cnxb{}𠇋}{\\cn{}{\\tfPush{-0.4}卩}红茶}}"]
+    # ["压茶𠇋卩","{\\cjk{}{\\cn{}压茶}{\\cnxb{}𠇋}{\\cn{}{\\tfPush{-0.4}卩}}}"]
+    # ["ℂ∪ℚ","ℂ∪ℚ"]
+    # ["&jzr#xe232;","{\\cjk{}{\\cnjzr{}}}"]
+    # ["& \\ #癶乛國",'\\&∗\\textbackslash{}∗\\#{\\cjk{}{\\cn{}{\\tfRaise{-0.2}\\cnxBabel{}癶}}{\\cnjzr{}{\\tfPushRaise{0.5}{-0.2}}}{\\cn{}{\\tfRaise{-0.2}乛}國}}']
+    # ["Brick tea 紧压茶卩癶都是用红茶 is delicious","Brick∗tea∗{\\cjk{}{\\cn{}紧压茶{\\tfPush{-0.4}卩}{\\tfRaise{-0.2}\\cnxBabel{}癶}}{\\cnjzr{}{\\tfRaise{0.1}\\cnxJzr{}}}{\\cn{}都是用红茶}}∗is∗delicious"]
+    ["x&#x65;x&morohashi#x12ab;x&jzr#xe000;x","xxx"]
     ]
   # warn "missing `.p` inside `(multi-column)`"
   #.........................................................................................................
@@ -1185,32 +1186,32 @@ unless module.parent?
     #-------------------------------------------------------------------------------------------------------
     # WORKING
     #-------------------------------------------------------------------------------------------------------
-    "MKTS.MACRO_ESCAPER.bracketed_raw_patterns matches raw macro"
-    "MKTS.MACRO_ESCAPER.escape.bracketed_raw_macros"
-    "MKTS.MACRO_ESCAPER.$expand.$raw_macros"
-    "MKTS.MACRO_ESCAPER.action_patterns match action macros"
-    "MKTS.MACRO_ESCAPER.region_patterns match region macros"
-    "MKTS.MACRO_ESCAPER.illegal_patterns matches consecutive unescaped LPBs"
-    "MKTS.MACRO_ESCAPER.end_command_patterns matches end command macro"
-    "MKTS.MACRO_ESCAPER.escape.truncate_text_at_end_command_macro"
-    "MKTS.MACRO_ESCAPER.escape.html_comments"
-    "MKTS.MACRO_ESCAPER.escape.action_macros"
-    "MKTS.MACRO_ESCAPER.escape 2"
-    "MKTS.MACRO_ESCAPER.$expand.$html_comments"
-    "MKTS.MACRO_ESCAPER.$expand.$action_macros"
-    "MKTS.MD_READER.FENCES.parse accepts dot patterns"
-    "MKTS.MD_READER.FENCES.parse accepts empty fenced patterns"
-    "MKTS.MD_READER.FENCES.parse accepts unfenced named patterns"
-    "MKTS.MD_READER.FENCES.parse accepts fenced named patterns"
-    "MKTS.MD_READER.FENCES.parse rejects empty string"
-    "MKTS.MD_READER.FENCES.parse rejects non-matching fences etc"
-    "MKTS.MD_READER.FENCES.parse accepts non-matching fences when so configured"
-    "MKTS.MD_READER.TRACKER.new_tracker().track rejects unregistered pattern"
-    "MKTS.MD_READER.TRACKER.new_tracker (short comprehensive test)"
-    "MKTS.MACRO_ESCAPER.escape.region_macros"
-    "MKTS.TEX_WRITER.tex_from_md (1)"
-    "MKTS.TEX_WRITER.tex_from_md (2)"
-    "MKTS.TEX_WRITER.tex_from_md (3)"
+    # "MKTS.MACRO_ESCAPER.bracketed_raw_patterns matches raw macro"
+    # "MKTS.MACRO_ESCAPER.escape.bracketed_raw_macros"
+    # "MKTS.MACRO_ESCAPER.$expand.$raw_macros"
+    # "MKTS.MACRO_ESCAPER.action_patterns match action macros"
+    # "MKTS.MACRO_ESCAPER.region_patterns match region macros"
+    # "MKTS.MACRO_ESCAPER.illegal_patterns matches consecutive unescaped LPBs"
+    # "MKTS.MACRO_ESCAPER.end_command_patterns matches end command macro"
+    # "MKTS.MACRO_ESCAPER.escape.truncate_text_at_end_command_macro"
+    # "MKTS.MACRO_ESCAPER.escape.html_comments"
+    # "MKTS.MACRO_ESCAPER.escape.action_macros"
+    # "MKTS.MACRO_ESCAPER.escape 2"
+    # "MKTS.MACRO_ESCAPER.$expand.$html_comments"
+    # "MKTS.MACRO_ESCAPER.$expand.$action_macros"
+    # "MKTS.MD_READER.FENCES.parse accepts dot patterns"
+    # "MKTS.MD_READER.FENCES.parse accepts empty fenced patterns"
+    # "MKTS.MD_READER.FENCES.parse accepts unfenced named patterns"
+    # "MKTS.MD_READER.FENCES.parse accepts fenced named patterns"
+    # "MKTS.MD_READER.FENCES.parse rejects empty string"
+    # "MKTS.MD_READER.FENCES.parse rejects non-matching fences etc"
+    # "MKTS.MD_READER.FENCES.parse accepts non-matching fences when so configured"
+    # "MKTS.MD_READER.TRACKER.new_tracker().track rejects unregistered pattern"
+    # "MKTS.MD_READER.TRACKER.new_tracker (short comprehensive test)"
+    # "MKTS.MACRO_ESCAPER.escape.region_macros"
+    # "MKTS.TEX_WRITER.tex_from_md (1)"
+    # "MKTS.TEX_WRITER.tex_from_md (2)"
+    # "MKTS.TEX_WRITER.tex_from_md (3)"
     "TEX_WRITER_TYPOFIX.fix_typography_for_tex"
     ]
   @_prune()
