@@ -1,6 +1,29 @@
 
 
 
+###
+
+{\latin{}a}{\latin{}g}{\latin{}f}{\latin{}i}{\latin{} }{\cjk{}{\cn{}{\tfRaise{-0.2}\cnxBabel{}癶}}}{\cjk{}{\cn{}里}}{\cjk{}{\cnxb{}{\cnxJzr{}}}}{\latin{} }{\cjk{}{\cn{}里}}{\cjk{}{\cnxa{}䊷}}{\mktsRsgFb{}இ}{\latin{} }{\latin{}a}{\latin{}g}{\latin{}f}{\latin{}i}
+
+agfi {\cjk{}\cn{}{\tfRaise{-0.2}\cnxBabel{}癶}里{\cnxb{}\cnxJzr{}} 里{\cnxa{}䊷}}{\mktsRsgFb{}இ} agfi
+
+agfi {\cjk{}\cn{}{\tfRaise{-0.2}\cnxBabel{}癶}里\cnxb{}\cnxJzr{}\cn 里\cnxa{}䊷}{\mktsRsgFb{}இ} agfi
+
+###
+
+###
+
+typofix v1:
+{\cjk{}{\cn{}里}{\cn{}里}{\cn\cnxa{}䊷}{\cn\cnxa{}䊷}{\cn{}里}{\cn{}里}{\cn{}里}{\cn{}里}{\cn{}里}}\\
+
+typofix v2:
+{\cjk{}{\cn{}里里}{\cnxa{}䊷䊷}{\cn{}里里里里里}}
+
+typofix v2 intermediate:
+{\CJK{}{\CN{}里里}{\CNXA{}䊷䊷}{\CN{}里里里里里}}
+###
+
+
 
 ############################################################################################################
 # njs_path                  = require 'path'
@@ -19,8 +42,8 @@ help                      = CND.get_logger 'help',      badge
 urge                      = CND.get_logger 'urge',      badge
 echo                      = CND.echo.bind CND
 #...........................................................................................................
-D                         = require 'pipedreams'
-$                         = D.remit.bind D
+D                         = require '../../../pipedreams'
+{ $ }                     = D
 MD_READER                 = require './md-reader'
 hide                      = MD_READER.hide.bind        MD_READER
 copy                      = MD_READER.copy.bind        MD_READER
@@ -29,230 +52,173 @@ select                    = MD_READER.select.bind      MD_READER
 is_hidden                 = MD_READER.is_hidden.bind   MD_READER
 is_stamped                = MD_READER.is_stamped.bind  MD_READER
 #...........................................................................................................
-### TAINT XNCHR will be phased out in favor of MKNCR ###
-XNCHR                     = require './xnchr'
 MKNCR                     = require '../../mingkwai-ncr'
+Σ_glyph_description       = Symbol 'glyph-description'
 
 
+#===========================================================================================================
+#
 #-----------------------------------------------------------------------------------------------------------
-@_tex_escape_replacements = [
-  [ /// \x01        ///g,  '\x01\x02',              ]
-  [ /// \x5c        ///g,  '\x01\x01',              ]
-  [ ///  \{         ///g,  '\\{',                   ]
-  [ ///  \}         ///g,  '\\}',                   ]
-  [ ///  \$         ///g,  '\\$',                   ]
-  [ ///  \#         ///g,  '\\#',                   ]
-  [ ///  %          ///g,  '\\%',                   ]
-  [ ///  _          ///g,  '\\_',                   ]
-  [ ///  \^         ///g,  '\\textasciicircum{}',   ]
-  [ ///  ~          ///g,  '\\textasciitilde{}',    ]
-  [ ///  &          ///g,  '\\&',                   ]
-  [ /// \x01\x01    ///g,  '\\textbackslash{}',     ]
-  [ /// \x01\x02    ///g,  '\x01',                  ]
-  ]
-
-#-----------------------------------------------------------------------------------------------------------
-@escape_for_tex = ( text ) =>
-  R = text
-  for [ pattern, replacement, ], idx in @_tex_escape_replacements
-    R = R.replace pattern, replacement
-  return R
-
-#-----------------------------------------------------------------------------------------------------------
-@$fix_typography_for_tex = ( S ) =>
+@$format_tex_specials = ( S ) ->
+  ### TAINT should preserve raw text from before replacements ###
   return $ ( event, send ) =>
-    if select event, '.', 'text'
-      # urge '12312', event
-      [ type, name, text, meta, ] = event
-      meta[ 'raw' ] = text
-      style         = meta[ 'typofix' ] ? 'basic' # 'escape-ncrs' ]
-      text          = @fix_typography_for_tex text, S.options, null, style
-      send [ type, name, text, meta, ]
-    else
-      send event
+    return send event unless select event, '.', Σ_glyph_description
+    [ type, name, description, meta, ]  = event
+    { uchr, rsg, }                      = description
+    return send event unless rsg is 'u-latn'
+    switch uchr
+      when '\\' then return send [ 'tex', '\\textbackslash{}',    ]
+      when '{'  then return send [ 'tex', '\\{',                  ]
+      when '}'  then return send [ 'tex', '\\}',                  ]
+      when '$'  then return send [ 'tex', '\\$',                  ]
+      when '#'  then return send [ 'tex', '\\#',                  ]
+      when '%'  then return send [ 'tex', '\\%',                  ]
+      when '_'  then return send [ 'tex', '\\_',                  ]
+      when '^'  then return send [ 'tex', '\\textasciicircum{}',  ]
+      when '~'  then return send [ 'tex', '\\textasciitilde{}',   ]
+      when '&'  then return send [ 'tex', '\\&',                  ]
+    return send event
 
 #-----------------------------------------------------------------------------------------------------------
-@is_cjk_rsg = ( rsg, options ) => rsg in options[ 'tex' ][ 'cjk-rsgs' ]
-
-#-----------------------------------------------------------------------------------------------------------
-@_analyze_chr = ( S, chr, style, is_last ) ->
+@$format_cjk = ( S ) ->
+  ### TAINT should preserve raw text from before replacements ###
+  ### TAINT must look for stream end ###
+  ### TAINT use piped streams for logic ###
+  cjk_collector       = []
+  _send               = null
+  last_texcmd_block   = null
   #.........................................................................................................
-  R = XNCHR.CHR.analyze chr, { input: if style is 'escape-ncrs' then 'plain' else 'xncr' }
+  ### TAINT code duplication ###
+  flush = =>
+    return unless cjk_collector.length > 0
+    cjk_collector.push "}" if last_texcmd_block?
+    cjk_collector.push "}"
+    ### TAINT that `\\cjk{}` part should come from the MKNCR Unicode InterSkipList ###
+    ### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ###
+    tex                   = "{\\cjk{}" + cjk_collector.join ''
+    # tex                   = "{\\CJK{}" + cjk_collector.join ''
+    ### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ###
+    last_texcmd_block     = null
+    cjk_collector.length  = 0
+    _send [ 'tex', tex, ]
+    return null
   #.........................................................................................................
-  switch R.rsg
-    when 'jzr-fig'  then R.chr = R.uchr
-    when 'u-pua'    then R.rsg = 'jzr-fig'
-    when 'u-latn'   then R.chr = @escape_for_tex chr
-  #.........................................................................................................
-  ### OBS `chr` has still the value this method was called with, so styling should work even for `u-latn`
-  characters ###
-  R.is_whitespace = chr   in S.whitespace
-  R.is_cjk        = R.rsg in S.cjk_rsgs
-  R.styled_chr    = @_style_chr S, R, chr, is_last
-  return R
-
-#-----------------------------------------------------------------------------------------------------------
-@_style_chr = ( S, chr_info, chr, is_last ) ->
-  ### TAINT parts of this code will be replaced by `mingkwai-ncr.glyph_style_as_tex` ###
-  { csg
-    rsg
-    fncr
-    is_cjk    }       = chr_info
-  rsg_command         = S.tex_command_by_rsgs[ rsg ]
-  # debug '©28708', chr, rsg_command
-  #.........................................................................................................
-  unless csg in [ 'u', 'jzr', ]
-    ### TAINT won't capture styling for `&`, `#` and so on ###
-    return @escape_for_tex chr_info.chr
-  #.........................................................................................................
-  unless rsg_command?
-    rsg_command = S.tex_command_by_rsgs[ 'fallback' ] ? null
-    message     = "unknown RSG #{rpr rsg}: #{fncr} #{chr} (using fallback #{rpr rsg_command})"
-    if S.send? then S.send remark 'warn', message, {}
-    else            warn message
-  rsg_command         = null if rsg_command in [ 'latin', ] # 'cn', ]
-  style               = S.glyph_styles[ chr ]
-  #.........................................................................................................
-  # return null if ( not rsg_command? ) and ( not style? )
-  #.........................................................................................................
-  if style?
-    ### TAINT use `cjkgGlue` only if `is_cjk` ###
-    R         = []
-    # R.push "\\cjkgGlue{"
-    R.push "{"
-    R.push "\\cn" if is_cjk
-    rpl_push  = style[ 'push'   ] ? null
-    rpl_raise = style[ 'raise'  ] ? null
-    rpl_chr   = style[ 'glyph'  ] ? chr_info[ 'uchr' ]
-    rpl_cmd   = style[ 'cmd'    ] ? rsg_command
-    rpl_cmd   = null if rpl_cmd is 'cn'
-    ### TAINT using `prPushRaise` here in place of `tfPushRaise` because it gives better
-    results ###
-    if _XXX_use_cxltx_pushraise = yes
-      if      rpl_push? and rpl_raise?  then R.push "\\prPushRaise{#{rpl_push}}{#{rpl_raise}}{"
-      else if rpl_push?                 then R.push "\\prPush{#{rpl_push}}{"
-      else if               rpl_raise?  then R.push "\\prRaise{#{rpl_raise}}{"
-    else
-      if      rpl_push? and rpl_raise?  then R.push "\\tfPushRaise{#{rpl_push}}{#{rpl_raise}}"
-      else if rpl_push?                 then R.push "\\tfPush{#{rpl_push}}"
-      else if               rpl_raise?  then R.push "\\tfRaise{#{rpl_raise}}"
-    if rpl_cmd?                       then R.push "\\#{rpl_cmd}{}"
-    R.push rpl_chr
-    R.push "}" if _XXX_use_cxltx_pushraise and ( rpl_push? or rpl_raise? )
-    R.push "}"
-    R = R.join ''
-  #.........................................................................................................
-  else if rsg_command?
-    ### TAINT does not collect glyphs with same RSG ###
-    # debug '©95429', chr_info
-    # debug '12321', ( rpr chr_info[ 'uchr' ] ), S.last_rsg_command, rsg_command, is_last
-    # if rsg_command
-    if is_cjk and rsg_command isnt 'cn'
-      R = "{\\cn\\#{rsg_command}{}#{chr_info[ 'uchr' ]}}"
-    else
-      R = "{\\#{rsg_command}{}#{chr_info[ 'uchr' ]}}"
-    # R = "\\cjkgGlue#{R}\\cjkgGlue{}" if is_cjk
-  #.........................................................................................................
-  else
-    R = null
-  #.........................................................................................................
-  S.last_rsg_command = rsg_command
-  return R
-
-#-----------------------------------------------------------------------------------------------------------
-@_move_whitespace = ( S ) ->
-  S.collector.splice S.collector.length, 0, S.ws_collector...
-  S.ws_collector.length = 0
-  return null
-
-#-----------------------------------------------------------------------------------------------------------
-@_push = ( S, chr, postpone_ws = no ) ->
-  @_move_whitespace S unless postpone_ws
-  S.collector.push chr if chr?
-  @_move_whitespace S if     postpone_ws
-  S.has_cjk_glue = no
-  return null
-
-#-----------------------------------------------------------------------------------------------------------
-@_push_whitespace = ( S, chr ) ->
-  S.ws_collector.push chr
-  return null
-
-#-----------------------------------------------------------------------------------------------------------
-@_split_dangling_ws = ( text ) ->
-  [ _, head, tail, ] = text.match @_split_dangling_ws.pattern
-  return [ head, tail, ]
-@_split_dangling_ws.pattern = /^([\s\S]*?)([\x20\t\n]*)$/
-# @_split_dangling_ws.pattern = /^([\s\S]*?)(\s*)$/
-
-#-----------------------------------------------------------------------------------------------------------
-@fix_typography_for_tex = ( text, options, send = null, style ) =>
-  S =
-    cjk_rsgs:                     options[ 'tex' ]?[ 'cjk-rsgs' ] ? null
-    glyph_styles:                 options[ 'tex' ]?[ 'glyph-styles'             ] ? {}
-    tex_command_by_rsgs:          options[ 'tex' ]?[ 'tex-command-by-rsgs'      ]
-    ws_collector:                 []
-    collector:                    []
-    whitespace:                   '\x20\n\r\t'
-    this_is_cjk:                  no
-    last_was_cjk:                 no
-    last_rsg_command:             null
-    # has_cjk_glue:                 no
-    R:                            null
-  #.........................................................................................................
-  throw new Error "need setting 'tex-command-by-rsgs'" unless S.tex_command_by_rsgs?
-  throw new Error "need setting 'cjk-rsgs'" unless S.cjk_rsgs?
-  #.........................................................................................................
-  [ text, dangling_ws, ]  = @_split_dangling_ws text
-  chrs                    = XNCHR.chrs_from_text text
-  last_idx                = chrs.length - 1
-  #.........................................................................................................
-  for chr, idx in chrs
-    A = @_analyze_chr S, chr, style, ( idx is last_idx )
-    ### ****************************** ###
-    # debug '21998', A
-    { csg, cid, } = A
-    urge '21998', description = MKNCR.describe chr
-    ### ****************************** ###
+  return $ 'null', ( event, send ) =>
+    _send = send
     #.......................................................................................................
-    ### Whitespace is ambiguous; it is treated as CJK when coming between two unambiguous CJK characters and
-    as non-CJK otherwise; to decide between these cases, we have to wait for the next non-whitespace
-    character: ###
-    if A.is_whitespace
-      @_push_whitespace S, chr
-      continue
+    if event?
+      if select event, '.', Σ_glyph_description
+        [ type, name, description, meta, ]              = event
+        { uchr, rsg, tag, tex: texcmd, }                = description
+        { block: texcmd_block, codepoint: texcmd_cp, }  = texcmd
+        ### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ###
+        # texcmd_block = texcmd_block.toUpperCase()
+        ### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ###
+        is_cjk                                          = 'cjk' in tag
+        # debug '90708', { tex_cmd_block, tex_cmd_cp}
+        # is_ascii_whistespace                = 'cjk' in tag
+        if is_cjk
+          if last_texcmd_block isnt texcmd_block
+            ### close previous open TeX block command, if any: ###
+            cjk_collector.push '}' if last_texcmd_block?
+            cjk_collector.push '{'
+            cjk_collector.push texcmd_block
+            last_texcmd_block = texcmd_block
+          tex   = texcmd_cp
+          tex  ?= uchr
+          cjk_collector.push tex
+        #...................................................................................................
+        else
+          flush()
+          send event
+      #.....................................................................................................
+      else
+        flush()
+        send event
     #.......................................................................................................
-    S.last_was_cjk  = S.this_is_cjk
-    S.this_is_cjk   = A.is_cjk
-    #.......................................................................................................
-    ### In case we're entering a region of CJK characters, we have to start a group and issue a `\cjk`
-    command; before we do that, any cached whitespace will be moved into the result. If we're leaving a
-    CJK region, the group must be closed first and followed by any cached whitespace: ###
-    if ( not S.last_was_cjk ) and ( S.this_is_cjk )
-      @_push S, "{\\cjk{}"
-      # @_push S, "{\\cjk{}"
-    else if ( S.last_was_cjk ) and ( not S.this_is_cjk )
-      @_push S, "}", yes
-      # @_push S, "}", yes
-    #.......................................................................................................
-    if A.styled_chr?
-      # @_push "\\cjkgGlue" if S.this_is_cjk
-      @_push S, A.styled_chr
     else
-      @_push S, A.chr
+      flush()
+    #.......................................................................................................
+    return null
+
+
+#===========================================================================================================
+# SPLITTING, WRAPPING, UNWRAPPING
+#-----------------------------------------------------------------------------------------------------------
+@$split = ( S ) ->
+  return $ ( event, send ) =>
+    return send event unless select event, '.', 'text'
+    [ type, name, text, meta, ] = event
+    for glyph in MKNCR.chrs_from_text text
+      send [ '.', Σ_glyph_description, glyph, meta, ]
+    return null
+
+#-----------------------------------------------------------------------------------------------------------
+@$wrap_as_glyph_description = ( S ) ->
+  return $ ( event, send ) =>
+    return send event unless select event, '.', Σ_glyph_description
+    [ type, name, glyph, meta, ] = event
+    description = MKNCR.describe glyph
+    send [ type, name, description, meta, ]
+    return null
+
+#-----------------------------------------------------------------------------------------------------------
+@$consolidate_tex_events = ( S ) ->
+  collector     = []
+  _send         = null
   #.........................................................................................................
-  ### TAINT here we should keep state across text chunks to decide on cases like
-  `國 **b** 國` vs `國 **國** 國` ###
-  @_push S
-  @_push S, '}' if S.this_is_cjk
-  @_push S, dangling_ws
+  flush = =>
+    return unless collector.length > 0
+    tex               = collector.join ''
+    collector.length  = 0
+    _send [ 'tex', tex, ]
+    return null
   #.........................................................................................................
-  return S.collector.join ''
+  return $ 'null', ( event, send ) =>
+    _send = send
+    if event?
+      if select event, 'tex'
+        [ _, tex, ] = event
+        collector.push tex
+      else
+        flush()
+        send event
+    else
+      flush()
+
+#-----------------------------------------------------------------------------------------------------------
+@$unwrap_glyph_description = ( S ) ->
+  return $ ( event, send ) =>
+    return send event unless select event, '.', Σ_glyph_description
+    [ type, name, description, meta, ] = event
+    # debug '70333', description
+    glyph = description[ 'uchr' ]
+    ### TAINT send `tex` or `text` event? ###
+    send [ 'tex', glyph, ]
+    return null
 
 
+#===========================================================================================================
+#
+#-----------------------------------------------------------------------------------------------------------
+@$fix_typography_for_tex = ( S ) ->
+  ### TAINT which one should come first? ###
+  pipeline = [
+    @$split                     S
+    @$wrap_as_glyph_description S
+    @$format_cjk                S
+    @$format_tex_specials       S
+    # $ ( data ) -> urge '67201', data
+    @$unwrap_glyph_description  S
+    @$consolidate_tex_events    S
+    $ ( event ) -> help '65099', rpr event[ 1 ] if select event, 'tex'
+    ]
+  return D.new_stream { pipeline, }
 
-
-
+#-----------------------------------------------------------------------------------------------------------
+@fix_typography_for_tex = ( S, text ) ->
+  throw new Error "not yet implemented"
+  transform = @$fix_typography_for_tex S
 
 
 

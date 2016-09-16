@@ -215,15 +215,15 @@ after = ( names..., method ) ->
 #
 #-----------------------------------------------------------------------------------------------------------
 @MKTX =
-  TEX:        require './tex-writer-typofix'
-  TEXv2:      require './tex-writer-typofix-v2'
-  DOCUMENT:   {}
-  COMMAND:    {}
-  REGION:     {}
-  BLOCK:      {}
-  INLINE:     {}
-  MIXED:      {}
-  CLEANUP:    {}
+  TYPOFIX:      require './tex-writer-typofix'
+  TYPOFIX_OLD:  require './tex-writer-typofix-OLD'
+  DOCUMENT:     {}
+  COMMAND:      {}
+  REGION:       {}
+  BLOCK:        {}
+  INLINE:       {}
+  MIXED:        {}
+  CLEANUP:      {}
 
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.COMMAND.$new_page = ( S ) =>
@@ -347,7 +347,7 @@ after = ( names..., method ) ->
         else
           unless last_was_empty = chunk.length is 0
             # debug `0903`, rpr chunk
-            # chunk = @MKTX.TEX.fix_typography_for_tex chunk, S.options
+            # chunk = @MKTX.TYPOFIX.fix_typography_for_tex chunk, S.options
             send [ '.', 'text', chunk, ( copy meta ), ]
             # send [ 'tex', chunk, ]
     #.......................................................................................................
@@ -578,7 +578,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       yadda_idx                        ?= cache.length
       cache.push generate_yadda settings while cache.length - 1 < yadda_idx
       yadda = cache[ yadda_idx ]
-      # yadda = @MKTX.TEX.fix_typography_for_tex yadda, S.options
+      # yadda = @MKTX.TYPOFIX.fix_typography_for_tex yadda, S.options
       send stamp event
       send [ 'tex', yadda, ]
       # send [ '.', 'p', null, ( copy meta ), ]
@@ -1126,7 +1126,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       unless text?
         mark_idx += +1
         text      = "a-#{mark_idx}"
-      # text = @MKTX.TEX.fix_typography_for_tex text, S.options
+      # text = @MKTX.TYPOFIX.fix_typography_for_tex text, S.options
       send [ 'tex', "\\mktsMark{#{text}}", ]
     #.......................................................................................................
     else
@@ -1492,7 +1492,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     primarily a formatting instruction ###
     if select event, '.', 'warning'
       [ type, name, text, meta, ] = event
-      message                     = @MKTX.TEX.fix_typography_for_tex text, S.options
+      message                     = @MKTX.TYPOFIX.fix_typography_for_tex text, S.options
       # message                     = text
       ### TAINT use location data ###
       send [ 'tex', "\\begin{mktsEnvWarning}#{message}\\end{mktsEnvWarning}" ]
@@ -1582,8 +1582,8 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe MACRO_INTERPRETER.$capture_change_events          S
     .pipe @MKTX.CLEANUP.$remove_empty_texts                 S
     .pipe @MKTX.CLEANUP.$consolidate_texts                  S
-    # .pipe @MKTX.TEX.$fix_typography_for_tex                 S
-    .pipe @MKTX.TEXv2.$fix_typography_for_tex               S
+    .pipe @MKTX.TYPOFIX.$fix_typography_for_tex             S
+    # .pipe @MKTX.TYPOFIX_OLD.$fix_typography_for_tex         S
     #.......................................................................................................
     .pipe MKTSCRIPT_WRITER.$show_mktsmd_events              S
     .pipe do =>
