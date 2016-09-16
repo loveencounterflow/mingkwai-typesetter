@@ -202,23 +202,38 @@ MKNCR                     = require '../../mingkwai-ncr'
 #
 #-----------------------------------------------------------------------------------------------------------
 @$fix_typography_for_tex = ( S ) ->
-  ### TAINT which one should come first? ###
   pipeline = [
     @$split                     S
     @$wrap_as_glyph_description S
     @$format_cjk                S
     @$format_tex_specials       S
-    # $ ( data ) -> urge '67201', data
     @$unwrap_glyph_description  S
     @$consolidate_tex_events    S
-    $ ( event ) -> help '65099', rpr event[ 1 ] if select event, 'tex'
+    # $ ( event ) -> help '65099', rpr event[ 1 ] if select event, 'tex'
     ]
   return D.new_stream { pipeline, }
 
 #-----------------------------------------------------------------------------------------------------------
-@fix_typography_for_tex = ( S, text ) ->
-  throw new Error "not yet implemented"
-  transform = @$fix_typography_for_tex S
+@fix_typography_for_tex = ( S, text, handler ) ->
+  collector = []
+  input     = D.new_stream()
+  input
+    .pipe @$fix_typography_for_tex S
+    .pipe $ ( event ) =>
+      return unless select event, 'tex'
+      [ _, tex,] = event
+      collector.push tex
+    .pipe $ 'finish', =>
+      handler null, collector.join ''
+  #.........................................................................................................
+  D.send  input, [ '.', 'text', text, {}, ]
+  D.end   input
+  #.........................................................................................................
+  return null
+
+
+
+
 
 
 
