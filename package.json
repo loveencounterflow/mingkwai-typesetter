@@ -5,12 +5,12 @@
   "main": "lib/main.js",
   "scripts": {
     "mkts": "node --harmony lib/cli.js mkts $2",
-    "build-options": "coffee -c options.coffee",
+    "build-options": "coffee --map -o lib -c options.coffee",
     "build": "coffee --map -o lib -c src",
     "build-all": "npm run build && npm run build-options",
     "push": "git add . && git commit -m'update' && git push",
     "doctoc": "doctoc README.md README-plugin-tabulate.md README-plugin-tsv.md",
-    "pub": "npm run build && npm run doctoc && npm run push && npm version patch && npm publish",
+    "pub": "npm run build-all && npm run doctoc && npm run push && npm version patch && npm publish",
     "test-travis": "node lib/tests.js",
     "test": "npm run build && node lib/tests.js"
   },

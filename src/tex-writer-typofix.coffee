@@ -107,13 +107,12 @@ MKNCR                     = require '../../mingkwai-ncr'
     return flush_and_send_event() unless event?
     return flush_and_send_event() unless select event, '.', Σ_glyph_description
     #.......................................................................................................
+    debug '50400', event
     [ type, name, description, meta, ]              = event
     { uchr, rsg, tag, tex: texcmd, }                = description
-    { block: texcmd_block, codepoint: texcmd_cp, }  = texcmd
     is_cjk                                          = 'cjk' in tag
-    # is_ascii_whistespace                            = 'ascii-whitespace' in tag
-    #.......................................................................................................
     return flush_and_send_event() unless is_cjk
+    { block: texcmd_block, codepoint: texcmd_cp, }  = texcmd
     #.......................................................................................................
     if last_texcmd_block isnt texcmd_block
       ### close previous open TeX block command, if any: ###

@@ -216,7 +216,6 @@ after = ( names..., method ) ->
 #-----------------------------------------------------------------------------------------------------------
 @MKTX =
   TYPOFIX:      require './tex-writer-typofix'
-  TYPOFIX_OLD:  require './tex-writer-typofix-OLD'
   DOCUMENT:     {}
   COMMAND:      {}
   REGION:       {}
@@ -1583,7 +1582,6 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @MKTX.CLEANUP.$remove_empty_texts                 S
     .pipe @MKTX.CLEANUP.$consolidate_texts                  S
     .pipe @MKTX.TYPOFIX.$fix_typography_for_tex             S
-    # .pipe @MKTX.TYPOFIX_OLD.$fix_typography_for_tex         S
     #.......................................................................................................
     .pipe MKTSCRIPT_WRITER.$show_mktsmd_events              S
     .pipe do =>
