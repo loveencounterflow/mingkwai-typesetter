@@ -924,11 +924,16 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
             else               col_styles.push 'l'
         col_styles  = '| ' + ( col_styles.join ' | ' ) + ' |'
         # send [ 'tex', "\\begin{tabular}[pos]{table spec}", ]
-        send [ 'tex', "\n\n\\begin{tabular}[pos]{ #{col_styles} }\n", ]
+        # send [ 'tex', "\n\n\\begin{tabular}[pos]{ #{col_styles} }\n", ]
+        ### thx to http://tex.stackexchange.com/a/86893 ###
+        send [ 'tex', "\n\n{\\setlength\\lineskiplimit{0mm}%\n", ]
+        send [ 'tex', "\\vskip{10mm}%\n", ]
+        send [ 'tex', "\\begin{tabular}[pos]{ #{col_styles} }\n", ]
       #.....................................................................................................
       else if select event, ')', 'table'
         send stamp hide copy event
-        send [ 'tex', "\\end{tabular}\n\n", ]
+        send [ 'tex', "\\end{tabular}}\n\n", ]
+        # send [ 'tex', "\\end{tabular}\n\n", ]
       #.....................................................................................................
       else if select event, '(', 'tbody'
         send stamp hide copy event
