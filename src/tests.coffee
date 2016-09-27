@@ -1097,7 +1097,7 @@ nice_text_rpr = ( text ) ->
 #-----------------------------------------------------------------------------------------------------------
 @[ "TEX_WRITER_TYPOFIX.fix_typography_for_tex" ] = ( T, done ) ->
   S                                 = {}
-  { CACHE, OPTIONS, }               = require './options'
+  { CACHE, OPTIONS, }               = require './options-and-cache'
   TEX_WRITER_TYPOFIX                = require './tex-writer-typofix'
   options_route                     = '../options.coffee'
   options_locator                   = require.resolve njs_path.resolve __dirname, options_route

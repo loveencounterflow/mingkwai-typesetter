@@ -84,6 +84,8 @@ MKNCR                     = require '../../mingkwai-ncr'
   ### NOTE same pattern as in `$consolidate_tex_events` ###
   ### TAINT should preserve raw text from before replacements ###
   ### TAINT use piped streams for logic? ###
+  ### TAINT unify with `$format_non_cjk` ###
+  ### TAINT do not use a collector, may potentially store text of entire document in memory ###
   cjk_collector       = []
   send                = null
   event               = null
@@ -107,12 +109,17 @@ MKNCR                     = require '../../mingkwai-ncr'
     return flush_and_send_event() unless event?
     return flush_and_send_event() unless select event, '.', Σ_glyph_description
     #.......................................................................................................
-    debug '50400', event
     [ type, name, description, meta, ]              = event
     { uchr, rsg, tag, tex: texcmd, }                = description
     is_cjk                                          = 'cjk' in tag
     return flush_and_send_event() unless is_cjk
-    { block: texcmd_block, codepoint: texcmd_cp, }  = texcmd
+    #.......................................................................................................
+    if texcmd?
+      { block: texcmd_block, codepoint: texcmd_cp, }  = texcmd
+    else
+      send [ '.', 'warning', "missing TeX command in description for codepoint: #{description}", ( copy meta ), ]
+      texcmd_block  = "\\cn{}"
+      texcmd_cp     = null
     #.......................................................................................................
     if last_texcmd_block isnt texcmd_block
       ### close previous open TeX block command, if any: ###
@@ -126,6 +133,101 @@ MKNCR                     = require '../../mingkwai-ncr'
     cjk_collector.push tex
     #.......................................................................................................
     return null
+
+#-----------------------------------------------------------------------------------------------------------
+@$format_non_cjk = ( S ) ->
+  ### TAINT code duplication ###
+  ### TAINT unify with `$format_cjk` ###
+  ignore_texcmd_blocks  = [ '\\latin{}', ]
+  #.........................................................................................................
+  return $ ( _event, _send ) =>
+    send  = _send
+    event = _event
+    #.......................................................................................................
+    return send event unless select event, '.', Σ_glyph_description
+    #.......................................................................................................
+    [ type, name, description, meta, ]              = event
+    { uchr, rsg, tag, tex: texcmd, }                = description
+    return send event if 'cjk' in tag
+    return send event unless texcmd?
+    #.......................................................................................................
+    { block: texcmd_block, codepoint: texcmd_cp, }  = texcmd
+    # debug '79876', texcmd, texcmd in ignore_texcmd_blocks
+    return send event if texcmd_block in ignore_texcmd_blocks
+    #.......................................................................................................
+    collector = []
+    collector.push "{#{texcmd_block}" if texcmd_block?
+    collector.push if texcmd_cp? then texcmd_cp else uchr
+    collector.push "}" if texcmd_block?
+    tex       = collector.join ''
+    send [ 'tex', tex, ]
+    #.......................................................................................................
+    return null
+
+# #-----------------------------------------------------------------------------------------------------------
+# @$format_cjk = ( S ) ->
+#   ### NOTE same pattern as in `$consolidate_tex_events` ###
+#   ### TAINT should preserve raw text from before replacements ###
+#   ### TAINT use piped streams for logic? ###
+#   cjk_collector         = []
+#   send                  = null
+#   event                 = null
+#   last_texcmd_block     = null
+#   script                = 'latin'
+#   last_script           = script
+#   ignore_texcmd_blocks  = [ '\\latin{}', ]
+#   must_close_group      = no
+#   #.........................................................................................................
+#   flush_and_send_event = =>
+#     if cjk_collector.length > 0
+#       cjk_collector.push "}" if last_texcmd_block?
+#       cjk_collector.push "}"
+#       tex                   = "{\\cjk{}" + cjk_collector.join ''
+#       last_texcmd_block     = null
+#       cjk_collector.length  = 0
+#       send [ 'tex', tex, ]
+#     send event if event?
+#     return null
+#   #.........................................................................................................
+#   return $ 'null', ( _event, _send ) =>
+#     send  = _send
+#     event = _event
+#     #.......................................................................................................
+#     return flush_and_send_event() unless event?
+#     return flush_and_send_event() unless select event, '.', Σ_glyph_description
+#     #.......................................................................................................
+#     [ type, name, description, meta, ]  = event
+#     { uchr, rsg, tag, tex: texcmd, }    = description
+#     script                              = if ( 'cjk' in tag ) then 'cjk' else 'latin'
+#     flush_and_send_event() if script isnt last_script
+#     last_script                         = script
+#     #.......................................................................................................
+#     if texcmd?
+#       { block: texcmd_block, codepoint: texcmd_cp, }  = texcmd
+#     else
+#       send [ '.', 'warning', "missing TeX command in description for codepoint: #{description}", ( copy meta ), ]
+#       texcmd_block  = null
+#       texcmd_cp     = null
+#     #.......................................................................................................
+#     if last_texcmd_block isnt texcmd_block
+#       ### close previous open TeX block command, if any: ###
+#       if must_close_group
+#         cjk_collector.push '}' if cjk_collector?
+#         must_close_group = no
+#       debug "30222", rpr texcmd_block, texcmd_block in ignore_texcmd_blocks
+#       if texcmd_block in ignore_texcmd_blocks
+#         must_close_group  = no
+#       else
+#         must_close_group  = yes
+#         cjk_collector.push '{'
+#         cjk_collector.push texcmd_block
+#       last_texcmd_block = texcmd_block
+#     #.......................................................................................................
+#     tex   = texcmd_cp
+#     tex  ?= uchr
+#     cjk_collector.push tex
+#     #.......................................................................................................
+#     return null
 
 
 #===========================================================================================================
@@ -203,6 +305,7 @@ MKNCR                     = require '../../mingkwai-ncr'
     @$split                     S
     @$wrap_as_glyph_description S
     @$format_cjk                S
+    @$format_non_cjk            S
     @$format_tex_specials       S
     @$unwrap_glyph_description  S
     @$consolidate_tex_events    S

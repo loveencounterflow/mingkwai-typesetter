@@ -351,22 +351,22 @@ module.exports = options =
       '⤾':      cmd: 'mktsFontfileDejavuserif'
 
       ### Ideographic description characters: ###
-      '↻':      raise: -0.2,   cmd: 'cnxJzr',      glyph: ''
-      '↔':      raise: -0.2,   cmd: 'cnxJzr',      glyph: ''
-      '↕':      raise: -0.2,   cmd: 'cnxJzr',      glyph: ''
-      '●':      raise: -0.2,   cmd: 'cnxJzr',      glyph: ''
-      '◰':      raise: -0.2,   cmd: 'cnxJzr',      glyph: ''
-      '≈':      raise: -0.2,   cmd: 'cnxJzr',      glyph: ''
-      '⿰':     raise: -0.2,   cmd: 'cnxJzr',      glyph: ''
-      '⿱':     raise: -0.2,   cmd: 'cnxJzr',      glyph: ''
-      '⿺':     raise: -0.2,   cmd: 'cnxJzr',      glyph: ''
-      '⿸':     raise: -0.2,   cmd: 'cnxJzr',      glyph: ''
-      '⿹':     raise: -0.2,   cmd: 'cnxJzr',      glyph: ''
-      '⿶':     raise: -0.2,   cmd: 'cnxJzr',      glyph: ''
-      '⿷':     raise: -0.2,   cmd: 'cnxJzr',      glyph: ''
-      '⿵':     raise: -0.2,   cmd: 'cnxJzr',      glyph: ''
-      '⿴':     raise: -0.2,   cmd: 'cnxJzr',      glyph: ''
-      '⿻':     raise: -0.2,   cmd: 'cnxJzr',      glyph: ''
+      '↻':         cmd: 'cnxJzr',      glyph: ''       # raise: -0.2,
+      '↔':         cmd: 'cnxJzr',      glyph: ''       # raise: -0.2,
+      '↕':         cmd: 'cnxJzr',      glyph: ''       # raise: -0.2,
+      '●':         cmd: 'cnxJzr',      glyph: ''       # raise: -0.2,
+      '◰':         cmd: 'cnxJzr',      glyph: ''       # raise: -0.2,
+      '≈':         cmd: 'cnxJzr',      glyph: ''       # raise: -0.2,
+      '⿰':        cmd: 'cnxJzr',      glyph: ''      # raise: -0.2,
+      '⿱':        cmd: 'cnxJzr',      glyph: ''      # raise: -0.2,
+      '⿺':        cmd: 'cnxJzr',      glyph: ''      # raise: -0.2,
+      '⿸':        cmd: 'cnxJzr',      glyph: ''      # raise: -0.2,
+      '⿹':        cmd: 'cnxJzr',      glyph: ''      # raise: -0.2,
+      '⿶':        cmd: 'cnxJzr',      glyph: ''      # raise: -0.2,
+      '⿷':        cmd: 'cnxJzr',      glyph: ''      # raise: -0.2,
+      '⿵':        cmd: 'cnxJzr',      glyph: ''      # raise: -0.2,
+      '⿴':        cmd: 'cnxJzr',      glyph: ''      # raise: -0.2,
+      '⿻':        cmd: 'cnxJzr',      glyph: ''      # raise: -0.2,
 
       ### 'Late Additions' in upper part of CJK unified ideographs (Unicode v5.2); glyphs are missing
         from Sun-ExtA but are included in BabelstoneHan: ###

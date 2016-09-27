@@ -31,7 +31,7 @@ ASYNC                     = require 'async'
 HELPERS                   = require './helpers'
 TEXLIVEPACKAGEINFO        = require './texlivepackageinfo'
 options_route             = '../options.coffee'
-{ CACHE, OPTIONS, }       = require './options'
+{ CACHE, OPTIONS, }       = require './options-and-cache'
 SEMVER                    = require 'semver'
 #...........................................................................................................
 TEXT                      = require 'coffeenode-text'
