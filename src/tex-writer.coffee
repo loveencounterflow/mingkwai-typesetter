@@ -923,17 +923,15 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
             when 'right'  then col_styles.push 'r'
             else               col_styles.push 'l'
         col_styles  = '| ' + ( col_styles.join ' | ' ) + ' |'
-        # send [ 'tex', "\\begin{tabular}[pos]{table spec}", ]
-        # send [ 'tex', "\n\n\\begin{tabular}[pos]{ #{col_styles} }\n", ]
-        ### thx to http://tex.stackexchange.com/a/86893 ###
+        ### thx to http://tex.stackexchange.com/a/86893 for `\\setlength\\lineskiplimit{0mm}` ###
         send [ 'tex', "\n\n{\\setlength\\lineskiplimit{0mm}%\n", ]
-        send [ 'tex', "\\vskip{10mm}%\n", ]
+        send [ 'tex', "\\vskip -0.5\\mktsLineheight%\n", ]
         send [ 'tex', "\\begin{tabular}[pos]{ #{col_styles} }\n", ]
       #.....................................................................................................
       else if select event, ')', 'table'
         send stamp hide copy event
-        send [ 'tex', "\\end{tabular}}\n\n", ]
-        # send [ 'tex', "\\end{tabular}\n\n", ]
+        send [ 'tex', "\\end{tabular}\n", ]
+        send [ 'tex', "\\vskip 1.01\\mktsLineheight}\n\n", ]
       #.....................................................................................................
       else if select event, '(', 'tbody'
         send stamp hide copy event
