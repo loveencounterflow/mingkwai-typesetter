@@ -579,7 +579,8 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       yadda = cache[ yadda_idx ]
       # yadda = @MKTX.TYPOFIX.fix_typography_for_tex yadda, S.options
       send stamp event
-      send [ 'tex', yadda, ]
+      # send [ 'tex', yadda, ]
+      send [ '.', 'text', yadda, ( copy meta ), ]
       # send [ '.', 'p', null, ( copy meta ), ]
     #.......................................................................................................
     else
@@ -605,7 +606,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       send event
 
 #-----------------------------------------------------------------------------------------------------------
-@MKTX.BLOCK.$paragraph = ( S ) =>
+@MKTX.BLOCK.$paragraph_1 = ( S ) =>
   ### TAINT should unify the two observers ###
   track = MD_READER.TRACKER.new_tracker '(code)', '(keep-lines)'
   #.........................................................................................................
@@ -622,6 +623,48 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       else
         send stamp event
         send @MKTX.BLOCK._end_paragraph()
+    #.......................................................................................................
+    else
+      send event
+
+#-----------------------------------------------------------------------------------------------------------
+@MKTX.BLOCK.$paragraph_2 = ( S ) =>
+  within_paragraph  = no
+  seen_text_event   = no
+  collector         = []
+  close_paragraph   = no
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    #.......................................................................................................
+    if event[ 0 ] is '~' and event[ 1 ] is 'start-paragraph'
+      within_paragraph  = yes
+      seen_text_event   = no
+    #.......................................................................................................
+    else if select event, '.', 'p'
+      within_paragraph  = no
+      seen_text_event   = no
+      # send [ 'tex', "\n}\n" ]
+      send cached_event for cached_event in collector
+      collector.length = 0
+      if close_paragraph
+        close_paragraph = no
+        send [ 'tex', "\n}% )p\n" ]
+    #.......................................................................................................
+    else if within_paragraph
+      if seen_text_event
+        send event
+      else
+        if select event, '.', 'text'
+          ### TAINT can omit either of these two ###
+          seen_text_event = yes
+          close_paragraph = yes
+          send [ 'tex', "\n{% (p\n" ]
+          # send [ 'tex', "\n{\n" ]
+          send cached_event for cached_event in collector
+          collector.length = 0
+          send event
+        else
+          collector.push event
     #.......................................................................................................
     else
       send event
@@ -924,14 +967,36 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
             else               col_styles.push 'l'
         col_styles  = '| ' + ( col_styles.join ' | ' ) + ' |'
         ### thx to http://tex.stackexchange.com/a/86893 for `\\setlength\\lineskiplimit{0mm}` ###
-        send [ 'tex', "\n\n{\\setlength\\lineskiplimit{0mm}%\n", ]
-        send [ 'tex', "\\vskip -0.5\\mktsLineheight%\n", ]
+        # send [ 'tex', "\n\n{", ]
+        ###
+        {%
+        \setlength\lineskiplimit{1mm}%
+        \setlength\lineskip{5mm}%
+        \begin{minipage}[b][7\mktsLineheight]{1\linewidth}%
+        \color{red}%
+        % \mktsVspace{3}%
+        Anim et laborum nisi voluptate occaecat irure duis enim labore tempor magna. Sunt magna irure nisi elit aliquip tempor veniam nulla ea eiusmod sit. Nostrud nisi non dolor est sunt enim aute. Sint cillum quis et do veniam. Ipsum sint deserunt aute ipsum nostrud excepteur anim non occaecat anim proident nulla excepteur. Elit commodo velit aliqua consectetur.
+        % \mktsVspace{3}%
+        \end{minipage}
+        }
+        ###
+        # send [ 'tex', "\\mktsVspace{3}%\n", ]
+        # send [ 'tex', "\\begin{minipage}[b][150mm]{1\\linewidth}%\n", ]
+        # send [ 'tex', "XXXXXXXXXXXXXXXXX\n", ]
+        # send [ 'tex', "\\setlength\\lineskiplimit{10mm}%\n", ]
+        # send [ 'tex', "\\setlength\\lineskip{\\mktsLineheight}%\n", ]
+        # send [ 'tex', "\\vskip -0.5\\mktsLineheight%\n", ]
         send [ 'tex', "\\begin{tabular}[pos]{ #{col_styles} }\n", ]
       #.....................................................................................................
       else if select event, ')', 'table'
         send stamp hide copy event
         send [ 'tex', "\\end{tabular}\n", ]
-        send [ 'tex', "\\vskip 1.01\\mktsLineheight}\n\n", ]
+        # send [ 'tex', "XXXXXXXXXXXXXXXXX\n", ]
+        # send [ 'tex', "\\end{minipage}\n", ]
+        # send [ 'tex', "\\mktsVspace{3}%\n", ]
+        # send [ 'tex', "\\vskip 1.01\\mktsLineheight\n\n", ]
+        # send [ 'tex', "}", ]
+        send [ 'tex', "\n\n", ]
       #.....................................................................................................
       else if select event, '(', 'tbody'
         send stamp hide copy event
@@ -1577,13 +1642,14 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @MKTX.INLINE.$em_strong_and_smallcaps             S
     .pipe @MKTX.INLINE.$image                               S
     .pipe @MKTX.BLOCK.$yadda                                S
-    .pipe @MKTX.BLOCK.$paragraph                            S
+    .pipe @MKTX.BLOCK.$paragraph_1                          S
     .pipe @MKTX.MIXED.$raw                                  S
     .pipe @COLUMNS.$main                                    S
     #.......................................................................................................
     .pipe MACRO_INTERPRETER.$capture_change_events          S
     .pipe @MKTX.CLEANUP.$remove_empty_texts                 S
     .pipe @MKTX.CLEANUP.$consolidate_texts                  S
+    .pipe @MKTX.BLOCK.$paragraph_2                          S
     .pipe @MKTX.TYPOFIX.$fix_typography_for_tex             S
     #.......................................................................................................
     .pipe MKTSCRIPT_WRITER.$show_mktsmd_events              S

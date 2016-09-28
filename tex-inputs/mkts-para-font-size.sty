@@ -32,10 +32,13 @@
   % % \setlength{\multicolsep}{6.0pt plus 2.0pt minus 1.5pt}
   % \setlength{\parskip}{\mktsLineheight}
 
-  % thx to http://www.tug.org/TUGboat/tb28-1/tb88bazargan.pdf for the next:
+  % thx to http://www.tug.org/TUGboat/tb28-1/tb88bazargan.pdf
   % and http://tex.stackexchange.com/a/86902/28067
-  \setlength\lineskiplimit{-1000mm}%
-  \setlength\lineskip{0pt}%
+  % for the next:
+  % \newdimen\xxx%
+  % \setlength\xxx{\lineskiplimit}\relax%
+  \setlength\lineskiplimit{-1000mm}\relax%
+  \setlength\lineskip{0mm plus 0mm minus 0mm}%
   \setlength\parskip{\mktsLineheight}%
   % \lineskiplimit=-10pt%
   % \lineskip=0pt%

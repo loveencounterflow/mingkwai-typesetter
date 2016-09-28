@@ -263,6 +263,7 @@ MKNCR                     = require '../../mingkwai-ncr'
   ### NOTE same pattern as in `$format_cjk` ###
   collector     = []
   send          = null
+  event         = null
   #.........................................................................................................
   flush_and_send_event = =>
     if collector.length > 0
