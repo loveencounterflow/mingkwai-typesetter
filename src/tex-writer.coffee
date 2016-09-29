@@ -981,12 +981,8 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
         \end{minipage}
         }
         ###
-        # send [ 'tex', "\\mktsVspace{3}%\n", ]
-        # send [ 'tex', "\\begin{minipage}[b][150mm]{1\\linewidth}%\n", ]
-        # send [ 'tex', "XXXXXXXXXXXXXXXXX\n", ]
-        # send [ 'tex', "\\setlength\\lineskiplimit{10mm}%\n", ]
-        # send [ 'tex', "\\setlength\\lineskip{\\mktsLineheight}%\n", ]
-        # send [ 'tex', "\\vskip -0.5\\mktsLineheight%\n", ]
+        send [ 'tex', "{", ]
+        send [ 'tex', "\\mktsVspace{7}\\tfRaise{5}%\n", ]
         send [ 'tex', "\\begin{tabular}[pos]{ #{col_styles} }\n", ]
       #.....................................................................................................
       else if select event, ')', 'table'
@@ -996,7 +992,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
         # send [ 'tex', "\\end{minipage}\n", ]
         # send [ 'tex', "\\mktsVspace{3}%\n", ]
         # send [ 'tex', "\\vskip 1.01\\mktsLineheight\n\n", ]
-        # send [ 'tex', "}", ]
+        send [ 'tex', "}", ]
         send [ 'tex', "\n\n", ]
       #.....................................................................................................
       else if select event, '(', 'tbody'
