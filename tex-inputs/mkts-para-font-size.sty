@@ -34,9 +34,11 @@
 
   % thx to http://www.tug.org/TUGboat/tb28-1/tb88bazargan.pdf
   % and http://tex.stackexchange.com/a/86902/28067
-  % for the next:
-  % \newdimen\xxx%
-  % \setlength\xxx{\lineskiplimit}\relax%
+  % for the next.
+  % Observe that tabular environments suffer from this `\lineskiplimit` setting.
+  % `\def\mktsZerohline{\Xhline{0\arrayrulewidth}}` is used in place of a `hline` in `tabular` environments
+  % in conjuntion with `\setlength\lineskiplimit{-1000mm}` to prevent table lines from
+  % collapsing.
   \setlength\lineskiplimit{-1000mm}\relax%
   \setlength\lineskip{0mm plus 0mm minus 0mm}%
   \setlength\parskip{\mktsLineheight}%

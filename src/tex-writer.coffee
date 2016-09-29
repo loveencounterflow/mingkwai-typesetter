@@ -950,6 +950,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       buffer = null
       send stamp hide copy event
       send [ 'tex', "\\\\\n", ]
+      send [ 'tex', "\\mktsZerohline\n", ]
     #.......................................................................................................
     else
       send buffer if buffer

@@ -6,6 +6,7 @@
 % MKTS BASE
 % ----------------------------------------------------------------------------------------------------------
 \usepackage{swrule}
+\usepackage{makecell}% contains `\Xhline`
 
 % ----------------------------------------------------------------------------------------------------------
 \newcommand{\mktsThrow}[2]{%
@@ -43,6 +44,7 @@
 \newcommand{\mktsRuleZero}{}%
 \newcommand{\mktsScaleFont}[1]{}%
 \newcommand{\mktsScaleFontRelative}[1]{}%
+\def\mktsZerohline{}
 
 
 % ==========================================================================================================
@@ -94,6 +96,11 @@
   % ........................................................................................................
   % thx to http://tex.stackexchange.com/a/65734/28067
   \renewcommand{\mktsHrulefill}[1]{\leavevmode\leaders\hrule height #1\columnseprule\hfill\kern\z@}
+  % thx to http://tex.stackexchange.com/a/31037
+  % The `\mktsZerohline` is used in place of a `hline` in `tabular` environments
+  % in conjuntion with `\setlength\lineskiplimit{-1000mm}` to prevent table lines from
+  % collapsing.
+  \def\mktsZerohline{\Xhline{0\arrayrulewidth}}
 
   % ........................................................................................................
   \renewcommand{\mktsRulePlainTight}{%
@@ -164,6 +171,7 @@
   \gdef\mktsObeyAllLines{}%
   \renewcommand{\mktsScaleFont}[1]{}%
   \renewcommand{\mktsScaleFontRelative}[1]{}%
+  \def\mktsZerohline{}
   }
 
 % ----------------------------------------------------------------------------------------------------------
