@@ -50,6 +50,8 @@ MACRO_ESCAPER             = require './macro-escaper'
 MACRO_INTERPRETER         = require './macro-interpreter'
 LINEBREAKER               = require './linebreaker'
 @COLUMNS                  = require './tex-writer-columns'
+#...........................................................................................................
+Σ_formatted_warning       = Symbol 'formatted-warning'
 
 
 #===========================================================================================================
@@ -648,7 +650,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       collector.length = 0
       if close_paragraph
         close_paragraph = no
-        send [ 'tex', "\n}% )p\n" ]
+        # send [ 'tex', "\n}% )p\n" ]
     #.......................................................................................................
     else if within_paragraph
       if seen_text_event
@@ -658,8 +660,8 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
           ### TAINT can omit either of these two ###
           seen_text_event = yes
           close_paragraph = yes
-          send [ 'tex', "\n{% (p\n" ]
-          # send [ 'tex', "\n{\n" ]
+          # send [ 'tex', "\n{% (p\n" ]
+          # # send [ 'tex', "\n{\n" ]
           send cached_event for cached_event in collector
           collector.length = 0
           send event
@@ -699,7 +701,9 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       # send [ 'tex', "\\item[#{item_markup_tex}] " ]
       # send [ 'tex', "{\\mktsFontfileHanamina{}.⚫.▪.⏹.◼.⬛.}\\hspace{3mm}y" ]
       ### TAINT Horizontal space should depend on other metrics ###
-      send [ 'tex', "{\\mktsFontfileHanamina{}\\prPushRaise{-0.4}{-0.1}{⚫}\\hspace{-0.75mm}}" ]
+      # send [ 'tex', "{\\mktsFontfileHanamina{}\\prPushRaise{-0.4}{-0.1}{⚫}\\hspace{-0.75mm}}" ]
+      # send [ 'tex', "{\\mktsFontfileCwtexqheibold{}\\prPushRaise{-0.4}{-0.1}{▷}\\hspace{-1.75mm}}" ]
+      send [ 'tex', "{\\mktsFontfileCwtexqheibold{}\\prPushRaise{-0.4}{-0.1}{▷}}" ]
     #.......................................................................................................
     else if select event, ')', 'li'
       send stamp event
@@ -931,9 +935,9 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
 
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.MIXED.$table = ( S ) =>
-  track   = MD_READER.TRACKER.new_tracker '(table)', '(th)'
-  remark  = MD_READER._get_remark()
-  buffer  = null
+  track                     = MD_READER.TRACKER.new_tracker '(table)', '(th)'
+  remark                    = MD_READER._get_remark()
+  buffered_field_separator  = null
   #.........................................................................................................
   return $ ( event, send ) =>
     [ type, name, text, meta, ] = event
@@ -941,23 +945,25 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     within_th                   = track.within '(th)'
     track event
     #.......................................................................................................
+    return send event unless within_table or select event, '(', 'table'
+    #.......................................................................................................
     if within_th and select event, '.', 'text'
       send [ '(', 'strong', null, ( copy meta ), ]
       send stamp event
       send [ ')', 'strong', null, ( copy meta ), ]
     #.......................................................................................................
     else if select event, ')', 'tr'
-      buffer = null
+      buffered_field_separator = null
       send stamp hide copy event
-      send [ 'tex', "\\\\\n", ]
-      send [ 'tex', "\\mktsZerohline\n", ]
+      ### thx to http://tex.stackexchange.com/a/159260 ###
+      send [ 'tex', "\\\\[\\mktsTabularLineheightDelta]\n", ]
+      # last_zerohline_idx = send [ 'tex', "\\mktsZerohline\n", ]
     #.......................................................................................................
     else
-      send buffer if buffer
-      buffer = null
+      send buffered_field_separator if buffered_field_separator
+      buffered_field_separator = null
       #.....................................................................................................
       if select event, '(', 'table'
-        # debug '©36643', event
         send stamp hide copy event
         col_styles  = []
         for alignment in meta[ 'table' ][ 'alignments' ]
@@ -967,31 +973,14 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
             when 'right'  then col_styles.push 'r'
             else               col_styles.push 'l'
         col_styles  = '| ' + ( col_styles.join ' | ' ) + ' |'
-        ### thx to http://tex.stackexchange.com/a/86893 for `\\setlength\\lineskiplimit{0mm}` ###
-        # send [ 'tex', "\n\n{", ]
-        ###
-        {%
-        \setlength\lineskiplimit{1mm}%
-        \setlength\lineskip{5mm}%
-        \begin{minipage}[b][7\mktsLineheight]{1\linewidth}%
-        \color{red}%
-        % \mktsVspace{3}%
-        Anim et laborum nisi voluptate occaecat irure duis enim labore tempor magna. Sunt magna irure nisi elit aliquip tempor veniam nulla ea eiusmod sit. Nostrud nisi non dolor est sunt enim aute. Sint cillum quis et do veniam. Ipsum sint deserunt aute ipsum nostrud excepteur anim non occaecat anim proident nulla excepteur. Elit commodo velit aliqua consectetur.
-        % \mktsVspace{3}%
-        \end{minipage}
-        }
-        ###
         send [ 'tex', "{", ]
-        send [ 'tex', "\\mktsVspace{7}\\tfRaise{5}%\n", ]
+        send [ 'tex', "\\mktsVspace{\\mktsTabularTopDelta}]", ]
         send [ 'tex', "\\begin{tabular}[pos]{ #{col_styles} }\n", ]
       #.....................................................................................................
       else if select event, ')', 'table'
         send stamp hide copy event
         send [ 'tex', "\\end{tabular}\n", ]
-        # send [ 'tex', "XXXXXXXXXXXXXXXXX\n", ]
-        # send [ 'tex', "\\end{minipage}\n", ]
-        # send [ 'tex', "\\mktsVspace{3}%\n", ]
-        # send [ 'tex', "\\vskip 1.01\\mktsLineheight\n\n", ]
+        send [ 'tex', "\\mktsVspace{\\mktsTabularBottomDelta}]", ]
         send [ 'tex', "}", ]
         send [ 'tex', "\n\n", ]
       #.....................................................................................................
@@ -1007,14 +996,14 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       #.....................................................................................................
       else if select event, ')', 'td'
         send stamp hide copy event
-        buffer = [ 'tex', " & ", ]
+        buffered_field_separator = [ 'tex', " & ", ]
       #.....................................................................................................
       else if select event, '(', 'th'
         send stamp hide copy event
       #.....................................................................................................
       else if select event, ')', 'th'
         send stamp hide copy event
-        buffer = [ 'tex', " & ", ]
+        buffered_field_separator = [ 'tex', " & ", ]
       #.....................................................................................................
       else if select event, '(', 'thead'
         send [ 'tex', "\\hline\n", ]
@@ -1548,7 +1537,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       send event
 
 #-----------------------------------------------------------------------------------------------------------
-@MKTX.$show_warnings = ( S ) =>
+@MKTX.$format_warnings = ( S ) =>
   return $async ( event, done ) =>
     ### TAINT this makes clear why we should not use '.' as type here; `warning` is a meta-event, not
     primarily a formatting instruction ###
@@ -1556,13 +1545,39 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     if select event, '.', 'warning'
       [ type, name, text, meta, ] = event
       step ( resume ) =>
-        message = yield @MKTX.TYPOFIX.fix_typography_for_tex S, text, resume
-        done [ 'tex', "\\begin{mktsEnvWarning}#{message}\\end{mktsEnvWarning}" ]
+        message       = yield @MKTX.TYPOFIX.fix_typography_for_tex S, text, resume
+        message_tex   = "\\begin{mktsEnvWarning}#{message}\\end{mktsEnvWarning}"
+        message_event = [ '.', Σ_formatted_warning, message_tex, ( copy meta ), ]
+        done message_event
     #.......................................................................................................
     else
       done event
     #.......................................................................................................
     return null
+
+#-----------------------------------------------------------------------------------------------------------
+@MKTX.$show_warnings = ( S ) =>
+  warnings = []
+  return $ ( event, send ) =>
+    #.......................................................................................................
+    if select event, '.', Σ_formatted_warning
+      [ _, _, message_tex, meta, ]  = event
+      tex_event                     = [ 'tex', message_tex, ]
+      warnings.push tex_event
+      send tex_event
+    #.......................................................................................................
+    else if select event, ')', 'document'
+      if warnings.length > 0
+        for tex_event in warnings
+          send tex_event
+          send [ 'tex', "\n\n", ]
+        send event
+    #.......................................................................................................
+    else
+      send event
+    #.......................................................................................................
+    return null
+
 
 #===========================================================================================================
 #
@@ -1656,6 +1671,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
         S.event_count += +1
     .pipe @MKTX.INLINE.$mark                                S
     .pipe @MKTX.$show_unhandled_tags                        S
+    .pipe @MKTX.$format_warnings                            S
     .pipe @MKTX.$show_warnings                              S
     .pipe @$filter_tex                                      S
     # ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ?

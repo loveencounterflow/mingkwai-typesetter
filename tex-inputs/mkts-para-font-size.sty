@@ -11,6 +11,7 @@
 \newdimen\mktsFontsize%
 \newdimen\mktsCurrentLineheight%
 \newdimen\mktsCurrentFontsize%
+\newdimen\mktsTabularLineheightDelta%
 \setlength{\mktsFontsize}{3.8mm}%
 \setlength{\mktsLineheight}{4.6667mm}%
 % \setlength{\mktsLineheight}{5mm}%
@@ -18,6 +19,8 @@
 \setlength{\mktsCurrentLineheight}{\mktsLineheight}%
 \newcommand{\mktsTightParagraphs}{}%
 \newcommand{\mktsVspace}[1]{}%
+\newcommand{\mktsTabularTopDelta}{0.2}
+\newcommand{\mktsTabularBottomDelta}{0.5}
 % \gdef\mktsNextVspaceCount{1}%
 
 
@@ -35,13 +38,14 @@
   % thx to http://www.tug.org/TUGboat/tb28-1/tb88bazargan.pdf
   % and http://tex.stackexchange.com/a/86902/28067
   % for the next.
-  % Observe that tabular environments suffer from this `\lineskiplimit` setting.
-  % `\def\mktsZerohline{\Xhline{0\arrayrulewidth}}` is used in place of a `hline` in `tabular` environments
-  % in conjuntion with `\setlength\lineskiplimit{-1000mm}` to prevent table lines from
-  % collapsing.
-  \setlength\lineskiplimit{-1000mm}\relax%
+  % \setlength\lineskiplimit{-2.5mm}\relax%
+  \setlength\lineskiplimit{-2.5mm}\relax%
   \setlength\lineskip{0mm plus 0mm minus 0mm}%
   \setlength\parskip{\mktsLineheight}%
+  % ### TAINT shouldn't this be expressed as a multiple of mktsLineheight? ###
+  \setlength\mktsTabularLineheightDelta{-0.13mm}
+  \renewcommand{\mktsTabularTopDelta}{0.2}
+  \renewcommand{\mktsTabularBottomDelta}{0.5}
   % \lineskiplimit=-10pt%
   % \lineskip=0pt%
   \topskip=\baselineskip%
