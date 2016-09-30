@@ -11,7 +11,6 @@
 \newdimen\mktsFontsize%
 \newdimen\mktsCurrentLineheight%
 \newdimen\mktsCurrentFontsize%
-\newdimen\mktsTabularLineheightDelta%
 \setlength{\mktsFontsize}{3.8mm}%
 \setlength{\mktsLineheight}{4.6667mm}%
 % \setlength{\mktsLineheight}{5mm}%
@@ -19,8 +18,10 @@
 \setlength{\mktsCurrentLineheight}{\mktsLineheight}%
 \newcommand{\mktsTightParagraphs}{}%
 \newcommand{\mktsVspace}[1]{}%
-\newcommand{\mktsTabularTopDelta}{0.2}
-\newcommand{\mktsTabularBottomDelta}{0.5}
+\newcommand{\mktsTabularTopDelta}{}%
+\newdimen\mktsTabularLineheightDelta%
+\newdimen\mktsTabularLineheightDeltaLast%
+\newcommand{\mktsTabularBottomDelta}{}%
 % \gdef\mktsNextVspaceCount{1}%
 
 
@@ -44,8 +45,9 @@
   \setlength\parskip{\mktsLineheight}%
   % ### TAINT shouldn't this be expressed as a multiple of mktsLineheight? ###
   \setlength\mktsTabularLineheightDelta{-0.13mm}
+  \setlength\mktsTabularLineheightDeltaLast{0.1\mktsLineheight}
   \renewcommand{\mktsTabularTopDelta}{0.2}
-  \renewcommand{\mktsTabularBottomDelta}{0.5}
+  \renewcommand{\mktsTabularBottomDelta}{0.45}
   % \lineskiplimit=-10pt%
   % \lineskip=0pt%
   \topskip=\baselineskip%

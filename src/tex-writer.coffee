@@ -938,6 +938,8 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
   track                     = MD_READER.TRACKER.new_tracker '(table)', '(th)'
   remark                    = MD_READER._get_remark()
   buffered_field_separator  = null
+  description               = null
+  row_count                 = null
   #.........................................................................................................
   return $ ( event, send ) =>
     [ type, name, text, meta, ] = event
@@ -953,10 +955,14 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       send [ ')', 'strong', null, ( copy meta ), ]
     #.......................................................................................................
     else if select event, ')', 'tr'
-      buffered_field_separator = null
+      row_count                += +1
+      buffered_field_separator  = null
       send stamp hide copy event
       ### thx to http://tex.stackexchange.com/a/159260 ###
-      send [ 'tex', "\\\\[\\mktsTabularLineheightDelta]\n", ]
+      if row_count is description[ 'row_count' ]
+        send [ 'tex', "\\\\[\\mktsTabularLineheightDeltaLast]\n", ]
+      else
+        send [ 'tex', "\\\\[\\mktsTabularLineheightDelta]\n", ]
       # last_zerohline_idx = send [ 'tex', "\\mktsZerohline\n", ]
     #.......................................................................................................
     else
@@ -966,7 +972,9 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       if select event, '(', 'table'
         send stamp hide copy event
         col_styles  = []
-        for alignment in meta[ 'table' ][ 'alignments' ]
+        row_count   = 0
+        description = meta[ 'table' ]
+        for alignment in description[ 'alignments' ]
           switch alignment
             when 'left'   then col_styles.push 'l'
             when 'center' then col_styles.push 'c'
@@ -974,21 +982,23 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
             else               col_styles.push 'l'
         col_styles  = '| ' + ( col_styles.join ' | ' ) + ' |'
         send [ 'tex', "{", ]
-        send [ 'tex', "\\mktsVspace{\\mktsTabularTopDelta}]", ]
+        send [ 'tex', "\\mktsVspace{\\mktsTabularTopDelta}", ]
         send [ 'tex', "\\begin{tabular}[pos]{ #{col_styles} }\n", ]
       #.....................................................................................................
       else if select event, ')', 'table'
         send stamp hide copy event
+        send [ 'tex', "\\hline\n", ]
         send [ 'tex', "\\end{tabular}\n", ]
-        send [ 'tex', "\\mktsVspace{\\mktsTabularBottomDelta}]", ]
+        send [ 'tex', "\\mktsVspace{\\mktsTabularBottomDelta}", ]
         send [ 'tex', "}", ]
         send [ 'tex', "\n\n", ]
+        description = null
+        row_count   = null
       #.....................................................................................................
       else if select event, '(', 'tbody'
         send stamp hide copy event
       #.....................................................................................................
       else if select event, ')', 'tbody'
-        send [ 'tex', "\\hline\n", ]
         send stamp hide copy event
       #.....................................................................................................
       else if select event, '(', 'td'

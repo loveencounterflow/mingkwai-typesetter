@@ -578,12 +578,12 @@ tracker_pattern = /// ^
     return null
 
 #-----------------------------------------------------------------------------------------------------------
-@_PRE.$consolidate_tables  = ( S ) =>
+@_PRE.$consolidate_tables_1  = ( S ) =>
   ### TAINT assumes unnested tables without merged cells ###
   track         = @TRACKER.new_tracker '(table)'
   collector     = []
   collecting    = no
-  col_count     = 0
+  col_count     = null
   alignments    = null
   description   = null
   #.........................................................................................................
@@ -627,6 +627,41 @@ tracker_pattern = /// ^
     #.......................................................................................................
     else
       send event
+
+#-----------------------------------------------------------------------------------------------------------
+@_PRE.$consolidate_tables_2  = ( S ) =>
+  collector     = []
+  description   = null
+  row_count     = 0
+  within_table  = no
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    [ type, name, text, meta, ] = event
+    #.......................................................................................................
+    if @select event, '(', 'table'
+      within_table  = yes
+      description   = meta[ 'table' ]
+      return collector.push event
+    #.......................................................................................................
+    return send event unless within_table
+    #.......................................................................................................
+    if @select event, ')', 'table'
+      within_table                = no
+      description[ 'row_count' ]  = row_count
+      description                 = null
+      send cached_event for cached_event in collector
+      send event
+      collector.length            = 0
+      row_count                   = 0
+    #.......................................................................................................
+    else if @select event, '(', 'tr'
+      row_count += +1
+      collector.push event
+    #.......................................................................................................
+    else
+      collector.push event
+    #.......................................................................................................
+    return null
 
 #-----------------------------------------------------------------------------------------------------------
 @_PRE.$consolidate_footnotes  = ( S ) =>
@@ -984,7 +1019,8 @@ tracker_pattern = /// ^
     .pipe @_PRE.$issue_administrative_events          S
     .pipe MKTS.MACRO_ESCAPER.$expand                  S
     .pipe @_PRE.$process_end_command                  S
-    .pipe @_PRE.$consolidate_tables                   S
+    .pipe @_PRE.$consolidate_tables_1                 S
+    .pipe @_PRE.$consolidate_tables_2                 S
     .pipe @_PRE.$consolidate_footnotes                S
     # .pipe @_PRE.$extra_hr                             S
     .pipe @_PRE.$hr2                                  S
