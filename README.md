@@ -89,7 +89,9 @@ squeeze and stretch type a teenie-weenie bit, but that's about it.
 > in practice almost all underlined text looks ugly. That should not be the case, given how straightforward
 > it is to add an underline to text. The [Shady Characters](http://www.shadycharacters.co.uk/) website is a
 > the rare exception; there, the designers went to lengths and devised ways to ensure that underlined text
-> look good.
+> look good.[^There's a very interesting proposal for a CSS property `text-decoration-skip` to provide for,
+> inter alia, gaps in the underline where it would otherwise cross descenders; as of 2016, it hasn't been
+> implemented in any browser, though.]
 
 Some (like Knuth) would argue that even mere font scaling produces another font (Schriftschnitt), and this
 was indeed, by and large, the matter of affairs with movable type, where you had one case with, say Times
