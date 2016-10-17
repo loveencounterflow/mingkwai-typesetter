@@ -100,6 +100,12 @@ $async                    = D.remit_async.bind D
   count               = 0
   texinputs_value     = layout_info[ 'tex-inputs-value' ]
   parameters          = [ texinputs_value, source_home, job_name, master_locator, ]
+  # ### !!!!!!!!!!!!!!!!!!!!!!!!!! ###
+  # PATH = require 'path'
+  # cwd = process.cwd()
+  # for parameter, parameter_idx in parameters
+  #   debug '60051', PATH.relative cwd, parameter
+  # ### !!!!!!!!!!!!!!!!!!!!!!!!!! ###
   error_lines         = []
   urge "#{xelatex_command}"
   whisper "$#{idx + 1}: #{parameters[ idx ]}" for idx in [ 0 ... parameters.length ]
