@@ -101,11 +101,11 @@
   \setlength{\mkts@GridYmax}{\paperheight - \headheight - \headsep - \topmargin - \voffset - 1in}%
   \setlength{\mkts@GridXshift}{\hoffset + 1in + \oddsidemargin}%
   \setlength{\mkts@GridXright}{\mkts@GridXshift + \textwidth}%
-  \setlength{\mkts@GridYshift}{\mkts@GridYmax - \textheight - 15mm }%
+  % \setlength{\mkts@GridYshift}{\mkts@GridYmax - \textheight - 15mm }%
   % % ........................................................................................................
   % \setlength{\mkts@GridYmax}{\paperheight - \headheight - \headsep - \topmargin - \voffset - 1in}%
   % \setlength{\mkts@GridXshift}{\hoffset + 1in + \oddsidemargin}%
-  % \setlength{\mkts@GridYshift}{\mkts@GridYmax - \textheight}%
+  \setlength{\mkts@GridYshift}{\mkts@GridYmax - \textheight}%
   % ........................................................................................................
   \setlength{\mkts@TwoColumnsCenter}{\textwidth * \real{0.5}}%
   \setlength{\mkts@TwoColumnsCenterLeft}{\mkts@TwoColumnsCenter - \columnsep * \real{0.5}}%
@@ -296,18 +296,19 @@
   % ........................................................................................................
   \AddToShipoutPicture{%
     \begin{tikzpicture}[ overlay, remember picture, blue!30, thin, xshift = \mkts@GridXshift, yshift = \mkts@GridYshift ]%
-      \draw ( \mkts@TwoColumnsCenterLeft,  0mm ) -- ( \mkts@TwoColumnsCenterLeft,  \textheight );
-      \draw ( \mkts@TwoColumnsCenterRight, 0mm ) -- ( \mkts@TwoColumnsCenterRight, \textheight );
-      \draw ( \mkts@FourColumnsCenterOneLeft,  0mm ) -- ( \mkts@FourColumnsCenterOneLeft,  \textheight );
-      \draw ( \mkts@FourColumnsCenterOneRight, 0mm ) -- ( \mkts@FourColumnsCenterOneRight, \textheight );
-      \draw ( \mkts@FourColumnsCenterTwoLeft,  0mm ) -- ( \mkts@FourColumnsCenterTwoLeft,  \textheight );
-      \draw ( \mkts@FourColumnsCenterTwoRight, 0mm ) -- ( \mkts@FourColumnsCenterTwoRight, \textheight );
+      % \draw ( \mkts@TwoColumnsCenterLeft,       \footheight + \footsep ) -- ( \mkts@TwoColumnsCenterLeft,        \textheight );
+      \draw ( \mkts@TwoColumnsCenterLeft,       0mm ) -- ( \mkts@TwoColumnsCenterLeft,        \textheight );
+      \draw ( \mkts@TwoColumnsCenterRight,      0mm ) -- ( \mkts@TwoColumnsCenterRight,       \textheight );
+      \draw ( \mkts@FourColumnsCenterOneLeft,   0mm ) -- ( \mkts@FourColumnsCenterOneLeft,    \textheight );
+      \draw ( \mkts@FourColumnsCenterOneRight,  0mm ) -- ( \mkts@FourColumnsCenterOneRight,   \textheight );
+      \draw ( \mkts@FourColumnsCenterTwoLeft,   0mm ) -- ( \mkts@FourColumnsCenterTwoLeft,    \textheight );
+      \draw ( \mkts@FourColumnsCenterTwoRight,  0mm ) -- ( \mkts@FourColumnsCenterTwoRight,   \textheight );
     \end{tikzpicture}%
     \begin{tikzpicture}[ overlay, remember picture, green!60, thin, xshift = \mkts@GridXshift, yshift = \mkts@GridYshift ]%
-      \draw ( \mkts@ThreeColumnsCenterOneLeft,  0mm ) -- ( \mkts@ThreeColumnsCenterOneLeft,  \textheight );
-      \draw ( \mkts@ThreeColumnsCenterOneRight, 0mm ) -- ( \mkts@ThreeColumnsCenterOneRight, \textheight );
-      \draw ( \mkts@ThreeColumnsCenterTwoLeft,  0mm ) -- ( \mkts@ThreeColumnsCenterTwoLeft,  \textheight );
-      \draw ( \mkts@ThreeColumnsCenterTwoRight, 0mm ) -- ( \mkts@ThreeColumnsCenterTwoRight, \textheight );
+      \draw ( \mkts@ThreeColumnsCenterOneLeft,  0mm ) -- ( \mkts@ThreeColumnsCenterOneLeft,   \textheight );
+      \draw ( \mkts@ThreeColumnsCenterOneRight, 0mm ) -- ( \mkts@ThreeColumnsCenterOneRight,  \textheight );
+      \draw ( \mkts@ThreeColumnsCenterTwoLeft,  0mm ) -- ( \mkts@ThreeColumnsCenterTwoLeft,   \textheight );
+      \draw ( \mkts@ThreeColumnsCenterTwoRight, 0mm ) -- ( \mkts@ThreeColumnsCenterTwoRight,  \textheight );
     \end{tikzpicture}%
     }%
   }
