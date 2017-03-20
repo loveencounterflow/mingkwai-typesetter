@@ -50,10 +50,10 @@
 \usepackage{cxltx-style-smashbox}
 
 % ### TAINT to be replaced with something else ###
-% \usepackage{cxltx-style-cjkglue}
-\newcommand{\cjkgUseCjkGlue}{}
-\newcommand{\cjkgGlue}{}
-\newcommand{\cjkgKeepLines}{}
+\usepackage{cxltx-style-cjkglue}
+% \newcommand{\cjkgUseCjkGlue}{}
+% \newcommand{\cjkgGlue}{}
+% \newcommand{\cjkgKeepLines}{}
 
 
 % \usepackage[null]{mkts-base} % plain
@@ -72,9 +72,9 @@
 % \usepackage[a4,interbands,ascenders,baselines,descenders]{mkts-page-geometry}
 % \usepackage[a4,ascenders,baselines,descenders]{mkts-page-geometry}
 % \usepackage[a4,ascenders,descenders,baselines,columns]{mkts-page-geometry}
-\usepackage[a4,linebands,columns,baselines]{mkts-page-geometry}
+% \usepackage[a4,linebands,columns,baselines]{mkts-page-geometry}
 % \usepackage[a4,baselines]{mkts-page-geometry}%            a4
-% \usepackage[a4]{mkts-page-geometry}%            a4
+\usepackage[a4]{mkts-page-geometry}%            a4
 % \usepackage[jizura]{mkts-headers-and-footers}%  jizura
 \usepackage[default]{mkts-fontsets}%            default
 \usepackage[default]{mkts-styles}%              default
@@ -176,7 +176,7 @@
 \renewcommand{\cjkgGlue}{\hskip 0mm plus 0.7mm minus 0.0mm}
 % \renewcommand{\cjkgGlue}{{\makebox[0mm]{\color{red}|}}\hskip 0mm plus 0.7mm minus 0.0mm}
 \newcommand{\cjk}{%
-  % \cjkgUseCjkGlue%
+  \cjkgUseCjkGlue%
   \cjkgGlue%
   \mktsScaleFontRelative{1.1}%
   \special{pdf:literal 1 0 0 1 0 -1.5 cm}%

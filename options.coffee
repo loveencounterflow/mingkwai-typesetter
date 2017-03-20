@@ -402,55 +402,55 @@ module.exports = options =
 
       #.....................................................................................................
       ### Ideographic Punctuation, Fullwidth Forms: ###
-      # '《':             raise: -0.2
-      # '》':             raise: -0.2
-      # '《':                                cmd: 'mktsFontfileNanummyeongjo'
-      # '》':                                cmd: 'mktsFontfileNanummyeongjo'
-      # '【':                                cmd: 'mktsFontfileNanummyeongjo'
-      # '】':                                cmd: 'mktsFontfileNanummyeongjo'
-      # '。':  push: 0.5, raise: 0.25,       cmd: 'cn'
-      # '、':  push: 0.5, raise: 0.25,       cmd: 'cn'
-      # '，':  push: 0.5, raise: 0.25,       cmd: 'cn'
-      # '．':  null
-      # '：':  push: 0.5, raise: 0.25,       cmd: 'cn'
-      # '；':  null
-      # '！':  null
-      # '？':  null
-      # '＂':  null
-      # '＇':  null
-      # '｀':  null
-      # '＾':  null
-      # '～':  null
-      # '￣':  null
-      # '＿':  null
-      # '＆':  null
-      # '＠':  null
-      # '＃':  null
-      # '％':  null
-      # '＋':  null
-      # '－':  null
-      # '＊':  null
-      # '＝':  null
-      # '＜':  null
-      # '＞':  null
-      # '（':  push: -0.25
-      # '）':  push:  0.25
-      # '［':  null
-      # '］':  null
-      # '｛':  null
-      # '｝':  null
-      # '｟':  null
-      # '｠':  null
-      # '｜':  null
-      # '￤':  null
-      # '／':  null
-      # '＼':  null
-      # '￢':  null
-      # '＄':  null
-      # '￡':  null
-      # '￠':  null
-      # '￦':  null
-      # '￥':  null
+      '《':             raise: -0.2
+      '》':             raise: -0.2
+      '《':                                cmd: 'mktsFontfileNanummyeongjo'
+      '》':                                cmd: 'mktsFontfileNanummyeongjo'
+      '【':                                cmd: 'mktsFontfileNanummyeongjo'
+      '】':                                cmd: 'mktsFontfileNanummyeongjo'
+      '。':  push: 0.5, raise: 0.25,       cmd: 'cn'
+      '、':  push: 0.5, raise: 0.25,       cmd: 'cn'
+      '，':  push: 0.5, raise: 0.25,       cmd: 'cn'
+      '．':  null
+      '：':  push: 0.5, raise: 0.25,       cmd: 'cn'
+      '；':  null
+      '！':  null
+      '？':  null
+      '＂':  null
+      '＇':  null
+      '｀':  null
+      '＾':  null
+      '～':  null
+      '￣':  null
+      '＿':  null
+      '＆':  null
+      '＠':  null
+      '＃':  null
+      '％':  null
+      '＋':  null
+      '－':  null
+      '＊':  null
+      '＝':  null
+      '＜':  null
+      '＞':  null
+      '（':  push: -0.25
+      '）':  push:  0.25
+      '［':  null
+      '］':  null
+      '｛':  null
+      '｝':  null
+      '｟':  null
+      '｠':  null
+      '｜':  null
+      '￤':  null
+      '／':  null
+      '＼':  null
+      '￢':  null
+      '＄':  null
+      '￡':  null
+      '￠':  null
+      '￦':  null
+      '￥':  null
 
       #.....................................................................................................
       '囗':                                cmd: 'cnjzr',       glyph: ''
