@@ -26,7 +26,7 @@ echo                      = CND.echo.bind CND
 
 #-----------------------------------------------------------------------------------------------------------
 @replacements =
-  # Simple typographyc replacements
+  # Simple typographic replacements
   #
   # (c) (C) → ©
   # (tm) (TM) → ™
