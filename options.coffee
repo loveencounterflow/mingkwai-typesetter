@@ -490,6 +490,7 @@ module.exports = options =
       '䒑':             raise: -0.15,      cmd: 'cnxa'
       '宀':             raise: -0.15
       '〇':             raise: -0.05,      cmd: 'cnxBabel'
+      # '⺍':                                cmd: 'cnjzr',       glyph: ''
       #.....................................................................................................
       ### Glyphs represented by other codepoints and/or with other than the standard fonts: ###
       # '⺊':                                cmd: 'cnxHanaA'
