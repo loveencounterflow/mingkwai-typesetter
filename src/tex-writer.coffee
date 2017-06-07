@@ -1673,6 +1673,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @MKTX.CLEANUP.$consolidate_texts                  S
     .pipe @MKTX.BLOCK.$paragraph_2                          S
     .pipe @MKTX.TYPOFIX.$fix_typography_for_tex             S
+    .pipe D.$show()
     #.......................................................................................................
     .pipe MKTSCRIPT_WRITER.$show_mktsmd_events              S
     .pipe do =>
