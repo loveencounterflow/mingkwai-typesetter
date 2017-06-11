@@ -1082,8 +1082,10 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
         fn_cache        = cache[ fn_idx ]
         cache[ fn_idx ] = null
         # send [ 'tex', "(#{fn_nr})\\,", ]
+        send stamp [ '(', 'footnote', null, {}, ]
         send [ 'tex', "{\\mktsEnStyleMarkNotes\\mktsEnMarkBefore#{fn_nr}\\mktsEnMarkAfter{}}", ]
         send fn_event for fn_event in fn_cache
+        send stamp [ ')', 'footnote', null, {}, ]
       send [ 'tex', "\\end{mktsEnNotes}\n\n", ]
       first_fn_idx  = last_fn_idx  + 1
       last_fn_idx   = first_fn_idx - 1
@@ -1094,7 +1096,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     track event
     #.......................................................................................................
     if select event, '(', 'footnote'
-      send stamp event
+      # send stamp event
       current_fn_cache        = []
       current_fn_idx         += +1
       last_fn_idx             = current_fn_idx
@@ -1105,7 +1107,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       send [ 'tex', "{\\mktsEnStyleMarkMain{}#{fn_separator}#{fn_nr}}" ]
     #.......................................................................................................
     else if select event, ')', 'footnote'
-      send stamp event
+      # send stamp event
       current_fn_cache  = null
       last_was_footnote = yes
     #.......................................................................................................
@@ -1607,6 +1609,53 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       warn "unhandled event: #{JSON.stringify event}"
       send.error new Error "unhandled events not allowed at this point; got #{JSON.stringify event}"
 
+#-----------------------------------------------------------------------------------------------------------
+@$show_events = ( S ) ->
+  return D.$observe ( event ) =>
+    whisper JSON.stringify event
+
+#-----------------------------------------------------------------------------------------------------------
+@$add_text_locators = ( S ) ->
+  stack         = []
+  event         = null
+  column_stack  = [ 1, ]
+  matches       = ( type, name ) -> MD_READER.select event, type, name, yes
+  return D.$observe ( _event ) =>
+    event = _event
+    [ type, name, text, meta, ] = event
+    return if matches [ '~', 'tex', ]
+    #.......................................................................................................
+    if matches [ '(', '!', ], [ 'multi-columns', 'columns', ]
+      if ( parameter = event[ 2 ][ 0 ] ) is 'pop'
+        column_stack.pop()
+      else
+        column_stack.push parameter
+    #.......................................................................................................
+    else if matches [ '(', '!', ], [ 'multi-columns', 'columns', ]
+      column_stack.pop()
+    #.......................................................................................................
+    else if matches '('
+      unless name in [ 'document', 'COLUMNS/group', ]
+        stack.push name
+    #.......................................................................................................
+    else if matches ')'
+      stack.pop() unless name is 'document'
+    #.......................................................................................................
+    else if matches '.', 'text'
+      column_count  = column_stack[ column_stack.length - 1 ]
+      meta.locator  = [ 'c' + ( rpr column_count ), stack..., ].join '/'
+    #.......................................................................................................
+    return null
+
+#-----------------------------------------------------------------------------------------------------------
+@$show_text_locators = ( S ) ->
+  return D.$observe ( event ) =>
+    if select event, '.', 'text'
+      [ type, name, text, meta, ] = event
+      help ( CND.lime ( meta.locator ? '????????????' ) ) + ' ' + ( CND.white rpr text )
+    #.......................................................................................................
+    return null
+
 
 #===========================================================================================================
 #
@@ -1668,14 +1717,17 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @MKTX.MIXED.$raw                                  S
     .pipe @COLUMNS.$main                                    S
     #.......................................................................................................
+    .pipe @$add_text_locators                               S
     .pipe MACRO_INTERPRETER.$capture_change_events          S
     .pipe @MKTX.CLEANUP.$remove_empty_texts                 S
     .pipe @MKTX.CLEANUP.$consolidate_texts                  S
+    # .pipe @$show_events                                     S
+    .pipe @$show_text_locators                              S
     .pipe @MKTX.BLOCK.$paragraph_2                          S
     .pipe @MKTX.TYPOFIX.$fix_typography_for_tex             S
-    .pipe D.$show()
+    # .pipe D.$show()
     #.......................................................................................................
-    .pipe MKTSCRIPT_WRITER.$show_mktsmd_events              S
+    # .pipe MKTSCRIPT_WRITER.$show_mktsmd_events              S
     .pipe do =>
       S.event_count = 0
       return D.$observe ( event ) =>
