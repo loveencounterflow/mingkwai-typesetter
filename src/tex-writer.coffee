@@ -1652,7 +1652,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
   return D.$observe ( event ) =>
     if select event, '.', 'text'
       [ type, name, text, meta, ] = event
-      help ( CND.lime ( meta.locator ? '????????????' ) ) + ' ' + ( CND.white rpr text )
+      help ( CND.grey '22311' ), ( CND.lime ( meta.locator ? '????????????' ) ) + ' ' + ( CND.white rpr text )
     #.......................................................................................................
     return null
 
