@@ -321,22 +321,25 @@ tracker_pattern = /// ^
   md_parser   = @_new_markdown_parser()
   return $ ( token, send ) =>
     { type, map, } = token
-    if type is 'html_block'
-      ### TAINT `map` location data is borked with this method ###
-      ### add extraneous text content; this causes the parser to parse the HTML block as a paragraph
-      with some inline HTML: ###
-      XXX_source  = "XXX" + token[ 'content' ]
-      ### for `environment` see https://markdown-it.github.io/markdown-it/#MarkdownIt.parse ###
-      ### TAINT what to do with useful data appearing in `environment`? ###
-      environment = {}
-      tokens      = md_parser.parse XXX_source, environment
-      ### remove extraneous text content: ###
-      removed     = tokens[ 1 ]?[ 'children' ]?.splice 0, 1
-      unless removed[ 0 ]?[ 'content' ] is "XXX"
-        throw new Error "should never happen (1)"
-      S.confluence.write token for token in tokens
-    else
-      send token
+    return send token unless type is 'html_block'
+    ### TAINT `map` location data is borked with this method ###
+    ### add extraneous text content; this causes the parser to parse the HTML block as a paragraph
+    with some inline HTML: ###
+    XXX_source  = "XXX" + token[ 'content' ]
+    debug '33392-1', token
+    debug '33392-2', XXX_source
+    ### for `environment` see https://markdown-it.github.io/markdown-it/#MarkdownIt.parse ###
+    ### TAINT what to do with useful data appearing in `environment`? ###
+    environment = {}
+    tokens      = md_parser.parse XXX_source, environment
+    ### remove extraneous text content: ###
+    removed     = tokens[ 1 ]?[ 'children' ]?.splice 0, 1
+    unless removed[ 0 ]?[ 'content' ] is "XXX"
+      debug '29282', "offending token:", token
+      throw new Error """
+        should never happen (1):
+        error in MD-READER _PRE.$reinject_html_blocks"""
+    S.confluence.write token for token in tokens
 
 #-----------------------------------------------------------------------------------------------------------
 @_PRE.$rewrite_markdownit_tokens = ( S ) =>
@@ -356,6 +359,7 @@ tracker_pattern = /// ^
   #.........................................................................................................
   # return $ ( token, send, end ) =>
   return $ ( token, send ) =>
+    # info '36372', JSON.stringify token
     _send = send
     #.......................................................................................................
     if token is end_token
@@ -496,6 +500,7 @@ tracker_pattern = /// ^
               send [ ( if position is 'open' then '(' else ')' ), tag, null, meta, ]
           #.................................................................................................
           when 'html_block'
+            debug '29281', "offending token:", token
             throw new Error "should never happen (2)"
           #.................................................................................................
           when 'fence'
