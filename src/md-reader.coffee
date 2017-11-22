@@ -108,6 +108,7 @@ MKTS                      = require './main'
     .enable 'smartquotes'
   #.......................................................................................................
   R.use require 'markdown-it-footnote'
+  # R.use require 'markdown-it-multimd-table'
   # R.use require 'markdown-it-mark'
   # R.use require 'markdown-it-sub'
   # R.use require 'markdown-it-sup'
