@@ -291,9 +291,11 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
       if column_count > 1
         send stamp [ '(', 'COLUMNS/group', null, ( copy meta, tex: 'pass-through', ), ]
         # send stamp [ '.', 'COLUMNS/tex', "\\mktsVspace{1}%TEX-WRITER/COLUMNS/$transform-to-tex\n", ( copy meta, tex: 'pass-through', ), ]
-        ### TAINt Here the layout design decision to separate multicols from surrounding paragraphs by
-        one bank line gets hardwired into the produced TeX code: ###
-        send stamp [ '.', 'COLUMNS/tex', "\\mktsVspace{1}\\begin{multicols}{#{column_count}}\\raggedcolumns{}", ( copy meta, tex: 'pass-through', ), ]
+        ### TAINT Here the layout design decision to separate multicols from surrounding paragraphs by
+        one blank line gets hardwired into the produced TeX code: ###
+        # send stamp [ '.', 'COLUMNS/tex', "\\mktsVspace{1}\\begin{multicols}{#{column_count}}\\raggedcolumns{}", ( copy meta, tex: 'pass-through', ), ]
+        ### TAINT ... and some time later we decide to throw it out again: ###
+        send stamp [ '.', 'COLUMNS/tex', "\\begin{multicols}{#{column_count}}\\raggedcolumns{}", ( copy meta, tex: 'pass-through', ), ]
     #.......................................................................................................
     else if select event, ')', 'multi-columns'
       # send stamp event
