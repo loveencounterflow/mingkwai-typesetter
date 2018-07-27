@@ -60,6 +60,7 @@
 % \usepackage[null]{mkts-endnotes}
 % % \usepackage[null]{mkts-page-geometry} % a4
 \usepackage[null]{mkts-headers-and-footers} % jizura
+% \usepackage[jizura]{mkts-headers-and-footers}%  jizura
 % \usepackage[null]{mkts-fontsets}
 % \usepackage[null]{mkts-styles}
 % \usepackage[null]{mkts-para-font-size} % plain
@@ -71,11 +72,10 @@
 % \usepackage[a4,baselines,ascenders,descenders]{mkts-page-geometry}
 % \usepackage[a4,interbands,ascenders,baselines,descenders]{mkts-page-geometry}
 % \usepackage[a4,ascenders,baselines,descenders]{mkts-page-geometry}
-\usepackage[a4,ascenders,descenders,baselines,columns]{mkts-page-geometry}
+% \usepackage[a4,ascenders,descenders,baselines,columns]{mkts-page-geometry}
 % \usepackage[a4,linebands,columns,baselines]{mkts-page-geometry}
 % \usepackage[a4,baselines]{mkts-page-geometry}%            a4
-% \usepackage[a4]{mkts-page-geometry}%            a4
-% \usepackage[jizura]{mkts-headers-and-footers}%  jizura
+\usepackage[a4]{mkts-page-geometry}%            a4
 \usepackage[default]{mkts-fontsets}%            default
 \usepackage[default]{mkts-styles}%              default
 \usepackage[plain]{mkts-para-font-size}%        plain
@@ -133,7 +133,9 @@
 \newenvironment{mktsEnvBlockquote}{%
   \par%
   % \mktsStyleItalic%
-  \setlength{\leftskip}{1em}%
+  \setlength{\leftskip}{\mktsLineheight}%
+  \setlength{\rightskip}{\mktsLineheight}%
+  \mktsScaleFont{0.95}%
   % \setlength{\rightskip}{1em}%
   \ignorespaces}{%
   \par%
