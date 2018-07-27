@@ -52,6 +52,7 @@ LINEBREAKER               = require './linebreaker'
 @COLUMNS                  = require './tex-writer-columns'
 #...........................................................................................................
 Σ_formatted_warning       = Symbol 'formatted-warning'
+jr                        = JSON.stringify
 
 
 #===========================================================================================================
@@ -638,11 +639,15 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
   collector         = []
   close_paragraph   = no
   #.........................................................................................................
+  ### TAINT S.is_first_par, S.within_ul could / should be local variables ###
   return $ ( event, send ) =>
-    if select event, '(', 'h'
-      debug '63676', '########################', 'H'
-      S.is_first_par        = true
+    # debug '73632', jr event
+    if select event, '(', [ 'h', 'multi-columns', 'blockquote', ], true then  S.is_first_par  = true
+    else if select event, ')', [ 'blockquote', 'ul', ], true            then  S.is_first_par  = true
+    else if select event, '(', [ 'ul', ], true                          then  S.within_ul     = true
+    else if select event, ')', [ 'ul', ], true                          then  S.within_ul     = false
     #.......................................................................................................
+    ### TAINT doesn't use `select`? ###
     if event[ 0 ] is '~' and event[ 1 ] is 'start-paragraph'
       within_paragraph  = yes
       seen_text_event   = no
@@ -684,13 +689,18 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
           blockquote or similar and send additional material as needed: ###
           has_indent        = not S.is_first_par
           S.is_first_par    = false
-          if has_indent
+          #.................................................................................................
+          if S.within_ul
+            send [ 'tex', "%% no indent within list\n" ]
+            # null
+          else if has_indent
             send [ 'tex', "%% with indent\n" ]
-            send [ 'tex', "¶ " ]
+            send [ 'tex', "\\hskip \\mktsLineheight plus 0mm minus 0mm " ]
+            # send [ 'tex', "¶ " ]
           #.................................................................................................
           else
             send [ 'tex', "%% no indent\n" ]
-            send [ 'tex', "÷ " ]
+            # send [ 'tex', "÷ " ]
           #.................................................................................................
           ### Finally, send the first text portion of the paragraph itself: ###
           send event
@@ -730,7 +740,9 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       ### TAINT Horizontal space should depend on other metrics ###
       # send [ 'tex', "{\\mktsFontfileHanamina{}\\prPushRaise{-0.4}{-0.1}{⚫}\\hspace{-0.75mm}}" ]
       # send [ 'tex', "{\\mktsFontfileCwtexqheibold{}\\prPushRaise{-0.4}{-0.1}{▷}\\hspace{-1.75mm}}" ]
-      send [ 'tex', "{\\mktsFontfileCwtexqheibold{}\\prPushRaise{-0.4}{-0.1}{▷}}" ]
+      # send [ 'tex', "{\\mktsFontfileHanamina{}◼}\\hspace{3mm}L" ]
+      # send [ 'tex', "{\\mktsFontfileCwtexqheibold{}\\prPushRaise{-0.4}{-0.1}{▷}}" ]
+      send [ 'tex', "\\makebox[\\mktsLineheight][l]{\\prPushRaise{-0.2}{-0.1}{\\mktsFontfileHanamina{}◼}}%" ]
     #.......................................................................................................
     else if select event, ')', 'li'
       send stamp event
@@ -1832,6 +1844,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       layout_info:          layout_info
       is_first_par:         true
       paragraph_nr:         0
+      within_ul:            false
     #.......................................................................................................
     ### TAINT should read MD source stream ###
     md_source               = njs_fs.readFileSync source_locator, encoding: 'utf-8'
@@ -1847,7 +1860,9 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     md_output
       .pipe tex_input
     tex_output
-      # .pipe $ ( event, send, end ) =>
+      # .pipe $ ( event, send ) =>
+      #   debug '33376', rpr event
+      #   send event
       #   if event?
       #     send event
       #   if end?
@@ -1889,6 +1904,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     bare:                 settings[ 'bare' ] ? no
     is_first_par:         true
     paragraph_nr:         0
+    within_ul:            false
   #.........................................................................................................
   md_readstream       = MD_READER.create_md_read_tee md_source
   tex_writestream     = @create_tex_write_tee S
