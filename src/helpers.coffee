@@ -112,15 +112,17 @@ $async                    = D.remit_async.bind D
   log "#{xelatex_command} #{parameters.join ' '}"
   #.........................................................................................................
   pdf_from_tex = ( next ) =>
-    count += 1
+    count          += 1
+    cp              = ( require 'child_process' ).spawn xelatex_command, parameters
+    error_detected  = false
     urge "run ##{count}"
-    # CND.spawn xelatex_command, parameters, ( error, data ) =>
-    cp = ( require 'child_process' ).spawn xelatex_command, parameters
     #.......................................................................................................
     cp.stdout
       .pipe D.$split()
-      .pipe D.$observe ( line ) =>
-        echo CND.grey line
+      #.....................................................................................................
+      .pipe D.$observe ( line ) => error_detected = true if line is 'No pages of output.'
+      .pipe D.$observe ( line ) => alert line if error_detected
+      .pipe D.$observe ( line ) => echo ( if error_detected then CND.red else CND.grey ) line
     #.......................................................................................................
     cp.stderr
       .pipe D.$split()
@@ -139,6 +141,8 @@ $async                    = D.remit_async.bind D
         if message.length > 0
           alert message
           return handler message
+      if error_detected
+        return handler new Error "detected unknown error, see transcript"
       digest = CND.id_from_route aux_locator
       if digest is last_digest
         echo ( CND.grey badge ), CND.lime "done."
