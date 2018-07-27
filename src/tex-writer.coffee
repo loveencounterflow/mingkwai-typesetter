@@ -621,8 +621,10 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       [ type, name, text, meta, ] = event
       if within_code or within_keep_lines
         send stamp event
+        send [ 'tex', "\n%% PARAGRAPH ##{S.paragraph_nr})\n" ]
         send [ 'tex', '\n\n' ]
       else
+        send [ 'tex', "\n%% PARAGRAPH ##{S.paragraph_nr})\n" ]
         send stamp event
         send @MKTX.BLOCK._end_paragraph()
     #.......................................................................................................
@@ -637,10 +639,15 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
   close_paragraph   = no
   #.........................................................................................................
   return $ ( event, send ) =>
+    if select event, '(', 'h'
+      debug '63676', '########################', 'H'
+      S.is_first_par        = true
     #.......................................................................................................
     if event[ 0 ] is '~' and event[ 1 ] is 'start-paragraph'
       within_paragraph  = yes
       seen_text_event   = no
+      S.paragraph_nr   += +1
+      send [ 'tex', "\n%% (PARAGRAPH ##{S.paragraph_nr}\n" ]
     #.......................................................................................................
     else if select event, '.', 'p'
       within_paragraph  = no
@@ -654,19 +661,39 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     #.......................................................................................................
     else if within_paragraph
       if seen_text_event
+        ### If we're within a paragraph, but some material has aleady gone down the line, then there's
+        nothing to do here: ###
         send event
       else
-        if select event, '.', 'text'
+        ### Otherwise, we either have to cache the current event, or else—if the current event is a text
+        event—we have to send all cached events, then the prefix to a new paragraph, and then the text event
+        itself. ###
+        unless select event, '.', 'text'
+          collector.push event
+        else
           ### TAINT can omit either of these two ###
           seen_text_event = yes
           close_paragraph = yes
-          # send [ 'tex', "\n{% (p\n" ]
-          # # send [ 'tex', "\n{\n" ]
+          #.................................................................................................
+          ### Send all the events encountered so far; typically, these will include commands to set up
+          columns etc.: ###
           send cached_event for cached_event in collector
           collector.length = 0
+          #.................................................................................................
+          ### Check whether we're typesetting the first text portion after a headline, the start of a
+          blockquote or similar and send additional material as needed: ###
+          has_indent        = not S.is_first_par
+          S.is_first_par    = false
+          if has_indent
+            send [ 'tex', "%% with indent\n" ]
+            send [ 'tex', "¶ " ]
+          #.................................................................................................
+          else
+            send [ 'tex', "%% no indent\n" ]
+            send [ 'tex', "÷ " ]
+          #.................................................................................................
+          ### Finally, send the first text portion of the paragraph itself: ###
           send event
-        else
-          collector.push event
     #.......................................................................................................
     else
       send event
@@ -1799,9 +1826,12 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
         help "#{TEXT.flush_right events_per_s_txt, 14} events / s"
         handler null if handler?
     #.......................................................................................................
+    ### TAINT use method to produce new state ###
     S =
       options:              @options
       layout_info:          layout_info
+      is_first_par:         true
+      paragraph_nr:         0
     #.......................................................................................................
     ### TAINT should read MD source stream ###
     md_source               = njs_fs.readFileSync source_locator, encoding: 'utf-8'
@@ -1852,10 +1882,13 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
   source_route        = settings[ 'source-route' ] ? '<STRING>'
   layout_info         = HELPERS.new_layout_info @options, source_route, false
   #.........................................................................................................
+  ### TAINT use method to produce new state ###
   S =
     options:              @options
     layout_info:          layout_info
     bare:                 settings[ 'bare' ] ? no
+    is_first_par:         true
+    paragraph_nr:         0
   #.........................................................................................................
   md_readstream       = MD_READER.create_md_read_tee md_source
   tex_writestream     = @create_tex_write_tee S

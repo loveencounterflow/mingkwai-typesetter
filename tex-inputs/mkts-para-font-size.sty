@@ -42,7 +42,10 @@
   % \setlength\lineskiplimit{-2.5mm}\relax%
   \setlength\lineskiplimit{-2.5mm}\relax%
   \setlength\lineskip{0mm plus 0mm minus 0mm}%
-  \setlength\parskip{\mktsLineheight}%
+  % \setlength\parskip{\mktsLineheight}%
+  \setlength\parskip{0mm}%
+  % \setlength\parindent{\mktsLineheight}%
+  \setlength\parindent{0mm}%
   % ### TAINT shouldn't this be expressed as a multiple of mktsLineheight? ###
   \setlength\mktsTabularLineheightDelta{-0.13mm}
   \setlength\mktsTabularLineheightDeltaLast{0.1\mktsLineheight}
@@ -60,10 +63,12 @@
   \renewcommand{\mktsTightParagraphs}{%
     \setlength\lineskiplimit{-1000mm}%
     \setlength\parskip{0mm}%
+    \setlength\parindent{0mm}%
     }%
 
   \renewcommand{\mktsVspace}[1]{%
-    \vspace{#1\parskip}%
+    \vspace{#1\mktsLineheight}%
+    % \vspace{#1\parskip}%
     % \gdef\mktsNextVspaceCount{1}%
     }
 
