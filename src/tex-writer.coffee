@@ -642,13 +642,16 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
   ### TAINT S.is_first_par, S.within_ul could / should be local variables ###
   return $ ( event, send ) =>
     # debug '73632', jr event
-    if select event, '(', [ 'h', 'multi-columns', 'blockquote', ], true then  S.is_first_par  = true
-    else if select event, ')', [ 'blockquote', 'ul', ], true            then  S.is_first_par  = true
-    else if select event, '(', [ 'ul', ], true                          then  S.within_ul     = true
-    else if select event, ')', [ 'ul', ], true                          then  S.within_ul     = false
+    if select event, '(', [ 'h', 'multi-columns', 'blockquote', ],  true then S.is_first_par  = true
+    if select event, ')', [ 'blockquote', ],                        true then S.is_first_par  = true
+    if select event, '(', [ 'ul', ],                                true then S.within_ul     = true
+    if select event, ')', [ 'ul', ],                                true then S.within_ul     = false
     #.......................................................................................................
     ### TAINT doesn't use `select`? ###
-    if event[ 0 ] is '~' and event[ 1 ] is 'start-paragraph'
+    debug '77633', ( jr event ), S.is_first_par, S.within_ul
+    if select event, ')', [ 'ul', ],                               true
+      urge '77768', ( jr event ), S.is_first_par, S.within_ul
+    if select event, '~', 'start-paragraph', true
       within_paragraph  = yes
       seen_text_event   = no
       S.paragraph_nr   += +1
