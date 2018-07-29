@@ -843,7 +843,7 @@ tracker_pattern = /// ^
       if start isnt stop
         return send [ '.', 'warning', "illegal HR markup #{rpr meta[ 'markup' ]}", ( copy meta ), ]
       slash = start is '/'
-      above = '1' if above.length is 0
+      above = '0' if above.length is 0
       below = '1' if below.length is 0
       above = parseInt above, 10
       below = parseInt below, 10

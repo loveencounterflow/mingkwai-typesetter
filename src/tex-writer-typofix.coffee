@@ -110,7 +110,6 @@ MKNCR                     = require '../../mingkwai-ncr'
     return flush_and_send_event() unless select event, '.', Σ_glyph_description
     #.......................................................................................................
     [ type, name, description, meta, ]              = event
-    # debug '33921', meta.locator
     { uchr, rsg, tag, tex: texcmd, }                = description
     is_cjk                                          = 'cjk' in tag
     return flush_and_send_event() unless is_cjk
@@ -334,8 +333,9 @@ MKNCR                     = require '../../mingkwai-ncr'
   return null
 
 
-
-
+# ############################################################################################################
+# unless module.parent?
+#   debug '83744', MKNCR.describe '&#x3000;'
 
 
 
