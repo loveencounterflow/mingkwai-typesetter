@@ -220,6 +220,8 @@ after = ( names..., method ) ->
 #-----------------------------------------------------------------------------------------------------------
 @MKTX =
   TYPOFIX:      require './tex-writer-typofix'
+  SH:           require './tex-writer-sh'
+  CALL:         require './tex-writer-call'
   DOCUMENT:     {}
   COMMAND:      {}
   REGION:       {}
@@ -1728,6 +1730,8 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     #.......................................................................................................
     # .pipe D.$show()
     .pipe @MKTX.BLOCK.$blockquote                           S
+    .pipe @MKTX.SH.$spawn                                   S
+    .pipe @MKTX.CALL.$call                                  S
     .pipe @MKTX.INLINE.$link                                S
     .pipe @MKTX.MIXED.$footnote                             S
     .pipe @MKTX.MIXED.$footnote.$remove_extra_paragraphs    S
