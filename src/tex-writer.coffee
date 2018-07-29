@@ -357,7 +357,7 @@ after = ( names..., method ) ->
     else if select event, '(', 'keep-lines'
       send stamp event
       [ type, name, parameters, meta, ] = event
-      unless squish = parameters?[ 0 ]?[ 'squish' ] ? no
+      unless squish = parameters?[ 0 ]?[ 'squish' ] ? yes
         send [ 'tex', "\\null\\par", ]
       send [ 'tex', "{\\mktsTightParagraphs{}", ]
     #.......................................................................................................
@@ -815,8 +815,8 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
   . dotted (line)
   * asterisks (line)
   + swole (line)
-  0 compress (above & below)
-  1 normal (spacing, one line above & below; default)
+  0 compress (above & below; default)
+  1 normal (spacing, one line above & below)
   2,1 custom (2 above, 1 below)
   2 splendid (2 above & below)
 
