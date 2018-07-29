@@ -35,7 +35,7 @@ echo                      = CND.echo.bind CND
 # TYPO                      = HELPERS[ 'TYPO' ]
 # options                   = require './options'
 # SEMVER                    = require 'semver'
-CS                        = require 'coffee-script'
+CS                        = require 'coffeescript'
 # options_route_fallback    = '../options.coffee'
 
 
@@ -98,7 +98,7 @@ CS                        = require 'coffee-script'
 #-----------------------------------------------------------------------------------------------------------
 @OPTIONS._require_coffee_file = ( route ) ->
   extensions = Object.keys require[ 'extensions' ]
-  require 'coffee-script/register'
+  require 'coffeescript/register'
   R = require route
   for name in require[ 'extensions' ]
     delete require[ 'extensions' ][ name ] unless name in extensions

@@ -682,7 +682,7 @@ nice_text_rpr = ( text ) ->
     [".","p",null,{"line_nr":1,"col_nr":2,"markup":""}]
     [")","document",null,{}]
     ]
-  step ( resume ) =>
+  step ( resume ) ->
     result = yield MKTS.MKTSCRIPT_WRITER.mkts_events_from_md probe, resume
     show_events probe, result
     T.eq matcher, result
@@ -701,7 +701,7 @@ nice_text_rpr = ( text ) ->
     [".","text","def",{"line_nr":1,"col_nr":2,"markup":""}]
     [".","p",null,{"line_nr":1,"col_nr":2,"markup":""}]
     ]
-  step ( resume ) =>
+  step ( resume ) ->
     result = yield MKTS.MKTSCRIPT_WRITER.mkts_events_from_md probe, settings, resume
     show_events probe, result
     T.eq matcher, result
@@ -716,7 +716,7 @@ nice_text_rpr = ( text ) ->
     [".","text","abc\\<<(:js\\>>f( 42 );\\<<:js)\\>>def",{"line_nr":1,"col_nr":2,"markup":""}]
     [".","p",null,{"line_nr":1,"col_nr":2,"markup":""}]
     ]
-  step ( resume ) =>
+  step ( resume ) ->
     result = yield MKTS.MKTSCRIPT_WRITER.mkts_events_from_md probe, settings, resume
     show_events probe, result
     T.eq matcher, result
@@ -732,7 +732,7 @@ nice_text_rpr = ( text ) ->
     [".","command","empty-document",{}]
     [")","document",null,{}]
     ]
-  step ( resume ) =>
+  step ( resume ) ->
     result = yield MKTS.MKTSCRIPT_WRITER.mkts_events_from_md probe, settings, resume
     show_events probe, result
     T.eq matcher, result
@@ -747,7 +747,7 @@ nice_text_rpr = ( text ) ->
     ["!","multi-column",[],{"line_nr":1,"col_nr":2,"markup":""}]
     [".","p",null,{"line_nr":1,"col_nr":2,"markup":""}]
     ]
-  step ( resume ) =>
+  step ( resume ) ->
     result = yield MKTS.MKTSCRIPT_WRITER.mkts_events_from_md probe, settings, resume
     show_events probe, result
     T.eq matcher, result
@@ -772,7 +772,7 @@ nice_text_rpr = ( text ) ->
     [".","text","\nccc",{"line_nr":1,"col_nr":6,"markup":""}]
     [".","p",null,{"line_nr":1,"col_nr":6,"markup":""}]
     ]
-  step ( resume ) =>
+  step ( resume ) ->
     result = yield MKTS.MKTSCRIPT_WRITER.mkts_events_from_md probe, settings, resume
     show_events probe, result
     T.eq matcher, result
@@ -795,7 +795,7 @@ nice_text_rpr = ( text ) ->
     ["#","resend","`multi-column)`",{"badge":"$close_dangling_open_tags","stamped":true}]
     [")","multi-column",null,{"line_nr":1,"col_nr":4,"markup":""}]
     ]
-  step ( resume ) =>
+  step ( resume ) ->
     result = yield MKTS.MKTSCRIPT_WRITER.mkts_events_from_md probe, settings, resume
     show_events probe, result
     T.eq matcher, result
@@ -812,7 +812,7 @@ nice_text_rpr = ( text ) ->
     [".","text","她說：「你好。」",{"line_nr":1,"col_nr":2,"markup":""}]
     [".","p",null,{"line_nr":1,"col_nr":2,"markup":""}]
     ]
-  step ( resume ) =>
+  step ( resume ) ->
     result = yield MKTS.MKTSCRIPT_WRITER.mkts_events_from_md probe, settings, resume
     show_events probe, result
     T.eq matcher, result
@@ -841,7 +841,7 @@ nice_text_rpr = ( text ) ->
     [".","text",".",{"line_nr":3,"col_nr":4,"markup":""}]
     [".","p",null,{"line_nr":3,"col_nr":4,"markup":""}]
     ]
-  step ( resume ) =>
+  step ( resume ) ->
     result = yield MKTS.MKTSCRIPT_WRITER.mkts_events_from_md probe, settings, resume
     show_events probe, result
     T.eq matcher, result
@@ -871,7 +871,7 @@ nice_text_rpr = ( text ) ->
     [".","text",".",{"line_nr":1,"col_nr":3,"markup":""}]
     [".","p",null,{"line_nr":1,"col_nr":3,"markup":""}]
     ]
-  step ( resume ) =>
+  step ( resume ) ->
     result = yield MKTS.MKTSCRIPT_WRITER.mkts_events_from_md probe, settings, resume
     show_events probe, result
     T.eq matcher, result
@@ -896,7 +896,7 @@ nice_text_rpr = ( text ) ->
     % end of MD document
 
     """
-  step ( resume ) =>
+  step ( resume ) ->
     result = yield MKTS.TEX_WRITER.tex_from_md probe, settings, resume
     # echo result
     T.eq matcher.trim(), result.trim()
@@ -915,7 +915,7 @@ nice_text_rpr = ( text ) ->
 
 
     % end of MD document\n"""
-  step ( resume ) =>
+  step ( resume ) ->
     result = yield MKTS.TEX_WRITER.tex_from_md probe, settings, resume
     # echo result
     info nice_text_rpr result
@@ -948,7 +948,7 @@ nice_text_rpr = ( text ) ->
     3\\par
     }
     % end of MD document\n"""
-  step ( resume ) =>
+  step ( resume ) ->
     result = yield MKTS.TEX_WRITER.tex_from_md probe, settings, resume
     # echo result
     info nice_text_rpr result
@@ -994,7 +994,7 @@ nice_text_rpr = ( text ) ->
     )document
     # EOF
     """
-  step ( resume ) =>
+  step ( resume ) ->
     result = yield MKTS.MKTSCRIPT_WRITER.mktscript_from_md probe, settings, resume
     echo result
     T.eq matcher.trim(), result.trim()
@@ -1023,7 +1023,7 @@ nice_text_rpr = ( text ) ->
     )document
     # EOF
     """
-  step ( resume ) =>
+  step ( resume ) ->
     result = yield MKTS.MKTSCRIPT_WRITER.mktscript_from_md probe, settings, resume
     echo result
     T.eq matcher.trim(), result.trim()
@@ -1135,7 +1135,7 @@ nice_text_rpr = ( text ) ->
     ]
   # warn "missing `.p` inside `(multi-column)`"
   #.........................................................................................................
-  step ( resume ) =>
+  step ( resume ) ->
     for [ probe, matcher, ] in probes_and_matchers
       result  = yield TEX_WRITER_TYPOFIX.fix_typography_for_tex S, probe, resume
       result  = format result

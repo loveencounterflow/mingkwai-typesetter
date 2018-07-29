@@ -104,7 +104,7 @@ MKTS                      = require './main'
   select      = MKTS.MD_READER.select.bind  MKTS.MD_READER
   get_sandbox = @track_changes()
   #.........................................................................................................
-  CS                        = require 'coffee-script'
+  CS                        = require 'coffeescript'
   VM                        = require 'vm'
   local_filename            = 'XXXXXXXXXXXXX'
   macro_output              = []
@@ -331,7 +331,7 @@ MKTS                      = require './main'
   #.........................................................................................................
   ### TAINT replicates some code from MACRO_INTERPRETER.process_actions ###
   ### TAINT move to CND? COFFEESCRIPT? ###
-  CS              = require 'coffee-script'
+  CS              = require 'coffeescript'
   VM              = require 'vm'
   source          = "mkts.signature_reader #{text}"
   error_message   = null
