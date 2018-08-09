@@ -59,6 +59,7 @@
     "ncr": "^0.2.12",
     "parse5": "^2.1.5",
     "pipedreams": "^3.0.9",
+    "pipestreams": "^0.4.1",
     "semver": "^5.4.1"
   },
   "devDependencies": {
