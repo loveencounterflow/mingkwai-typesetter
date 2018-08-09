@@ -18,9 +18,9 @@ help                      = CND.get_logger 'help',      badge
 urge                      = CND.get_logger 'urge',      badge
 echo                      = CND.echo.bind CND
 #...........................................................................................................
-D                         = require '../../../pipedreams'
-{ $ }                     = D
-$async                    = D.remit_async.bind D
+PIPEDREAMS                = require '../../../pipedreams'
+PS                        = require 'pipestreams'
+{ $, $async, }            = PS
 #...........................................................................................................
 MD_READER                 = require './md-reader'
 hide                      = MD_READER.hide.bind        MD_READER
@@ -29,59 +29,48 @@ stamp                     = MD_READER.stamp.bind       MD_READER
 select                    = MD_READER.select.bind      MD_READER
 is_hidden                 = MD_READER.is_hidden.bind   MD_READER
 is_stamped                = MD_READER.is_stamped.bind  MD_READER
-throw_all_errors          = yes
-
-
-# [ ')',
-#   'code',
-#   [ 'keep-lines' ],
-#   { line_nr: 92, col_nr: 129, markup: '```' } ]
-# 00:03 mkts/tex-writer-call  ⚙  33733 [ '.',
-#   'hr2',
-#   { slash: true,
-#     above: 0,
-#     one: '-',
-#     two: '',
-#     three: '',
-#     below: 1,
-#     stop: '/' },
-#   { line_nr: 130,
-#     col_nr: 131,
-#     markup: '/--------------------------------------------/' } ]
-
-f = ->
-  return await g()
 
 #-----------------------------------------------------------------------------------------------------------
-@$call = ( S ) =>
-  reference_path = S.layout_info[ 'source-home' ]
+@_resolve_arguments = ( S, event ) =>
+  reference_path                      = S.layout_info[ 'source-home' ]
+  [ type, name, parameters, meta, ]   = event
+  [ module_path, method_path, P..., ] = parameters
+  locator                             = PATH.join reference_path, module_path
+  [ crumbs..., method_name, ]         = method_path.split '.'
+  #.....................................................................................................
+  try
+    module  = require locator
+    module  = module[ crumb ] for crumb in crumbs
+  catch error
+    alert '98987', "when trying to resolve #{crumbs.join '.'}"
+    alert '98987', "starting with module #{rpr locator}"
+    alert '98987', "an error occurred at path component #{rpr crumb}"
+    throw error
+  #.....................................................................................................
+  return {
+    type,
+    name,
+    parameters,
+    meta,
+    module_path,
+    method_path,
+    P,
+    method_name,
+    locator,
+    module,
+    crumbs, }
+
+#-----------------------------------------------------------------------------------------------------------
+@$call_await = ( S ) =>
+  ### TAINT implicitly assumes return value will be lines of text ###
+  ### parses MKTS commands of the form `<<!call_await module_path, method_name, parameters... >>` ###
   # self = @
-  return $async ( event, send, end ) =>
+  return PIPEDREAMS.$async ( event, send, end ) =>
     #.......................................................................................................
-    if event? and select event, '!', 'call'
-      [ type, name, parameters, meta, ]   = event
-      [ module_path, method_path, P..., ] = parameters
-      lines                               = null
-      locator                             = PATH.join reference_path, module_path
-      [ crumbs..., method_name, ]         = method_path.split '.'
-      send [ '.', 'text', "76765 module:#{rpr module_path}\n",        ( copy meta ), ]
-      send [ '.', 'text', "76765 method: #{rpr method_path}\n",       ( copy meta ), ]
-      send [ '.', 'text', "76765 P: #{rpr P}\n",                      ( copy meta ), ]
-      ### TAINT could result be streamed? ###
+    if event? and select event, '!', 'call_await'
+      { module, method_name, P, meta, locator, crumbs, } = @_resolve_arguments S, event
       #.....................................................................................................
       try
-        module  = require locator
-        module  = module[ crumb ] for crumb in crumbs
-      catch error
-        alert '98987', "when trying to resolve #{crumbs.join '.'}"
-        alert '98987', "starting with module #{rpr locator}"
-        alert '98987', "an error occurred at path component #{rpr crumb}"
-        throw error if throw_all_errors
-        send [ '.', 'warning', error.message, ( copy meta ), ]
-        return send.done()
-      #.....................................................................................................
-      try
-        # process.chdir '/home/flow/io/mingkwai-rack/texts/800-demo-actions/mojikura3-model'
         lines   = await module[ method_name ] P...
       #.....................................................................................................
       catch error
@@ -98,6 +87,42 @@ f = ->
         line = line + '\n' unless line.endsWith '\n'
         send [ '.', 'text', line, ( copy meta ), ]
       send.done()
+    #.......................................................................................................
+    else
+      send event
+      send.done()
+    #.......................................................................................................
+    end() if end?
+    return null
+
+#-----------------------------------------------------------------------------------------------------------
+@$call_stream = ( S ) =>
+  ### TAINT implicitly assumes return value will be lines of text ###
+  # self = @
+  return PIPEDREAMS.$async ( event, send, end ) =>
+    #.......................................................................................................
+    if event? and select event, '!', 'call_stream'
+      { module, method_name, P, meta, locator, crumbs, } = @_resolve_arguments S, event
+      #.....................................................................................................
+      try
+        on_stop   = PS.new_event_collector 'stop', ->
+          send.done()
+          help "(finished $call_stream #{method_name})"
+        pipeline  = []
+        pipeline.push await module[ method_name ] P...
+        pipeline.push PS.$watch ( line ) ->
+          line = line + '\n' unless line.endsWith '\n'
+          send [ '.', 'text', line, ( copy meta ), ]
+        pipeline.push on_stop.add PS.$drain()
+        PS.pull pipeline...
+      #.....................................................................................................
+      catch error
+        alert '98987', "when trying to call method #{rpr method_name}"
+        alert '98987', "from module #{rpr locator}##{crumbs.join '.'}"
+        alert '98987', "with arguments #{rpr P}"
+        alert '98987', "an error occurred:"
+        alert '98987', error.message
+        throw error
     #.......................................................................................................
     else
       send event

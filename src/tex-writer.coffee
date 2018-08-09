@@ -151,6 +151,7 @@ after = ( names..., method ) ->
     # PACKAGES
     #.......................................................................................................
     write ""
+
     write "% PACKAGES"
     # write "\\usepackage{mkts2015-main}"
     # write "\\usepackage{mkts2015-fonts}"
@@ -625,10 +626,10 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       [ type, name, text, meta, ] = event
       if within_code or within_keep_lines
         send stamp event
-        send [ 'tex', "\n%% PARAGRAPH ##{S.paragraph_nr})\n" ]
+        # send [ 'tex', "\n%% PARAGRAPH ##{S.paragraph_nr})\n" ]
         send [ 'tex', '\n\n' ]
       else
-        send [ 'tex', "\n%% PARAGRAPH ##{S.paragraph_nr})\n" ]
+        # send [ 'tex', "\n%% PARAGRAPH ##{S.paragraph_nr})\n" ]
         send stamp event
         send @MKTX.BLOCK._end_paragraph()
     #.......................................................................................................
@@ -645,18 +646,18 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
   is_first_par      = true
   #.........................................................................................................
   return $ ( event, send ) =>
-    # debug '73632', jr event
+    # send [ 'tex', ( '% 73632' + ( jr event ) + '\n' ), ]
     if select event, '(', [ 'h', 'multi-columns', 'blockquote', ],  true then is_first_par    = true
-    if select event, ')', [ 'blockquote', ],                        true then is_first_par    = true
-    if select event, '.', [ 'hr', 'hr2' ],                          true then is_first_par    = true
-    if select event, '(', [ 'ul', 'keep-lines', ],                  true then within_noindent = true
-    if select event, ')', [ 'ul', 'keep-lines', ],                  true then within_noindent = false
+    if select event, ')', [ 'blockquote', 'ul', 'code',         ],  true then is_first_par    = true
+    if select event, '.', [ 'hr', 'hr2',                        ],  true then is_first_par    = true
+    if select event, '(', [ 'ul', 'keep-lines',                 ],  true then within_noindent = true
+    if select event, ')', [ 'ul', 'keep-lines',                 ],  true then within_noindent = false
     #.......................................................................................................
     if select event, '~', 'start-paragraph', true
       within_paragraph  = yes
       seen_text_event   = no
       S.paragraph_nr   += +1
-      send [ 'tex', "\n%% (PARAGRAPH ##{S.paragraph_nr}\n" ]
+      # send [ 'tex', "\n%% (PARAGRAPH ##{S.paragraph_nr}\n" ]
     #.......................................................................................................
     else if select event, '.', 'p'
       within_paragraph  = no
@@ -1724,14 +1725,15 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
   plugins_tee = D.combine pipeline
   #.......................................................................................................
   readstream
+    .pipe @MKTX.SH.$spawn                                   S
+    .pipe @MKTX.CALL.$call_await                            S
+    .pipe @MKTX.CALL.$call_stream                           S
     .pipe plugins_tee
     .pipe MACRO_ESCAPER.$expand.$remove_backslashes         S
     .pipe @$document                                        S
     #.......................................................................................................
     # .pipe D.$show()
     .pipe @MKTX.BLOCK.$blockquote                           S
-    .pipe @MKTX.SH.$spawn                                   S
-    .pipe @MKTX.CALL.$call                                  S
     .pipe @MKTX.INLINE.$link                                S
     .pipe @MKTX.MIXED.$footnote                             S
     .pipe @MKTX.MIXED.$footnote.$remove_extra_paragraphs    S
