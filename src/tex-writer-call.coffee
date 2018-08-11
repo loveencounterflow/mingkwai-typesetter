@@ -84,8 +84,11 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
         return send.done()
       #.....................................................................................................
       for line in lines
-        line = line + '\n' unless line.endsWith '\n'
-        send [ '.', 'text', line, ( copy meta ), ]
+        if CND.isa_text line
+          line = line + '\n' unless line.endsWith '\n'
+          send [ '.', 'text', line, ( copy meta ), ]
+        else
+          send line
       send.done()
     #.......................................................................................................
     else
@@ -111,8 +114,12 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
         pipeline  = []
         pipeline.push await module[ method_name ] P...
         pipeline.push PS.$watch ( line ) ->
-          line = line + '\n' unless line.endsWith '\n'
-          send [ '.', 'text', line, ( copy meta ), ]
+          if CND.isa_text line
+            line = line + '\n' unless line.endsWith '\n'
+            send [ '.', 'text', line, ( copy meta ), ]
+          else
+            send line
+          return null
         pipeline.push on_stop.add PS.$drain()
         PS.pull pipeline...
       #.....................................................................................................
