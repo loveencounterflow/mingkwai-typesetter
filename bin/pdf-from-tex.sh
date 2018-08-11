@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-
+set -euo pipefail
 
 # ### TAINT in case TEXINPUTS is already set, the next line would make it longer
 # with each run: ###

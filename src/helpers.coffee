@@ -130,11 +130,14 @@ $async                    = D.remit_async.bind D
         error_lines.push line
         echo CND.red line
     #.......................................................................................................
-    cp.on 'close', ( error ) =>
-      error = undefined if error is 0
-      if error?
-        alert error
-        return handler error
+    cp.on 'close', ( exit_code ) =>
+      if exit_code isnt 0
+        alert '33533', '—'.repeat 108
+        alert '33533', "command"
+        alert "#{xelatex_command} #{parameters.join ' '}"
+        alert '33533', "exited with #{rpr exit_code}"
+        alert '33533', '—'.repeat 108
+        return handler new Error "Error during PDF creation"
       if error_lines.length > 0
         ### TAINT looks like we're getting empty lines on stderr? ###
         message = ( line for line in error_lines when line.length > 0 ).join '\n'
