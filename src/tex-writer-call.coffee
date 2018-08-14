@@ -68,10 +68,11 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
   return PIPEDREAMS.$async ( event, send, end ) =>
     #.......................................................................................................
     if event? and select event, '!', 'call_await'
-      { module, method_name, P, meta, locator, crumbs, } = @_resolve_arguments S, event
+      { module, method_name, P, meta, locator, crumbs, }  = @_resolve_arguments S, event
+      ctx                                                 = { S, event, }
       #.....................................................................................................
       try
-        lines   = await module[ method_name ] P...
+        lines   = await module[ method_name ] ctx, P...
       #.....................................................................................................
       catch error
         alert '98987', "when trying to call method #{rpr method_name}"
@@ -105,14 +106,15 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
   return PIPEDREAMS.$async ( event, send, end ) =>
     #.......................................................................................................
     if event? and select event, '!', 'call_stream'
-      { module, method_name, P, meta, locator, crumbs, } = @_resolve_arguments S, event
+      { module, method_name, P, meta, locator, crumbs, }  = @_resolve_arguments S, event
+      ctx                                                 = { S, event, }
       #.....................................................................................................
       try
         on_stop   = PS.new_event_collector 'stop', ->
           send.done()
           help "(finished $call_stream #{method_name})"
         pipeline  = []
-        pipeline.push await module[ method_name ] P...
+        pipeline.push await module[ method_name ] ctx, P...
         pipeline.push PS.$watch ( line ) ->
           if CND.isa_text line
             line = line + '\n' unless line.endsWith '\n'
