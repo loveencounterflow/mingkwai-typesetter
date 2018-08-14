@@ -830,6 +830,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
   #.........................................................................................................
   return $ ( event, send ) =>
     #.......................................................................................................
+    # debug '33533', event
     if select event, '.', 'hr2'
       send stamp event
       [ type, name, parameters, meta, ]         = event
