@@ -131,21 +131,26 @@ $async                    = D.remit_async.bind D
         echo CND.red line
     #.......................................................................................................
     cp.on 'close', ( exit_code ) =>
+      #.....................................................................................................
       if exit_code isnt 0
         alert '33533', '—'.repeat 108
         alert '33533', "command"
         alert "#{xelatex_command} #{parameters.join ' '}"
         alert '33533', "exited with #{rpr exit_code}"
         alert '33533', '—'.repeat 108
-        return handler new Error "Error during PDF creation"
+        # return handler new Error "Error during PDF creation"
+        error_detected = yes
+      #.....................................................................................................
       if error_lines.length > 0
         ### TAINT looks like we're getting empty lines on stderr? ###
         message = ( line for line in error_lines when line.length > 0 ).join '\n'
         if message.length > 0
           alert message
           return handler message
+      #.....................................................................................................
       if error_detected
-        return handler new Error "detected unknown error, see transcript"
+        return handler new Error "detected error, see transcript"
+      #.....................................................................................................
       digest = CND.id_from_route aux_locator
       if digest is last_digest
         echo ( CND.grey badge ), CND.lime "done."
