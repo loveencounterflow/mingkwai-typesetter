@@ -80,9 +80,7 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
         alert '98987', "with arguments #{rpr P}"
         alert '98987', "an error occurred:"
         alert '98987', error.message
-        throw error if throw_all_errors
-        send [ '.', 'warning', error.message, ( copy meta ), ]
-        return send.done()
+        throw error
       #.....................................................................................................
       for line in lines
         if CND.isa_text line
