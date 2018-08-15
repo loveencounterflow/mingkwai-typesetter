@@ -830,7 +830,6 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
   #.........................................................................................................
   return $ ( event, send ) =>
     #.......................................................................................................
-    # debug '33533', event
     if select event, '.', 'hr2'
       send stamp event
       [ type, name, parameters, meta, ]         = event
@@ -1729,11 +1728,11 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @MKTX.SH.$spawn                                   S
     .pipe @MKTX.CALL.$call_await                            S
     .pipe @MKTX.CALL.$call_stream                           S
+    .pipe D.$observe ( data ) -> info ( CND.grey '--------->' ), ( CND.blue data[ 0 ] + data[ 1 ] )
     .pipe plugins_tee
     .pipe MACRO_ESCAPER.$expand.$remove_backslashes         S
     .pipe @$document                                        S
     #.......................................................................................................
-    # .pipe D.$show()
     .pipe @MKTX.BLOCK.$blockquote                           S
     .pipe @MKTX.INLINE.$link                                S
     .pipe @MKTX.MIXED.$footnote                             S
