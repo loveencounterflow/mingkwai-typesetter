@@ -1711,8 +1711,8 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
   #.......................................................................................................
   readstream    = D.create_throughstream()
   writestream   = D.create_throughstream()
-  mktscript_in  = D.create_throughstream()
-  mktscript_out = D.create_throughstream()
+  # mktscript_in  = D.create_throughstream()
+  # mktscript_out = D.create_throughstream()
   #.......................................................................................................
   ### TAINT need a file to write MKTScript text events to; must still send on incoming events ###
   # mktscript_in
@@ -1773,9 +1773,9 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @$show_text_locators                              S
     .pipe @MKTX.BLOCK.$paragraph_2                          S
     .pipe @MKTX.TYPOFIX.$fix_typography_for_tex             S
+    # .pipe D.$observe ( event ) -> urge '44433', ( CND.grey '--------->' ), event
     # .pipe D.$show()
     #.......................................................................................................
-    # .pipe MKTSCRIPT_WRITER.$show_mktsmd_events              S
     .pipe do =>
       S.event_count = 0
       return D.$observe ( event ) =>
@@ -1827,9 +1827,6 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     source_locator          = layout_info[ 'source-locator'  ]
     content_locator         = layout_info[ 'content-locator' ]
     file_output             = njs_fs.createWriteStream content_locator
-    #.......................................................................................................
-    mkscript_locator        = layout_info[ 'mkscript-locator' ]
-    mkscript_output         = njs_fs.createWriteStream mkscript_locator
     #.......................................................................................................
     file_output.on 'close', =>
       HELPERS.write_pdf layout_info, ( error ) =>

@@ -146,60 +146,74 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
 
 #-----------------------------------------------------------------------------------------------------------
 @$produce_mktscript = ( S ) ->
-  indentation       = ''
-  tag_stack         = []
+  level                   = 0
+  indentation             = ''
+  tag_stack               = []
+  mktscript_locator       = S.layout_info[ 'mktscript-locator' ]
+  mktscript_output        = njs_fs.createWriteStream mktscript_locator
+  write                   = ( x ) -> mktscript_output.write x, { encoding: 'utf-8', }
+  clr_anchor              = '\x1b[1;32m'
+  clr_reset               = '\x1b[0m'
   #.........................................................................................................
-  return $ ( event, send, end ) ->
-    if event?
-      # debug '©Yo4cR', rpr event
-      [ type, name, text, meta, ] = event
-      unless type in [ 'tex', 'text', ]
-        { line_nr, } = meta
-        if line_nr?
-          anchor = "#{line_nr} █ "
-        else
-          anchor = ""
-        #.....................................................................................................
-        # send JSON.stringify event
-        text_rpr = ''
-        if text?
-          ### TAINT we have to adopt a new event format; for now, the `text` attribute is misnamed,
-          as it is really a `data` attribute ###
-          if CND.isa_text text
-            ### TAINT doesn't recognize escaped backslash ###
-            text_rpr = ' ' + ( rpr text ).replace /\\n/g, '\n'
-          else if ( Object.keys text ).length > 0
-            text_rpr = ' ' + JSON.stringify text
-        send "#{anchor}#{type}#{name}#{text_rpr}"
-        send '\n'
-        # switch type
-        #   when '?'
-        #     send "\n#{anchor}#{type}#{name}\n"
-        #   when '('
-        #     send "#{anchor}#{type}#{name}"
-        #   when ')', '!'
-        #     send "#{type}\n"
-        #   when '('
-        #     send "#{type}#{name}"
-        #   when ')'
-        #     send "#{type}"
-        #   when '.'
-        #     switch name
-        #       when 'hr'
-        #         send "\n#{anchor}#{type}#{name}\n"
-        #       when 'p'
-        #         send "¶\n"
-        #       when 'text'
-        #         ### TAINT doesn't recognize escaped backslash ###
-        #         text_rpr = ( rpr text ).replace /\\n/g, '\n'
-        #         send text_rpr
-        #       else
-        #         send "\n#{anchor}IGNORED: #{rpr event}"
-        #   else
-        #     send "\n#{anchor}IGNORED: #{rpr event}"
-    if end?
-      send "# EOF"
-      end()
+  return D.$observe ( event, has_ended ) =>
+    if ( not event? ) or has_ended
+      write "#{clr_anchor}     █  #{clr_reset}# EOF"
+      return null
+    #.......................................................................................................
+    [ type, name, text, meta, ] = event
+    if meta?.line_nr?
+      line_nr_txt = meta.line_nr.toString().padStart 4, '0'
+      anchor      = "#{clr_anchor}#{line_nr_txt} █ #{clr_reset}"
+      # anchor      = CND.grey "#{line_nr_txt} █ "
+    else
+      anchor = "#{clr_anchor}     █  #{clr_reset}"
+    #.....................................................................................................
+    # send JSON.stringify event
+    text_rpr = ''
+    if text?
+      ### TAINT we have to adopt a new event format; for now, the `text` attribute is misnamed,
+      as it is really a `data` attribute ###
+      if CND.isa_text text
+        ### TAINT doesn't recognize escaped backslash ###
+        text_rpr = ' ' + ( rpr text ).replace /\\n/g, '\n'
+      else if ( Object.keys text ).length > 0
+        text_rpr = ' ' + JSON.stringify text
+    switch type
+      when '('
+        # write '33347 indent plus'
+        level        += +1
+        indentation   = '  '.repeat level
+      when ')'
+        # write '33347 indent minus'
+        level        += -1
+        indentation   = '  '.repeat level
+
+    #   when '?'
+    #     write "\n#{anchor}#{type}#{name}\n"
+    #   when '('
+    #     write "#{anchor}#{type}#{name}"
+    #   when ')', '!'
+    #     write "#{type}\n"
+    #   when '('
+    #     write "#{type}#{name}"
+    #   when ')'
+    #     write "#{type}"
+    #   when '.'
+    #     switch name
+    #       when 'hr'
+    #         write "\n#{anchor}#{type}#{name}\n"
+    #       when 'p'
+    #         write "¶\n"
+    #       when 'text'
+    #         ### TAINT doesn't recognize escaped backslash ###
+    #         text_rpr = ( rpr text ).replace /\\n/g, '\n'
+    #         write text_rpr
+    #       else
+    #         write "\n#{anchor}IGNORED: #{rpr event}"
+    #   else
+    #     write "\n#{anchor}IGNORED: #{rpr event}"
+    write "#{anchor}#{indentation}#{type}#{name}#{text_rpr}"
+    write '\n'
     return null
 
 #-----------------------------------------------------------------------------------------------------------
