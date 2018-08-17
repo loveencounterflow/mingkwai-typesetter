@@ -461,6 +461,29 @@ before '@MKTX.BLOCK.$heading', '@MKTX.COMMAND.$toc', \
       send event
 
 #-----------------------------------------------------------------------------------------------------------
+@MKTX.COMMAND.$crossrefs = ( S ) =>
+  crossrefs       = {}
+  #.........................................................................................................
+  return $ ( event, send, end ) =>
+    if event?
+      # debug '8624', event
+      [ type, name, text, meta, ] = event
+      #.......................................................................................................
+      if select event, '!', [ 'crossref-source', ]
+        # debug '33633', jr event
+        count   = crossrefs[ text ] = ( crossrefs[ text ] ? 0 ) + 1
+        key     = "#{text}-#{count}"
+        send [ 'tex', "\\zlabel{#{key}}", ]
+        send stamp event
+      #.......................................................................................................
+      else
+        send event
+    #.......................................................................................................
+    if end?
+      # debug '32988', crossrefs
+      end()
+
+#-----------------------------------------------------------------------------------------------------------
 before '@MKTX.COMMAND.$toc', after '@MKTX.BLOCK.$heading', \
 @MKTX.MIXED.$collect_headings_for_toc = ( S ) =>
   within_heading  = no
@@ -1728,9 +1751,12 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @MKTX.SH.$spawn                                   S
     .pipe @MKTX.CALL.$call_await                            S
     .pipe @MKTX.CALL.$call_stream                           S
-    .pipe D.$observe ( data ) -> info ( CND.grey '--------->' ), ( CND.blue data[ 0 ] + data[ 1 ] )
+    # .pipe D.$observe ( event ) -> info ( CND.grey '--------->' ), ( CND.blue event[ 0 ] + event[ 1 ] )
+    # .pipe D.$observe ( event ) -> info '23993', ( CND.grey '--------->' ), jr event
     .pipe plugins_tee
     .pipe MACRO_ESCAPER.$expand.$remove_backslashes         S
+    .pipe MKTSCRIPT_WRITER.$show_mktsmd_events              S
+    .pipe MKTSCRIPT_WRITER.$produce_mktscript               S
     .pipe @$document                                        S
     #.......................................................................................................
     .pipe @MKTX.BLOCK.$blockquote                           S
@@ -1748,6 +1774,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @MKTX.REGION.$keep_lines                          S
     .pipe @MKTX.REGION.$toc                                 S
     .pipe @MKTX.BLOCK.$heading                              S
+    .pipe @MKTX.COMMAND.$crossrefs                          S
     .pipe @MKTX.MIXED.$collect_headings_for_toc             S
     .pipe @MKTX.COMMAND.$toc                                S
     .pipe @MKTX.BLOCK.$unordered_list                       S
