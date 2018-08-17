@@ -56,7 +56,7 @@ $async                    = D.remit_async.bind D
   job_name              = njs_path.basename source_home
   aux_locator           = njs_path.join source_home, "#{job_name}.aux"
   pdf_locator           = njs_path.join source_home, "#{job_name}.pdf"
-  mkscript_locator      = njs_path.join source_home, "#{job_name}.mkscript"
+  mktscript_locator      = njs_path.join source_home, "#{job_name}.mktscript"
   # tex_inputs_home       = njs_path.resolve __dirname, '..', 'tex-inputs'
   master_name           = options[ 'master' ][ 'filename' ]
   master_ext            = njs_path.extname master_name
@@ -73,7 +73,7 @@ $async                    = D.remit_async.bind D
     'master-locator':             master_locator
     'master-name':                master_name
     'pdf-locator':                pdf_locator
-    'mkscript-locator':           mkscript_locator
+    'mktscript-locator':          mktscript_locator
     'source-home':                source_home
     'source-locator':             source_locator
     'source-name':                source_name
