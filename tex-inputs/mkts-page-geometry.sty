@@ -48,7 +48,7 @@
     % asymmetric,% see http://tex.stackexchange.com/a/42051/28067
     driver=xetex,
     % showframe,%
-    % twoside,
+    twoside,
     left=21mm,%
     right=21mm,%
     top=18mm,%
@@ -94,6 +94,10 @@
 \newdimen\mkts@ThreeColumnsCenterOneRight%
 \newdimen\mkts@ThreeColumnsCenterTwoLeft%
 \newdimen\mkts@ThreeColumnsCenterTwoRight%
+\newdimen\mkts@Left%
+\newdimen\mkts@Right%
+\newdimen\mkts@Top%
+\newdimen\mkts@Bottom%
 
 % ----------------------------------------------------------------------------------------------------------
 \newcommand{\mkts@GridCalculateLengths}{
@@ -125,6 +129,11 @@
   % ........................................................................................................
   \setlength{\mkts@ThreeColumnsCenterTwoLeft}{\mkts@ThreeColumnsCenterOneRight + \mkts@ThreeColumnsCenterOneLeft}%
   \setlength{\mkts@ThreeColumnsCenterTwoRight}{\mkts@ThreeColumnsCenterTwoLeft + \columnsep}%
+  % ........................................................................................................
+  \setlength{\mkts@Left}{\mkts@GridXshift  - \columnsep * \real{0.5}}%
+  \setlength{\mkts@Right}{\mkts@GridXright + \columnsep * \real{0.5}}%
+  \setlength{\mkts@Top}{\mkts@GridY        - \columnsep * \real{0.5}}%
+  \setlength{\mkts@Bottom}{\mkts@GridYmax  + \columnsep * \real{0.5}}%
   }
 
 % ----------------------------------------------------------------------------------------------------------
@@ -310,6 +319,26 @@
       \draw ( \mkts@ThreeColumnsCenterTwoLeft,  0mm ) -- ( \mkts@ThreeColumnsCenterTwoLeft,   \textheight );
       \draw ( \mkts@ThreeColumnsCenterTwoRight, 0mm ) -- ( \mkts@ThreeColumnsCenterTwoRight,  \textheight );
     \end{tikzpicture}%
+    }%
+  }
+
+% ----------------------------------------------------------------------------------------------------------
+\DeclareOption{outer}{%
+  \typeout{mkts-page-geometry: \trmIndigo{outer}}
+  \mkts@GridCalculateLengths%
+  % ........................................................................................................
+  \AddToShipoutPicture{%
+    \oeIfEvenPage{
+      % even branch
+      \begin{tikzpicture}[ overlay, remember picture, black ]%
+        \draw ( \mkts@Left, \mkts@GridYshift ) -- ( \mkts@Left, \mkts@GridYmax );
+        \end{tikzpicture}%
+        }{%
+      % odd branch
+      \begin{tikzpicture}[ overlay, remember picture, black ]%
+        \draw ( \mkts@Right, \mkts@GridYshift ) -- ( \mkts@Right, \mkts@GridYmax );
+        \end{tikzpicture}%
+        }%
     }%
   }
 
