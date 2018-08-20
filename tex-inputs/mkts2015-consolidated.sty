@@ -286,4 +286,68 @@
 \tikzstyle{arrow} = [thick,->,>=stealth]
 
 
+% ----------------------------------------------------------------------------------
+% ##################################################################################
+% ==================================================================================
+
+% DECORATIONS (should got into module of their own)
+
+% ==================================================================================
+% ##################################################################################
+% ----------------------------------------------------------------------------------
+
+
+\usepackage{adjustbox}
+\definecolor{jzrBlue}{RGB}{0,94,129}
+\definecolor{jzrDarkBlue}{RGB}{0,60,110}
+
+\newdimen\myFontsize
+\setlength{\myFontsize}{5mm}
+\newdimen\kwicwrapStrutWidth
+\newdimen\kwicwrapStrutDoubleTopLength
+\newdimen\kwicwrapStrutDoubleTopHeight
+\newdimen\kwicwrapStrutDoubleTopDepth
+\setlength{\kwicwrapStrutDoubleTopLength}{2.85\myFontsize}
+% \setlength{\kwicwrapStrutDoubleTopLength}{2.4\myFontsize-0.155mm}
+\setlength{\kwicwrapStrutDoubleTopHeight}{0.5\kwicwrapStrutDoubleTopLength}
+\setlength{\kwicwrapStrutDoubleTopDepth}{\kwicwrapStrutDoubleTopLength-\kwicwrapStrutDoubleTopHeight}
+% ..........................................................................................................
+\kwicwrapStrutWidth=0mm
+\newcommand{\kwicwrapStrutDoubleTop}{{\color{blue}\vrule height\kwicwrapStrutDoubleTopHeight width\kwicwrapStrutWidth depth\kwicwrapStrutDoubleTopDepth}}
+\newdimen\kwicwrapStrutCircleLength
+\newdimen\kwicwrapStrutCircleHeight
+\newdimen\kwicwrapStrutCircleDepth
+\newdimen\kwicwrapStrutCircleFontsize
+\setlength{\kwicwrapStrutCircleLength}{1.25\myFontsize}
+\setlength{\kwicwrapStrutCircleHeight}{0.7\kwicwrapStrutCircleLength}
+\setlength{\kwicwrapStrutCircleDepth}{\kwicwrapStrutCircleLength-\kwicwrapStrutCircleHeight}
+\setlength{\kwicwrapStrutCircleFontsize}{1.0\kwicwrapStrutCircleLength}
+%\newcommand{\kwicwrapStrutCircle}{{\color{blue}\vrule height\kwicwrapStrutCircleHeight width\kwicwrapStrutWidth depth\kwicwrapStrutCircleDepth}}
+\newcommand{\kwicwrapStrutCircle}{\vrule %
+  height\kwicwrapStrutCircleHeight %
+  width\kwicwrapStrutWidth %
+  depth\kwicwrapStrutCircleDepth}
+\newcommand*\kwicwrapCircledInner[1]{%
+  \makebox[12.5mm]{\kwicwrapStrutDoubleTop\smash{%
+  \begin{adjustbox}{trim=-2.25mm 0mm 0mm 0}%
+  % \begin{adjustbox}{trim=8.5mm 0mm 0mm 0}%
+    \tikz[baseline=(char.base),line width=0.5mm]{%
+      \node[shape=circle,draw,inner sep=0.55mm,jzrDarkBlue,fill=jzrBlue] (char) {%
+      \makebox[\kwicwrapStrutCircleLength]{\kwicwrapStrutCircle\smash{{%
+        \color{white}%
+        \prPushRaise{0.03}{-0.3}{#1}}%
+        }}}%
+  ;}%
+  \end{adjustbox}%
+  }}}
+
+% ### TAINT parametrize font scaling factor
+\newcommand*\kwicwrapCircled[1]{%
+  \kwicwrapCircledInner{\mktsScaleFontRelative{2}#1}}%
+
+
+% \newcommand{\mktsXxxxstrut}[1]{{%
+%   \color{blue}%
+%   \rule[0mm]{1mm}{#1\mktsLineheight}%
+%   }}
 
