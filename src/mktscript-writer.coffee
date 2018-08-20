@@ -120,6 +120,7 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
 @$show_mktsmd_events = ( S ) ->
   return D.$observe ( event, has_ended ) =>
     if event?
+      # debug '33733', rpr event
       [ type, name, text, meta, ] = event
       if select event, 'tex', null, yes
         null
