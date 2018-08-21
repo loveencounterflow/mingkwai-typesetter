@@ -355,12 +355,39 @@
   }
 
 % ----------------------------------------------------------------------------------------------------------
-\DeclareOption{outerverticalborders}{\mkts@GridCalculateLengths\AddToShipoutPicture{%
+\DeclareOption{outerborders}{\mkts@GridCalculateLengths\AddToShipoutPicture{%
   \begin{tikzpicture}[ overlay, remember picture, black, line width = \columnseprule ]%
     \oeIfEvenPage{\draw ( \mktsGeoLeftmostTextXEven - \columnsep * 0.5, \mktsGeoDeepestTextY - \mktsLineheight * 0.5 ) --
                         ( \mktsGeoLeftmostTextXEven - \columnsep * 0.5, \mktsGeoHighestTextY + \mktsLineheight * 0.5 );}
                  {\draw ( \mktsGeoRightmostTextXOdd + \columnsep * 0.5, \mktsGeoDeepestTextY - \mktsLineheight * 0.5 ) --
                         ( \mktsGeoRightmostTextXOdd + \columnsep * 0.5, \mktsGeoHighestTextY + \mktsLineheight * 0.5 );}
+  \end{tikzpicture}}}%
+
+% ----------------------------------------------------------------------------------------------------------
+\DeclareOption{innerborders}{\mkts@GridCalculateLengths\AddToShipoutPicture{%
+  \begin{tikzpicture}[ overlay, remember picture, black, line width = \columnseprule ]%
+    \oeIfEvenPage{\draw ( \mktsGeoRightmostTextXEven + \columnsep * 0.5, \mktsGeoDeepestTextY - \mktsLineheight * 0.5 ) --
+                        ( \mktsGeoRightmostTextXEven + \columnsep * 0.5, \mktsGeoHighestTextY + \mktsLineheight * 0.5 );}
+                 {\draw ( \mktsGeoLeftmostTextXOdd   - \columnsep * 0.5, \mktsGeoDeepestTextY - \mktsLineheight * 0.5 ) --
+                        ( \mktsGeoLeftmostTextXOdd   - \columnsep * 0.5, \mktsGeoHighestTextY + \mktsLineheight * 0.5 );}
+  \end{tikzpicture}}}%
+
+% ----------------------------------------------------------------------------------------------------------
+\DeclareOption{upperborders}{\mkts@GridCalculateLengths\AddToShipoutPicture{%
+  \begin{tikzpicture}[ overlay, remember picture, black, line width = \columnseprule ]%
+    \oeIfEvenPage{\draw ( \mktsGeoLeftmostTextXEven  - \columnsep * 0.5, \mktsGeoHighestTextY + \mktsLineheight * 0.5 ) --
+                        ( \mktsGeoRightmostTextXEven + \columnsep * 0.5, \mktsGeoHighestTextY + \mktsLineheight * 0.5 );}
+                 {\draw ( \mktsGeoLeftmostTextXOdd   - \columnsep * 0.5, \mktsGeoHighestTextY + \mktsLineheight * 0.5 ) --
+                        ( \mktsGeoRightmostTextXOdd  + \columnsep * 0.5, \mktsGeoHighestTextY + \mktsLineheight * 0.5 );}
+  \end{tikzpicture}}}%
+
+% ----------------------------------------------------------------------------------------------------------
+\DeclareOption{lowerborders}{\mkts@GridCalculateLengths\AddToShipoutPicture{%
+  \begin{tikzpicture}[ overlay, remember picture, black, line width = \columnseprule ]%
+    \oeIfEvenPage{\draw ( \mktsGeoLeftmostTextXEven  - \columnsep * 0.5, \mktsGeoDeepestTextY - \mktsLineheight * 0.5 ) --
+                        ( \mktsGeoRightmostTextXEven + \columnsep * 0.5, \mktsGeoDeepestTextY - \mktsLineheight * 0.5 );}
+                 {\draw ( \mktsGeoLeftmostTextXOdd   - \columnsep * 0.5, \mktsGeoDeepestTextY - \mktsLineheight * 0.5 ) --
+                        ( \mktsGeoRightmostTextXOdd  + \columnsep * 0.5, \mktsGeoDeepestTextY - \mktsLineheight * 0.5 );}
   \end{tikzpicture}}}%
 
 % ----------------------------------------------------------------------------------------------------------
