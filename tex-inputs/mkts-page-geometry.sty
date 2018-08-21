@@ -41,7 +41,7 @@
 
 % ----------------------------------------------------------------------------------------------------------
 \DeclareOption{a4}{%
-  \typeout{mkts-page-geometry: \trmIndigo{a4}}
+  \typeout{mkts-page-geometry: \trmIndigo{a4}}%
   \setlength{\columnsep}{5mm}%
   \setlength{\columnseprule}{0.155mm}%
   \geometry{
@@ -99,13 +99,26 @@
 \newdimen\mkts@Right%
 \newdimen\mkts@Top%
 \newdimen\mkts@Bottom%
-\newdimen\mktsGeoGutterWidth%
-\newdimen\mktsGeoGutterOddX%
-\newdimen\mktsGeoGutterEvenX%
+\newdimen\mktsGeoGutterWidth%           width of gutter
+\newdimen\mktsGeoGutterXEven%           x of gutter right edge on even pages
+\newdimen\mktsGeoGutterXOdd%            x of gutter left  edge on odd  pages
+\newdimen\mktsGeoLeftmostXEven%         leftmost  printing x on even pages
+\newdimen\mktsGeoLeftmostXOdd%          leftmost  printing x on odd  pages
+\newdimen\mktsGeoLeftmostTextXEven%     leftmost  x of text (left edge of first column) on even pages
+\newdimen\mktsGeoLeftmostTextXOdd%      leftmost  x of text (left edge of first column) on odd  pages
+\newdimen\mktsGeoRightmostXEven%        rightmost printing x on even pages
+\newdimen\mktsGeoRightmostXOdd%         rightmost printing x on odd  pages
+\newdimen\mktsGeoRightmostTextXEven%    rightmost x of text (right edge of last column) on even pages
+\newdimen\mktsGeoRightmostTextXOdd%     rightmost x of text (right edge of last column) on odd  pages
+\newdimen\mktsGeoHighestY%              topmost position on page
+\newdimen\mktsGeoDeepestY%              lowest  position on page
+\newdimen\mktsGeoHighestTextY%          topmost position of text (above any type, excluding header)
+\newdimen\mktsGeoDeepestTextY%          lowest  position of text (below any type, excluding footer)
+
 
 % ----------------------------------------------------------------------------------------------------------
 \newcommand{\mkts@GridCalculateLengths}{
-  \typeout{mkts-page-geometry: \trmIndigo{mkts@GridCalculateLengths}}
+  \typeout{mkts-page-geometry: \trmIndigo{mkts@GridCalculateLengths}}%
   \setlength{\mkts@GridYmax}{\paperheight - \headheight - \headsep - \topmargin - \voffset - 1in}%
   \setlength{\mkts@GridXshift}{\hoffset + 1in + \oddsidemargin}%
   \setlength{\mkts@GridXright}{\mkts@GridXshift + \textwidth}%
@@ -139,16 +152,25 @@
   \setlength{\mkts@Top}{\mkts@GridY        - \columnsep * \real{0.5}}%
   \setlength{\mkts@Bottom}{\mkts@GridYmax  + \columnsep * \real{0.5}}%
   \setlength{\mktsGeoGutterWidth}{\Gm@bindingoffset}%
-  \setlength{\mktsGeoGutterOddX}{\mktsGeoGutterWidth}%
-  \setlength{\mktsGeoGutterEvenX}{\paperwidth - \mktsGeoGutterWidth}%
+  \setlength{\mktsGeoGutterXEven}{\paperwidth - \mktsGeoGutterWidth}%
+  \setlength{\mktsGeoGutterXOdd}{\mktsGeoGutterWidth}%
+  \setlength{\mktsGeoLeftmostXEven}{0mm}%
+  \setlength{\mktsGeoLeftmostXOdd}{\mktsGeoGutterWidth}%
+  \setlength{\mktsGeoLeftmostTextXEven}{\hoffset + 1in + \evensidemargin}%
+  \setlength{\mktsGeoLeftmostTextXOdd}{ \hoffset + 1in + \oddsidemargin}%
+  \setlength{\mktsGeoHighestY}{\paperheight}
+  \setlength{\mktsGeoDeepestY}{0mm}
+  \setlength{\mktsGeoHighestTextY}{\paperheight - \headheight - \headsep - \topmargin - \voffset - 1in}
+  \setlength{\mktsGeoDeepestTextY}{\mktsGeoHighestTextY - \textheight}
+  \setlength{\mktsGeoRightmostXEven}{\paperwidth - \mktsGeoGutterWidth}
+  \setlength{\mktsGeoRightmostXOdd}{ \paperwidth}
+  \setlength{\mktsGeoRightmostTextXEven}{\mktsGeoLeftmostTextXEven + \textwidth}
+  \setlength{\mktsGeoRightmostTextXOdd}{ \mktsGeoLeftmostTextXOdd  + \textwidth}
   }
 
 % ----------------------------------------------------------------------------------------------------------
-% \newcommand{\mktsGeoGutterX}{oeIfEvenPage{\mktsGeoGutterEvenX}{\mktsGeoGutterOddX}}
-
-% ----------------------------------------------------------------------------------------------------------
 \DeclareOption{linebands}{%
-  \typeout{mkts-page-geometry: \trmIndigo{linebands}}
+  \typeout{mkts-page-geometry: \trmIndigo{linebands}}%
   \mkts@GridCalculateLengths%
   % thx to http://tex.stackexchange.com/a/41153/28067
   \AddToShipoutPicture{%
@@ -167,7 +189,7 @@
 
 % ----------------------------------------------------------------------------------------------------------
 \DeclareOption{interbands}{%
-  \typeout{mkts-page-geometry: \trmIndigo{descenders}}
+  \typeout{mkts-page-geometry: \trmIndigo{descenders}}%
   \mkts@GridCalculateLengths%
   % thx to http://tex.stackexchange.com/a/41153/28067
   \AddToShipoutPicture{%
@@ -187,7 +209,7 @@
 
 % ----------------------------------------------------------------------------------------------------------
 \DeclareOption{mmgrid}{%
-  \typeout{mkts-page-geometry: \trmIndigo{mmgrid}}
+  \typeout{mkts-page-geometry: \trmIndigo{mmgrid}}%
   \mkts@GridCalculateLengths%
   % thx to http://tex.stackexchange.com/a/41153/28067
   \AddToShipoutPicture{%
@@ -207,7 +229,7 @@
 
 % ----------------------------------------------------------------------------------------------------------
 \DeclareOption{cmgrid}{%
-  \typeout{mkts-page-geometry: \trmIndigo{mmgrid}}
+  \typeout{mkts-page-geometry: \trmIndigo{mmgrid}}%
   \mkts@GridCalculateLengths%
   % thx to http://tex.stackexchange.com/a/41153/28067
   \AddToShipoutPicture{%
@@ -234,7 +256,7 @@
 
 % ----------------------------------------------------------------------------------------------------------
 \DeclareOption{baselines}{%
-  \typeout{mkts-page-geometry: \trmIndigo{baselines}}
+  \typeout{mkts-page-geometry: \trmIndigo{baselines}}%
   \mkts@GridCalculateLengths%
   % thx to http://tex.stackexchange.com/a/41153/28067
   \AddToShipoutPicture{%
@@ -254,7 +276,7 @@
 
 % ----------------------------------------------------------------------------------------------------------
 \DeclareOption{medians}{%
-  \typeout{mkts-page-geometry: \trmIndigo{medians}}
+  \typeout{mkts-page-geometry: \trmIndigo{medians}}%
   \mkts@GridCalculateLengths%
   % thx to http://tex.stackexchange.com/a/41153/28067
   \AddToShipoutPicture{%
@@ -272,7 +294,7 @@
 
 % ----------------------------------------------------------------------------------------------------------
 \DeclareOption{ascenders}{%
-  \typeout{mkts-page-geometry: \trmIndigo{ascenders}}
+  \typeout{mkts-page-geometry: \trmIndigo{ascenders}}%
   \mkts@GridCalculateLengths%
   % thx to http://tex.stackexchange.com/a/41153/28067
   \AddToShipoutPicture{%
@@ -290,7 +312,7 @@
 
 % ----------------------------------------------------------------------------------------------------------
 \DeclareOption{descenders}{%
-  \typeout{mkts-page-geometry: \trmIndigo{descenders}}
+  \typeout{mkts-page-geometry: \trmIndigo{descenders}}%
   \mkts@GridCalculateLengths%
   % thx to http://tex.stackexchange.com/a/41153/28067
   \AddToShipoutPicture{%
@@ -310,7 +332,7 @@
 
 % ----------------------------------------------------------------------------------------------------------
 \DeclareOption{columns}{%
-  \typeout{mkts-page-geometry: \trmIndigo{columns}}
+  \typeout{mkts-page-geometry: \trmIndigo{columns}}%
   \mkts@GridCalculateLengths%
   % ........................................................................................................
   \AddToShipoutPicture{%
@@ -333,50 +355,59 @@
   }
 
 % ----------------------------------------------------------------------------------------------------------
-\DeclareOption{outer}{%
-  \typeout{mkts-page-geometry: \trmIndigo{outer}}
-  \mkts@GridCalculateLengths%
-  % ........................................................................................................
-  \AddToShipoutPicture{%
-    \oeIfEvenPage{%
-      % even branch
-      \begin{tikzpicture}[ overlay, remember picture, black ]%
-        \draw ( \mkts@Left, \mkts@GridYshift ) -- ( \mkts@Left, \mkts@GridYmax );
-        \end{tikzpicture}%
-        }{%
-      % odd branch
-      \begin{tikzpicture}[ overlay, remember picture, black ]%
-        \draw ( \mkts@Right, \mkts@GridYshift ) -- ( \mkts@Right, \mkts@GridYmax );
-        \end{tikzpicture}%
-        }%
-    }%
-  }
+\DeclareOption{outerverticalborders}{\mkts@GridCalculateLengths\AddToShipoutPicture{%
+  \begin{tikzpicture}[ overlay, remember picture, black, line width = \columnseprule ]%
+    \oeIfEvenPage{\draw ( \mktsGeoLeftmostTextXEven - \columnsep * 0.5, \mktsGeoDeepestTextY - \mktsLineheight * 0.5 ) --
+                        ( \mktsGeoLeftmostTextXEven - \columnsep * 0.5, \mktsGeoHighestTextY + \mktsLineheight * 0.5 );}
+                 {\draw ( \mktsGeoRightmostTextXOdd + \columnsep * 0.5, \mktsGeoDeepestTextY - \mktsLineheight * 0.5 ) --
+                        ( \mktsGeoRightmostTextXOdd + \columnsep * 0.5, \mktsGeoHighestTextY + \mktsLineheight * 0.5 );}
+  \end{tikzpicture}}}%
 
 % ----------------------------------------------------------------------------------------------------------
-\DeclareOption{debug}{%
-  \typeout{mkts-page-geometry: \trmIndigo{outer}}
+\DeclareOption{debug}{\typeout{mkts-page-geometry: \trmIndigo{debug}}\mkts@GridCalculateLengths\AddToShipoutPicture{%
+  \begin{tikzpicture}[ overlay, remember picture, blue, line width = 0.1mm ]%
+    \oeIfEvenPage{
+      \draw[red]    ( \mktsGeoLeftmostXEven,      \mktsGeoDeepestY     ) circle ( 1mm ) circle ( 2mm ) circle ( 3mm );
+      \draw[blue]   ( \mktsGeoLeftmostTextXEven,  \mktsGeoDeepestTextY ) circle ( 1mm ) circle ( 2mm ) circle ( 3mm );
+      \draw[orange] ( \mktsGeoLeftmostTextXEven,  \mktsGeoHighestTextY ) circle ( 1mm ) circle ( 2mm ) circle ( 3mm );
+      \draw[purple] ( \mktsGeoRightmostTextXEven, \mktsGeoHighestTextY ) circle ( 1mm ) circle ( 2mm ) circle ( 3mm );
+      \draw[green]  ( \mktsGeoRightmostTextXEven, \mktsGeoDeepestTextY ) circle ( 1mm ) circle ( 2mm ) circle ( 3mm );
+      \draw (         \mktsGeoLeftmostXEven,      \mktsGeoDeepestY     ) -- ( \mktsGeoLeftmostTextXEven, \mktsGeoDeepestTextY );}%
+                 {
+      \draw[red]    ( \mktsGeoLeftmostXOdd,       \mktsGeoDeepestY     ) circle ( 1mm ) circle ( 2mm ) circle ( 3mm );
+      \draw[blue]   ( \mktsGeoLeftmostTextXOdd,   \mktsGeoDeepestTextY ) circle ( 1mm ) circle ( 2mm ) circle ( 3mm );
+      \draw[orange] ( \mktsGeoLeftmostTextXOdd,   \mktsGeoHighestTextY ) circle ( 1mm ) circle ( 2mm ) circle ( 3mm );
+      \draw[purple] ( \mktsGeoRightmostTextXOdd,  \mktsGeoHighestTextY ) circle ( 1mm ) circle ( 2mm ) circle ( 3mm );
+      \draw[green]  ( \mktsGeoRightmostTextXOdd,  \mktsGeoDeepestTextY ) circle ( 1mm ) circle ( 2mm ) circle ( 3mm );
+      \draw (         \mktsGeoLeftmostXOdd,       \mktsGeoDeepestY     ) -- ( \mktsGeoLeftmostTextXOdd,  \mktsGeoDeepestTextY );}%
+  \end{tikzpicture}}}%
+
+% ----------------------------------------------------------------------------------------------------------
+\DeclareOption{debugorigin}{%
+  \typeout{mkts-page-geometry: \trmIndigo{debug}}%
   \mkts@GridCalculateLengths%
   % ........................................................................................................
   \AddToShipoutPicture{%
-    \begin{tikzpicture}[ overlay, remember picture, blue, line width = 0.5mm ]%
-      \draw ( 0mm, 0mm ) -- ( 10mm, 10mm );
-      \end{tikzpicture}%
-      }%
-    }%
+    \begin{tikzpicture}[ overlay, remember picture, red, line width = 0.1mm ]%
+      \oeIfEvenPage{ \draw ( 0mm, 0mm ) -- ( 0mm, 10mm ) -- ( 10mm, 10mm ) -- ( 0mm, 0mm ) -- ( 10mm, 0mm ) -- ( 10mm, 10mm ); \draw ( 0mm, 0mm ) circle ( 1mm ) circle ( 10mm ); }%
+                   { \draw ( 0mm, 0mm ) -- ( 0mm, 10mm ) -- ( 10mm, 10mm ) -- ( 0mm, 0mm ) -- ( 10mm, 0mm ) -- ( 10mm, 10mm ); \draw ( 0mm, 0mm ) circle ( 1mm ) circle ( 10mm ); }%
+    \end{tikzpicture}}}%
 
 % ----------------------------------------------------------------------------------------------------------
 \DeclareOption{gutter}{%
-  \typeout{mkts-page-geometry: \trmIndigo{outer}}
+  \typeout{mkts-page-geometry: \trmIndigo{gutter}}%
   \mkts@GridCalculateLengths%
   % ........................................................................................................
   \AddToShipoutPicture{%
     \oeIfEvenPage{%
-      \begin{tikzpicture}[ overlay, remember picture, blue!50, dashed, line width = \mktsGeoGutterWidth ]%
-      \draw ( \mktsGeoGutterEvenX + \mktsGeoGutterWidth * real{0.5}, 0mm ) -- ( \mktsGeoGutterEvenX + \mktsGeoGutterWidth * real{0.5}, \paperheight );
+      \begin{tikzpicture}[ overlay, remember picture, blue, opacity = 0.25, solid, line width = \mktsGeoGutterWidth ]%
+      \draw ( \mktsGeoGutterXEven + \mktsGeoGutterWidth * real{0.5},                1mm ) --
+            ( \mktsGeoGutterXEven + \mktsGeoGutterWidth * real{0.5}, \paperheight - 1mm );
       \end{tikzpicture}%
     }{%
-      \begin{tikzpicture}[ overlay, remember picture, blue!50, dashed, line width = \mktsGeoGutterWidth ]%
-      \draw ( \mktsGeoGutterOddX - \mktsGeoGutterWidth * real{0.5}, 0mm ) -- ( \mktsGeoGutterOddX - \mktsGeoGutterWidth * real{0.5}, \paperheight );
+      \begin{tikzpicture}[ overlay, remember picture, blue, opacity = 0.25, solid, line width = \mktsGeoGutterWidth ]%
+      \draw ( \mktsGeoGutterXOdd - \mktsGeoGutterWidth * real{0.5},                 1mm ) --
+            ( \mktsGeoGutterXOdd - \mktsGeoGutterWidth * real{0.5},  \paperheight - 1mm );
       \end{tikzpicture}%
     }}}%
 
