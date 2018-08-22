@@ -357,19 +357,19 @@
 % ----------------------------------------------------------------------------------------------------------
 \DeclareOption{outerborders}{\mkts@GridCalculateLengths\AddToShipoutPicture{%
   \begin{tikzpicture}[ overlay, remember picture, black, line width = \columnseprule ]%
-    \oeIfEvenPage{\draw ( \mktsGeoLeftmostTextXEven - \columnsep * 0.5, \mktsGeoDeepestTextY - \mktsLineheight * 0.5 ) --
-                        ( \mktsGeoLeftmostTextXEven - \columnsep * 0.5, \mktsGeoHighestTextY + \mktsLineheight * 0.5 );}
-                 {\draw ( \mktsGeoRightmostTextXOdd + \columnsep * 0.5, \mktsGeoDeepestTextY - \mktsLineheight * 0.5 ) --
-                        ( \mktsGeoRightmostTextXOdd + \columnsep * 0.5, \mktsGeoHighestTextY + \mktsLineheight * 0.5 );}
+    \oeIfEvenPage{\draw ( \mktsGeoLeftmostTextXEven - \columnsep * 0.5, \mktsGeoDeepestTextY - \mktsLineheight * 0.2 ) --
+                        ( \mktsGeoLeftmostTextXEven - \columnsep * 0.5, \mktsGeoHighestTextY + \mktsLineheight * 0.2 );}
+                 {\draw ( \mktsGeoRightmostTextXOdd + \columnsep * 0.5, \mktsGeoDeepestTextY - \mktsLineheight * 0.2 ) --
+                        ( \mktsGeoRightmostTextXOdd + \columnsep * 0.5, \mktsGeoHighestTextY + \mktsLineheight * 0.2 );}
   \end{tikzpicture}}}%
 
 % ----------------------------------------------------------------------------------------------------------
 \DeclareOption{innerborders}{\mkts@GridCalculateLengths\AddToShipoutPicture{%
   \begin{tikzpicture}[ overlay, remember picture, black, line width = \columnseprule ]%
-    \oeIfEvenPage{\draw ( \mktsGeoRightmostTextXEven + \columnsep * 0.5, \mktsGeoDeepestTextY - \mktsLineheight * 0.5 ) --
-                        ( \mktsGeoRightmostTextXEven + \columnsep * 0.5, \mktsGeoHighestTextY + \mktsLineheight * 0.5 );}
-                 {\draw ( \mktsGeoLeftmostTextXOdd   - \columnsep * 0.5, \mktsGeoDeepestTextY - \mktsLineheight * 0.5 ) --
-                        ( \mktsGeoLeftmostTextXOdd   - \columnsep * 0.5, \mktsGeoHighestTextY + \mktsLineheight * 0.5 );}
+    \oeIfEvenPage{\draw ( \mktsGeoRightmostTextXEven + \columnsep * 0.5, \mktsGeoDeepestTextY - \mktsLineheight * 0.2 ) --
+                        ( \mktsGeoRightmostTextXEven + \columnsep * 0.5, \mktsGeoHighestTextY + \mktsLineheight * 0.2 );}
+                 {\draw ( \mktsGeoLeftmostTextXOdd   - \columnsep * 0.5, \mktsGeoDeepestTextY - \mktsLineheight * 0.2 ) --
+                        ( \mktsGeoLeftmostTextXOdd   - \columnsep * 0.5, \mktsGeoHighestTextY + \mktsLineheight * 0.2 );}
   \end{tikzpicture}}}%
 
 % ----------------------------------------------------------------------------------------------------------
@@ -427,12 +427,12 @@
   % ........................................................................................................
   \AddToShipoutPicture{%
     \oeIfEvenPage{%
-      \begin{tikzpicture}[ overlay, remember picture, blue, opacity = 0.25, solid, line width = \mktsGeoGutterWidth ]%
+      \begin{tikzpicture}[ overlay, remember picture, blue, opacity = 0.25, dashed, line width = \mktsGeoGutterWidth ]%
       \draw ( \mktsGeoGutterXEven + \mktsGeoGutterWidth * real{0.5},                1mm ) --
             ( \mktsGeoGutterXEven + \mktsGeoGutterWidth * real{0.5}, \paperheight - 1mm );
       \end{tikzpicture}%
     }{%
-      \begin{tikzpicture}[ overlay, remember picture, blue, opacity = 0.25, solid, line width = \mktsGeoGutterWidth ]%
+      \begin{tikzpicture}[ overlay, remember picture, blue, opacity = 0.25, dashed, line width = \mktsGeoGutterWidth ]%
       \draw ( \mktsGeoGutterXOdd - \mktsGeoGutterWidth * real{0.5},                 1mm ) --
             ( \mktsGeoGutterXOdd - \mktsGeoGutterWidth * real{0.5},  \paperheight - 1mm );
       \end{tikzpicture}%
