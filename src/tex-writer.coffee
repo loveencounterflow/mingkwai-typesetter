@@ -464,24 +464,29 @@ before '@MKTX.BLOCK.$heading', '@MKTX.COMMAND.$toc', \
 @MKTX.COMMAND.$crossrefs = ( S ) =>
   crossrefs       = {}
   #.........................................................................................................
-  return $ ( event, send, end ) =>
-    if event?
-      # debug '8624', event
-      [ type, name, text, meta, ] = event
-      #.......................................................................................................
-      if select event, '!', [ 'crossref-source', ]
-        # debug '33633', jr event
-        count   = crossrefs[ text ] = ( crossrefs[ text ] ? 0 ) + 1
-        key     = "#{text}-#{count}"
-        send [ 'tex', "\\zlabel{#{key}}", ]
-        send stamp event
-      #.......................................................................................................
-      else
-        send event
+  return $ ( event, send ) =>
+    [ type, name, text, meta, ] = event
     #.......................................................................................................
-    if end?
-      # debug '32988', crossrefs
-      end()
+    if select event, '!', [ 'crossref-anchor', ]
+      debug '33393', event
+      ### count   = crossrefs[ text ] = ( crossrefs[ text ] ? 0 ) + 1 ###
+      ### key     = "#{text}-#{count}" ###
+      key     = text
+      send [ 'tex', "\\zlabel{#{key}}", ]
+      send stamp event
+    #.......................................................................................................
+    else if select event, '!', [ 'crossref-link', ]
+      debug '33394', event
+      ### count   = crossrefs[ text ] = ( crossrefs[ text ] ? 0 ) + 1 ###
+      ### key     = "#{text}-#{count}" ###
+      key     = text
+      send [ 'tex', "\\zpageref{#{key}}", ]
+      send stamp event
+    #.......................................................................................................
+    else
+      send event
+    #.......................................................................................................
+    return null
 
 #-----------------------------------------------------------------------------------------------------------
 before '@MKTX.COMMAND.$toc', after '@MKTX.BLOCK.$heading', \
@@ -1774,7 +1779,6 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @MKTX.REGION.$keep_lines                          S
     .pipe @MKTX.REGION.$toc                                 S
     .pipe @MKTX.BLOCK.$heading                              S
-    .pipe @MKTX.COMMAND.$crossrefs                          S
     .pipe @MKTX.MIXED.$collect_headings_for_toc             S
     .pipe @MKTX.COMMAND.$toc                                S
     .pipe @MKTX.BLOCK.$unordered_list                       S
@@ -1799,6 +1803,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     # .pipe @$show_events                                     S
     .pipe @$show_text_locators                              S
     .pipe @MKTX.BLOCK.$paragraph_2                          S
+    .pipe @MKTX.COMMAND.$crossrefs                          S
     .pipe @MKTX.TYPOFIX.$fix_typography_for_tex             S
     # .pipe D.$observe ( event ) -> urge '44433', ( CND.grey '--------->' ), event
     # .pipe D.$show()
