@@ -50,6 +50,7 @@ MACRO_ESCAPER             = require './macro-escaper'
 MACRO_INTERPRETER         = require './macro-interpreter'
 LINEBREAKER               = require './linebreaker'
 @COLUMNS                  = require './tex-writer-columns'
+AUX                       = require './tex-writer-aux'
 #...........................................................................................................
 Σ_formatted_warning       = Symbol 'formatted-warning'
 jr                        = JSON.stringify
@@ -1875,6 +1876,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
         help "#{TEXT.flush_right         dt_s_txt, 14}          s"
         help "#{TEXT.flush_right   chrs_per_s_txt, 14}   chrs / s"
         help "#{TEXT.flush_right events_per_s_txt, 14} events / s"
+        debug '49984', S.aux
         handler null if handler?
     #.......................................................................................................
     ### TAINT use method to produce new state ###
@@ -1892,6 +1894,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     tex_input               = tex_writestream.tee[  'input'  ]
     tex_output              = tex_writestream.tee[  'output' ]
     #.......................................................................................................
+    S.aux                   = yield AUX.fetch_aux_data S, resume
     S.resend                = md_readstream.tee[ 'S' ].resend
     #.......................................................................................................
     md_output
@@ -1948,6 +1951,8 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
   tex_input           = tex_writestream.tee[ 'input'  ]
   tex_output          = tex_writestream.tee[ 'output' ]
   #.........................................................................................................
+  S.aux               = @AUX.read_auxfile S
+  debug S.aux; xxx
   S.resend            = md_readstream.tee[ 'S' ].resend
   #.........................................................................................................
   md_output
