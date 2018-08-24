@@ -1,0 +1,18 @@
+% ==========================================================================================================
+%
+% 888      8888888 888b    888 8888888888 888b    888 888     888 888b     d888 888888b.   8888888888 8888888b.   .d8888b.
+% 888        888   8888b   888 888        8888b   888 888     888 8888b   d8888 888  "88b  888        888   Y88b d88P  Y88b
+% 888        888   88888b  888 888        88888b  888 888     888 88888b.d88888 888  .88P  888        888    888 Y88b.
+% 888        888   888Y88b 888 8888888    888Y88b 888 888     888 888Y88888P888 8888888K.  8888888    888   d88P  "Y888b.
+% 888        888   888 Y88b888 888        888 Y88b888 888     888 888 Y888P 888 888  "Y88b 888        8888888P"      "Y88b.
+% 888        888   888  Y88888 888        888  Y88888 888     888 888  Y8P  888 888    888 888        888 T88b         "888
+% 888        888   888   Y8888 888        888   Y8888 Y88b. .d88P 888   "   888 888   d88P 888        888  T88b  Y88b  d88P
+% 88888888 8888888 888    Y888 8888888888 888    Y888  "Y88888P"  888       888 8888888P"  8888888888 888   T88b  "Y8888P"
+%
+% ==========================================================================================================
+
+% see http://ftp.fernuni-hagen.de/ftp-dir/pub/mirrors/www.ctan.org/macros/latex/contrib/lineno/ulineno.pdf p9
+% we're setting modulo to an unrealisitcally big number so no line number gets printed, but labels and
+% references still work:
+\usepackage[modulo,pagewise]{lineno}\linenumbers\modulolinenumbers[10000]%
+%\renewcommand\thelinenumber{\roman{linenumber}}
