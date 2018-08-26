@@ -16,14 +16,15 @@
 % ### TAINT make texts, styling configurable ###
 \DeclareOption{jizura}{%
   \pagestyle{fancy}%
+  \fancyhf{}% as per https://tex.stackexchange.com/a/110305/128255, clears predefined, avoids nagging about \sl
   \renewcommand{\headrulewidth}{0mm}%
   \renewcommand{\footrulewidth}{0mm}%
-  \fancyhead[OR]{\prPush{1.1}{\cn{{\mktsFontfileBiaukai{}萬字一覽置換索引}}}}%
-  \fancyhead[EL]{\cn{{\mktsFontfileBiaukai{}萬字一覽置換索引}}}%
+  \fancyhead[OR]{{\mktsScaleFont{1}\cjk{}{\cn{}萬字一覽置換索引}}}%
+  \fancyhead[EL]{{\mktsScaleFont{1}\cjk{}{\cn{}萬字一覽置換索引}}}%
   % \fancyhead[EL,OR]{\leftmark}%
   % \fancyhead[OL,ER]{\rightmark\cn{{\mktsFontfileBiaukai{}字面萬字一覽}}}%
-  \fancyfoot[OR]{\prPush{1.1}{\pageNr{\thepage}}}%
-  \fancyfoot[EL]{\pageNr{\thepage}}%
+  \fancyfoot[OR]{\thepage}%
+  \fancyfoot[EL]{\thepage}%
   \fancyfoot[OC,EC]{}%
   \fancyfoot[OL,ER]{}%
   }
