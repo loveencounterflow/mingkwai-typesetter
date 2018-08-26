@@ -175,27 +175,62 @@ module.exports = options =
       { texname: 'mktsFontfileUbunturi',                       filename: 'Ubuntu-RI.ttf',                       }
       { texname: 'mktsFontfileUkai',                           filename: 'ukai.ttc',                            }
       { texname: 'mktsFontfileUming',                          filename: 'uming.ttc',                           }
-      { texname: 'mktsFontfileIosevkaslabbold',                subfolder: 'iosevska', filename: 'iosevka-slab-bold.ttf',              }
-      { texname: 'mktsFontfileIosevkaslabbolditalic',          subfolder: 'iosevska', filename: 'iosevka-slab-bolditalic.ttf',        }
-      { texname: 'mktsFontfileIosevkaslabboldoblique',         subfolder: 'iosevska', filename: 'iosevka-slab-boldoblique.ttf',       }
-      { texname: 'mktsFontfileIosevkaslabextralight',          subfolder: 'iosevska', filename: 'iosevka-slab-extralight.ttf',        }
-      { texname: 'mktsFontfileIosevkaslabextralightitalic',    subfolder: 'iosevska', filename: 'iosevka-slab-extralightitalic.ttf',  }
-      { texname: 'mktsFontfileIosevkaslabextralightoblique',   subfolder: 'iosevska', filename: 'iosevka-slab-extralightoblique.ttf', }
-      { texname: 'mktsFontfileIosevkaslabheavy',               subfolder: 'iosevska', filename: 'iosevka-slab-heavy.ttf',             }
-      { texname: 'mktsFontfileIosevkaslabheavyitalic',         subfolder: 'iosevska', filename: 'iosevka-slab-heavyitalic.ttf',       }
-      { texname: 'mktsFontfileIosevkaslabheavyoblique',        subfolder: 'iosevska', filename: 'iosevka-slab-heavyoblique.ttf',      }
-      { texname: 'mktsFontfileIosevkaslabitalic',              subfolder: 'iosevska', filename: 'iosevka-slab-italic.ttf',            }
-      { texname: 'mktsFontfileIosevkaslablight',               subfolder: 'iosevska', filename: 'iosevka-slab-light.ttf',             }
-      { texname: 'mktsFontfileIosevkaslablightitalic',         subfolder: 'iosevska', filename: 'iosevka-slab-lightitalic.ttf',       }
-      { texname: 'mktsFontfileIosevkaslablightoblique',        subfolder: 'iosevska', filename: 'iosevka-slab-lightoblique.ttf',      }
-      { texname: 'mktsFontfileIosevkaslabmedium',              subfolder: 'iosevska', filename: 'iosevka-slab-medium.ttf',            }
-      { texname: 'mktsFontfileIosevkaslabmediumitalic',        subfolder: 'iosevska', filename: 'iosevka-slab-mediumitalic.ttf',      }
-      { texname: 'mktsFontfileIosevkaslabmediumoblique',       subfolder: 'iosevska', filename: 'iosevka-slab-mediumoblique.ttf',     }
-      { texname: 'mktsFontfileIosevkaslaboblique',             subfolder: 'iosevska', filename: 'iosevka-slab-oblique.ttf',           }
-      { texname: 'mktsFontfileIosevkaslabregular',             subfolder: 'iosevska', filename: 'iosevka-slab-regular.ttf',           }
-      { texname: 'mktsFontfileIosevkaslabthin',                subfolder: 'iosevska', filename: 'iosevka-slab-thin.ttf',              }
-      { texname: 'mktsFontfileIosevkaslabthinitalic',          subfolder: 'iosevska', filename: 'iosevka-slab-thinitalic.ttf',        }
-      { texname: 'mktsFontfileIosevkaslabthinoblique',         subfolder: 'iosevska', filename: 'iosevka-slab-thinoblique.ttf',       }
+      # { texname: 'mktsFontfileIosevkaslabbold',                subfolder: 'iosevska', filename: 'iosevka-slab-bold.ttf',              }
+      # { texname: 'mktsFontfileIosevkaslabbolditalic',          subfolder: 'iosevska', filename: 'iosevka-slab-bolditalic.ttf',        }
+      # { texname: 'mktsFontfileIosevkaslabboldoblique',         subfolder: 'iosevska', filename: 'iosevka-slab-boldoblique.ttf',       }
+      # { texname: 'mktsFontfileIosevkaslabextralight',          subfolder: 'iosevska', filename: 'iosevka-slab-extralight.ttf',        }
+      # { texname: 'mktsFontfileIosevkaslabextralightitalic',    subfolder: 'iosevska', filename: 'iosevka-slab-extralightitalic.ttf',  }
+      # { texname: 'mktsFontfileIosevkaslabextralightoblique',   subfolder: 'iosevska', filename: 'iosevka-slab-extralightoblique.ttf', }
+      # { texname: 'mktsFontfileIosevkaslabheavy',               subfolder: 'iosevska', filename: 'iosevka-slab-heavy.ttf',             }
+      # { texname: 'mktsFontfileIosevkaslabheavyitalic',         subfolder: 'iosevska', filename: 'iosevka-slab-heavyitalic.ttf',       }
+      # { texname: 'mktsFontfileIosevkaslabheavyoblique',        subfolder: 'iosevska', filename: 'iosevka-slab-heavyoblique.ttf',      }
+      # { texname: 'mktsFontfileIosevkaslabitalic',              subfolder: 'iosevska', filename: 'iosevka-slab-italic.ttf',            }
+      # { texname: 'mktsFontfileIosevkaslablight',               subfolder: 'iosevska', filename: 'iosevka-slab-light.ttf',             }
+      # { texname: 'mktsFontfileIosevkaslablightitalic',         subfolder: 'iosevska', filename: 'iosevka-slab-lightitalic.ttf',       }
+      # { texname: 'mktsFontfileIosevkaslablightoblique',        subfolder: 'iosevska', filename: 'iosevka-slab-lightoblique.ttf',      }
+      # { texname: 'mktsFontfileIosevkaslabmedium',              subfolder: 'iosevska', filename: 'iosevka-slab-medium.ttf',            }
+      # { texname: 'mktsFontfileIosevkaslabmediumitalic',        subfolder: 'iosevska', filename: 'iosevka-slab-mediumitalic.ttf',      }
+      # { texname: 'mktsFontfileIosevkaslabmediumoblique',       subfolder: 'iosevska', filename: 'iosevka-slab-mediumoblique.ttf',     }
+      # { texname: 'mktsFontfileIosevkaslaboblique',             subfolder: 'iosevska', filename: 'iosevka-slab-oblique.ttf',           }
+      # { texname: 'mktsFontfileIosevkaslabregular',             subfolder: 'iosevska', filename: 'iosevka-slab-regular.ttf',           }
+      # { texname: 'mktsFontfileIosevkaslabthin',                subfolder: 'iosevska', filename: 'iosevka-slab-thin.ttf',              }
+      # { texname: 'mktsFontfileIosevkaslabthinitalic',          subfolder: 'iosevska', filename: 'iosevka-slab-thinitalic.ttf',        }
+
+      # { texname: 'mktsFontfileIosevkafivebolditalic',                subfolder: 'iosevka-ss05', filename: 'iosevka-ss05-bolditalic.ttf',              }
+      # { texname: 'mktsFontfileIosevkafiveboldoblique',               subfolder: 'iosevka-ss05', filename: 'iosevka-ss05-boldoblique.ttf',             }
+      # { texname: 'mktsFontfileIosevkafivebold',                      subfolder: 'iosevka-ss05', filename: 'iosevka-ss05-bold.ttf',                    }
+      # { texname: 'mktsFontfileIosevkafiveextrabolditalic',           subfolder: 'iosevka-ss05', filename: 'iosevka-ss05-extrabolditalic.ttf',         }
+      # { texname: 'mktsFontfileIosevkafiveextraboldoblique',          subfolder: 'iosevka-ss05', filename: 'iosevka-ss05-extraboldoblique.ttf',        }
+      # { texname: 'mktsFontfileIosevkafiveextrabold',                 subfolder: 'iosevka-ss05', filename: 'iosevka-ss05-extrabold.ttf',               }
+      # { texname: 'mktsFontfileIosevkafiveextralightitalic',          subfolder: 'iosevka-ss05', filename: 'iosevka-ss05-extralightitalic.ttf',        }
+      # { texname: 'mktsFontfileIosevkafiveextralightoblique',         subfolder: 'iosevka-ss05', filename: 'iosevka-ss05-extralightoblique.ttf',       }
+      # { texname: 'mktsFontfileIosevkafiveextralight',                subfolder: 'iosevka-ss05', filename: 'iosevka-ss05-extralight.ttf',              }
+      # { texname: 'mktsFontfileIosevkafiveheavyitalic',               subfolder: 'iosevka-ss05', filename: 'iosevka-ss05-heavyitalic.ttf',             }
+      # { texname: 'mktsFontfileIosevkafiveheavyoblique',              subfolder: 'iosevka-ss05', filename: 'iosevka-ss05-heavyoblique.ttf',            }
+      # { texname: 'mktsFontfileIosevkafiveheavy',                     subfolder: 'iosevka-ss05', filename: 'iosevka-ss05-heavy.ttf',                   }
+      # { texname: 'mktsFontfileIosevkafiveitalic',                    subfolder: 'iosevka-ss05', filename: 'iosevka-ss05-italic.ttf',                  }
+      # { texname: 'mktsFontfileIosevkafivelightitalic',               subfolder: 'iosevka-ss05', filename: 'iosevka-ss05-lightitalic.ttf',             }
+      # { texname: 'mktsFontfileIosevkafivelightoblique',              subfolder: 'iosevka-ss05', filename: 'iosevka-ss05-lightoblique.ttf',            }
+      # { texname: 'mktsFontfileIosevkafivelight',                     subfolder: 'iosevka-ss05', filename: 'iosevka-ss05-light.ttf',                   }
+      # { texname: 'mktsFontfileIosevkafivemediumitalic',              subfolder: 'iosevka-ss05', filename: 'iosevka-ss05-mediumitalic.ttf',            }
+      # { texname: 'mktsFontfileIosevkafivemediumoblique',             subfolder: 'iosevka-ss05', filename: 'iosevka-ss05-mediumoblique.ttf',           }
+      # { texname: 'mktsFontfileIosevkafivemedium',                    subfolder: 'iosevka-ss05', filename: 'iosevka-ss05-medium.ttf',                  }
+      # { texname: 'mktsFontfileIosevkafiveoblique',                   subfolder: 'iosevka-ss05', filename: 'iosevka-ss05-oblique.ttf',                 }
+      # { texname: 'mktsFontfileIosevkafiveregular',                   subfolder: 'iosevka-ss05', filename: 'iosevka-ss05-regular.ttf',                 }
+      # { texname: 'mktsFontfileIosevkafivesemibolditalic',            subfolder: 'iosevka-ss05', filename: 'iosevka-ss05-semibolditalic.ttf',          }
+      # { texname: 'mktsFontfileIosevkafivesemiboldoblique',           subfolder: 'iosevka-ss05', filename: 'iosevka-ss05-semiboldoblique.ttf',         }
+      # { texname: 'mktsFontfileIosevkafivesemibold',                  subfolder: 'iosevka-ss05', filename: 'iosevka-ss05-semibold.ttf',                }
+      # { texname: 'mktsFontfileIosevkafivethinitalic',                subfolder: 'iosevka-ss05', filename: 'iosevka-ss05-thinitalic.ttf',              }
+      # { texname: 'mktsFontfileIosevkafivethinoblique',               subfolder: 'iosevka-ss05', filename: 'iosevka-ss05-thinoblique.ttf',             }
+      # { texname: 'mktsFontfileIosevkafivethin',                      subfolder: 'iosevka-ss05', filename: 'iosevka-ss05-thin.ttf',                    }
+
+      { texname: 'mktsFontfileIosevkatypeslabmedium',        otf: 'CharacterVariant={14,21,3,24,19,17,23,51,46,44,34}', subfolder: 'iosevka-type-slab-2.0.0', filename: 'iosevka-type-slab-medium.ttf',                  }
+      { texname: 'mktsFontfileIosevkatypeslabheavy',         otf: 'CharacterVariant={14,21,3,24,19,17,23,51,46,44,34}', subfolder: 'iosevka-type-slab-2.0.0', filename: 'iosevka-type-slab-heavy.ttf',                  }
+
+      { texname: 'mktsFontfileIosevkatermslabheavyitalic',  otf: 'CharacterVariant={14,21,3,24,19,17,23,51,46,44,34}', subfolder: 'iosevka-term-slab-2.0.0', filename: 'iosevka-term-slab-heavyitalic.ttf',   }
+      { texname: 'mktsFontfileIosevkatermslabheavy',        otf: 'CharacterVariant={14,21,3,24,19,17,23,51,46,44,34}', subfolder: 'iosevka-term-slab-2.0.0', filename: 'iosevka-term-slab-heavy.ttf',         }
+      { texname: 'mktsFontfileIosevkatermslabmediumitalic', otf: 'CharacterVariant={14,21,3,24,19,17,23,51,46,44,34}', subfolder: 'iosevka-term-slab-2.0.0', filename: 'iosevka-term-slab-mediumitalic.ttf',  }
+      { texname: 'mktsFontfileIosevkatermslabmedium',       otf: 'CharacterVariant={14,21,3,24,19,17,23,51,46,44,34}', subfolder: 'iosevka-term-slab-2.0.0', filename: 'iosevka-term-slab-medium.ttf',        }
 
       { texname: 'mktsFontfileFjallaoneregular',                subfolder: 'Fjalla_One',              filename: 'FjallaOne-Regular.ttf'               }
       { texname: 'mktsFontfileMerriweatherblack',               subfolder: 'Merriweather',            filename: 'Merriweather-Black.ttf'              }
