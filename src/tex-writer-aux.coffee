@@ -35,12 +35,27 @@ PS                        = require 'pipestreams'
   pipeline.push source
   pipeline.push PS.$split()
   # pipeline.push PS.$show()
+  pipeline.push @$read_pagerefs     S, Z
   pipeline.push @$read_linerefs     S, Z
   pipeline.push @$read_xypositions  S, Z
   pipeline.push on_stop.add PS.$drain()
   PS.pull pipeline...
   #.........................................................................................................
   return null
+
+#-----------------------------------------------------------------------------------------------------------
+@$read_pagerefs = ( S, Z ) ->
+  ### Reads references made by package `zref` provided reference labels start with `mkts-pagenr-` ###
+  ### \zref@newlabel{mkts-pagenr-guide-𤴓}{\default{}\page{4}} ###
+  pattern = /^\\zref@newlabel\{mkts-pagenr-([^}]+)\}.*\page\{([\d]+)\}\}$/
+  target  = Z.pagenrs = {}
+  return $ ( line, send ) ->
+    match                         = line.match pattern
+    return send line unless match?
+    [ _, name, pagenr, ]          = match
+    pagenr                        = parseInt pagenr, 10
+    target[ name ]                = { pagenr, }
+    return null
 
 #-----------------------------------------------------------------------------------------------------------
 @$read_linerefs = ( S, Z ) ->
