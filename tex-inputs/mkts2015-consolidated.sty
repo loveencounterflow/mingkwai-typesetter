@@ -74,6 +74,8 @@
 % \usepackage[a4,ascenders,baselines,descenders]{mkts-page-geometry}
 % \usepackage[a4,ascenders,descenders,baselines,columns]{mkts-page-geometry}
 \usepackage[
+  % cmgrid,
+  % mmgrid,
   % linebands,
   % columns,
   % baselines,
@@ -301,11 +303,11 @@
 \newcommand{\kai}{\renewcommand{\mktsStyleFontCjkDefault}{\mktsFontfileBiaukai}}
 \newcommand{\jzrkai}[1]{{\mktsFontfileJizurathreeb{}#1}}
 % ..........................................................................................................
-\newcommand{\pageNr}[1]{{\fontsize{2.5mm}{2.5mm}\mktsFontfilePtsans#1}}
+% \newcommand{\pageNr}[1]{{\fontsize{2.5mm}{2.5mm}\mktsFontfilePtsans#1}}
 % \newcommand{\sfncr}[1]{{\fontsize{2mm}{2mm}\jzrFontInputMonoCompressedLight#1}}
-\newcommand{\wbf}[1]{{\fontsize{2mm}{2mm}\jzrFontInputMonoCompressedMedium#1}}
-\newcommand{\pageNrText}[1]{{\fontsize{3mm}{5mm}\mktsFontfilePtsans#1}}
-\newcommand{\wbfText}[1]{{\fontsize{3mm}{5mm}\jzrFontInputMonoCompressedMedium#1}}
+% \newcommand{\wbf}[1]{{\fontsize{2mm}{2mm}\mktsFontfileIosevkaslabbold#1}}
+% \newcommand{\pageNrText}[1]{{\fontsize{3mm}{5mm}\mktsFontfilePtsans#1}}
+% \newcommand{\wbfText}[1]{{\fontsize{3mm}{5mm}\jzrFontInputMonoCompressedMedium#1}}
 
 
 % ### TAINT should only be loaded when needed ###
@@ -383,4 +385,32 @@
 %   \color{blue}%
 %   \rule[0mm]{1mm}{#1\mktsLineheight}%
 %   }}
+
+% ----------------------------------------------------------------------------------------------------------
+\usepackage[usestackEOL]{stackengine}
+
+% ----------------------------------------------------------------------------------------------------------
+\newcommand{\mktsFncrStacked}[3]{{%
+  \smash{%
+    \thinspace%
+    \mbox{%
+      \prRaise{-0.25}{%
+        \mktsStyleFncr%
+        \mktsScaleFontRelative{0.7}%
+        \setstackgap{L}{\mktsCurrentFontsize}%
+        \Longstack{#1\\#2}}}%
+  \thinspace\mktsStyleFncr{}#3}}}%
+
+% ----------------------------------------------------------------------------------------------------------
+\newcommand{\mktsFncr}[3]{{%
+  \mktsScaleFont{0.8}%
+  {\mktsFontfileIosevkatermslabheavy#1}%
+  \thinspace{\prRaise{-0.2}{\mktsScaleFont{0.5}\mktsFontfileIosevkatermslabmediumitalic#2}}\thinspace%
+  {\mktsFontfileIosevkatermslabheavy#3}}}%
+
+
+
+
+
+
 
