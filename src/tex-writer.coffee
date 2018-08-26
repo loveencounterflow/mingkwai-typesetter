@@ -473,7 +473,7 @@ before '@MKTX.BLOCK.$heading', '@MKTX.COMMAND.$toc', \
       ### count   = crossrefs[ text ] = ( crossrefs[ text ] ? 0 ) + 1 ###
       ### key     = "#{text}-#{count}" ###
       key     = text
-      send [ 'tex', "\\zlabel{#{key}}", ]
+      send [ 'tex', "\\label{#{key}}", ]
       send stamp event
     #.......................................................................................................
     else if select event, '!', [ 'crossref-link', ]
@@ -481,7 +481,7 @@ before '@MKTX.BLOCK.$heading', '@MKTX.COMMAND.$toc', \
       ### count   = crossrefs[ text ] = ( crossrefs[ text ] ? 0 ) + 1 ###
       ### key     = "#{text}-#{count}" ###
       key     = text
-      send [ 'tex', "\\zpageref{#{key}}", ]
+      send [ 'tex', "\\mktsPagerefArrow{#{key}}", ]
       send stamp event
     #.......................................................................................................
     else

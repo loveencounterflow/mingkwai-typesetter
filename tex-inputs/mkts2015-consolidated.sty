@@ -408,7 +408,21 @@
   \thinspace{\prRaise{-0.2}{\mktsScaleFont{0.5}\mktsFontfileIosevkatermslabmediumitalic#2}}\thinspace%
   {\mktsFontfileIosevkatermslabheavy#3}}}%
 
+% ----------------------------------------------------------------------------------------------------------
+\usepackage{refcount}
+% usage:
+%   \label{foobarone}
+%   ...
+%   \mktsPagerefCompare{foobarone}{<}{=}{>}
+% chooses one of the arguments based on comparinf current page with page where label occurs
+\newcommand{\mktsPagerefCompare}[4]{%
+  \ifnumequal{\getpagerefnumber{#1}}{\thepage}{#3}{%
+    \ifnumless{\getpagerefnumber{#1}}{\thepage}{#2}{#4}}}%
 
+% ----------------------------------------------------------------------------------------------------------
+% like `\mktsPagerefCompare`, chooses an arrow
+\newcommand{\mktsPagerefArrow}[1]{%
+  \mktsPagerefCompare{#1}{↑}{↕}{↓}}%
 
 
 
