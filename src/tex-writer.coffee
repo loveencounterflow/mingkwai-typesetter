@@ -1876,7 +1876,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
         help "#{TEXT.flush_right         dt_s_txt, 14}          s"
         help "#{TEXT.flush_right   chrs_per_s_txt, 14}   chrs / s"
         help "#{TEXT.flush_right events_per_s_txt, 14} events / s"
-        debug '49984', S.aux
+        # debug '49984', S.aux
         handler null if handler?
     #.......................................................................................................
     ### TAINT use method to produce new state ###
@@ -1894,7 +1894,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     tex_input               = tex_writestream.tee[  'input'  ]
     tex_output              = tex_writestream.tee[  'output' ]
     #.......................................................................................................
-    S.aux                   = yield AUX.fetch_aux_data S, resume
+    # S.aux                   = yield AUX.fetch_aux_data S, resume
     S.resend                = md_readstream.tee[ 'S' ].resend
     #.......................................................................................................
     md_output
