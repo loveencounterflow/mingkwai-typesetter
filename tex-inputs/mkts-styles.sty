@@ -11,6 +11,7 @@
 % ----------------------------------------------------------------------------------------------------------
 \newcommand{\mktsStyleBold}{}%
 \newcommand{\mktsStyleFncr}{}%
+\newcommand{\mktsStylePagenr}{}%
 \newcommand{\mktsStyleGloss}{}%
 \newcommand{\mktsStyleItalic}{}%
 \newcommand{\mktsStyleBolditalic}{}%
@@ -54,9 +55,8 @@
     }%
 
   % ........................................................................................................
-  \renewcommand{\mktsStyleFncr}{%
-    \mktsStyleFontFncr%
-    }%
+  \renewcommand{\mktsStyleFncr}{\mktsStyleFontFncr}%
+  \renewcommand{\mktsStylePagenr}{\mktsStyleFontPagenr}%
 
   % ........................................................................................................
   \renewcommand{\mktsStyleMidashi}{%
