@@ -224,13 +224,13 @@ module.exports = options =
       # { texname: 'mktsFontfileIosevkafivethinoblique',               subfolder: 'iosevka-ss05', filename: 'iosevka-ss05-thinoblique.ttf',             }
       # { texname: 'mktsFontfileIosevkafivethin',                      subfolder: 'iosevka-ss05', filename: 'iosevka-ss05-thin.ttf',                    }
 
-      { texname: 'mktsFontfileIosevkatypeslabmedium',        otf: 'CharacterVariant={14,21,3,24,19,17,23,51,46,44,34}', subfolder: 'iosevka-type-slab-2.0.0', filename: 'iosevka-type-slab-medium.ttf',                  }
-      { texname: 'mktsFontfileIosevkatypeslabheavy',         otf: 'CharacterVariant={14,21,3,24,19,17,23,51,46,44,34}', subfolder: 'iosevka-type-slab-2.0.0', filename: 'iosevka-type-slab-heavy.ttf',                  }
+      # { texname: 'mktsFontfileIosevkatypeslabmedium',       otf: 'CharacterVariant={15,21,3,24,19,17,23,51,46,44,34}', subfolder: 'iosevka-type-slab-2.0.0', filename: 'iosevka-type-slab-medium.ttf',                  }
+      # { texname: 'mktsFontfileIosevkatypeslabbold',         otf: 'CharacterVariant={15,21,3,24,19,17,23,51,46,44,34}', subfolder: 'iosevka-type-slab-2.0.0', filename: 'iosevka-type-slab-bold.ttf',                  }
 
-      { texname: 'mktsFontfileIosevkatermslabheavyitalic',  otf: 'CharacterVariant={14,21,3,24,19,17,23,51,46,44,34}', subfolder: 'iosevka-term-slab-2.0.0', filename: 'iosevka-term-slab-heavyitalic.ttf',   }
-      { texname: 'mktsFontfileIosevkatermslabheavy',        otf: 'CharacterVariant={14,21,3,24,19,17,23,51,46,44,34}', subfolder: 'iosevka-term-slab-2.0.0', filename: 'iosevka-term-slab-heavy.ttf',         }
-      { texname: 'mktsFontfileIosevkatermslabmediumitalic', otf: 'CharacterVariant={14,21,3,24,19,17,23,51,46,44,34}', subfolder: 'iosevka-term-slab-2.0.0', filename: 'iosevka-term-slab-mediumitalic.ttf',  }
-      { texname: 'mktsFontfileIosevkatermslabmedium',       otf: 'CharacterVariant={14,21,3,24,19,17,23,51,46,44,34}', subfolder: 'iosevka-term-slab-2.0.0', filename: 'iosevka-term-slab-medium.ttf',        }
+      { texname: 'mktsFontfileIosevkatermslabbolditalic',   otf: 'CharacterVariant={15,21,3,24,19,17,23,51,46,44,34}', subfolder: 'iosevka-term-slab-2.0.0', filename: 'iosevka-term-slab-bolditalic.ttf',   }
+      { texname: 'mktsFontfileIosevkatermslabbold',         otf: 'CharacterVariant={15,21,3,24,19,17,23,51,46,44,34}', subfolder: 'iosevka-term-slab-2.0.0', filename: 'iosevka-term-slab-bold.ttf',         }
+      { texname: 'mktsFontfileIosevkatermslabmediumitalic', otf: 'CharacterVariant={15,21,3,24,19,17,23,51,46,44,34}', subfolder: 'iosevka-term-slab-2.0.0', filename: 'iosevka-term-slab-mediumitalic.ttf',  }
+      { texname: 'mktsFontfileIosevkatermslabmedium',       otf: 'CharacterVariant={15,21,3,24,19,17,23,51,46,44,34}', subfolder: 'iosevka-term-slab-2.0.0', filename: 'iosevka-term-slab-medium.ttf',        }
 
       { texname: 'mktsFontfileFjallaoneregular',                subfolder: 'Fjalla_One',              filename: 'FjallaOne-Regular.ttf'               }
       { texname: 'mktsFontfileMerriweatherblack',               subfolder: 'Merriweather',            filename: 'Merriweather-Black.ttf'              }
@@ -392,16 +392,16 @@ module.exports = options =
       '●':         cmd: 'cnxJzr',      glyph: ''       # raise: -0.2,
       '◰':         cmd: 'cnxJzr',      glyph: ''       # raise: -0.2,
       '≈':         cmd: 'cnxJzr',      glyph: ''       # raise: -0.2,
-      '⿰':        cmd: 'cnxJzr',      glyph: ''      # raise: -0.2,
-      '⿱':        cmd: 'cnxJzr',      glyph: ''      # raise: -0.2,
-      '⿺':        cmd: 'cnxJzr',      glyph: ''      # raise: -0.2,
-      '⿸':        cmd: 'cnxJzr',      glyph: ''      # raise: -0.2,
-      '⿹':        cmd: 'cnxJzr',      glyph: ''      # raise: -0.2,
-      '⿶':        cmd: 'cnxJzr',      glyph: ''      # raise: -0.2,
-      '⿷':        cmd: 'cnxJzr',      glyph: ''      # raise: -0.2,
-      '⿵':        cmd: 'cnxJzr',      glyph: ''      # raise: -0.2,
-      '⿴':        cmd: 'cnxJzr',      glyph: ''      # raise: -0.2,
-      '⿻':        cmd: 'cnxJzr',      glyph: ''      # raise: -0.2,
+      # '⿰':        cmd: 'cnxJzr',      glyph: ''      # raise: -0.2,
+      # '⿱':        cmd: 'cnxJzr',      glyph: ''      # raise: -0.2,
+      # '⿺':        cmd: 'cnxJzr',      glyph: ''      # raise: -0.2,
+      # '⿸':        cmd: 'cnxJzr',      glyph: ''      # raise: -0.2,
+      # '⿹':        cmd: 'cnxJzr',      glyph: ''      # raise: -0.2,
+      # '⿶':        cmd: 'cnxJzr',      glyph: ''      # raise: -0.2,
+      # '⿷':        cmd: 'cnxJzr',      glyph: ''      # raise: -0.2,
+      # '⿵':        cmd: 'cnxJzr',      glyph: ''      # raise: -0.2,
+      # '⿴':        cmd: 'cnxJzr',      glyph: ''      # raise: -0.2,
+      # '⿻':        cmd: 'cnxJzr',      glyph: ''      # raise: -0.2,
 
       ### 'Late Additions' in upper part of CJK unified ideographs (Unicode v5.2); glyphs are missing
         from Sun-ExtA but are included in BabelstoneHan: ###

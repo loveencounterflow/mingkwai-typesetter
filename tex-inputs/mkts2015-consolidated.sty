@@ -79,9 +79,9 @@
   % linebands,
   % columns,
   % baselines,
-  debug,
-  debugorigin,
-  gutter,
+  % debug,
+  % debugorigin,
+  % gutter,
   outerborders,
   innerborders,
   upperborders,
@@ -113,7 +113,7 @@
     }
   % ........................................................................................................
   \renewcommand{\mktsJzrVerticalbarGlyph}{%
-    {\color{black}\hspace{0.2em}\rule[-0.4em]{0.15mm}{1.4em}\hspace{0.1em}}%
+    {\color{black}\hspace{0.2em}\rule[-0.4em]{0.15mm}{1.4em}\hspace{0.2em}}%
     }
 
 \newcommand{\mktsJzrGlyphbraceLeft}{%
@@ -281,6 +281,8 @@
   }
 % ..........................................................................................................
 \newcommand{\jzrStrokeclassZZWBF}{\prPushRaise{-0.1}{-0.1}{{\mktsFontfileJizurathreeb{}}}}
+\newcommand{\jzrStrokeclassVoid}{\prPushRaise{-0.1}{-0.1}{{\mktsFontfileSunexta{}　}}}
+\newcommand{\jzrStrokeclassZero}{\prPushRaise{-0.1}{-0.1}{{\mktsFontfileJizurathreeb{}}}}
 \newcommand{\jzrStrokeclassOne}{\prPushRaise{-0.1}{-0.1}{{\mktsFontfileJizurathreeb{}}}}
 \newcommand{\jzrStrokeclassTwo}{\prPushRaise{-0.1}{-0.1}{{\mktsFontfileJizurathreeb{}}}}
 \newcommand{\jzrStrokeclassThree}{\prPushRaise{-0.1}{-0.1}{{\mktsFontfileJizurathreeb{}}}}
@@ -404,9 +406,11 @@
 % ----------------------------------------------------------------------------------------------------------
 \newcommand{\mktsFncr}[3]{{%
   \mktsScaleFont{0.8}%
-  {\mktsFontfileIosevkatermslabheavy#1}%
-  \thinspace{\prRaise{-0.2}{\mktsScaleFont{0.5}\mktsFontfileIosevkatermslabmediumitalic#2}}\thinspace%
-  {\mktsFontfileIosevkatermslabheavy#3}}}%
+  {\mktsFontfileIosevkatermslabbold#1+#3}%
+  \thinspace%
+  {\prRaise{-0.2}{\mktsScaleFont{0.5}\mktsFontfileIosevkatermslabmediumitalic#2}}%
+  \thinspace%
+  }}%
 
 % ----------------------------------------------------------------------------------------------------------
 \usepackage{refcount}
@@ -420,11 +424,47 @@
     \ifnumless{\getpagerefnumber{#1}}{\thepage}{#2}{#4}}}%
 
 % ----------------------------------------------------------------------------------------------------------
-% like `\mktsPagerefCompare`, chooses an arrow
-\newcommand{\mktsPagerefArrow}[1]{%
-  \mktsPagerefCompare{#1}{↑}{↕}{↓}}%
+% like `\mktsPagerefCompare`, chooses style, spacing, appropriate arrow; prints prefix and pagenr
+\newcommand{\mktsPagerefArrow}[1]{{%
+  \mktsStylePagenr{\mktsFontfileIosevkatermslabbold\mktsPagerefCompare{#1}{↑}{↕}{↓}}\thinspace{}p\thinspace\getpagerefnumber{#1}}}%
 
+% ----------------------------------------------------------------------------------------------------------
+% ### TAINT using absolute, direct dimensions instead of relative, symbolic ones
+\newcommand{\jzrStrokeclassCircled}[1]{%
+  \makebox[4mm]{%
+    \makebox[0mm]{{%
+      \mktsScaleFont{0.8}%
+      \prPushRaise{-0.1}{+0.05}{\mktsFontfileJizurathreeb{}#1}}}%
+    \makebox[0mm]{{%
+      \mktsScaleFont{1.25}%
+      \prPushRaise{-0.1}{-0.1}{\mktsFontfileJizurathreeb{}}}}%
+      }}%
 
+% ----------------------------------------------------------------------------------------------------------
+% ### TAINT using absolute, direct dimensions instead of relative, symbolic ones
+\newcommand{\jzrStrokeclassCircledSingle}[1]{%
+  \makebox[4mm]{%
+    \makebox[0mm]{{%
+      \mktsScaleFont{1.25}%
+      \prPushRaise{-0.1}{-0.1}{\mktsFontfileJizurathreeb{}}}}%
+      }}%
 
+% ----------------------------------------------------------------------------------------------------------
+% ### TAINT using absolute, direct dimensions instead of relative, symbolic ones
+\newcommand{\jzrStrokeclassCircledZero}[1]{%
+  \makebox[4mm]{%
+    \makebox[0mm]{{%
+      \mktsScaleFont{1.25}%
+      \prPushRaise{-0.1}{-0.1}{\mktsFontfileJizurathreeb{}}}}%
+      }}%
+
+% ### TAINT using absolute, direct dimensions instead of relative, symbolic ones
+\newcommand{\jzrStrokeclassCircledVoid}{\makebox[4mm]}%
+\newcommand{\jzrStrokeclassCircledTest}{\jzrStrokeclassCircled{}}%
+\newcommand{\jzrStrokeclassCircledOne}{\jzrStrokeclassCircled{}}%
+\newcommand{\jzrStrokeclassCircledTwo}{\jzrStrokeclassCircled{}}%
+\newcommand{\jzrStrokeclassCircledThree}{\jzrStrokeclassCircled{}}%
+\newcommand{\jzrStrokeclassCircledFour}{\jzrStrokeclassCircled{}}%
+\newcommand{\jzrStrokeclassCircledFive}{\jzrStrokeclassCircled{}}%
 
 
