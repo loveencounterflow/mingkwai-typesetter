@@ -725,15 +725,16 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
           is_first_par    = false
           #.................................................................................................
           if within_noindent
-            send [ 'tex', "%% no indent within list\n" ]
-            # null
+            null
+            # send [ 'tex', "%% no indent within list\n" ]
           else if has_indent
-            send [ 'tex', "%% with indent\n" ]
+            # send [ 'tex', "%% with indent\n" ]
             send [ 'tex', "\\hskip \\mktsLineheight plus 0mm minus 0mm " ]
             # send [ 'tex', "¶ " ]
           #.................................................................................................
           else
-            send [ 'tex', "%% no indent\n" ]
+            null
+            # send [ 'tex', "%% no indent\n" ]
             # send [ 'tex', "÷ " ]
           #.................................................................................................
           ### Finally, send the first text portion of the paragraph itself: ###
@@ -776,7 +777,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       # send [ 'tex', "{\\mktsFontfileCwtexqheibold{}\\prPushRaise{-0.4}{-0.1}{▷}\\hspace{-1.75mm}}" ]
       # send [ 'tex', "{\\mktsFontfileHanamina{}◼}\\hspace{3mm}L" ]
       # send [ 'tex', "{\\mktsFontfileCwtexqheibold{}\\prPushRaise{-0.4}{-0.1}{▷}}" ]
-      send [ 'tex', "\\makebox[\\mktsLineheight][l]{\\prPushRaise{-0.2}{-0.1}{\\mktsFontfileHanamina{}◼}}%" ]
+      send [ 'tex', "\\makebox[\\mktsLineheight][l]{\\prPushRaise{-0.2}{-0.1}{\\mktsFontfileHanamina{}◼}}" ]
     #.......................................................................................................
     else if select event, ')', 'li'
       send stamp event
