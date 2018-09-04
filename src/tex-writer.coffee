@@ -623,6 +623,25 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       send event
 
 #-----------------------------------------------------------------------------------------------------------
+@MKTX.INLINE.$box = ( S ) =>
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    if select event, '(', 'box'
+      [ type, name, parameters, meta, ] = event
+      send stamp event
+      if parameters.frame
+        send [ 'tex', "\\framebox{", ]
+      else
+        send [ 'tex', "\\makebox{", ]
+    #.......................................................................................................
+    else if select event, ')', 'box'
+      send stamp event
+      send [ 'tex', "}", ]
+    #.......................................................................................................
+    else
+      send event
+
+#-----------------------------------------------------------------------------------------------------------
 @MKTX.BLOCK.$blockquote = ( S ) =>
   #.........................................................................................................
   return $ ( event, send ) =>
@@ -1766,6 +1785,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe MKTSCRIPT_WRITER.$produce_mktscript               S
     .pipe @$document                                        S
     #.......................................................................................................
+    .pipe @MKTX.INLINE.$box                                 S
     .pipe @MKTX.BLOCK.$blockquote                           S
     .pipe @MKTX.INLINE.$link                                S
     .pipe @MKTX.MIXED.$footnote                             S
