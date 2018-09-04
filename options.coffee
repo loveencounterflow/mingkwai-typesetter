@@ -392,6 +392,7 @@ module.exports = options =
       '●':         cmd: 'cnxJzr',      glyph: ''       # raise: -0.2,
       '◰':         cmd: 'cnxJzr',      glyph: ''       # raise: -0.2,
       '≈':         cmd: 'cnxJzr',      glyph: ''       # raise: -0.2,
+      '﹋':         cmd: 'cnxBabel',   push: -0.35             # raise: -0.2,
       # '⿰':        cmd: 'cnxJzr',      glyph: ''      # raise: -0.2,
       # '⿱':        cmd: 'cnxJzr',      glyph: ''      # raise: -0.2,
       # '⿺':        cmd: 'cnxJzr',      glyph: ''      # raise: -0.2,
