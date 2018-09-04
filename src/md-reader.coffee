@@ -31,6 +31,8 @@ HELPERS                   = require './helpers'
 misfit                    = Symbol 'misfit'
 MKTS                      = require './main'
 @TYPOFIX                  = require './md-reader-typofix'
+#...........................................................................................................
+assign                    = Object.assign
 
 
 #-----------------------------------------------------------------------------------------------------------
@@ -123,18 +125,25 @@ MKTS                      = require './main'
   #.......................................................................................................
   return R
 
+
 #-----------------------------------------------------------------------------------------------------------
 get_parse_html_methods = ->
   PARSE5      = require 'parse5'
   get_message = ( source ) -> "expected single opening node, got #{rpr source}"
   R           = {}
   #.........................................................................................................
+  _cast_attribute_value = ( x ) -> if x is '' then true else x
+  #.........................................................................................................
+  _resolve_html_attributes = ( facets ) ->
+    assign {}, ( { "#{facet.name}": ( _cast_attribute_value facet.value ) } for facet in facets )...
+  #.........................................................................................................
   R[ '_parse_html_open_tag' ] = ( source ) ->
     tree    = PARSE5.parseFragment source
     throw new Error get_message source unless ( cns = tree[ 'childNodes' ] ).length is 1
     cn = cns[ 0 ]
     throw new Error get_message source unless cn[ 'childNodes' ]?.length is 0
-    return [ 'begin', cn[ 'tagName' ], cn[ 'attrs' ][ 0 ] ? {}, ]
+    return [ 'begin', cn[ 'tagName' ], ( _resolve_html_attributes cn[ 'attrs' ] ), ]
+    # return [ 'begin', cn[ 'tagName' ], cn[ 'attrs' ][ 0 ] ? {}, ]
   #.........................................................................................................
   R[ '_parse_html_block' ] = ( source ) ->
     tree    = PARSE5.parseFragment source
