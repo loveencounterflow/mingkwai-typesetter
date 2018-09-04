@@ -1319,7 +1319,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
   #.........................................................................................................
   return $ ( event, send ) =>
     [ type, name, text, meta, ] = event
-    delta = if ( type is '(' ) then +1 else - 1
+    delta = if ( type is '(' ) then +1 else -1
     #.......................................................................................................
     if select event, [ '(', ')', ], [ 'code', 'code-span', ]
       code_count += delta
