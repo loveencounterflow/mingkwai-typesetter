@@ -904,6 +904,17 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
   ###
   #.........................................................................................................
   return $ ( event, send ) =>
+    # #.......................................................................................................
+    # ### re-interpret `<hr>`: ###
+    # if select event, '(', 'hr'
+    #   is_synthetic_event                        = true
+    #   [ type, name, parameters, meta, ]         = event
+    #   event[ 0 ]                                = '.'
+    #   event[ 1 ]                                = 'hr2'
+    #   event[ 2 ]                                = { slash: false, above: 0, one: '-', two: null, three: null, below: 0 }
+    # #.......................................................................................................
+    # if select event, ')', 'hr'
+    #   return send stamp event
     #.......................................................................................................
     if select event, '.', 'hr2'
       send stamp event
