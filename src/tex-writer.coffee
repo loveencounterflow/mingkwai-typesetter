@@ -643,6 +643,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
 
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.INLINE.$custom_entities = ( S ) =>
+  ### Define custom XML entities in `options.coffee` under key `entities` ###
   #.........................................................................................................
   return $ ( event, send ) =>
     if select event, '.', 'entity'
