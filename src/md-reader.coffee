@@ -90,7 +90,7 @@ assign                    = Object.assign
     .enable 'image'
     .enable 'autolink'
     .enable 'html_inline'
-    .enable 'entity'
+    # .enable 'entity'
     # .enable 'code'
     .enable 'fence'
     .enable 'blockquote'
@@ -301,6 +301,26 @@ tracker_pattern = /// ^
 # _PRE (PREPROCESSING)
 #-----------------------------------------------------------------------------------------------------------
 @_PRE = {}
+
+#-----------------------------------------------------------------------------------------------------------
+@_PRE.$define_brackets = ( S ) =>
+  return $ ( token, send ) ->
+    debug '48484', token
+    send token
+
+#-----------------------------------------------------------------------------------------------------------
+@_PRE.$custom_entities = ( S ) =>
+  return $ ( event, send ) =>
+    if @select event, '.', 'text'
+      [ type, name, text, meta, ] = event
+      is_plain = no
+      for part in text.split /&([^#;]+);/g
+        if ( is_plain = not is_plain )
+          send [ type, name, part, ( @copy meta ), ] if part.length > 0
+        else
+          send [ '.', 'entity', part, ( @copy meta ), ]
+    else
+      send event
 
 #-----------------------------------------------------------------------------------------------------------
 @_PRE.$flatten_inline_tokens = ( S ) =>
@@ -1031,6 +1051,8 @@ tracker_pattern = /// ^
     .pipe @_PRE.$reinject_html_blocks                 S
     # .pipe D.$observe ( event ) => debug '©1', rpr event
     .pipe @_PRE.$rewrite_markdownit_tokens            S
+    # .pipe @_PRE.$define_brackets                      S
+    .pipe @_PRE.$custom_entities                      S
     .pipe @_PRE.$issue_administrative_events          S
     .pipe MKTS.MACRO_ESCAPER.$expand                  S
     .pipe @_PRE.$process_end_command                  S

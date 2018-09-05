@@ -34,6 +34,11 @@ module.exports = options =
     foobar:   "this variable has been set in `options`"
 
   #.........................................................................................................
+  entities:
+    'auml':   { type: 'text', value: 'ä', }
+    'nl':     { type: 'tex',  value: '\\\\', }
+
+  #.........................................................................................................
   newcommands:
     ### TAINT use relative routes ###
     ### TAINT `mktsPathsMktsHome` is duplicate from texinputs ###

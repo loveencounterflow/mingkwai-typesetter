@@ -642,6 +642,32 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       send event
 
 #-----------------------------------------------------------------------------------------------------------
+@MKTX.INLINE.$custom_entities = ( S ) =>
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    if select event, '.', 'entity'
+      [ _, _, key, meta, ]  = event
+      entry                 = S.options.entities[ key ] ? []
+      #.....................................................................................................
+      return send event unless entry?
+      unless entry.type? and entry.value?
+        send [ '.', 'warning', "entry for entity #{rpr key} needs both 'type' and 'value', got #{rpr entry}", ( copy meta ), ]
+        return null
+      #.....................................................................................................
+      switch entry.type
+        when 'text'
+          send [ '.', 'text', entry.value, ( copy meta ), ]
+          send stamp event
+        when 'tex'
+          send [ 'tex', entry.value, ]
+          send stamp event
+        else
+          send event
+    #.......................................................................................................
+    else
+      send event
+
+#-----------------------------------------------------------------------------------------------------------
 @MKTX.BLOCK.$blockquote = ( S ) =>
   #.........................................................................................................
   return $ ( event, send ) =>
@@ -1779,6 +1805,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @MKTX.CALL.$call_stream                           S
     # .pipe D.$observe ( event ) -> info ( CND.grey '--------->' ), ( CND.blue event[ 0 ] + event[ 1 ] )
     # .pipe D.$observe ( event ) -> info '23993', ( CND.grey '--------->' ), jr event
+    .pipe @MKTX.INLINE.$custom_entities                     S
     .pipe plugins_tee
     .pipe MACRO_ESCAPER.$expand.$remove_backslashes         S
     .pipe MKTSCRIPT_WRITER.$show_mktsmd_events              S
