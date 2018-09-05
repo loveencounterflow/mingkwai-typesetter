@@ -459,6 +459,30 @@
       \prPushRaise{-0.1}{-0.1}{\mktsFontfileJizurathreeb{}}}}%
       }}%
 
+% ----------------------------------------------------------------------------------------------------------
+% ### TAINT using absolute, direct dimensions instead of relative, symbolic ones
+\newcommand{\mktsCircledLetter}[1]{%
+  \makebox[4mm]{%
+    \makebox[0mm]{{%
+      \mktsScaleFont{0.8}%
+      \prPushRaise{-0.1}{-0.05}{\mktsStyleFontCode{}#1}}}%
+    \makebox[0mm]{{%
+      \mktsScaleFont{1.25}%
+      \prPushRaise{-0.1}{-0.15}{\mktsFontfileJizurathreeb{}}}}%
+      }}%
+
+% ----------------------------------------------------------------------------------------------------------
+% ### TAINT using absolute, direct dimensions instead of relative, symbolic ones
+\newcommand{\mktsBoxedLetter}[1]{%
+  \makebox[4mm]{%
+    \makebox[0mm]{{%
+      \mktsScaleFont{0.8}%
+      \prPushRaise{-0.1}{-0.05}{\mktsStyleFontCode{}#1}}}%
+    \makebox[0mm]{{%
+      \mktsScaleFont{1.25}%
+      \prPushRaise{-0.1}{-0.18}{\mktsFontfileSourcehansansbold{}□}}}%
+      }}%
+
 % ### TAINT using absolute, direct dimensions instead of relative, symbolic ones
 \newcommand{\jzrStrokeclassCircledVoid}{\makebox[4mm]}%
 \newcommand{\jzrStrokeclassCircledTest}{\jzrStrokeclassCircled{}}%
