@@ -212,13 +212,14 @@
 % }
 \renewcommand{\cjkgGlue}{\hskip 0mm plus 0.7mm minus 0.0mm}
 % \renewcommand{\cjkgGlue}{{\makebox[0mm]{\color{red}|}}\hskip 0mm plus 0.7mm minus 0.0mm}
-\newcommand{\cjk}{%
+\newcommand{\mktsCjkBase}{%
   \cjkgUseCjkGlue%
   \cjkgGlue%
   \mktsScaleFontRelative{1.1}%
   \special{pdf:literal 1 0 0 1 0 -1.5 cm}%
   \AfterGroup{\special{pdf:literal 1 0 0 1 0 1.5 cm}\cjkgGlue}%
   }
+\newcommand{\cjk}{\mktsCjkBase}%
 % \newcommand{\cn}{\mktsStartCjk\mktsFontfileSunexta}
 \newcommand{\cn}{%
   \mktsStyleFontCjkDefault%

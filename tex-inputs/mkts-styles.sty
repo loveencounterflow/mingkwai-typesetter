@@ -143,7 +143,12 @@
 
   % ........................................................................................................
   \renewcommand{\mktsStyleCode}{%
-    \fontsize{0.8\mktsFontsize}{0.8\mktsFontsize}%%
+    \renewcommand{\cjk}{%
+      % \mktsStyleFontCjkKaishu%
+      \mktsCjkBase%
+      \fontsize{1.1\mktsFontsize}{1.1\mktsFontsize}%
+      }%
+    \fontsize{0.8\mktsFontsize}{0.8\mktsFontsize}%
     \mktsStyleFontCode%
     }%
 
