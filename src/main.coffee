@@ -21,6 +21,7 @@ echo                      = CND.echo.bind CND
 # D                         = require 'pipedreams'
 # $                         = D.remit.bind D
 #...........................................................................................................
+require './exception-handler'
 @HELPERS                  = require './helpers'
 @MACRO_ESCAPER            = require './macro-escaper'
 @MACRO_INTERPRETER        = require './macro-interpreter'
