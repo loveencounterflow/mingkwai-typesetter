@@ -623,6 +623,44 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       send event
 
 #-----------------------------------------------------------------------------------------------------------
+@MKTX.INLINE.$fncr = ( S ) =>
+  within_fncr = false
+  buffer      = []
+  pattern     = /^([a-z])(?:-([a-z0-9][-a-z0-9]*))?[-\/]([0-9a-f]{1,6})$/
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    [ type, name, parameters, meta, ] = event
+    if select event, '(', 'fncr'
+      within_fncr = true
+      send stamp event
+    #.......................................................................................................
+    else if select event, ')', 'fncr'
+      within_fncr   = false
+      send stamp event
+      text          = buffer.join ''
+      buffer.length = 0
+      unless ( match = ( text.match pattern ) )?
+        send [ '.', 'warning', "illegal FNCR: #{rpr text}", ( copy meta ), ]
+      else
+        [ _, csg, rsg, cid, ] = match
+        # debug '33733', match
+        # debug '33733', [ _, csg, rsg, cid, ]
+        csg   = csg.toUpperCase()
+        rsg  ?= ''
+        send [ 'tex', "\\mktsFncr{#{csg}}{#{rsg}}{#{cid}}" ]
+    #.......................................................................................................
+    else if within_fncr
+      if select event, '.', 'text'
+        buffer.push parameters
+      else
+        send [ '.', 'warning', "illegal event inside `<fncr>...</fncr>`: #{rpr event}", ( copy meta ), ]
+    #.......................................................................................................
+    else
+      send event
+    #.......................................................................................................
+    return null
+
+#-----------------------------------------------------------------------------------------------------------
 @MKTX.INLINE.$box = ( S ) =>
   #.........................................................................................................
   return $ ( event, send ) =>
@@ -1825,6 +1863,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @$document                                        S
     #.......................................................................................................
     .pipe @MKTX.INLINE.$box                                 S
+    .pipe @MKTX.INLINE.$fncr                                S
     .pipe @MKTX.BLOCK.$blockquote                           S
     .pipe @MKTX.INLINE.$link                                S
     .pipe @MKTX.MIXED.$footnote                             S
