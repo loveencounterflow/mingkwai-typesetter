@@ -221,32 +221,32 @@
   }
 \newcommand{\cjk}{\mktsCjkBase}%
 % \newcommand{\cn}{\mktsStartCjk\mktsFontfileSunexta}
-\newcommand{\cn}{%
-  \mktsStyleFontCjkDefault%
-  }
-\newcommand{\mktsRsgFb}{\mktsFontfileSunexta}
-\newcommand{\cnxa}{\mktsFontfileSunexta}
-\newcommand{\cnxb}{\mktsFontfileSunflowerucjkxb}
-\newcommand{\cnxc}{\mktsFontfileHanaminb}
-% \newcommand{\cnxc}{\mktsFontfileSunextb}
-% \newcommand{\cnxc}{\mktsFontfileSunflowerucjkxb}
-\newcommand{\cnxd}{\mktsFontfileBabelstonehan}
-\newcommand{\cncone}{\mktsFontfileSunexta}       % CJK Compatibility 1
-\newcommand{\cnctwo}{\mktsFontfileHanamina}          % CJK Compatibility 2
-\newcommand{\cnrone}{\mktsFontfileSunexta}       % CJK Radicals 1
-\newcommand{\cnrtwo}{\mktsFontfileSunexta}       % CJK Radicals 2
-\newcommand{\cnsym}{\mktsFontfileHanamina}
-\newcommand{\cnstrk}{\mktsFontfileSunexta}
+\newcommand{\cn}{\cjkgGlue\mktsStyleFontCjkDefault\AfterGroup{\cjkgGlue}}
+\newcommand{\mktsRsgFb}{\cjkgGlue\mktsFontfileSunexta\AfterGroup{\cjkgGlue}}
+\newcommand{\cnxa}{\cjkgGlue\mktsFontfileSunexta\AfterGroup{\cjkgGlue}}
+\newcommand{\cnxb}{\cjkgGlue\mktsFontfileSunflowerucjkxb\AfterGroup{\cjkgGlue}}
+\newcommand{\cnxc}{\cjkgGlue\mktsFontfileHanaminb\AfterGroup{\cjkgGlue}}
+% \newcommand{\cnxc}{\cjkgGlue\mktsFontfileSunextb\AfterGroup{\cjkgGlue}}
+% \newcommand{\cnxc}{\cjkgGlue\mktsFontfileSunflowerucjkxb\AfterGroup{\cjkgGlue}}
+\newcommand{\cnxd}{\cjkgGlue\mktsFontfileBabelstonehan\AfterGroup{\cjkgGlue}}
+\newcommand{\cncone}{\cjkgGlue\mktsFontfileSunexta\AfterGroup{\cjkgGlue}}       % CJK Compatibility 1
+\newcommand{\cnctwo}{\cjkgGlue\mktsFontfileHanamina\AfterGroup{\cjkgGlue}}          % CJK Compatibility 2
+\newcommand{\cnrone}{\cjkgGlue\mktsFontfileSunexta\AfterGroup{\cjkgGlue}}       % CJK Radicals 1
+\newcommand{\cnrtwo}{\cjkgGlue\mktsFontfileSunexta\AfterGroup{\cjkgGlue}}       % CJK Radicals 2
+\newcommand{\cnsym}{\cjkgGlue\mktsFontfileHanamina\AfterGroup{\cjkgGlue}}
+\newcommand{\cnstrk}{\cjkgGlue\mktsFontfileSunexta\AfterGroup{\cjkgGlue}}
 % ..........................................................................................................
-\newcommand{\cnxBabel}{\mktsFontfileBabelstonehan}
-\newcommand{\cnxHanaA}{\mktsFontfileHanamina}
-\newcommand{\cnxHanaB}{\mktsFontfileHanaminb}
-\newcommand{\cnxSunXA}{\mktsFontfileSunexta}
-\newcommand{\cnxUming}{\mktsFontfileUming}
+\newcommand{\cnxBabel}{\cjkgGlue\mktsFontfileBabelstonehan\AfterGroup{\cjkgGlue}}
+\newcommand{\cnxHanaA}{\cjkgGlue\mktsFontfileHanamina\AfterGroup{\cjkgGlue}}
+\newcommand{\cnxHanaB}{\cjkgGlue\mktsFontfileHanaminb\AfterGroup{\cjkgGlue}}
+\newcommand{\cnxSunXA}{\cjkgGlue\mktsFontfileSunexta\AfterGroup{\cjkgGlue}}
+\newcommand{\cnxUming}{\cjkgGlue\mktsFontfileUming\AfterGroup{\cjkgGlue}}
 % ..........................................................................................................
 \newcommand{\cnjzr}{%
   % \cn%
+  \cjkgGlue%
   \mktsFontfileJizurathreeb%
+  \AfterGroup{\cjkgGlue}%
   % \mktsScaleFont{1.1}
   }%
 \newcommand{\cnxJzr}{\cnjzr}
@@ -255,11 +255,19 @@
 % ### TAINT should use single kana definition and differentiate between hiragana, katakan only iff and where
 % necessary; should *not* use font filename here but symbolic name ###
 \newcommand{\ka}{%
-  \special{pdf:literal 1 0 0 1 0 0.5 cm}%
-  \mktsFontfileFandolfangregular%
-  % \mktsScaleFont{1.2523}%
-  \AfterGroup{\special{pdf:literal 1 0 0 1 0 -0.5 cm}}%
-  }
+  \cjkgGlue%
+  % \renewcommand{\cjkgGlue}{\hskip -0.05ex plus 0.05ex minus 0.05ex}%
+  % \mktsStyleFontKanaCurrent%
+  \mktsStyleFontCjkDefault%
+  \AfterGroup{\cjkgGlue}%
+  }%
+
+% \newcommand{\ka}{%
+%   % \special{pdf:literal 1 0 0 1 0 0.5 cm}%
+%   % \mktsStyleFontKanaCurrent%
+%   % \mktsScaleFont{1.2523}%
+%   % \AfterGroup{\special{pdf:literal 1 0 0 1 0 -0.5 cm}}%
+%   }
 \newcommand{\hi}{\ka}
 
 % \newcommand{\hi}{%
