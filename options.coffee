@@ -127,16 +127,10 @@ module.exports = options =
       { texname: 'mktsFontfileHanamina',                       filename: 'HanaMinA.ttf',                        }
       { texname: 'mktsFontfileHanaminb',                       filename: 'HanaMinB.ttf',                        }
       { texname: 'mktsFontfileIpaexg',                         filename: 'ipaexg.ttf',                          }
-      { texname: 'mktsFontfileIpaexg',                         filename: 'ipaexg.ttf',                          }
-      { texname: 'mktsFontfileIpaexm',                         filename: 'ipaexm.ttf',                          }
       { texname: 'mktsFontfileIpaexm',                         filename: 'ipaexm.ttf',                          }
       { texname: 'mktsFontfileIpag',                           filename: 'ipag.ttf',                            }
-      { texname: 'mktsFontfileIpag',                           filename: 'ipag.ttf',                            }
-      { texname: 'mktsFontfileIpagp',                          filename: 'ipagp.ttf',                           }
       { texname: 'mktsFontfileIpagp',                          filename: 'ipagp.ttf',                           }
       { texname: 'mktsFontfileIpam',                           filename: 'ipam.ttf',                            }
-      { texname: 'mktsFontfileIpam',                           filename: 'ipam.ttf',                            }
-      { texname: 'mktsFontfileIpamp',                          filename: 'ipamp.ttf',                           }
       { texname: 'mktsFontfileIpamp',                          filename: 'ipamp.ttf',                           }
       { texname: 'mktsFontfileJizurathreeb',                   filename: 'jizura3b.ttf',                        }
       { texname: 'mktsFontfileKai',                            filename: 'Kai.ttf',                             }
@@ -302,9 +296,36 @@ module.exports = options =
       { texname: 'mktsFontfileAleolightitalic',                 subfolder: 'Aleo_font_v1.2.2/Desktop OTF', filename: 'Aleo-LightItalic.otf', }
       { texname: 'mktsFontfileAleoregular',                     subfolder: 'Aleo_font_v1.2.2/Desktop OTF', filename: 'Aleo-Regular.otf',     }
 
-      { texname: 'mktsFontfileUnifrakturcook',                  subfolder: 'unifraktur',              filename: 'UnifrakturCook.ttf',        }
-      { texname: 'mktsFontfileUnifrakturcooklight',             subfolder: 'unifraktur',              filename: 'UnifrakturCook-Light.ttf',  }
-      { texname: 'mktsFontfileUnifrakturmaguntia',              subfolder: 'unifraktur',              filename: 'UnifrakturMaguntia.ttf',    }
+      { texname: 'mktsFontfileUnifrakturcook',                subfolder: 'unifraktur', filename: 'UnifrakturCook.ttf',        }
+      { texname: 'mktsFontfileUnifrakturcooklight',           subfolder: 'unifraktur', filename: 'UnifrakturCook-Light.ttf',  }
+      { texname: 'mktsFontfileUnifrakturmaguntia',            subfolder: 'unifraktur', filename: 'UnifrakturMaguntia.ttf',    }
+
+      { texname: 'mktsFontfileGltsukijifivego',               subfolder: 'GL-Tsukiji-5go', filename: 'GL-Tsukiji-5go.ttf',    }
+
+      { texname: 'mktsFontfileThtshynpzero',                  subfolder: 'TH-Tshyn', filename: 'TH-Tshyn-P0.ttf',    }
+      { texname: 'mktsFontfileThtshynpone',                   subfolder: 'TH-Tshyn', filename: 'TH-Tshyn-P1.ttf',    }
+      { texname: 'mktsFontfileThtshynptwo',                   subfolder: 'TH-Tshyn', filename: 'TH-Tshyn-P2.ttf',    }
+
+      { texname: 'mktsFontfileNotoserifjpblack',              subfolder: 'NotoSerifJP', filename: 'NotoSerifJP-Black.otf',    }
+      { texname: 'mktsFontfileNotoserifjpbold',               subfolder: 'NotoSerifJP', filename: 'NotoSerifJP-Bold.otf',    }
+      { texname: 'mktsFontfileNotoserifjpextralight',         subfolder: 'NotoSerifJP', filename: 'NotoSerifJP-ExtraLight.otf',    }
+      { texname: 'mktsFontfileNotoserifjplight',              subfolder: 'NotoSerifJP', filename: 'NotoSerifJP-Light.otf',    }
+      { texname: 'mktsFontfileNotoserifjpmedium',             subfolder: 'NotoSerifJP', filename: 'NotoSerifJP-Medium.otf',    }
+      { texname: 'mktsFontfileNotoserifjpregular',            subfolder: 'NotoSerifJP', filename: 'NotoSerifJP-Regular.otf',    }
+      { texname: 'mktsFontfileNotoserifjpsemibold',           subfolder: 'NotoSerifJP', filename: 'NotoSerifJP-SemiBold.otf',    }
+
+      { texname: 'mktsFontfileThkhaaitpzero',                 subfolder: 'TH-Khaai', filename: 'TH-Khaai-TP0.ttf', }
+      { texname: 'mktsFontfileThkhaaitptwo',                  subfolder: 'TH-Khaai', filename: 'TH-Khaai-TP2.ttf', }
+
+      { texname: 'mktsFontfileHminglanr',                     subfolder: 'MingLan', filename: 'H-MingLan-R.ttf', }
+      { texname: 'mktsFontfileHminglanb',                     subfolder: 'MingLan', filename: 'H-MingLan-B.ttf', }
+
+      { texname: 'mktsFontfileRkaisubold',                    filename: 'R-Kai-SUBold.ttf', }
+      { texname: 'mktsFontfileRkantingliuwnine',              filename: 'R-KanTingLiu-W9.ttf', }
+
+      { texname: 'mktsFontfileSushikii',                      subfolder: 'sushiki_ub',  filename: 'sushikii.ttf', }
+
+
       ]
 
 
