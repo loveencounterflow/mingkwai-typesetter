@@ -813,7 +813,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
             # send [ 'tex', "%% no indent within list\n" ]
           else if has_indent
             # send [ 'tex', "%% with indent\n" ]
-            send [ 'tex', "\\hskip \\mktsLineheight plus 0mm minus 0mm " ]
+            send [ 'tex', "\\mktsIndent{}" ]
             # send [ 'tex', "¶ " ]
           #.................................................................................................
           else
