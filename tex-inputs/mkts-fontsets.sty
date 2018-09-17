@@ -39,10 +39,10 @@
 \newcommand{\mktsStyleFontHangeulBold}{\mktsStyleFontThrowUndefined{HangeulBold}}%
 \newcommand{\mktsStyleFontHangeulItalic}{\mktsStyleFontThrowUndefined{HangeulItalic}}%
 \newcommand{\mktsStyleFontHangeulKaishu}{\mktsStyleFontThrowUndefined{HangeulKaishu}}%
-\newcommand{\mktsStyleFontKanaDefault}{\mktsStyleFontThrowUndefined{KanaDefault}}%
+\newcommand{\mktsStyleFontKanaRegular}{\mktsStyleFontThrowUndefined{KanaRegular}}%
 \newcommand{\mktsStyleFontKanaBold}{\mktsStyleFontThrowUndefined{KanaBold}}%
-\newcommand{\mktsStyleFontKanaItalic}{\mktsStyleFontThrowUndefined{KanaItalic}}%
 \newcommand{\mktsStyleFontKanaKaishu}{\mktsStyleFontThrowUndefined{KanaKaishu}}%
+\newcommand{\mktsStyleFontKanaCurrent}{\mktsStyleFontThrowUndefined{KanaCurrent}}%
 
 % ----------------------------------------------------------------------------------------------------------
 \newcommand{\mktsStyleFontsetNone}{
@@ -72,10 +72,10 @@
   \renewcommand{\mktsStyleFontHangeulBold}{\mktsStyleFontThrowUndefined{HangeulBold}}%
   \renewcommand{\mktsStyleFontHangeulItalic}{\mktsStyleFontThrowUndefined{HangeulItalic}}%
   \renewcommand{\mktsStyleFontHangeulKaishu}{\mktsStyleFontThrowUndefined{HangeulKaishu}}%
-  \renewcommand{\mktsStyleFontKanaDefault}{\mktsStyleFontThrowUndefined{KanaDefault}}%
+  \renewcommand{\mktsStyleFontKanaRegular}{\mktsStyleFontThrowUndefined{KanaRegular}}%
   \renewcommand{\mktsStyleFontKanaBold}{\mktsStyleFontThrowUndefined{KanaBold}}%
-  \renewcommand{\mktsStyleFontKanaItalic}{\mktsStyleFontThrowUndefined{KanaItalic}}%
   \renewcommand{\mktsStyleFontKanaKaishu}{\mktsStyleFontThrowUndefined{KanaKaishu}}%
+  \renewcommand{\mktsStyleFontKanaCurrent}{\mktsStyleFontThrowUndefined{KanaCurrent}}%
   }\mktsStyleFontsetNone
 
 % ----------------------------------------------------------------------------------------------------------
@@ -106,10 +106,10 @@
   \renewcommand{\mktsStyleFontHangeulBold}{}%
   \renewcommand{\mktsStyleFontHangeulItalic}{}%
   \renewcommand{\mktsStyleFontHangeulKaishu}{}%
-  \renewcommand{\mktsStyleFontKanaDefault}{}%
+  \renewcommand{\mktsStyleFontKanaRegular}{}%
   \renewcommand{\mktsStyleFontKanaBold}{}%
-  \renewcommand{\mktsStyleFontKanaItalic}{}%
   \renewcommand{\mktsStyleFontKanaKaishu}{}%
+  \renewcommand{\mktsStyleFontKanaCurrent}{}%
   }
 
 % ----------------------------------------------------------------------------------------------------------
@@ -141,9 +141,6 @@
     % \mktsFontfileAleobolditalic\mktsScaleFont{0.8}%
     \mktsFontfileBitterbolditalic\mktsScaleFont{0.85}%
     }%
-  \renewcommand{\mktsStyleFontItalic}{%
-    \mktsFontfileEbgaramondtwelveitalic\mktsScaleFont{1.0}%
-    }%
   \renewcommand{\mktsStyleFontSymbol}{\mktsFontfileSunexta}%
   \renewcommand{\mktsStyleFontCode}{\mktsScaleFont{0.8}\mktsFontfileIosevkatermslabmedium}%
   \renewcommand{\mktsStyleFontPagenr}{\mktsScaleFont{0.8}\mktsFontfileIosevkatermslabmedium}%
@@ -153,12 +150,17 @@
   \renewcommand{\mktsStyleFontCjkDefault}{\mktsFontfileSunexta}%
   % \renewcommand{\mktsStyleFontCjkDefault}{\mktsFontfileFandolkairegular}%
   \renewcommand{\mktsStyleFontCjkBold}{\mktsFontfileSourcehansansbold}%
-  % \renewcommand{\mktsStyleFontCjkItalic}{\mktsStyleFontThrowUndefined{CjkItalic}}%
-  \renewcommand{\mktsStyleFontCjkKaishu}{\mktsFontfileBiaukai}%
+  \renewcommand{\mktsStyleFontCjkKaishu}{\mktsFontfileThkhaaitpzero}%
   \renewcommand{\mktsStyleFontHangeulDefault}{\mktsFontfileNanummyeongjo}%
   \renewcommand{\mktsStyleFontHangeulBold}{\mktsFontfileSourcehansansbold}%
-  \renewcommand{\mktsStyleFontKanaDefault}{\mktsFontfileFandolfangregular}%
+  \renewcommand{\mktsStyleFontKanaRegular}{\mktsFontfileIpamp}%
   \renewcommand{\mktsStyleFontKanaBold}{\mktsFontfileSourcehansansbold}%
+  \renewcommand{\mktsStyleFontKanaKaishu}{\mktsFontfileThkhaaitpzero}%
+  \renewcommand{\mktsStyleFontKanaCurrent}{\mktsStyleFontKanaRegular}%
+  \renewcommand{\mktsStyleFontItalic}{%
+    \mktsFontfileEbgaramondtwelveitalic\mktsScaleFont{1.0}%
+    \renewcommand{\mktsStyleFontKanaCurrent}{\mktsStyleFontKanaKaishu}%
+    }%
   }
 
 
