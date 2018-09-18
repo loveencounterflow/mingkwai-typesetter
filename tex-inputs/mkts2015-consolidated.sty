@@ -258,7 +258,14 @@
 % necessary; should *not* use font filename here but symbolic name ###
 \newcommand{\ka}{%
   \cjkgGlue%
-  % \renewcommand{\cjkgGlue}{\hskip -0.05ex plus 0.05ex minus 0.05ex}%
+  % \mktsStyleFontKanaCurrent%
+  \mktsStyleFontCjkDefault%
+  \AfterGroup{\cjkgGlue}%
+  }%
+
+\newcommand{\readingKa}{%
+  \cjkgGlue%
+  \renewcommand{\cjkgGlue}{\hskip -0.3ex plus 0.3ex minus 0.3ex}%
   % \mktsStyleFontKanaCurrent%
   \mktsStyleFontCjkDefault%
   \AfterGroup{\cjkgGlue}%
