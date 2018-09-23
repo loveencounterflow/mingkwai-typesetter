@@ -24,6 +24,7 @@ step                      = suspend.step
 D                         = require 'pipedreams'
 $                         = D.remit.bind D
 $async                    = D.remit_async.bind D
+PIPEDREAMS                = require '../../../pipedreams'
 #...........................................................................................................
 ASYNC                     = require 'async'
 #...........................................................................................................
@@ -54,6 +55,7 @@ AUX                       = require './tex-writer-aux'
 #...........................................................................................................
 Σ_formatted_warning       = Symbol 'formatted-warning'
 jr                        = JSON.stringify
+promisify                 = ( require 'util' ).promisify
 
 
 #===========================================================================================================
@@ -1760,6 +1762,28 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     #.......................................................................................................
     return null
 
+#-----------------------------------------------------------------------------------------------------------
+@MKTX.$mktscript = ( S ) =>
+  return PIPEDREAMS.$async ( event, send, end ) =>
+    #.......................................................................................................
+    if event?
+      if select event, '.', [ 'mktscript', 'mktscript-trim', ]
+        [ type, name, mktscript, meta, ]   = event
+        trim        = ( name is 'mktscript-trim' )
+        send stamp event
+        tex_source  = await ( promisify @tex_from_md.bind @ ) mktscript, { bare: yes, }
+        tex_source  = tex_source.trim() if trim
+        send [ 'tex', tex_source, ]
+        send.done()
+      else
+        send event
+        send.done()
+    else
+      send.done()
+    #.......................................................................................................
+    end() if end?
+    return null
+
 
 #===========================================================================================================
 #
@@ -1853,6 +1877,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @MKTX.SH.$spawn                                   S
     .pipe @MKTX.CALL.$call_await                            S
     .pipe @MKTX.CALL.$call_stream                           S
+    .pipe @MKTX.$mktscript                                  S
     # .pipe D.$observe ( event ) -> info ( CND.grey '--------->' ), ( CND.blue event[ 0 ] + event[ 1 ] )
     # .pipe D.$observe ( event ) -> info '23993', ( CND.grey '--------->' ), jr event
     .pipe @MKTX.INLINE.$custom_entities                     S
@@ -2043,15 +2068,14 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     bare:                 settings[ 'bare' ] ? no
     paragraph_nr:         0
   #.........................................................................................................
-  md_readstream       = MD_READER.create_md_read_tee md_source
+  md_readstream       = MD_READER.create_md_read_tee S, md_source
   tex_writestream     = @create_tex_write_tee S
   md_input            =   md_readstream.tee[ 'input'  ]
   md_output           =   md_readstream.tee[ 'output' ]
   tex_input           = tex_writestream.tee[ 'input'  ]
   tex_output          = tex_writestream.tee[ 'output' ]
   #.........................................................................................................
-  S.aux               = @AUX.read_auxfile S
-  debug S.aux; xxx
+    # S.aux                   = yield AUX.fetch_aux_data S, resume
   S.resend            = md_readstream.tee[ 'S' ].resend
   #.........................................................................................................
   md_output
@@ -2066,14 +2090,28 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
 
 
 ############################################################################################################
-unless module.parent?
-  # @pdf_from_md 'texts/A-Permuted-Index-of-Chinese-Characters/index.md'
-  @pdf_from_md 'texts/demo'
+# unless module.parent?
+#   # @pdf_from_md 'texts/A-Permuted-Index-of-Chinese-Characters/index.md'
+#   # @pdf_from_md 'texts/demo'
+#   TW = @
+#   require '../../mingkwai'
+#   do ->
+#     mktscript = """
+#     # Headline
 
-  # debug '©nL12s', MKTS.as_tex_text '亻龵helo さしすサシス 臺灣國語Ⓒ, Ⓙ, Ⓣ𠀤𠁥&jzr#e202;'
-  # debug '©nL12s', MKTS.as_tex_text 'helo さし'
-  # event = [ '(', 'single-column', ]
-  # event = [ ')', 'single-column', ]
-  # event = [ '(', 'new-page', ]
-  # debug '©Gpn1J', select event, [ '(', ')'], [ 'single-column', 'new-page', ]
+#     Some *important* text. <box>boxed</box>
+
+#     """
+#     # mktscript = """<box>boxed</box>"""
+#     promisify = ( require 'util' ).promisify
+#     tex_source  = await ( promisify TW.tex_from_md.bind TW ) mktscript, { bare: yes, }
+#     debug '45532', rpr tex_source.trim()
+#     debug '45532', '###'
+
+#   # debug '©nL12s', MKTS.as_tex_text '亻龵helo さしすサシス 臺灣國語Ⓒ, Ⓙ, Ⓣ𠀤𠁥&jzr#e202;'
+#   # debug '©nL12s', MKTS.as_tex_text 'helo さし'
+#   # event = [ '(', 'single-column', ]
+#   # event = [ ')', 'single-column', ]
+#   # event = [ '(', 'new-page', ]
+#   # debug '©Gpn1J', select event, [ '(', ')'], [ 'single-column', 'new-page', ]
 
