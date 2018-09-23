@@ -147,6 +147,9 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
 
 #-----------------------------------------------------------------------------------------------------------
 @$produce_mktscript = ( S ) ->
+  if S.layout_info[ 'job-name' ] is '<STRING>'
+    return D.$observe ( event ) ->
+  #.........................................................................................................
   level                   = 0
   indentation             = ''
   tag_stack               = []
