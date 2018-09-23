@@ -30,6 +30,7 @@ select                    = MD_READER.select.bind      MD_READER
 is_hidden                 = MD_READER.is_hidden.bind   MD_READER
 is_stamped                = MD_READER.is_stamped.bind  MD_READER
 
+
 #-----------------------------------------------------------------------------------------------------------
 @_resolve_arguments = ( S, event ) =>
   reference_path                      = S.layout_info[ 'source-home' ]
@@ -42,9 +43,9 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
     module  = require locator
     module  = module[ crumb ] for crumb in crumbs
   catch error
-    alert '98987', "when trying to resolve #{crumbs.join '.'}"
-    alert '98987', "starting with module #{rpr locator}"
-    alert '98987', "an error occurred at path component #{rpr crumb}"
+    alert '98987-1', "when trying to resolve #{crumbs.join '.'}"
+    alert '98987-2', "starting with module #{rpr locator}"
+    alert '98987-3', "an error occurred at path component #{rpr crumb}"
     throw error
   #.....................................................................................................
   return {
@@ -75,11 +76,12 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
         lines   = await module[ method_name ] ctx, P...
       #.....................................................................................................
       catch error
-        alert '98987', "when trying to call method #{rpr method_name}"
-        alert '98987', "from module #{rpr locator}##{crumbs.join '.'}"
-        alert '98987', "with arguments #{rpr P}"
-        alert '98987', "an error occurred:"
-        alert '98987', error.message
+        alert '98987-4', { module, method_name, P, meta, locator, crumbs, }
+        alert '98987-5', "when trying to call method #{rpr method_name}"
+        alert '98987-6', "from module #{rpr locator}##{crumbs.join '.'}"
+        alert '98987-7', "with arguments #{rpr P}"
+        alert '98987-8', "an error occurred:"
+        alert '98987-9', error.message
         throw error
       #.....................................................................................................
       for line in lines
@@ -124,11 +126,12 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
         PS.pull pipeline...
       #.....................................................................................................
       catch error
-        alert '98987', "when trying to call method #{rpr method_name}"
-        alert '98987', "from module #{rpr locator}##{crumbs.join '.'}"
-        alert '98987', "with arguments #{rpr P}"
-        alert '98987', "an error occurred:"
-        alert '98987', error.message
+        alert '98987-10', { module, method_name, P, meta, locator, crumbs, }
+        alert '98987-11', "when trying to call method #{rpr method_name}"
+        alert '98987-12', "from module #{rpr locator}##{crumbs.join '.'}"
+        alert '98987-13', "with arguments #{rpr P}"
+        alert '98987-14', "an error occurred:"
+        alert '98987-15', error.message
         throw error
     #.......................................................................................................
     else
