@@ -260,7 +260,7 @@ after = ( names..., method ) ->
   bare                    = S.bare ? no
   #.........................................................................................................
   flush_as = ( what ) =>
-    send_ [ 'tex', "\n% begin of MD document\n", ]
+    send_ [ 'tex', "\n% begin of MD document\n", ] unless bare
     if what is 'preamble' and buffer.length > 0
       send_ [ 'tex', "% (extra preamble inserted from MD document)\n", ]
       send_ event for event in buffer
@@ -280,7 +280,7 @@ after = ( names..., method ) ->
     #.......................................................................................................
     else if select event, ')', 'document'
       flush_as 'document' if before_document_command
-      send [ 'tex', "\n% end of MD document\n", ]
+      send [ 'tex', "\n% end of MD document\n", ] unless bare
       send stamp event
     #.......................................................................................................
     else if select event, '!', 'document'
