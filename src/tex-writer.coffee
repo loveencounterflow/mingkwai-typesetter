@@ -1883,10 +1883,9 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @MKTX.INLINE.$custom_entities                     S
     .pipe plugins_tee
     .pipe MACRO_ESCAPER.$expand.$remove_backslashes         S
-    .pipe MKTSCRIPT_WRITER.$show_mktsmd_events              S
+    # .pipe MKTSCRIPT_WRITER.$show_mktsmd_events              S
     .pipe MKTSCRIPT_WRITER.$produce_mktscript               S
     .pipe @$document                                        S
-    #.......................................................................................................
     .pipe @MKTX.INLINE.$box                                 S
     .pipe @MKTX.INLINE.$fncr                                S
     .pipe @MKTX.BLOCK.$blockquote                           S
@@ -1930,8 +1929,6 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @MKTX.BLOCK.$paragraph_2                          S
     .pipe @MKTX.COMMAND.$crossrefs                          S
     .pipe @MKTX.TYPOFIX.$fix_typography_for_tex             S
-    # .pipe D.$observe ( event ) -> urge '44433', ( CND.grey '--------->' ), event
-    # .pipe D.$show()
     #.......................................................................................................
     .pipe do =>
       S.event_count = 0
@@ -2041,6 +2038,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
 #===========================================================================================================
 # TEX FROM MD
 #-----------------------------------------------------------------------------------------------------------
+XXX_tex_from_md_nr = 0
 @tex_from_md = ( md_source, settings, handler ) ->
   ### TAINT code duplication ###
   switch arity = arguments.length
@@ -2056,6 +2054,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       Z.push event if event?
       if end?
         handler null, Z.join ''
+        debug '44553', XXX_tex_from_md_nr, '--------------------------------'
         end()
   #.........................................................................................................
   source_route        = settings[ 'source-route' ] ? '<STRING>'
@@ -2068,6 +2067,8 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     bare:                 settings[ 'bare' ] ? no
     paragraph_nr:         0
   #.........................................................................................................
+  XXX_tex_from_md_nr += +1
+  debug '44553', XXX_tex_from_md_nr, rpr md_source
   md_readstream       = MD_READER.create_md_read_tee S, md_source
   tex_writestream     = @create_tex_write_tee S
   md_input            =   md_readstream.tee[ 'input'  ]
@@ -2081,7 +2082,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
   md_output
     .pipe tex_input
   tex_output
-    .pipe D.$show '>>>>>>>>>>>>>>>>>>'
+    # .pipe D.$show '>>>>>>>>>>>>>>>>>>'
     .pipe $collect_and_call handler
   #.........................................................................................................
   D.run ( => md_input.resume() ), @_handle_error
