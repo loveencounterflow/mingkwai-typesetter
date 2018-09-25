@@ -737,28 +737,35 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
 
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.BLOCK.$paragraph_2 = ( S ) =>
-  within_paragraph  = false
-  seen_text_event   = false
-  collector         = []
-  close_paragraph   = false
-  within_noindent   = false
-  is_first_par      = true
+  within_paragraph    = false
+  seen_text_event     = false
+  collector           = []
+  close_paragraph     = false
+  within_noindent     = false
+  is_first_par        = true
+  has_noindent_tag    = false
+  # is_fresh            = true
   #.........................................................................................................
   return $ ( event, send ) =>
-    # send [ 'tex', ( '% 73632' + ( jr event ) + '\n' ), ]
-    if select event, '(', [ 'h', 'multi-columns', 'blockquote', ],  true then is_first_par    = true
-    if select event, ')', [ 'blockquote', 'ul', 'code',         ],  true then is_first_par    = true
-    if select event, '.', [ 'hr', 'hr2',                        ],  true then is_first_par    = true
-    if select event, '(', [ 'ul', 'keep-lines',                 ],  true then within_noindent = true
-    if select event, ')', [ 'ul', 'keep-lines',                 ],  true then within_noindent = false
+    if select event, '(', [ 'h', 'multi-columns', 'blockquote', ],  true then is_first_par        = true
+    if select event, ')', [ 'blockquote', 'ul', 'code',         ],  true then is_first_par        = true
+    if select event, '.', [ 'hr', 'hr2',                        ],  true then is_first_par        = true
+    if select event, '(', [ 'ul', 'keep-lines',                 ],  true then within_noindent     = true
+    if select event, ')', [ 'ul', 'keep-lines',                 ],  true then within_noindent     = false
+    # if select event, '(', [ 'h',                                ],  true then is_fresh            = false
     #.......................................................................................................
-    if select event, '~', 'start-paragraph', true
+    if select event, '.', 'noindent'
+      send stamp event
+      has_noindent_tag  = yes
+    #.......................................................................................................
+    else if select event, '~', 'start-paragraph', true
       within_paragraph  = yes
       seen_text_event   = no
       S.paragraph_nr   += +1
       # send [ 'tex', "\n%% (PARAGRAPH ##{S.paragraph_nr}\n" ]
     #.......................................................................................................
     else if select event, '.', 'p'
+      has_noindent_tag  = no
       within_paragraph  = no
       seen_text_event   = no
       # send [ 'tex', "\n}\n" ]
@@ -794,18 +801,12 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
           has_indent        = not is_first_par
           is_first_par    = false
           #.................................................................................................
-          if within_noindent
+          if within_noindent or has_noindent_tag or ( not has_indent ) # or is_fresh
+            # is_fresh = false
             null
-            # send [ 'tex', "%% no indent within list\n" ]
-          else if has_indent
-            # send [ 'tex', "%% with indent\n" ]
+          else
             send [ 'tex', "\\mktsIndent{}" ]
             # send [ 'tex', "¶ " ]
-          #.................................................................................................
-          else
-            null
-            # send [ 'tex', "%% no indent\n" ]
-            # send [ 'tex', "÷ " ]
           #.................................................................................................
           ### Finally, send the first text portion of the paragraph itself: ###
           send event
