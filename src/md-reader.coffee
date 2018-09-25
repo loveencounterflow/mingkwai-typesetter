@@ -1073,7 +1073,7 @@ tracker_pattern = /// ^
     .pipe @_PRE.$flatten_image_tokens                 S
     .pipe @_PRE.$reinject_html_blocks                 S
     .pipe @_PRE.$rewrite_markdownit_tokens            S
-    .pipe D.$observe ( event ) => debug '©1', jr event
+    # .pipe D.$observe ( event ) => debug '©1', jr event
     # .pipe @_PRE.$define_brackets                      S
     .pipe @_PRE.$custom_entities                      S
     .pipe @_PRE.$spurious_ampersand                  S
