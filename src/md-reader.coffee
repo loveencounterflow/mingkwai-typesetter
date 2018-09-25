@@ -33,6 +33,7 @@ MKTS                      = require './main'
 @TYPOFIX                  = require './md-reader-typofix'
 #...........................................................................................................
 assign                    = Object.assign
+MKNCR                     = require '../../mingkwai-ncr'
 
 
 #-----------------------------------------------------------------------------------------------------------
@@ -314,7 +315,7 @@ tracker_pattern = /// ^
     if @select event, '.', 'text'
       [ type, name, text, meta, ] = event
       is_plain = no
-      for part in text.split /&([^\s#;]+);/g
+      for part in text.split /&([^\s#&;]+);/g
         if ( is_plain = not is_plain )
           send [ type, name, part, ( @copy meta ), ] if part.length > 0
         else
@@ -328,8 +329,9 @@ tracker_pattern = /// ^
     if @select event, '.', 'text'
       [ type, name, text, meta, ] = event
       is_plain = no
-      for part in text.split /(&[^\s;]+?;?)/g
-        if ( is_plain = not is_plain )
+      for part in text.split /(&[^\s;]+(?:;|\s|$))/g
+        # /^&([a-z][-a-z0-9]*)#x[0-9a-f]+;$/
+        if ( is_plain = not is_plain ) or ( part.match MKNCR._xncr_matcher )?
           send [ type, name, part, ( @copy meta ), ] if part.length > 0
         else
           send [ '.', 'spurious-ampersand', part, ( @copy meta ), ]
