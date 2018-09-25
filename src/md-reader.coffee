@@ -33,6 +33,7 @@ MKTS                      = require './main'
 @TYPOFIX                  = require './md-reader-typofix'
 #...........................................................................................................
 assign                    = Object.assign
+jr                        = JSON.stringify
 MKNCR                     = require '../../mingkwai-ncr'
 
 
@@ -138,12 +139,17 @@ get_parse_html_methods = ->
   _resolve_html_attributes = ( facets ) ->
     assign {}, ( { "#{facet.name}": ( _cast_attribute_value facet.value ) } for facet in facets )...
   #.........................................................................................................
-  R[ '_parse_html_open_tag' ] = ( source ) ->
+  R[ '_parse_html_open_or_lone_tag' ] = ( source ) ->
+    if is_lone_tag = source.endsWith '/>'
+      position  = 'lone'
+      source    = source[ ... source.length - 2 ] + '>'
+    else
+      position  = 'begin'
     tree    = PARSE5.parseFragment source
     throw new Error get_message source unless ( cns = tree[ 'childNodes' ] ).length is 1
     cn = cns[ 0 ]
     throw new Error get_message source unless cn[ 'childNodes' ]?.length is 0
-    return [ 'begin', cn[ 'tagName' ], ( _resolve_html_attributes cn[ 'attrs' ] ), ]
+    return [ position, cn[ 'tagName' ], ( _resolve_html_attributes cn[ 'attrs' ] ), ]
     # return [ 'begin', cn[ 'tagName' ], cn[ 'attrs' ][ 0 ] ? {}, ]
   #.........................................................................................................
   R[ '_parse_html_block' ] = ( source ) ->
@@ -154,7 +160,7 @@ get_parse_html_methods = ->
   return R
 #...........................................................................................................
 parse_methods = get_parse_html_methods()
-@_parse_html_open_tag = parse_methods[ '_parse_html_open_tag' ]
+@_parse_html_open_or_lone_tag = parse_methods[ '_parse_html_open_or_lone_tag' ]
 @_parse_html_block    = parse_methods[ '_parse_html_block'    ]
 
 #-----------------------------------------------------------------------------------------------------------
@@ -163,9 +169,9 @@ parse_methods = get_parse_html_methods()
     return [ 'end', match[ 1 ], ]
   if ( match = source.match @_parse_html_tag.comment_pattern )?
     return [ 'comment', 'comment', match[ 1 ], ]
-  return @_parse_html_open_tag source
-@_parse_html_tag.close_tag_pattern   = /^<\/([^>]+)>$/
-@_parse_html_tag.comment_pattern     = /^<!--([\s\S]*)-->$/
+  return @_parse_html_open_or_lone_tag source
+@_parse_html_tag.close_tag_pattern  = /^<\/([^>]+)>$/
+@_parse_html_tag.comment_pattern    = /^<!--([\s\S]*)-->$/
 
 
 #===========================================================================================================
@@ -560,8 +566,8 @@ tracker_pattern = /// ^
               else send_unknown token, meta
           #.................................................................................................
           when 'html_inline'
-            [ position, name, extra, ] = @_parse_html_tag token[ 'content' ]
-            # debug '44647', name, extra; xxx
+            [ position, name, extra, ]  = @_parse_html_tag token[ 'content' ]
+            meta.markup                 = token[ 'content' ]
             switch position
               when 'comment'
                 send [ '.', 'comment', extra.trim(), meta, ]
@@ -571,6 +577,8 @@ tracker_pattern = /// ^
               when 'end'
                 if name is 'p' then send [ '.', name, null, meta, ]
                 else                send [ ')', name, null, meta, ]
+              when 'lone'
+                send [ '.', name, null, meta, ]
               else throw new Error "unknown HTML tag position #{rpr position}"
           #.................................................................................................
           else
@@ -1066,8 +1074,8 @@ tracker_pattern = /// ^
     .pipe @_PRE.$flatten_inline_tokens                S
     .pipe @_PRE.$flatten_image_tokens                 S
     .pipe @_PRE.$reinject_html_blocks                 S
-    # .pipe D.$observe ( event ) => debug '©1', rpr event
     .pipe @_PRE.$rewrite_markdownit_tokens            S
+    .pipe D.$observe ( event ) => debug '©1', jr event
     # .pipe @_PRE.$define_brackets                      S
     .pipe @_PRE.$custom_entities                      S
     .pipe @_PRE.$spurious_ampersand                  S
