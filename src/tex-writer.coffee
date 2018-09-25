@@ -1793,17 +1793,34 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     #.......................................................................................................
     return null
 
+
+#-----------------------------------------------------------------------------------------------------------
+@MKTX.$consolidate_mktscript_events = ( S ) ->
+  # remark      = MD_READER._get_remark()
+  collector   = []
+  first_meta  = null
+  return $ ( event, send ) =>
+    if select event, '.', 'mktscript'
+      [ type, name, text, meta, ] = event
+      first_meta                 ?= meta
+      collector.push text
+    else
+      # debug '83726', collector
+      if collector.length > 0
+        send [ '.', 'mktscript', ( collector.join '\n' ), ( copy first_meta ), ]
+        first_meta        = null
+        collector.length  = 0
+      send event
+
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.$mktscript = ( S ) =>
   return PIPEDREAMS.$async ( event, send, end ) =>
     #.......................................................................................................
     if event?
-      if select event, '.', [ 'mktscript', 'mktscript-trim', ]
+      if select event, '.', 'mktscript'
         [ type, name, mktscript, meta, ]   = event
-        trim        = ( name is 'mktscript-trim' )
         send stamp event
         tex_source  = await ( promisify @tex_from_md.bind @ ) mktscript, { bare: yes, }
-        tex_source  = tex_source.trim() if trim
         send [ 'tex', tex_source, ]
         send.done()
       else
@@ -1908,6 +1925,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @MKTX.SH.$spawn                                   S
     .pipe @MKTX.CALL.$call_await                            S
     .pipe @MKTX.CALL.$call_stream                           S
+    .pipe @MKTX.$consolidate_mktscript_events               S
     .pipe @MKTX.$mktscript                                  S
     # .pipe D.$observe ( event ) -> info ( CND.grey '--------->' ), ( CND.blue event[ 0 ] + event[ 1 ] )
     # .pipe D.$observe ( event ) -> info '23993', ( CND.grey '--------->' ), jr event
