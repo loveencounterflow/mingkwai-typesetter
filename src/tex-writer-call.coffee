@@ -103,7 +103,7 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
 @$call_stream = ( S ) =>
   ### TAINT implicitly assumes return value will be lines of text ###
   # self = @
-  return PIPEDREAMS.$async ( event, send, end ) =>
+  return PIPEDREAMS.$async ( event, outer_send, outer_end ) =>
     #.......................................................................................................
     if event? and select event, '!', 'call_stream'
       { module, method_name, P, meta, locator, crumbs, }  = @_resolve_arguments S, event
@@ -111,17 +111,24 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
       #.....................................................................................................
       try
         on_stop   = PS.new_event_collector 'stop', ->
-          send.done()
+          outer_send.done()
           help "(finished $call_stream #{method_name})"
         pipeline  = []
         pipeline.push await module[ method_name ] ctx, P...
-        pipeline.push PS.$watch ( line ) ->
+        #...................................................................................................
+        ### transform strings into text events ###
+        pipeline.push $ ( line, send ) ->
           if CND.isa_text line
             line = line + '\n' unless line.endsWith '\n'
             send [ '.', 'text', line, ( copy meta ), ]
           else
             send line
           return null
+        #...................................................................................................
+        pipeline.push $ ( event, send ) ->
+          outer_send event
+          send event
+        #...................................................................................................
         pipeline.push on_stop.add PS.$drain()
         PS.pull pipeline...
       #.....................................................................................................
@@ -135,10 +142,10 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
         throw error
     #.......................................................................................................
     else
-      send event
-      send.done()
+      outer_send event
+      outer_send.done()
     #.......................................................................................................
-    end() if end?
+    outer_end() if outer_end?
     return null
 
 
