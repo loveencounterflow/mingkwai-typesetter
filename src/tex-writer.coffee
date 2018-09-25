@@ -1719,11 +1719,36 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       #   last              = type
       # event_txt         = first + last + ' ' + text
       event_txt = "unhandled event: #{JSON.stringify event, null, ' '}"
-      warn event_txt
       send [ '.', 'warning', event_txt, ( copy meta ), ]
       # send stamp hide copy event
     else
       send event
+
+#-----------------------------------------------------------------------------------------------------------
+@MKTX.$show_warnings = ( S ) =>
+  warnings = []
+  return $ ( event, send, end ) =>
+    #.......................................................................................................
+    if event?
+      if select event, '.', 'warning'
+        [ type, name, text, meta, ] = event
+        line_nr                     = meta.line_nr  ? '?'
+        col_nr                      = meta.col_nr   ? '?'
+        ### TAINT fix location, use proper file name even for generated mktscript events ###
+        source_locator              = S.layout_info[ 'source-locator' ]
+        source_locator              = '<STRING>' if ( source_locator.match /<STRING>/ )?
+        text                        = "#{text} (#{source_locator}#{line_nr}:#{col_nr})"
+        warn '39833-1', text
+        warnings.push text
+        send event
+      else
+        send event
+    #.......................................................................................................
+    if end?
+      warn '39833-2', text for text in warnings
+      end()
+    #.......................................................................................................
+    return null
 
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.$format_warnings = ( S ) =>
@@ -1746,7 +1771,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     return null
 
 #-----------------------------------------------------------------------------------------------------------
-@MKTX.$show_warnings = ( S ) =>
+@MKTX.$warnings_as_tex = ( S ) =>
   warnings = []
   return $ ( event, send ) =>
     #.......................................................................................................
@@ -1942,8 +1967,9 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
         S.event_count += +1
     .pipe @MKTX.INLINE.$mark                                S
     .pipe @MKTX.$show_unhandled_tags                        S
-    .pipe @MKTX.$format_warnings                            S
     .pipe @MKTX.$show_warnings                              S
+    .pipe @MKTX.$format_warnings                            S
+    .pipe @MKTX.$warnings_as_tex                            S
     .pipe @$filter_tex                                      S
     # ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ?
     .pipe @COLUMNS.$XXX_transform_pretex_to_tex             S
