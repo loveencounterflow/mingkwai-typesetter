@@ -688,7 +688,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
   return $ ( event, send ) =>
     if select event, '.', 'entity'
       [ _, _, key, meta, ]  = event
-      entry                 = S.options.entities[ key ] ? []
+      entry                 = S.options.entities[ key ]
       #.....................................................................................................
       return send event unless entry?
       unless entry.type? and entry.value?
@@ -705,8 +705,14 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
         else
           send event
     #.......................................................................................................
+    else if select event, '.', 'spurious-ampersand'
+      [ _, _, key, meta, ]  = event
+      send [ '.', 'warning', "spurious ampersand #{rpr key}", ( copy meta ), ]
+    #.......................................................................................................
     else
       send event
+    #.......................................................................................................
+    return null
 
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.BLOCK.$blockquote = ( S ) =>

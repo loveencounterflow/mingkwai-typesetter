@@ -314,11 +314,25 @@ tracker_pattern = /// ^
     if @select event, '.', 'text'
       [ type, name, text, meta, ] = event
       is_plain = no
-      for part in text.split /&([^#;]+);/g
+      for part in text.split /&([^\s#;]+);/g
         if ( is_plain = not is_plain )
           send [ type, name, part, ( @copy meta ), ] if part.length > 0
         else
           send [ '.', 'entity', part, ( @copy meta ), ]
+    else
+      send event
+
+#-----------------------------------------------------------------------------------------------------------
+@_PRE.$spurious_ampersand = ( S ) =>
+  return $ ( event, send ) =>
+    if @select event, '.', 'text'
+      [ type, name, text, meta, ] = event
+      is_plain = no
+      for part in text.split /(&[^\s;]+?;?)/g
+        if ( is_plain = not is_plain )
+          send [ type, name, part, ( @copy meta ), ] if part.length > 0
+        else
+          send [ '.', 'spurious-ampersand', part, ( @copy meta ), ]
     else
       send event
 
@@ -1054,6 +1068,7 @@ tracker_pattern = /// ^
     .pipe @_PRE.$rewrite_markdownit_tokens            S
     # .pipe @_PRE.$define_brackets                      S
     .pipe @_PRE.$custom_entities                      S
+    .pipe @_PRE.$spurious_ampersand                  S
     .pipe @_PRE.$issue_administrative_events          S
     .pipe MKTS.MACRO_ESCAPER.$expand                  S
     .pipe @_PRE.$process_end_command                  S
