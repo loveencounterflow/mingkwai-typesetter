@@ -35,8 +35,11 @@ module.exports = options =
 
   #.........................................................................................................
   entities:
-    'auml':   { type: 'text', value: 'ä', }
-    'nl':     { type: 'tex',  value: '\\\\', }
+    'auml':         { type: 'text', value: 'ä', }
+    'nl':           { type: 'tex',  value: '\\\\', }
+    'thinspace':    { type: 'tex',  value: '\\thinspace{}', }
+    'x':            { type: 'tex',  value: '%', }
+    'noindent':     { type: 'tex',  value: '\\noindent{}', }
 
   #.........................................................................................................
   newcommands:
