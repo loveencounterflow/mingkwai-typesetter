@@ -2104,7 +2104,6 @@ XXX_tex_from_md_nr = 0
       Z.push event if event?
       if end?
         handler null, Z.join ''
-        debug '44553', XXX_tex_from_md_nr, '--------------------------------'
         end()
   #.........................................................................................................
   source_route        = settings[ 'source-route' ] ? '<STRING>'
@@ -2118,7 +2117,6 @@ XXX_tex_from_md_nr = 0
     paragraph_nr:         0
   #.........................................................................................................
   XXX_tex_from_md_nr += +1
-  debug '44553', XXX_tex_from_md_nr, rpr md_source
   md_readstream       = MD_READER.create_md_read_tee S, md_source
   tex_writestream     = @create_tex_write_tee S
   md_input            =   md_readstream.tee[ 'input'  ]
