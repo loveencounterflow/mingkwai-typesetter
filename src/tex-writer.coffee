@@ -1718,7 +1718,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       #   first             = name
       #   last              = type
       # event_txt         = first + last + ' ' + text
-      event_txt = "unhandled event: #{JSON.stringify event, null, ' '}"
+      event_txt = "unhandled event: #{jr event}"
       send [ '.', 'warning', event_txt, ( copy meta ), ]
       # send stamp hide copy event
     else
@@ -1848,8 +1848,8 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       # debug '82341', event
       send event
     else unless ( type is '~' ) or ( is_stamped event )
-      warn "unhandled event: #{JSON.stringify event}"
-      send.error new Error "unhandled events not allowed at this point; got #{JSON.stringify event}"
+      warn "unhandled event: #{jr event}"
+      send.error new Error "unhandled events not allowed at this point; got #{jr event}"
 
 #-----------------------------------------------------------------------------------------------------------
 @$show_events = ( S ) ->
