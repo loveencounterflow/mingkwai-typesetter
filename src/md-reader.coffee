@@ -576,7 +576,7 @@ tracker_pattern = /// ^
                 if name is 'p' then send [ '.', name, null, meta, ]
                 else                send [ ')', name, null, meta, ]
               when 'lone'
-                send [ '.', name, null, meta, ]
+                send [ '.', name, extra, meta, ]
               else throw new Error "unknown HTML tag position #{rpr position}"
           #.................................................................................................
           else
