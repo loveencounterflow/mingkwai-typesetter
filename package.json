@@ -39,7 +39,7 @@
     "coffeenode-chr": "^1.0.4",
     "coffeenode-suspend": "^0.1.11",
     "coffeenode-text": "^0.1.9",
-    "coffeescript": "^2.3.1",
+    "coffeescript": "^2.3.2",
     "commander": "^2.9.0",
     "cxltx-styles": "^1.4.7",
     "font-cmap": "^1.0.1",
@@ -57,7 +57,7 @@
     "markdown-it-sub": "^1.0.0",
     "markdown-it-sup": "^1.0.0",
     "ncr": "^0.2.12",
-    "parse5": "^2.1.5",
+    "parse5": "^5.1.0",
     "pipedreams": "^3.0.9",
     "pipestreams": "^0.4.1",
     "semver": "^5.4.1"
