@@ -1869,6 +1869,51 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     return null
 
 #-----------------------------------------------------------------------------------------------------------
+@$show_start_and_end_2 = ( S ) ->
+  ### TAINT will buffer all texts ###
+  is_first    = true
+  buffer      = []
+  event_count = 0
+  t0          = null
+  t1          = null
+  return $ ( event, send, end ) =>
+    #.......................................................................................................
+    if event?
+      event_count += +1
+      #.....................................................................................................
+      if is_first
+        is_first  = false
+        t0        = Date.now()
+      #.....................................................................................................
+      if select event, '.', 'text'
+        [ type, name, text, meta, ] = event
+        buffer.push text
+      #.....................................................................................................
+      send event
+    #.......................................................................................................
+    if end?
+      t1            = Date.now()
+      dts           = ( t1 - t0 ) / 1000
+      max_chr_count = 200
+      raw_text      = buffer.join ' '
+      chr_count     = raw_text.length ### NOTE approximate count ###
+      text_count    = buffer.length
+      cpe_txt       = ( chr_count / text_count ).toFixed 1 ### characters per text event ###
+      eps_txt       = ( event_count / dts ).toFixed 1 ### events per second ###
+      if chr_count > max_chr_count
+        info '33442', rpr ( raw_text[ ... max_chr_count ] + ' ... ' + raw_text[ chr_count - max_chr_count ... ] )
+      else
+        info '33442', rpr raw_text
+      ### TAINT compare text size with buffer length; characters per text event ###
+      urge '\n' + """
+        needed #{dts}s for #{event_count} events (#{eps_txt} events / s)
+        (#{buffer.length} text events, #{cpe_txt} chrs / text event)"""
+      buffer.length = 0
+      end()
+    #.......................................................................................................
+    return null
+
+#-----------------------------------------------------------------------------------------------------------
 @$show_text_locators = ( S ) ->
   return D.$observe ( event ) =>
     if select event, '.', 'text'
@@ -1953,7 +1998,8 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @MKTX.CLEANUP.$remove_empty_texts                 S
     .pipe @MKTX.CLEANUP.$consolidate_texts                  S
     # .pipe @$show_events                                     S
-    .pipe @$show_text_locators                              S
+    # .pipe @$show_text_locators                              S
+    .pipe @$show_start_and_end_2                            S
     .pipe @MKTX.BLOCK.$paragraph_2                          S
     .pipe @MKTX.COMMAND.$crossrefs                          S
     .pipe @MKTX.TYPOFIX.$fix_typography_for_tex             S
