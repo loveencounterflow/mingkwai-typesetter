@@ -105,33 +105,20 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
   # self = @
   return PIPEDREAMS.$async ( event, outer_send, outer_end ) =>
     #.......................................................................................................
-    if event? and select event, '!', 'call_stream'
+    unless ( event? and select event, '!', 'call_stream' )
+      outer_send event
+      outer_send.done()
+    #.......................................................................................................
+    else
       { module, method_name, P, meta, locator, crumbs, }  = @_resolve_arguments S, event
       ctx                                                 = { S, event, }
       #.....................................................................................................
+      on_stop = PS.new_event_collector 'stop', ->
+        outer_send.done()
+        help "(finished $call_stream #{method_name})"
+      #...................................................................................................
       try
-        on_stop   = PS.new_event_collector 'stop', ->
-          outer_send.done()
-          help "(finished $call_stream #{method_name})"
-        pipeline  = []
-        pipeline.push await module[ method_name ] ctx, P...
-        #...................................................................................................
-        ### transform strings into text events ###
-        pipeline.push $ ( line, send ) ->
-          if CND.isa_text line
-            line = line + '\n' unless line.endsWith '\n'
-            send [ '.', 'text', line, ( copy meta ), ]
-          else
-            send line
-          return null
-        #...................................................................................................
-        pipeline.push $ ( event, send ) ->
-          outer_send event
-          send event
-        #...................................................................................................
-        pipeline.push on_stop.add PS.$drain()
-        PS.pull pipeline...
-      #.....................................................................................................
+        source = await module[ method_name ] ctx, P...
       catch error
         alert '98987-10', { module, method_name, P, meta, locator, crumbs, }
         alert '98987-11', "when trying to call method #{rpr method_name}"
@@ -140,12 +127,25 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
         alert '98987-14', "an error occurred:"
         alert '98987-15', error.message
         throw error
-    #.......................................................................................................
-    else
-      outer_send event
-      outer_send.done()
+      #.....................................................................................................
+      pipeline = []
+      pipeline.push source
+      pipeline.push @_$string_as_textline_event S
+      pipeline.push $ ( event, send ) -> outer_send event; send event
+      pipeline.push on_stop.add PS.$drain()
+      PS.pull pipeline...
     #.......................................................................................................
     outer_end() if outer_end?
     return null
 
+#-----------------------------------------------------------------------------------------------------------
+@_$string_as_textline_event = ( S ) ->
+  ### transform strings into text events ###
+  return $ ( line, send ) ->
+    if CND.isa_text line
+      line = line + '\n' unless line.endsWith '\n'
+      send [ '.', 'text', line, ( copy meta ), ]
+    else
+      send line
+    return null
 
