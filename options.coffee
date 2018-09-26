@@ -34,11 +34,15 @@ module.exports = options =
     foobar:   "this variable has been set in `options`"
 
   #.........................................................................................................
+  ### type may be `tex` or `text` ###
   entities:
     'nl':           { type: 'tex',  value: '\\\\', }                  ### newline ###
     'thinspace':    { type: 'tex',  value: '\\thinspace{}', }         ### thin space ###
+    'cspc':         { type: 'tex',  value: '\\cspc{}', }              ### thin constant space ###
+    'ccspc':        { type: 'tex',  value: '\\ccspc{}', }             ### CJK constant space ###
+    'hfill':        { type: 'tex',  value: '\\hfill{}', }             ### medium hfill ###
     '%':            { type: 'tex',  value: '%', }                     ### TeX comment ###
-
+    'geta':         { type: 'text', value: '〓', }                    ### Geta mark ###
   #.........................................................................................................
   newcommands:
     ### TAINT use relative routes ###
