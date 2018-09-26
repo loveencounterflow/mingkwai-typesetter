@@ -645,9 +645,9 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
   #.........................................................................................................
   return $ ( event, send ) =>
     if select event, '(', 'box'
-      [ type, name, parameters, meta, ] = event
+      [ type, name, Q, meta, ] = event
       send stamp event
-      if parameters.frame
+      if Q.frame?
         send [ 'tex', "\\framebox{", ]
       else
         send [ 'tex', "\\makebox{", ]
@@ -655,6 +655,20 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     else if select event, ')', 'box'
       send stamp event
       send [ 'tex', "}", ]
+    #.......................................................................................................
+    else
+      send event
+
+#-----------------------------------------------------------------------------------------------------------
+@MKTX.INLINE.$here = ( S ) =>
+  prv_nr = 0
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    if select event, '.', 'here'
+      send stamp event
+      [ type, name, Q, meta, ]  = event
+      Q.key                    ?= "h#{++prv_nr}" ### TAINT `++`?? ###
+      send [ 'tex', "\\here{#{Q.key}}", ]
     #.......................................................................................................
     else
       send event
@@ -1958,8 +1972,12 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     # .pipe MKTSCRIPT_WRITER.$show_mktsmd_events              S
     .pipe MKTSCRIPT_WRITER.$produce_mktscript               S
     .pipe @$document                                        S
+    #.......................................................................................................
+    ### stuff using new HTML-ish syntax ###
+    .pipe @MKTX.INLINE.$here                                S
     .pipe @MKTX.INLINE.$box                                 S
     .pipe @MKTX.INLINE.$fncr                                S
+    #.......................................................................................................
     .pipe @MKTX.BLOCK.$blockquote                           S
     .pipe @MKTX.INLINE.$link                                S
     .pipe @MKTX.MIXED.$footnote                             S

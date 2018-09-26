@@ -523,6 +523,20 @@
 \newcommand{\cspc}{\hspace{0.2\mktsFontsize}}%
 \newcommand{\ccspc}{\hspace{1.1\mktsFontsize}}%
 
+% ----------------------------------------------------------------------------------------------------------
+\newcommand{\here}[1]{{%
+  \color{red}%
+  \makebox[0mm][l]{%
+    \prPushRaise{1}{0.75}{\mktsStyleFontCode\mktsScaleFont{0.35}#1}}%
+  \makebox[0mm][l]{%
+    \mktsFontfileSunexta{}%
+    \prPushRaise{-0.1}{0.3}{⥒}%
+    }\zsavepos{#1}}}%
+
+
+
+
+
 
 
 
