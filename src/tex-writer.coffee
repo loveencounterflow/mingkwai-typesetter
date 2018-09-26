@@ -1003,22 +1003,21 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
 
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.INLINE.$code_span = ( S ) =>
-  track = MD_READER.TRACKER.new_tracker '(code-span)'
+  within_code_span = false
   #.........................................................................................................
   return $ ( event, send ) =>
-    within_code_span = track.within '(code-span)'
-    track event
     #.......................................................................................................
-    if select event, '(', 'code-span'
+    if select event, '(', [ 'code-span', 'tt', ]
       send stamp event
       send [ 'tex', '{\\mktsStyleCode{}', ]
+      within_code_span = true
     #.......................................................................................................
-    else if select event, ')', 'code-span'
-      send [ 'tex', "}", ]
+    else if select event, ')', [ 'code-span', 'tt', ]
       send stamp event
+      send [ 'tex', "}", ]
+      within_code_span = false
     #.......................................................................................................
     else if within_code_span and select event, '.', 'text'
-      # send event
       [ _, _, text, meta, ] = event
       #.....................................................................................................
       ### TAINT sort-of code duplication with command url ###
