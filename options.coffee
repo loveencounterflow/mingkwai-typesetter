@@ -9,7 +9,7 @@ module.exports = options =
   texinputs:
     routes: [
       './node_modules/cxltx-styles/styles//'
-      './tex-inputs'
+      './tex-inputs//'
       ]
 
   #.........................................................................................................
