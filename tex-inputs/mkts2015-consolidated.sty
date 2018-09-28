@@ -526,14 +526,19 @@
 
 % ----------------------------------------------------------------------------------------------------------
 \newcommand{\herex}[1]{{%
+  \auxc{herex}%
+  \oeIfEvenPage{%
+    \setlength{\mktsGeoTmpOne}{\mktsGeoLeftmostTextXEven}}{%
+    \setlength{\mktsGeoTmpOne}{\mktsGeoLeftmostTextXOdd}}%
   \color{red}%
-  \makebox[0mm][l]{%
-    \prPushRaise{1}{0.75}{\mktsStyleFontCode\mktsScaleFont{0.35}\showx{#1}}}%
-    % \prPushRaise{1}{0.75}{\mktsStyleFontCode\mktsScaleFont{0.35}#1}}%
   \makebox[0mm][l]{%
     \mktsFontfileSunexta{}%
     \prPushRaise{-0.11}{0.3}{⥒}%
-    }\zsavepos{#1}}}%
+    }\zsavepos{#1}%
+  \makebox[0mm][l]{%
+    {\tfPushRaise{1.1}{0.75}\mktsStyleFontCode\mktsScaleFont{0.35}\showx{#1}}}%
+    % \prPushRaise{1}{0.75}{\mktsStyleFontCode\mktsScaleFont{0.35}\auxc{herex 2}\showx{#1}}}%
+    }}%
 
 % ----------------------------------------------------------------------------------------------------------
 \newcommand{\showx}[1]{%
