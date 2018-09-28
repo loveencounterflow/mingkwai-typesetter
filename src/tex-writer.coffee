@@ -660,10 +660,9 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     if select event, '(', 'box'
       [ type, name, Q, meta, ] = event
       send stamp event
-      if Q.frame?
-        send [ 'tex', "\\framebox{", ]
-      else
-        send [ 'tex', "\\makebox{", ]
+      command = if Q.border? then 'framebox' else 'makebox'
+      if Q.width? then  send [ 'tex', "\\#{command}[#{Q.width}]{", ]
+      else              send [ 'tex', "\\#{command}{", ]
     #.......................................................................................................
     else if select event, ')', 'box'
       send stamp event
