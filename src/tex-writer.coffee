@@ -676,13 +676,12 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
   prv_nr = 0
   #.........................................................................................................
   return $ ( event, send ) =>
-    # if select event, '.', [ 'here-x', 'show-x', ]
     if select event, '.', 'here-x'
       send stamp event
       [ type, name, Q, meta, ]  = event
       prefix                    = name[ ... name.length - 2 ]
-      # ### TAINT auto-numbering needs two independent counters for labels and refs ###
-      Q.key                    ?= "h#{++prv_nr}" ### TAINT `++`?? ###
+      prv_nr                   += +1
+      Q.key                    ?= "h#{prv_nr}"
       send [ 'tex', "\\#{prefix}x{#{Q.key}}", ]
     #.......................................................................................................
     else
