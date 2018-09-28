@@ -31,6 +31,7 @@ O.app                     = {}
 O.app.name                = 'MKTS'
 O.rpc.port                = 8910
 O.rpc.host                = '127.0.0.1'
+counts                    = {}
 
 #-----------------------------------------------------------------------------------------------------------
 @_socket_listen_on_all = ( socket ) ->
@@ -53,28 +54,20 @@ O.rpc.host                = '127.0.0.1'
   return null
 
 #-----------------------------------------------------------------------------------------------------------
-@listen = ( handler = null ) ->
+@listen = ( handler ) ->
   #.........................................................................................................
   server = NET.createServer ( socket ) =>
-    XXX_t0 = Date.now()
     socket.on 'error', ( error ) => warn "socket error: #{error.message}"
-    # info '33733', 'yo'
     #.......................................................................................................
     source    = PS._nodejs_input_to_pull_source socket
-    counts    = { requests: 0, rpcs: 0, hits: 0, fails: 0, errors: 0, }
+    counts    = {}
     S         = { socket, counts, }
     pipeline  = []
-    on_stop   = PS.new_event_collector 'stop', =>
-      help "socket.end() called"
-      socket.end()
-      debug '33844', ( Date.now() / XXX_t0 ) / 1000
+    on_stop   = PS.new_event_collector 'stop', => socket.end()
     #.......................................................................................................
     pipeline.push source
     pipeline.push PS.$split()
-    # pipeline.push PS.$show()
-    # pipeline.push @$show_counts   S
     pipeline.push @$dispatch      S
-    # pipeline.push PS.$show()
     pipeline.push $ ( result, send ) ->
       S.socket.write result
       send null
@@ -83,36 +76,27 @@ O.rpc.host                = '127.0.0.1'
     PS.pull pipeline...
     return null
   #.........................................................................................................
-  handler ?= =>
+  server.listen O.rpc.port, O.rpc.host, =>
     { address: host, port, family, } = server.address()
     help "#{O.app.name} RPC server listening on #{family} #{host}:#{port}"
   #.........................................................................................................
-  # ### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ###
-  # try FS.unlinkSync O.rpc.path catch error then warn error
-  # server.listen O.rpc.path, handler
-  # ### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ###
-  server.listen O.rpc.port, O.rpc.host, handler
+  return handler null, server if handler?
   return null
-
-#-----------------------------------------------------------------------------------------------------------
-@$show_counts = ( S ) ->
-  return PS.$watch ( event ) ->
-    S.counts.requests += +1
-    if ( S.counts.requests % 1000 ) is 0
-      urge JSON.stringify S.counts
-    return null
 
 #-----------------------------------------------------------------------------------------------------------
 @$dispatch = ( S ) ->
   return $ ( line, send ) =>
     try
-      event                       = JSON.parse "[#{line}]"
-      [ method, parameters..., ]  = event
+      event                             = JSON.parse "[#{line}]"
+      [ method_name, parameters..., ]   = event
     catch error
       throw error
     #.......................................................................................................
-    debug '33733', { method, parameters, }
-    send @do_rpc S, method, parameters
+    count = counts[ method_name ] = ( counts[ method_name ] ?= 0 ) + 1
+    if ( count is 1 ) or ( count % 5 is 0 )
+      whisper '33673', "RPC: #{method_name}() ##{count}"
+    #.......................................................................................................
+    send @do_rpc S, method_name, parameters
     #.......................................................................................................
     return null
 
@@ -122,7 +106,6 @@ O.rpc.host                = '127.0.0.1'
   method          = @RPC[ method_name ]
   unless method?
     throw new Error "no such method: #{rpr method_name}"
-    # return @send_error S, "no such method: #{rpr method_name}"
   #.........................................................................................................
   try
     return method.apply @RPC, parameters

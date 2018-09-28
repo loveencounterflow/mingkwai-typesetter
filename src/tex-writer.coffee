@@ -2080,7 +2080,11 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
 #-----------------------------------------------------------------------------------------------------------
 @pdf_from_md = ( source_route, handler ) ->
   ### TAINT code duplication ###
-  ### TAIN only works with docs in the filesystem, not with literal texts ###
+  ### TAINT only works with docs in the filesystem, not with literal texts ###
+  ### TAINT wait for RPC server start ###
+  RPC_SERVER  = require './rpc-server'
+  server      = await ( promisify RPC_SERVER.listen.bind RPC_SERVER )()
+  process.on 'exit', -> server.close()
   self = @
   #---------------------------------------------------------------------------------------------------------
   f = => step ( resume ) ->
@@ -2107,7 +2111,8 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
         help "#{TEXT.flush_right   chrs_per_s_txt, 14}   chrs / s"
         help "#{TEXT.flush_right events_per_s_txt, 14} events / s"
         # debug '49984', S.aux
-        handler null if handler?
+        # handler null if handler?
+        process.exit 0
     #.......................................................................................................
     ### TAINT use method to produce new state ###
     S =
