@@ -538,8 +538,7 @@
 % ----------------------------------------------------------------------------------------------------------
 \newcommand{\showx}[1]{%
   % ### TAINT use variable instead of symlink to find MKTS path
-  \exec{node mingkwai-typesetter/lib/cxltx-demo.js as_here_x_ref \zposx{#1}}}
-  % \exec{node mingkwai-typesetter/lib/cxltx-demo.js as_here_x_ref \ctConvertTo{mm}{10\zposx{#1}sp}}}
+  \exec{node mingkwai-typesetter/lib/cxltx-demo.js as_here_x_ref \zposx{#1} sp \ctConvertTo{mm}{\the\mktsGeoTmpOne} mm}}
 
 
 
