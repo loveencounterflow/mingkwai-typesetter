@@ -25,6 +25,7 @@
 \usepackage[user,savepos]{zref}
 % \usepackage{/Volumes/Storage/io/jizura-xelatex/tex-inputs/utils}
 % \usepackage{/Users/flow/JIZURA/flow/dictionary/tex-inputs/accentbx/accentbx}
+\usepackage{cxltx}
 \usepackage{cxltx-style-accentbox}
 \usepackage{cxltx-style-trm}
 % \usepackage{longtable}
@@ -157,26 +158,26 @@
   }
 
 
-% ==========================================================================================================
-%
-%        d8888  888     888  Y88b   d88P
-%       d88888  888     888   Y88b d88P
-%      d88P888  888     888    Y88o88P
-%     d88P 888  888     888     Y888P
-%    d88P  888  888     888     d888b
-%   d88P   888  888     888    d88888b
-%  d8888888888  Y88b. .d88P   d88P Y88b
-% d88P     888   "Y88888P"   d88P   Y88b
-%
-% ==========================================================================================================
-% routines for writing to .aux file
-% this code copied from https://github.com/loveencounterflow/cxltx
-\makeatletter
-\catcode`\%=11
-\newcommand{\aux}[1]{\immediate\write\@auxout{#1}}
-\newcommand{\auxc}[1]{\immediate\write\@auxout{% #1}}
-\catcode`\%=14
-\makeatother
+% % ==========================================================================================================
+% %
+% %        d8888  888     888  Y88b   d88P
+% %       d88888  888     888   Y88b d88P
+% %      d88P888  888     888    Y88o88P
+% %     d88P 888  888     888     Y888P
+% %    d88P  888  888     888     d888b
+% %   d88P   888  888     888    d88888b
+% %  d8888888888  Y88b. .d88P   d88P Y88b
+% % d88P     888   "Y88888P"   d88P   Y88b
+% %
+% % ==========================================================================================================
+% % routines for writing to .aux file
+% % this code copied from https://github.com/loveencounterflow/cxltx
+% \makeatletter
+% \catcode`\%=11
+% \newcommand{\aux}[1]{\immediate\write\@auxout{#1}}
+% \newcommand{\auxc}[1]{\immediate\write\@auxout{% #1}}
+% \catcode`\%=14
+% \makeatother
 
 
 % ==========================================================================================================
