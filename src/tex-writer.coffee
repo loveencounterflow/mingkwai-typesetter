@@ -673,15 +673,18 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       send event
 
 #-----------------------------------------------------------------------------------------------------------
-@MKTX.INLINE.$here = ( S ) =>
+@MKTX.INLINE.$here_x = ( S ) =>
   prv_nr = 0
   #.........................................................................................................
   return $ ( event, send ) =>
-    if select event, '.', 'here'
+    # if select event, '.', [ 'here-x', 'show-x', ]
+    if select event, '.', 'here-x'
       send stamp event
       [ type, name, Q, meta, ]  = event
+      prefix                    = name[ ... name.length - 2 ]
+      # ### TAINT auto-numbering needs two independent counters for labels and refs ###
       Q.key                    ?= "h#{++prv_nr}" ### TAINT `++`?? ###
-      send [ 'tex', "\\here{#{Q.key}}", ]
+      send [ 'tex', "\\#{prefix}x{#{Q.key}}", ]
     #.......................................................................................................
     else
       send event
@@ -1990,7 +1993,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @$document                                        S
     #.......................................................................................................
     ### stuff using new HTML-ish syntax ###
-    .pipe @MKTX.INLINE.$here                                S
+    .pipe @MKTX.INLINE.$here_x                              S
     .pipe @MKTX.INLINE.$box                                 S
     .pipe @MKTX.INLINE.$fncr                                S
     #.......................................................................................................

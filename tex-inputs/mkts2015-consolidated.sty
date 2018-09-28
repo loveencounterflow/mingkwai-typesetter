@@ -525,16 +525,21 @@
 \newcommand{\ccspc}{\hspace{1.1\mktsFontsize}}%
 
 % ----------------------------------------------------------------------------------------------------------
-\newcommand{\here}[1]{{%
+\newcommand{\herex}[1]{{%
   \color{red}%
   \makebox[0mm][l]{%
-    \prPushRaise{1}{0.75}{\mktsStyleFontCode\mktsScaleFont{0.35}#1}}%
+    \prPushRaise{1}{0.75}{\mktsStyleFontCode\mktsScaleFont{0.35}\showx{#1}}}%
+    % \prPushRaise{1}{0.75}{\mktsStyleFontCode\mktsScaleFont{0.35}#1}}%
   \makebox[0mm][l]{%
     \mktsFontfileSunexta{}%
-    \prPushRaise{-0.1}{0.3}{⥒}%
+    \prPushRaise{-0.11}{0.3}{⥒}%
     }\zsavepos{#1}}}%
 
-
+% ----------------------------------------------------------------------------------------------------------
+\newcommand{\showx}[1]{%
+  % ### TAINT use variable instead of symlink to find MKTS path
+  \exec{node mingkwai-typesetter/lib/cxltx-demo.js as_here_x_ref \zposx{#1}}}
+  % \exec{node mingkwai-typesetter/lib/cxltx-demo.js as_here_x_ref \ctConvertTo{mm}{10\zposx{#1}sp}}}
 
 
 
