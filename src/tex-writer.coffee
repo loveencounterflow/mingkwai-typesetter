@@ -183,14 +183,24 @@ after = ( names..., method ) ->
       font_settings_txt = font_settings.join ','
       if use_new_syntax
         ### TAINT should properly escape values ###
-        write "\\newfontface{\\#{texname}}{#{filename}}[#{font_settings_txt}]"
-        # write "\\newcommand{\\#{texname}}{"
-        # write "\\typeout{\\trmWhite{redefining #{texname}}}"
-        # write "\\newfontface{\\#{texname}XXX}{#{filename}}[#{font_settings_txt}/]"
-        # write "\\renewcommand{\\#{texname}}{\\#{texname}XXX}"
-        # write "}"
+        # write "\\newfontface{\\#{texname}}{#{filename}}[#{font_settings_txt}]"
+        ### TAINT this is an experiment to confine font loading to what is needed in the document
+        at hand. Strangely enough, calling the below commands will redefine them, although they do get
+        executed; still, redefining a *font* doesn't seem to bother XeLaTeX much and indeed, only
+        the needed fonts are loaded. Also, we could capture the output of the font commands and
+        compile a list of all used fonts. ###
+        write "\\newcommand{\\#{texname}}{%"
+        write "\\renewcommand{\\#{texname}}{\\typeout{\\trmGreen{using #{texname}}}}%"
+        # write "\\typeout{\\trmWhite{defining #{texname}}}%"
+        write "\\newfontface{\\#{texname}XXX}{#{filename}}[#{font_settings_txt}]%"
+        write "\\#{texname}XXX%"
+        write "}"
       else
         write "\\newfontface\\#{texname}[#{font_settings_txt}]{#{filename}}"
+        # write "\\newcommand\\#{texname}{%"
+        # write "\\newfontface\\#{texname}[#{font_settings_txt}]{#{filename}}%"
+        # write "\\renewcommand\\#{texname}{#{filename}}%"
+        # write "}"
     write ""
     #-------------------------------------------------------------------------------------------------------
     # STYLES
