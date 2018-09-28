@@ -2,7 +2,7 @@
 set -euo pipefail
 
 
-# set default value of $TEXINPUTS so we don'Ät get an `unbound variable` error:
+# set default value of $TEXINPUTS so we don't get an `unbound variable` error:
 TEXINPUTS=${TEXINPUTS:-}
 
 # append first argument to $TEXINPUTS:
