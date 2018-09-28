@@ -114,6 +114,7 @@
 \newdimen\mktsGeoDeepestY%              lowest  position on page
 \newdimen\mktsGeoHighestTextY%          topmost position of text (above any type, excluding header)
 \newdimen\mktsGeoDeepestTextY%          lowest  position of text (below any type, excluding footer)
+\newdimen\mktsGeoTmpOne%
 
 
 % ----------------------------------------------------------------------------------------------------------
@@ -213,15 +214,13 @@
   \mkts@GridCalculateLengths%
   % thx to http://tex.stackexchange.com/a/41153/28067
   \AddToShipoutPicture{%
-    % \begin{pgfonlayer}{mktsTikzLayerZ}
+    \oeIfEvenPage{%
+      \setlength{\mktsGeoTmpOne}{\mktsGeoLeftmostTextXEven}}{%
+      \setlength{\mktsGeoTmpOne}{\mktsGeoLeftmostTextXOdd}}%
     \begin{tikzpicture}[overlay,remember picture]%
-      \draw[ red!25, line width = 0.1mm, xshift = \mkts@GridXshift ]
-        ( 0mm,
-          \mkts@GridYmax - \textheight + \mktsLineheight * 0.5 )
-        grid[ xstep = 1mm, ystep = 1mm,
-          yshift = \mktsLineheight * 0.05 ]
-        ( \textwidth,
-          \mkts@GridYmax );
+      \draw[ red!25, line width = 0.1mm, xshift = \mktsGeoTmpOne ]
+        ( 0mm, \mkts@GridYmax - \textheight + \mktsLineheight * 0.5 )
+        grid[ xstep = 1mm, ystep = 1mm, yshift = \mktsLineheight * 0.05 ]( \textwidth, \mkts@GridYmax );
     \end{tikzpicture}%
     % \end{pgfonlayer}
     }%
@@ -233,22 +232,16 @@
   \mkts@GridCalculateLengths%
   % thx to http://tex.stackexchange.com/a/41153/28067
   \AddToShipoutPicture{%
-    % \begin{pgfonlayer}{mktsTikzLayerZ}
+    \oeIfEvenPage{%
+      \setlength{\mktsGeoTmpOne}{\mktsGeoLeftmostTextXEven}}{%
+      \setlength{\mktsGeoTmpOne}{\mktsGeoLeftmostTextXOdd}}%
     \begin{tikzpicture}[overlay,remember picture]%
-      \draw[ red!25, line width = 0.2mm, xshift = \mkts@GridXshift ]
-        ( 0mm,
-          \mkts@GridYmax - \textheight + \mktsLineheight * 0.5 )
-        grid[ xstep = 1cm, ystep = 1cm,
-          yshift = \mktsLineheight * 0.05 - 1mm ]
-        ( \textwidth,
-          \mkts@GridYmax );
-      \draw[ red!50, line width = 0.1mm, xshift = \mkts@GridXshift ]
-        ( 0mm,
-          \mkts@GridYmax - \textheight + \mktsLineheight * 0.5 )
-        grid[ xstep = 5mm, ystep = 5mm,
-          yshift = \mktsLineheight * 0.05 - 1mm ]
-        ( \textwidth,
-          \mkts@GridYmax );
+      \draw[ red!25, line width = 0.2mm, xshift = \mktsGeoTmpOne ]
+        ( 0mm, \mkts@GridYmax - \textheight + \mktsLineheight * 0.5 )
+        grid[ xstep = 1cm, ystep = 1cm, yshift = \mktsLineheight * 0.05 - 1mm ]( \textwidth, \mkts@GridYmax );
+      \draw[ red!50, line width = 0.1mm, xshift = \mktsGeoTmpOne ]
+        ( 0mm, \mkts@GridYmax - \textheight + \mktsLineheight * 0.5 )
+        grid[ xstep = 5mm, ystep = 5mm, yshift = \mktsLineheight * 0.05 - 1mm ]( \textwidth, \mkts@GridYmax );
     \end{tikzpicture}%
     % \end{pgfonlayer}
     }%
