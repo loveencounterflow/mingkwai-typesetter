@@ -882,7 +882,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       # send [ 'tex', "{\\mktsFontfileCwtexqheibold{}\\prPushRaise{-0.4}{-0.1}{▷}\\hspace{-1.75mm}}" ]
       # send [ 'tex', "{\\mktsFontfileHanamina{}◼}\\hspace{3mm}L" ]
       # send [ 'tex', "{\\mktsFontfileCwtexqheibold{}\\prPushRaise{-0.4}{-0.1}{▷}}" ]
-      send [ 'tex', "\\makebox[\\mktsLineheight][l]{\\prPushRaise{-0.2}{-0.1}{\\mktsFontfileHanamina{}◼}}" ]
+      send [ 'tex', S.options.entities[ 'ulsymbol' ] ]
     #.......................................................................................................
     else if select event, ')', 'li'
       send stamp event

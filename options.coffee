@@ -44,6 +44,8 @@ module.exports = options =
     '%':            { type: 'tex',  value: '%', }                     ### TeX comment ###
     'geta':         { type: 'text', value: '〓', }                    ### Geta mark ###
     'TeX':          { type: 'tex',  value: '\\TeX{}', }               ### TeX logo ###
+    'ulsymbolr':    { type: 'tex', value: "\\makebox[\\mktsLineheight][r]{\\prPushRaise{-0.2}{-0.1}{\\mktsFontfileHanamina{}◼}}", }
+    'ulsymbol':     { type: 'tex', value: "\\makebox[\\mktsLineheight][l]{\\prPushRaise{-0.2}{-0.1}{\\mktsFontfileHanamina{}◼}}", }
   #.........................................................................................................
   newcommands:
     ### TAINT use relative routes ###
