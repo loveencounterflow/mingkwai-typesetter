@@ -43,6 +43,7 @@ module.exports = options =
     'hfill':        { type: 'tex',  value: '\\hfill{}', }             ### medium hfill ###
     '%':            { type: 'tex',  value: '%', }                     ### TeX comment ###
     'geta':         { type: 'text', value: '〓', }                    ### Geta mark ###
+    'TeX':          { type: 'tex',  value: '\\TeX{}', }               ### TeX logo ###
   #.........................................................................................................
   newcommands:
     ### TAINT use relative routes ###
