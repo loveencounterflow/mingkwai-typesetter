@@ -189,12 +189,15 @@ after = ( names..., method ) ->
         executed; still, redefining a *font* doesn't seem to bother XeLaTeX much and indeed, only
         the needed fonts are loaded. Also, we could capture the output of the font commands and
         compile a list of all used fonts. ###
-        write "\\newcommand{\\#{texname}}{%"
-        write "\\renewcommand{\\#{texname}}{\\typeout{\\trmGreen{using #{texname}}}}%"
+        ### TAINT Mystery: redefinition doesn't work, processing time skyrockets ###
+        write "\\newfontface{\\#{texname}}{#{filename}}[#{font_settings_txt}]%"
+        # write "\\newcommand{\\#{texname}}{%"
+        # write "\\renewcommand{\\#{texname}}{\\#{texname}XXX}%"
+        # write "\\renewcommand{\\#{texname}}{\\typeout{\\trmGreen{using #{texname}}}}%"
         # write "\\typeout{\\trmWhite{defining #{texname}}}%"
-        write "\\newfontface{\\#{texname}XXX}{#{filename}}[#{font_settings_txt}]%"
-        write "\\#{texname}XXX%"
-        write "}"
+        # # write "\\newfontface{\\#{texname}XXX}{#{filename}}[#{font_settings_txt}]%"
+        # # write "\\#{texname}XXX%"
+        # write "}"
       else
         write "\\newfontface\\#{texname}[#{font_settings_txt}]{#{filename}}"
         # write "\\newcommand\\#{texname}{%"
