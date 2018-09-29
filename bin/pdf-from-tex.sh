@@ -14,7 +14,7 @@ echo '$TEXINPUTS set to' "$TEXINPUTS"
 # out this is the correct way to do it; without the initial colon, TeX will not be able
 # to find files from its standard library.
 
-xelatex -8bit -output-directory="$2" -jobname="$3" -halt-on-error --enable-write18 --recorder "$4"
+stdbuf -o0 xelatex -8bit -output-directory="$2" -jobname="$3" -halt-on-error --enable-write18 --recorder "$4"
 
 echo "-----------------------------------------------------------------------------"
 echo "you can re-run the last TeX command with:"
