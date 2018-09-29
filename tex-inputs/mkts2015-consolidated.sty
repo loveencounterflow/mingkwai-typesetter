@@ -547,8 +547,18 @@
   \execdebug{echo '"as_here_x_ref","\zposx{#1}","sp","\ctConvertTo{mm}{\the\mktsGeoTmpOne}","mm"' | nc 127.0.0.1 8910}}
   % \exec{node mingkwai-typesetter/lib/cxltx-demo.js as_here_x_ref \zposx{#1} sp \ctConvertTo{mm}{\the\mktsGeoTmpOne} mm}}
 
+% ----------------------------------------------------------------------------------------------------------
+% xFormula status code
+% parameters: 1) xfsc, 2) symbol (colon or somesuch)
+\newcommand{\mktsXfsc}[2]{{%
+  \makebox[0.5\mktsFontsize]{%
+    \mktsStyleFontCode%
+    {\tfPushRaise{0}{-0.25}\mktsScaleFont{0.8}#2}%
+    \makebox[0mm]{\tfPushRaise{-0.4}{0.4}\mktsScaleFont{0.5}#1}}}}
 
-
+% ----------------------------------------------------------------------------------------------------------
+% ad hoc tiny typeface
+\newcommand{\mktsTiny}{\mktsScaleFont{0.5}}
 
 
 
