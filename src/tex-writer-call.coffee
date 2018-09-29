@@ -130,7 +130,7 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
       #.....................................................................................................
       pipeline = []
       pipeline.push source
-      pipeline.push @_$string_as_textline_event S
+      pipeline.push @_$string_as_textline_event S, meta
       pipeline.push $ ( event, send ) -> outer_send event; send event
       pipeline.push on_stop.add PS.$drain()
       PS.pull pipeline...
@@ -139,7 +139,7 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
     return null
 
 #-----------------------------------------------------------------------------------------------------------
-@_$string_as_textline_event = ( S ) ->
+@_$string_as_textline_event = ( S, meta ) ->
   ### transform strings into text events ###
   return $ ( line, send ) ->
     if CND.isa_text line

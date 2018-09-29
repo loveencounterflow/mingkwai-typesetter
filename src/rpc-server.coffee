@@ -60,8 +60,7 @@ counts                    = {}
     socket.on 'error', ( error ) => warn "socket error: #{error.message}"
     #.......................................................................................................
     source    = PS._nodejs_input_to_pull_source socket
-    counts    = {}
-    S         = { socket, counts, }
+    S         = { socket, }
     pipeline  = []
     on_stop   = PS.new_event_collector 'stop', => socket.end()
     #.......................................................................................................
@@ -93,7 +92,7 @@ counts                    = {}
       throw error
     #.......................................................................................................
     count = counts[ method_name ] = ( counts[ method_name ] ?= 0 ) + 1
-    if ( count is 1 ) or ( count % 5 is 0 )
+    if ( count is 1 ) or ( count % 10 is 0 )
       whisper '33673', "RPC: #{method_name}() ##{count}"
     #.......................................................................................................
     send @do_rpc S, method_name, parameters
@@ -102,7 +101,7 @@ counts                    = {}
 
 #-----------------------------------------------------------------------------------------------------------
 @do_rpc = ( S, method_name, parameters ) ->
-  S.counts.rpcs  += +1
+  # S.counts.rpcs  += +1
   method          = @RPC[ method_name ]
   unless method?
     throw new Error "no such method: #{rpr method_name}"
@@ -110,7 +109,7 @@ counts                    = {}
   try
     return method.apply @RPC, parameters
   catch error
-    S.counts.errors += +1
+    # S.counts.errors += +1
     throw error
   return null
 
