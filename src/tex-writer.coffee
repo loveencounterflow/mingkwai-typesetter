@@ -114,7 +114,7 @@ after = ( names..., method ) ->
 @compile_options()
 
 #-----------------------------------------------------------------------------------------------------------
-@write_mkts_master = ( layout_info, handler ) ->
+@write_mkts_master = ( S, layout_info, handler ) ->
   self = @
   step ( resume ) ->
     lines             = []
@@ -2183,7 +2183,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
   f = => step ( resume ) ->
     # handler                ?= ->
     layout_info             = HELPERS.new_layout_info self.options, source_route
-    yield self.write_mkts_master layout_info, resume
+    yield self.write_mkts_master S, layout_info, resume
     source_locator          = layout_info[ 'source-locator'  ]
     content_locator         = layout_info[ 'content-locator' ]
     file_output             = njs_fs.createWriteStream content_locator
@@ -2212,6 +2212,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       options:              self.options
       layout_info:          layout_info
       paragraph_nr:         0
+      configuration:        {}
     #.......................................................................................................
     ### TAINT should read MD source stream ###
     md_source               = njs_fs.readFileSync source_locator, encoding: 'utf-8'
