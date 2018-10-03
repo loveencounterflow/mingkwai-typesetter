@@ -146,6 +146,33 @@ after = ( names..., method ) ->
       value = njs_path.resolve __dirname, '..', value
       write "\\newcommand{\\#{name}}{%\n#{value}%\n}"
   #-------------------------------------------------------------------------------------------------------
+  # IN-DOCUMENT CONFIGURATION
+  #.......................................................................................................
+  write ""
+  write "% IN-DOCUMENT CONFIGURATION"
+  ### TAINT use default configuration *.ptv file ###
+  ### TAINT make more general; ATM can only decide on boolean ###
+  S.configuration[ 'document/geometry/show/cmgrid'      ]?= false
+  S.configuration[ 'document/geometry/show/mmgrid'      ]?= false
+  S.configuration[ 'document/geometry/show/linebands'   ]?= false
+  S.configuration[ 'document/geometry/show/columns'     ]?= false
+  S.configuration[ 'document/geometry/show/baselines'   ]?= false
+  S.configuration[ 'document/geometry/show/ascenders'   ]?= false
+  S.configuration[ 'document/geometry/show/descenders'  ]?= false
+  S.configuration[ 'document/geometry/show/medians'     ]?= false
+  S.configuration[ 'document/geometry/show/debug'       ]?= false
+  S.configuration[ 'document/geometry/show/debugorigin' ]?= false
+  S.configuration[ 'document/geometry/show/gutter'      ]?= false
+  for key, value of S.configuration
+    unless ( key.match /^document\/geometry\/show\// )?
+      warn "ignoring configuration key #{rpr key}"
+      continue
+    continue unless value
+    gkey  = key.replace /^.*?([^\/]+)$/g, '$1'
+    tex   = "\\PassOptionsToPackage{#{gkey}}{mkts-page-geometry}%"
+    info '55569', "in-document configuration -> #{tex}"
+    write tex
+  #-------------------------------------------------------------------------------------------------------
   # PACKAGES
   #.......................................................................................................
   write ""
