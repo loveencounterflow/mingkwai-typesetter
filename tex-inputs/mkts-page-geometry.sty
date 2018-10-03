@@ -175,13 +175,16 @@
   \mkts@GridCalculateLengths%
   % thx to http://tex.stackexchange.com/a/41153/28067
   \AddToShipoutPicture{%
+    \oeIfEvenPage{%
+      \setlength{\mktsGeoTmpOne}{\mktsGeoLeftmostTextXEven}}{%
+      \setlength{\mktsGeoTmpOne}{\mktsGeoLeftmostTextXOdd}}%
     % \begin{pgfonlayer}{mktsTikzLayerZ}
     \begin{tikzpicture}[overlay,remember picture]%
       % ### TAINT should calculate number of lines ###
       \foreach \y in { 0, ..., 53 }{
         \setlength{\mkts@GridY}{\mkts@GridYshift + \y\mktsLineheight};
-        \draw[ yellow!80, line width = \mktsFontsize * 0.9 ]
-          ( \mkts@GridXshift, \mktsLineheight * 0.525 + \mkts@GridY ) -- ( \mkts@GridXright, \mktsLineheight * 0.525 + \mkts@GridY );
+        \draw[ yellow!80, line width = \mktsFontsize * 0.9, xshift = \mktsGeoTmpOne ]
+          ( 0mm, \mktsLineheight * 0.525 + \mkts@GridY ) -- ( \textwidth, \mktsLineheight * 0.525 + \mkts@GridY );
         }
     \end{tikzpicture}%
     % \end{pgfonlayer}
@@ -194,9 +197,12 @@
   \mkts@GridCalculateLengths%
   % thx to http://tex.stackexchange.com/a/41153/28067
   \AddToShipoutPicture{%
+    \oeIfEvenPage{%
+      \setlength{\mktsGeoTmpOne}{\mktsGeoLeftmostTextXEven}}{%
+      \setlength{\mktsGeoTmpOne}{\mktsGeoLeftmostTextXOdd}}%
     % \begin{pgfonlayer}{mktsTikzLayerZ}
     \begin{tikzpicture}[overlay,remember picture]%
-      \draw[ red!40, line width = \mktsLineheight - \mktsFontsize, xshift = \mkts@GridXshift ]
+      \draw[ red!40, line width = \mktsLineheight - \mktsFontsize, xshift = \mktsGeoTmpOne ]
         ( 0mm,
           \mkts@GridYmax - \textheight + \mktsLineheight * 0.5 )
         grid[ xstep = \textwidth, ystep = \mktsLineheight,
@@ -253,8 +259,11 @@
   \mkts@GridCalculateLengths%
   % thx to http://tex.stackexchange.com/a/41153/28067
   \AddToShipoutPicture{%
+    \oeIfEvenPage{%
+      \setlength{\mktsGeoTmpOne}{\mktsGeoLeftmostTextXEven}}{%
+      \setlength{\mktsGeoTmpOne}{\mktsGeoLeftmostTextXOdd}}%
     \begin{tikzpicture}[overlay,remember picture]%
-      \draw[ red!30, thin, xshift = \mkts@GridXshift ]
+      \draw[ red!30, thin, xshift = \mktsGeoTmpOne ]
       %\draw[red!30!white,thin]
         ( 0mm,
           \mkts@GridYmax - \textheight )
@@ -273,8 +282,11 @@
   \mkts@GridCalculateLengths%
   % thx to http://tex.stackexchange.com/a/41153/28067
   \AddToShipoutPicture{%
+    \oeIfEvenPage{%
+      \setlength{\mktsGeoTmpOne}{\mktsGeoLeftmostTextXEven}}{%
+      \setlength{\mktsGeoTmpOne}{\mktsGeoLeftmostTextXOdd}}%
     \begin{tikzpicture}[overlay,remember picture]%
-      \draw[ green!50, thin, xshift = \mkts@GridXshift ]
+      \draw[ green!50, thin, xshift = \mktsGeoTmpOne ]
         ( 0mm,
           \mkts@GridYmax - \textheight )
         grid[ xstep = \textwidth, ystep = \mktsLineheight,
@@ -291,8 +303,11 @@
   \mkts@GridCalculateLengths%
   % thx to http://tex.stackexchange.com/a/41153/28067
   \AddToShipoutPicture{%
+    \oeIfEvenPage{%
+      \setlength{\mktsGeoTmpOne}{\mktsGeoLeftmostTextXEven}}{%
+      \setlength{\mktsGeoTmpOne}{\mktsGeoLeftmostTextXOdd}}%
     \begin{tikzpicture}[overlay,remember picture]%
-      \draw[ green!50, thin, xshift = \mkts@GridXshift ]
+      \draw[ green!50, thin, xshift = \mktsGeoTmpOne ]
         ( 0mm,
           \mkts@GridYmax - \textheight )
         grid[ xstep = \textwidth, ystep = \mktsLineheight,
@@ -309,9 +324,12 @@
   \mkts@GridCalculateLengths%
   % thx to http://tex.stackexchange.com/a/41153/28067
   \AddToShipoutPicture{%
+    \oeIfEvenPage{%
+      \setlength{\mktsGeoTmpOne}{\mktsGeoLeftmostTextXEven}}{%
+      \setlength{\mktsGeoTmpOne}{\mktsGeoLeftmostTextXOdd}}%
     % \begin{pgfonlayer}{mktsTikzLayerA}
     \begin{tikzpicture}[overlay,remember picture]%
-      \draw[ green!50, thin, xshift = \mkts@GridXshift ]
+      \draw[ green!50, thin, xshift = \mktsGeoTmpOne ]
         ( 0mm,
           \mkts@GridYmax - \textheight )
         grid[ xstep = \textwidth, ystep = \mktsLineheight,
@@ -329,7 +347,10 @@
   \mkts@GridCalculateLengths%
   % ........................................................................................................
   \AddToShipoutPicture{%
-    \begin{tikzpicture}[ overlay, remember picture, blue!30, thin, xshift = \mkts@GridXshift, yshift = \mkts@GridYshift ]%
+    \oeIfEvenPage{%
+      \setlength{\mktsGeoTmpOne}{\mktsGeoLeftmostTextXEven}}{%
+      \setlength{\mktsGeoTmpOne}{\mktsGeoLeftmostTextXOdd}}%
+    \begin{tikzpicture}[ overlay, remember picture, blue!30, thin, xshift = \mktsGeoTmpOne, yshift = \mkts@GridYshift ]%
       % \draw ( \mkts@TwoColumnsCenterLeft,       \footheight + \footsep ) -- ( \mkts@TwoColumnsCenterLeft,        \textheight );
       \draw ( \mkts@TwoColumnsCenterLeft,       0mm ) -- ( \mkts@TwoColumnsCenterLeft,        \textheight );
       \draw ( \mkts@TwoColumnsCenterRight,      0mm ) -- ( \mkts@TwoColumnsCenterRight,       \textheight );
@@ -338,7 +359,7 @@
       \draw ( \mkts@FourColumnsCenterTwoLeft,   0mm ) -- ( \mkts@FourColumnsCenterTwoLeft,    \textheight );
       \draw ( \mkts@FourColumnsCenterTwoRight,  0mm ) -- ( \mkts@FourColumnsCenterTwoRight,   \textheight );
     \end{tikzpicture}%
-    \begin{tikzpicture}[ overlay, remember picture, green!60, thin, xshift = \mkts@GridXshift, yshift = \mkts@GridYshift ]%
+    \begin{tikzpicture}[ overlay, remember picture, green!60, thin, xshift = \mktsGeoTmpOne, yshift = \mkts@GridYshift ]%
       \draw ( \mkts@ThreeColumnsCenterOneLeft,  0mm ) -- ( \mkts@ThreeColumnsCenterOneLeft,   \textheight );
       \draw ( \mkts@ThreeColumnsCenterOneRight, 0mm ) -- ( \mkts@ThreeColumnsCenterOneRight,  \textheight );
       \draw ( \mkts@ThreeColumnsCenterTwoLeft,  0mm ) -- ( \mkts@ThreeColumnsCenterTwoLeft,   \textheight );
