@@ -267,49 +267,76 @@ after = ( names..., method ) ->
 
 #-----------------------------------------------------------------------------------------------------------
 @$document = ( S ) =>
-  buffer                  = []
-  start_document_event    = null
-  before_document_command = yes
-  send_                   = null
-  before_flush            = yes
-  bare                    = S.bare ? no
-  #.........................................................................................................
-  flush_as = ( what ) =>
-    send_ [ 'tex', "\n% begin of MD document\n", ] unless bare
-    if what is 'preamble' and buffer.length > 0
-      send_ [ 'tex', "% (extra preamble inserted from MD document)\n", ]
-      send_ event for event in buffer
-    send_ stamp start_document_event
-    send_ [ 'tex', "\\begin{document}\\mktsStyleNormal{}", ] unless bare
-    if what is 'document'
-      send_ event for event in buffer
-    buffer.length           = 0
-    before_document_command = no
+  is_first_document_tag   = true
+  bare                    = S.bare ? false
+  within_document         = false
   #.........................................................................................................
   return $ ( event, send ) =>
-    send_ = send
     #.......................................................................................................
-    if before_flush
-      send event
-      before_flush = no if select event, '~', 'flush'
+    if select event, [ '.', '(', ], 'document'
+      throw new Error "encountered repeated `<document/>` tag (#{jr event})" unless is_first_document_tag
+      within_document             = true
+      is_first_document_tag       = false
+      [ type, name, text, meta, ] = event
+      send stamp event
+      unless bare
+        send [ 'tex', "\n% begin of MD document\n", ]
+        send [ 'tex', "\\begin{document}\\mktsStyleNormal{}", ]
     #.......................................................................................................
     else if select event, ')', 'document'
-      flush_as 'document' if before_document_command
-      send [ 'tex', "\n% end of MD document\n", ] unless bare
-      send stamp event
-    #.......................................................................................................
-    else if select event, '!', 'document'
-      send stamp event
-      flush_as 'preamble'
-    #.......................................................................................................
-    else if before_document_command
-      if select event, '(', 'document'
-        start_document_event = event
-      else
-        buffer.push event
+      within_document             = false
     #.......................................................................................................
     else
       send event
+    #.......................................................................................................
+    return null
+
+
+# #-----------------------------------------------------------------------------------------------------------
+# @$document = ( S ) =>
+#   buffer                  = []
+#   start_document_event    = null
+#   before_document_command = yes
+#   send_                   = null
+#   before_flush            = yes
+#   bare                    = S.bare ? no
+#   #.........................................................................................................
+#   flush_as = ( what ) =>
+#     send_ [ 'tex', "\n% begin of MD document\n", ] unless bare
+#     if what is 'preamble' and buffer.length > 0
+#       send_ [ 'tex', "% (extra preamble inserted from MD document)\n", ]
+#       send_ event for event in buffer
+#     send_ stamp start_document_event
+#     send_ [ 'tex', "\\begin{document}\\mktsStyleNormal{}", ] unless bare
+#     if what is 'document'
+#       send_ event for event in buffer
+#     buffer.length           = 0
+#     before_document_command = no
+#   #.........................................................................................................
+#   return $ ( event, send ) =>
+#     send_ = send
+#     #.......................................................................................................
+#     if before_flush
+#       send event
+#       before_flush = no if select event, '~', 'flush'
+#     #.......................................................................................................
+#     else if select event, ')', 'document'
+#       flush_as 'document' if before_document_command
+#       send [ 'tex', "\n% end of MD document\n", ] unless bare
+#       send stamp event
+#     #.......................................................................................................
+#     else if select event, '!', 'document'
+#       send stamp event
+#       flush_as 'preamble'
+#     #.......................................................................................................
+#     else if before_document_command
+#       if select event, '(', 'document'
+#         start_document_event = event
+#       else
+#         buffer.push event
+#     #.......................................................................................................
+#     else
+#       send event
 
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.REGION.$code = ( S ) =>
