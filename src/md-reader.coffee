@@ -316,7 +316,7 @@ tracker_pattern = /// ^
     throw new Error "(internal error) need `S.configuration`, got #{rpr S.configuration}"
   #.........................................................................................................
   return $ ( event, send ) =>
-    debug '33533', jr event
+    # debug '33533', jr event
     #.......................................................................................................
     if @select event, '(', 'configuration'
       [ type, name, Q, meta, ]    = event
