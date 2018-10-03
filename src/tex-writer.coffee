@@ -622,17 +622,14 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     suffix:               '\n'                    # The character to insert between paragraphs. Defaults to default EOL for your OS.
   #.........................................................................................................
   return $ ( event, send ) =>
-    if select event, '!', 'yadda'
-      [ type, name, parameters, meta, ] = event
-      [ yadda_idx, ]                    = parameters
-      yadda_idx                        ?= cache.length
-      cache.push generate_yadda settings while cache.length - 1 < yadda_idx
-      yadda = cache[ yadda_idx ]
-      # yadda = @MKTX.TYPOFIX.fix_typography_for_tex yadda, S.options
+    if select event, '.', 'yadda'
+      [ type, name, Q, meta, ]          = event
+      Q.nr                             ?= cache.length + 1
+      cache.push generate_yadda settings while cache.length < Q.nr
+      # debug '33733', cache; process.exit 1
+      yadda = cache[ Q.nr - 1 ]
       send stamp event
-      # send [ 'tex', yadda, ]
       send [ '.', 'text', yadda, ( copy meta ), ]
-      # send [ '.', 'p', null, ( copy meta ), ]
     #.......................................................................................................
     else
       send event
@@ -703,6 +700,18 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       send event
 
 #-----------------------------------------------------------------------------------------------------------
+@MKTX.INLINE.$hfill = ( S ) =>
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    if select event, '.', [ 'hfil', 'hfill', ]
+      [ type, name, Q, meta, ] = event
+      send stamp event
+      send [ 'tex', "\\#{name}{}", ]
+    #.......................................................................................................
+    else
+      send event
+
+#-----------------------------------------------------------------------------------------------------------
 @MKTX.INLINE.$here_x = ( S ) =>
   prv_nr = 0
   #.........................................................................................................
@@ -714,6 +723,28 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       prv_nr                   += +1
       Q.key                    ?= "h#{prv_nr}"
       send [ 'tex', "\\#{prefix}x{#{Q.key}}", ]
+    #.......................................................................................................
+    else
+      send event
+
+#-----------------------------------------------------------------------------------------------------------
+@MKTX.$insert = ( S ) =>
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    if select event, '.', 'insert'
+      send stamp event
+      [ type, name, Q, meta, ]  = event
+      path    = HELPERS.resolve_document_relative_path S, Q.src
+      content = njs_fs.readFileSync path, { encoding: 'utf-8', }
+      switch Q.mode ? 'literal'
+        when 'literal'
+          send [ '.', 'text', content, ( copy meta ), ]
+        when 'mkts'
+          send [ '.', 'mktscript', content, ( copy meta ), ]
+        when 'raw'
+          send [ 'tex', content, ]
+        else
+          send [ '.', 'warning', "unknown mode #{rpr Q.mode} in #{rpr event}", ( copy meta ), ]
     #.......................................................................................................
     else
       send event
@@ -910,7 +941,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       # send [ 'tex', "{\\mktsFontfileCwtexqheibold{}\\prPushRaise{-0.4}{-0.1}{▷}\\hspace{-1.75mm}}" ]
       # send [ 'tex', "{\\mktsFontfileHanamina{}◼}\\hspace{3mm}L" ]
       # send [ 'tex', "{\\mktsFontfileCwtexqheibold{}\\prPushRaise{-0.4}{-0.1}{▷}}" ]
-      send [ 'tex', S.options.entities[ 'ulsymbol' ] ]
+      send [ 'tex', S.options.entities[ 'ulsymbol' ][ 'value' ] ]
     #.......................................................................................................
     else if select event, ')', 'li'
       send stamp event
@@ -1108,7 +1139,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     #.......................................................................................................
     if select event, '(', 'image'
       send stamp event
-      src = njs_path.resolve S.layout_info[ 'source-home' ], meta[ 'src' ]
+      src = HELPERS.resolve_document_relative_path S, meta[ 'src' ]
       # src = njs_path.resolve S.layout_info[ 'source-home' ], meta[ 'src' ]
     #.......................................................................................................
     else if select event, ')', 'image'
@@ -2007,6 +2038,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
   plugins_tee = D.combine pipeline
   #.......................................................................................................
   readstream
+    .pipe @MKTX.$insert                                     S
     .pipe @MKTX.SH.$spawn                                   S
     .pipe @MKTX.CALL.$call_await                            S
     .pipe @MKTX.CALL.$call_stream                           S
@@ -2024,6 +2056,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     ### stuff using new HTML-ish syntax ###
     .pipe @MKTX.INLINE.$here_x                              S
     .pipe @MKTX.INLINE.$box                                 S
+    .pipe @MKTX.INLINE.$hfill                               S
     .pipe @MKTX.INLINE.$tiny                                S
     .pipe @MKTX.INLINE.$fncr                                S
     .pipe @MKTX.INLINE.$xfsc                                S
