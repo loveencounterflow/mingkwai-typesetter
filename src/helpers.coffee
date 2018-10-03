@@ -40,6 +40,10 @@ $async                    = D.remit_async.bind D
 #   return njs_path.join CND.swap_extension tex_locator, extension
 
 #-----------------------------------------------------------------------------------------------------------
+@resolve_document_relative_path = ( S, path ) ->
+  return njs_path.resolve S.layout_info[ 'source-home' ], path
+
+#-----------------------------------------------------------------------------------------------------------
 @new_layout_info = ( options, source_route, validate = yes ) ->
   xelatex_command       = options[ 'xelatex-command' ]
   source_home           = njs_path.resolve process.cwd(), source_route
