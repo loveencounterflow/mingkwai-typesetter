@@ -31,6 +31,7 @@ $                         = D.remit.bind D
 #...........................................................................................................
 # misfit                    = Symbol 'misfit'
 MKTS                      = require './main'
+jr                        = JSON.stringify
 
 
 #===========================================================================================================
@@ -280,8 +281,10 @@ MKTS                      = require './main'
     else if select event, ')'
       [ _, identifier, extra, meta, ] = event
       #.....................................................................................................
-      if tag_stack.length < 1
-        return send [ '.', 'warning', "too many closing regions", ( copy meta ), ]
+      if ( tag_stack.length < 1 )
+        if ( identifier != 'document' )
+          send [ '.', 'warning', "too many closing regions: #{jr event}", ( copy meta ), ]
+        return
       #.....................................................................................................
       expected = tag_stack.pop()
       #.....................................................................................................

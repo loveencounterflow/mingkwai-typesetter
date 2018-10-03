@@ -35,6 +35,7 @@ MKTS                      = require './main'
 assign                    = Object.assign
 jr                        = JSON.stringify
 MKNCR                     = require '../../mingkwai-ncr'
+PTVREADER                 = require './ptv-reader'
 
 
 #-----------------------------------------------------------------------------------------------------------
@@ -308,10 +309,48 @@ tracker_pattern = /// ^
 @_PRE = {}
 
 #-----------------------------------------------------------------------------------------------------------
-@_PRE.$define_brackets = ( S ) =>
-  return $ ( token, send ) ->
-    debug '48484', token
-    send token
+@_PRE.$configuration = ( S ) =>
+  within_configuration  = false
+  within_preamble       = true
+  unless S.configuration? and CND.isa_pod S.configuration
+    throw new Error "(internal error) need `S.configuration`, got #{rpr S.configuration}"
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    debug '33533', jr event
+    #.......................................................................................................
+    if @select event, '(', 'configuration'
+      [ type, name, Q, meta, ]    = event
+      Q.type                     ?= 'ptv'
+      #.....................................................................................................
+      ### TAINT simplified temporary solution ###
+      unless Q.type is 'ptv'
+        throw new Error "expected 'ptv' for configuration type, got #{rpr Q.type}"
+      #.....................................................................................................
+      send @stamp event
+      within_configuration        = true
+      unless within_preamble
+        throw new Error "configuration must appear in preamble of document, got #{jr event}"
+    #.......................................................................................................
+    else if @select event, ')', 'configuration'
+      send @stamp event
+      within_configuration        = false
+      text                        = ( S.configuration.lines ?= [] ).join ''
+      delete S.configuration.lines
+      PTVREADER.cast_values PTVREADER.update_hash_from_text text, S.configuration
+    #.......................................................................................................
+    else if within_configuration and @select event, '.', 'text'
+      [ type, name, text, meta, ] = event
+      ( S.configuration.lines    ?= [] ).push text
+      # send @stamp event
+    #.......................................................................................................
+    else if @select event, [ '.', '(', ], 'document'
+      within_preamble                   = false
+      send event
+    #.......................................................................................................
+    else
+      send event
+    #.......................................................................................................
+    return null
 
 #-----------------------------------------------------------------------------------------------------------
 @_PRE.$custom_entities = ( S ) =>
@@ -376,8 +415,8 @@ tracker_pattern = /// ^
     ### add extraneous text content; this causes the parser to parse the HTML block as a paragraph
     with some inline HTML: ###
     XXX_source  = "XXX" + token[ 'content' ]
-    debug '33392-1', token
-    debug '33392-2', XXX_source
+    # debug '33392-1', token
+    # debug '33392-2', XXX_source
     ### for `environment` see https://markdown-it.github.io/markdown-it/#MarkdownIt.parse ###
     ### TAINT what to do with useful data appearing in `environment`? ###
     environment = {}
@@ -415,10 +454,10 @@ tracker_pattern = /// ^
     if token is end_token
       if unknown_tokens.length > 0
         send remark 'warn', "unknown tokens: #{unknown_tokens.sort().join ', '}", {}
-      if is_first
-        is_first = no
-        send [ '(', 'document', null, {}, ]
-      send [ ')', 'document', null, {}, ]
+      # if is_first
+      #   is_first = no
+      #   send [ '(', 'document', null, {}, ]
+      send [ ')', 'document', null, { ref: '35333', }, ]
       setImmediate => send.end()
     else if CND.isa_list token
       ### TAINT this clause shouldn't be here; we should target resends (which could be source texts
@@ -438,9 +477,9 @@ tracker_pattern = /// ^
         col_nr
         markup
         }
-      if is_first
-        is_first = no
-        send [ '(', 'document', null, meta, ]
+      # if is_first
+      #   is_first = no
+      #   send [ '(', 'document', null, meta, ]
       # #.....................................................................................................
       # if type in [
       #   'footnote_ref',
@@ -601,7 +640,7 @@ tracker_pattern = /// ^
   return $ ( event, send ) =>
     [ type, name, text, meta, ] = event
     #.......................................................................................................
-    if @select event, '(', 'document'
+    if @select event, [ '.', '(', ], 'document'
       send [ '~', 'start', null, ( @copy meta ), ]
       send [ '~', 'flush', null, ( @copy meta ), ]
       send event
@@ -1074,9 +1113,9 @@ tracker_pattern = /// ^
     .pipe @_PRE.$reinject_html_blocks                 S
     .pipe @_PRE.$rewrite_markdownit_tokens            S
     # .pipe D.$observe ( event ) => debug '©1', jr event
-    # .pipe @_PRE.$define_brackets                      S
+    .pipe @_PRE.$configuration                        S
     .pipe @_PRE.$custom_entities                      S
-    .pipe @_PRE.$spurious_ampersand                  S
+    .pipe @_PRE.$spurious_ampersand                   S
     .pipe @_PRE.$issue_administrative_events          S
     .pipe MKTS.MACRO_ESCAPER.$expand                  S
     .pipe @_PRE.$process_end_command                  S
