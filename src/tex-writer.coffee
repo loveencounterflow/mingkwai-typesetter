@@ -2169,41 +2169,44 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
 #===========================================================================================================
 # PDF FROM MD
 #-----------------------------------------------------------------------------------------------------------
-@pdf_from_md = ( source_route, handler ) ->
-  ### TAINT code duplication ###
-  ### TAINT only works with docs in the filesystem, not with literal texts ###
-  ### TAINT wait for RPC server start ###
-  RPC_SERVER  = require './rpc-server'
-  server      = await ( promisify RPC_SERVER.listen.bind RPC_SERVER )()
-  process.on 'exit', -> server.close()
-  #.......................................................................................................
-  ### TAINT use method to produce new state ###
-  S =
+@_get_on_content_output_close = ( S ) ->
+  return =>
+    #.......................................................................................................
+    await ( promisify @write_mkts_master.bind @ ) S
+    await ( promisify HELPERS.write_pdf.bind HELPERS ) S.layout_info
+    #.......................................................................................................
+    S.t1              = +new Date()
+    dt_s              = ( S.t1 - S.t0 ) / 1000
+    dt_s_txt          = dt_s.toFixed 3
+    chrs_per_s_txt    = (   S.chr_count / dt_s ).toFixed 3
+    events_per_s_txt  = ( S.event_count / dt_s ).toFixed 3
+    chr_count_txt     = ƒ S.chr_count
+    event_count_txt   = ƒ S.event_count
+    help "#{TEXT.flush_right    chr_count_txt, 10}       chrs (approx.)"
+    help "#{TEXT.flush_right  event_count_txt, 10}     events (approx.)"
+    help "#{TEXT.flush_right         dt_s_txt, 14}          s"
+    help "#{TEXT.flush_right   chrs_per_s_txt, 14}   chrs / s"
+    help "#{TEXT.flush_right events_per_s_txt, 14} events / s"
+    process.exit 0
+
+#-----------------------------------------------------------------------------------------------------------
+@_new_state = ( source_route ) ->
+  R =
     options:              @options
     layout_info:          HELPERS.new_layout_info @options, source_route
     paragraph_nr:         0
     configuration:        {}
-  await ( promisify @write_mkts_master.bind @ ) S
-  file_output             = njs_fs.createWriteStream S.layout_info[ 'content-locator' ]
+  return R
+
+#-----------------------------------------------------------------------------------------------------------
+@pdf_from_md = ( source_route, handler ) ->
+  RPC_SERVER              = require './rpc-server'
+  server                  = await ( promisify RPC_SERVER.listen.bind RPC_SERVER )()
+  process.on 'exit', -> server.close()
   #.......................................................................................................
-  file_output.on 'close', =>
-    HELPERS.write_pdf S.layout_info, ( error ) =>
-      throw error if error?
-      S.t1              = +new Date()
-      dt_s              = ( S.t1 - S.t0 ) / 1000
-      dt_s_txt          = dt_s.toFixed 3
-      chrs_per_s_txt    = (   S.chr_count / dt_s ).toFixed 3
-      events_per_s_txt  = ( S.event_count / dt_s ).toFixed 3
-      chr_count_txt     = ƒ S.chr_count
-      event_count_txt   = ƒ S.event_count
-      help "#{TEXT.flush_right    chr_count_txt, 10}       chrs (approx.)"
-      help "#{TEXT.flush_right  event_count_txt, 10}     events (approx.)"
-      help "#{TEXT.flush_right         dt_s_txt, 14}          s"
-      help "#{TEXT.flush_right   chrs_per_s_txt, 14}   chrs / s"
-      help "#{TEXT.flush_right events_per_s_txt, 14} events / s"
-      # debug '49984', S.aux
-      # handler null if handler?
-      process.exit 0
+  S                       = @_new_state source_route
+  content_output          = njs_fs.createWriteStream S.layout_info[ 'content-locator' ]
+  content_output.on 'close', @_get_on_content_output_close S
   #.......................................................................................................
   ### TAINT should read MD source stream ###
   md_source               = njs_fs.readFileSync S.layout_info[ 'source-locator'  ], encoding: 'utf-8'
@@ -2217,17 +2220,8 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
   # S.aux                   = yield AUX.fetch_aux_data S, resume
   S.resend                = md_readstream.tee[ 'S' ].resend
   #.......................................................................................................
-  md_output
-    .pipe tex_input
-  tex_output
-    # .pipe $ ( event, send ) =>
-    #   debug '33376', rpr event
-    #   send event
-    #   if event?
-    #     send event
-    #   if end?
-    #     end() # setTimeout end, 1000
-    .pipe file_output
+  md_output.pipe          tex_input
+  tex_output.pipe         content_output
   #.......................................................................................................
   md_input.resume()
   return null
