@@ -99,6 +99,7 @@
 \newdimen\mktsGeoHighestTextY%          topmost position of text (above any type, excluding header)
 \newdimen\mktsGeoDeepestTextY%          lowest  position of text (below any type, excluding footer)
 \newdimen\mktsGeoTmpOne%
+\newdimen\mktsGeoBaselineDeltaY%
 
 
 % ----------------------------------------------------------------------------------------------------------
@@ -151,6 +152,7 @@
   \setlength{\mktsGeoRightmostXOdd}{ \paperwidth}
   \setlength{\mktsGeoRightmostTextXEven}{\mktsGeoLeftmostTextXEven + \textwidth}
   \setlength{\mktsGeoRightmostTextXOdd}{ \mktsGeoLeftmostTextXOdd  + \textwidth}
+  \setlength{\mktsGeoBaselineDeltaY}{0.15\mktsFontsize}
   }
 
 % ----------------------------------------------------------------------------------------------------------
@@ -199,6 +201,21 @@
   }
 
 % ----------------------------------------------------------------------------------------------------------
+\DeclareOption{papergrid}{%
+  \typeout{mkts-page-geometry: \trmIndigo{cmpagegrid}}%
+  \mkts@GridCalculateLengths%
+  \AddToShipoutPicture{%
+    \begin{tikzpicture}[ overlay, remember picture, yshift = \paperheight, yscale = -1 ]%
+      \draw[ blue!25, line width = 0.4mm ]
+        ( 0mm, 0mm ) grid[ xstep = 10mm, ystep = 10mm ]( \paperwidth, \paperheight );
+      \draw[ blue!40, line width = 0.2mm ]
+        ( 0mm, 0mm ) grid[ xstep = 5mm, ystep = 5mm ]( \paperwidth, \paperheight );
+      \draw[ blue!50, line width = 0.01mm ]
+        ( 0mm, 0mm ) grid[ xstep = 1mm, ystep = 1mm ]( \paperwidth, \paperheight );
+    \end{tikzpicture}%
+    }}%
+
+% ----------------------------------------------------------------------------------------------------------
 \DeclareOption{textgrid}{%
   \typeout{mkts-page-geometry: \trmIndigo{cmgrid}}%
   \mkts@GridCalculateLengths%
@@ -218,21 +235,6 @@
     }}%
 
 % ----------------------------------------------------------------------------------------------------------
-\DeclareOption{papergrid}{%
-  \typeout{mkts-page-geometry: \trmIndigo{cmpagegrid}}%
-  \mkts@GridCalculateLengths%
-  \AddToShipoutPicture{%
-    \begin{tikzpicture}[ overlay, remember picture, yshift = \paperheight, yscale = -1 ]%
-      \draw[ blue!25, line width = 0.4mm ]
-        ( 0mm, 0mm ) grid[ xstep = 10mm, ystep = 10mm ]( \paperwidth, \paperheight );
-      \draw[ blue!40, line width = 0.2mm ]
-        ( 0mm, 0mm ) grid[ xstep = 5mm, ystep = 5mm ]( \paperwidth, \paperheight );
-      \draw[ blue!50, line width = 0.01mm ]
-        ( 0mm, 0mm ) grid[ xstep = 1mm, ystep = 1mm ]( \paperwidth, \paperheight );
-    \end{tikzpicture}%
-    }}%
-
-% ----------------------------------------------------------------------------------------------------------
 \DeclareOption{baselines}{%
   \typeout{mkts-page-geometry: \trmIndigo{baselines}}%
   \mkts@GridCalculateLengths%
@@ -241,19 +243,12 @@
     \oeIfEvenPage{%
       \setlength{\mktsGeoTmpOne}{\mktsGeoLeftmostTextXEven}}{%
       \setlength{\mktsGeoTmpOne}{\mktsGeoLeftmostTextXOdd}}%
-    \begin{tikzpicture}[overlay,remember picture]%
-      \draw[ red!30, thin, xshift = \mktsGeoTmpOne ]
-      %\draw[red!30!white,thin]
-        ( 0mm,
-          \mkts@GridYmax - \textheight )
-        grid[ xstep = \textwidth, ystep = \mktsLineheight,
-          yshift = -\mktsLineheight * 0.125 * \mkts@GridVerticalFudgeFactor ]
-          % yshift = -\mktsLineheight * 0.125 - 0.5mm ]
-        ( \textwidth,
-          \mkts@GridYmax );
+    \begin{tikzpicture}[ overlay, remember picture, line cap = round,
+      xshift = \mktsGeoTmpOne,  yshift = \mktsGeoHighestTextY + \mktsGeoBaselineDeltaY, yscale = -1 ]%
+      \draw[ blue!30, line width = 0.5mm ] ( 0mm, 0mm )
+        grid[ xstep = \textwidth, ystep = \mktsLineheight ] ( \textwidth, \textheight );
     \end{tikzpicture}%
-    }%
-  }
+    }}%
 
 % ----------------------------------------------------------------------------------------------------------
 \DeclareOption{medians}{%
