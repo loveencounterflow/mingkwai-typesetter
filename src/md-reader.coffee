@@ -636,21 +636,31 @@ tracker_pattern = /// ^
 
 #-----------------------------------------------------------------------------------------------------------
 @_PRE.$issue_administrative_events = ( S ) =>
+  sent_end_document = false
   #.........................................................................................................
-  return $ ( event, send ) =>
-    [ type, name, text, meta, ] = event
+  return $ ( event, send, end ) =>
+    if event?
+      [ type, name, text, meta, ] = event
+      #.......................................................................................................
+      if @select event, [ '.', '(', ], 'document'
+        send [ '~', 'start', null, ( @copy meta ), ]
+        send [ '~', 'flush', null, ( @copy meta ), ]
+        send [ '(', 'document', null, ( @copy meta ), ]
+      #.......................................................................................................
+      else if @select event, ')', 'document'
+        sent_end_document = true
+        send event
+      #.......................................................................................................
+      else
+        send event
     #.......................................................................................................
-    if @select event, [ '.', '(', ], 'document'
-      send [ '~', 'start', null, ( @copy meta ), ]
-      send [ '~', 'flush', null, ( @copy meta ), ]
-      send event
-    #.......................................................................................................
-    else if @select event, ')', 'document'
-      send event
-      send [ '~', 'stop', null, ( @copy meta ), ]
-    #.......................................................................................................
-    else
-      send event
+    if end?
+      warn '34744', 'end'
+      unless sent_end_document
+        sent_end_document = true
+        send [ ')', 'document', null, {}, ]
+      send [ '~', 'stop', null, {}, ]
+      end()
     #.......................................................................................................
     return null
 

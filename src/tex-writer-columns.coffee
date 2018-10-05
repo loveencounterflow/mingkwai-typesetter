@@ -50,6 +50,7 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
 @$main = ( S ) ->
   #.........................................................................................................
   return D.TEE.from_pipeline [
+    # D.$observe ( event ) -> help '99871', ( CND.blue rpr event[ 0 ] + event[ 1 ] )
     @$initialize_state          S
     @$end_columns_with_document S
     @$region_slash              S
@@ -91,13 +92,16 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
 
 #-----------------------------------------------------------------------------------------------------------
 @$end_columns_with_document = ( S ) ->
+  finished = false
   #.........................................................................................................
   return $ ( event, send ) =>
     #.......................................................................................................
-    if select event, ')', 'document'
-      [ ..., meta, ] = event
-      send [ '!', 'columns', [ 1, ], ( copy meta, 'multi-columns': 'omit-open', ), ]
+    if ( select event, ')', 'document' ) or ( select event, '~', 'stop' )
+      unless finished
+        [ ..., meta, ]  = event
+        send [ '!', 'columns', [ 1, ], ( copy meta, 'multi-columns': 'omit-open', ), ]
       send event
+      finished = true
     #.......................................................................................................
     else
       send event
@@ -328,11 +332,11 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
       [ type, name, text, meta, ] = event
     #.......................................................................................................
     if select event, '(', 'COLUMNS/group'
-      # help '975', ( JSON.stringify event )[ .. 50 ]
+      help '975', ( JSON.stringify event )[ .. 50 ]
       within_group = yes
     #.......................................................................................................
     else if select event, ')', 'COLUMNS/group'
-      # warn '975', ( JSON.stringify event )[ .. 50 ]
+      warn '975', ( JSON.stringify event )[ .. 50 ]
       if all_whitespace
         whisper "ignoring multicols b/c group only contains whitespace"
         ### remark not possible at this stage ###
@@ -353,7 +357,7 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
       if within_group
         all_whitespace = all_whitespace and ws_pattern.test text
         buffer.push text
-        debug '975', event if text is undefined
+        # debug '975', event if text is undefined
         # whisper '975', all_whitespace, rpr text
       else
         # info '975', ( JSON.stringify event )[ .. 50 ]

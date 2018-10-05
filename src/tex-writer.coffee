@@ -2069,10 +2069,10 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @MKTX.CALL.$call_stream                           S
     .pipe @MKTX.$consolidate_mktscript_events               S
     .pipe @MKTX.$mktscript                                  S
-    # .pipe D.$observe ( event ) -> info ( CND.grey '--------->' ), ( CND.blue event[ 0 ] + event[ 1 ] )
     # .pipe D.$observe ( event ) -> info '23993', ( CND.grey '--------->' ), jr event
     .pipe @MKTX.INLINE.$custom_entities                     S
     .pipe plugins_tee
+    # .pipe D.$observe ( event ) -> info ( CND.grey '--------->' ), ( CND.blue event[ 0 ] + event[ 1 ] )
     .pipe MACRO_ESCAPER.$expand.$remove_backslashes         S
     # .pipe MKTSCRIPT_WRITER.$show_mktsmd_events              S
     .pipe MKTSCRIPT_WRITER.$produce_mktscript               S
