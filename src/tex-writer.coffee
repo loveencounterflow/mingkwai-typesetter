@@ -52,6 +52,7 @@ MACRO_INTERPRETER         = require './macro-interpreter'
 LINEBREAKER               = require './linebreaker'
 @COLUMNS                  = require './tex-writer-columns'
 AUX                       = require './tex-writer-aux'
+YADDA                     = require './yadda'
 #...........................................................................................................
 Σ_formatted_warning       = Symbol 'formatted-warning'
 jr                        = JSON.stringify
@@ -600,6 +601,8 @@ before '@MKTX.COMMAND.$toc', after '@MKTX.BLOCK.$heading', \
     #.......................................................................................................
     else
       buffer.push event
+    #.......................................................................................................
+    return null
 
 #-----------------------------------------------------------------------------------------------------------
 after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
@@ -637,36 +640,24 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     #.......................................................................................................
     else
       send event
+    #.......................................................................................................
+    return null
 
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.BLOCK.$yadda = ( S ) =>
-  generate_yadda  = require 'lorem-ipsum'
-  cache           = []
-  settings        =
-    count:                1                       # Number of words, sentences, or paragraphs to generate.
-    # units:                'sentences'             # Generate words, sentences, or paragraphs.
-    units:                'paragraphs'            # Generate words, sentences, or paragraphs.
-    sentenceLowerBound:   5                       # Minimum words per sentence.
-    sentenceUpperBound:   15                      # Maximum words per sentence.
-    paragraphLowerBound:  3                       # Minimum sentences per paragraph.
-    paragraphUpperBound:  7                       # Maximum sentences per paragraph.
-    format:               'plain'                 # Plain text or html
-    # words:                ['ad', 'dolor', ... ]   # Custom word dictionary. Uses dictionary.words (in lib/dictionary.js) by default.
-    random:               CND.get_rnd 42, 3       # A PRNG function. Uses Math.random by default
-    suffix:               '\n'                    # The character to insert between paragraphs. Defaults to default EOL for your OS.
+  ### TAINT in the case of Chinese (`<yadda lang=zh nr=1/>`), using the `nr` attribute will not reproduce
+  the same text across runs. ###
   #.........................................................................................................
   return $ ( event, send ) =>
     if select event, '.', 'yadda'
       [ type, name, Q, meta, ]          = event
-      Q.nr                             ?= cache.length + 1
-      cache.push generate_yadda settings while cache.length < Q.nr
-      # debug '33733', cache; process.exit 1
-      yadda = cache[ Q.nr - 1 ]
       send stamp event
-      send [ '.', 'text', yadda, ( copy meta ), ]
+      send [ '.', 'text', ( YADDA.generate Q ), ( copy meta ), ]
     #.......................................................................................................
     else
       send event
+    #.......................................................................................................
+    return null
 
 
 #===========================================================================================================
