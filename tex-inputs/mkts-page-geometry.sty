@@ -99,6 +99,7 @@
 \newdimen\mktsGeoHighestTextY%          topmost position of text (above any type, excluding header)
 \newdimen\mktsGeoDeepestTextY%          lowest  position of text (below any type, excluding footer)
 \newdimen\mktsGeoTmpOne%
+\newdimen\mktsGeoTmpTwo%
 \newdimen\mktsGeoBaselineDeltaY%
 
 
@@ -231,6 +232,25 @@
         grid[ xstep = 5mm, ystep = 5mm ] ( \textwidth, \textheight );
       \draw[ red!50, line width = 0.01mm ] ( 0mm, 0mm )
         grid[ xstep = 1mm, ystep = 1mm ] ( \textwidth, \textheight );
+    \end{tikzpicture}%
+    }}%
+
+
+% ----------------------------------------------------------------------------------------------------------
+\DeclareOption{interlines}{%
+  \typeout{mkts-page-geometry: \trmIndigo{baselines}}%
+  \mkts@GridCalculateLengths%
+  \AddToShipoutPicture{%
+    \oeIfEvenPage{%
+      \setlength{\mktsGeoTmpOne}{\mktsGeoLeftmostTextXEven}}{%
+      \setlength{\mktsGeoTmpOne}{\mktsGeoLeftmostTextXOdd}}%
+    \begin{tikzpicture}[ overlay, remember picture, line cap = round,
+      xshift = \mktsGeoTmpOne,  yshift = \mktsGeoHighestTextY - 0.5mm, yscale = -1 ]%
+      \pgfmathparse{ int( \textheight / \mktsLineheight ) }% compute nr of lines per page
+      \foreach \y in {0,...,\pgfmathresult}{
+        \setlength{\mktsGeoTmpTwo}{\y\mktsLineheight}% compute y-offset of line
+        \draw[ red, line width = 0.1mm ] ( 0mm, \mktsGeoTmpTwo ) -- ( \textwidth, \mktsGeoTmpTwo );
+        }
     \end{tikzpicture}%
     }}%
 
