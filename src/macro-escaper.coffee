@@ -37,6 +37,7 @@ MKTS                      = require './main'
 # select                    = MKTS.MD_READER.select.bind      MKTS
 # is_hidden                 = MKTS.is_hidden.bind   MKTS
 # is_stamped                = MKTS.is_stamped.bind  MKTS
+XREGEXP                   = require 'xregexp'
 
 
 #===========================================================================================================
@@ -265,6 +266,7 @@ after it, thereby inhibiting any processing of those portions. ###
   R = @escape.html_comments             S, R
   # R = @escape.sensitive_ws              S, R
   R = @escape.bracketed_raw_macros      S, R
+  R = @escape.taggish_raw_macros        S, R
   R = @escape.action_macros             S, R
   R = @escape.region_macros             S, R
   R = @escape.comma_macros              S, R
@@ -330,6 +332,28 @@ after it, thereby inhibiting any processing of those portions. ###
       return "\x15#{id}\x13"
   #.........................................................................................................
   return R
+
+#-----------------------------------------------------------------------------------------------------------
+@escape.taggish_raw_macros = ( S, text ) =>
+  R       = []
+  markup  = null
+  #.........................................................................................................
+  settings  = { valueNames: [ 'between', 'left', 'match', 'right', ], }
+  matches   = XREGEXP.matchRecursive text, '<raw>', '</raw>', 'gi', settings
+  return text unless matches?
+  for match in matches
+    switch match.name
+      when 'between'
+        R.push match.value
+      when 'left'
+        markup = match.value
+      when 'match'
+        id = @_register_content S, 'raw', markup, match.value
+        R.push "\x15#{id}\x13"
+      when 'right'
+        null
+  #.........................................................................................................
+  return R.join ''
 
 #-----------------------------------------------------------------------------------------------------------
 @escape.action_macros = ( S, text ) =>

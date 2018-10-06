@@ -63,7 +63,8 @@
     "parse5": "^5.1.0",
     "pipedreams": "^3.0.9",
     "pipestreams": "^0.4.1",
-    "semver": "^5.5.1"
+    "semver": "^5.5.1",
+    "xregexp": "^4.2.0"
   },
   "devDependencies": {
     "guy-test": "^1.3.3"
