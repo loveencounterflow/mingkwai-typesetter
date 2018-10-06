@@ -2190,10 +2190,11 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     process.exit 0
 
 #-----------------------------------------------------------------------------------------------------------
-@_new_state = ( source_route ) ->
-  R =
+@_new_state = ( source_route, settings ) ->
+  validate    = ( settings ? {} ).validate ? true
+  R           =
     options:              @options
-    layout_info:          HELPERS.new_layout_info @options, source_route
+    layout_info:          HELPERS.new_layout_info @options, source_route, validate
     paragraph_nr:         0
     configuration:        {}
   return R
@@ -2252,11 +2253,8 @@ XXX_tex_from_md_nr = 0
   layout_info         = HELPERS.new_layout_info @options, source_route, false
   #.........................................................................................................
   ### TAINT use method to produce new state ###
-  S =
-    options:              @options
-    layout_info:          layout_info
-    bare:                 settings[ 'bare' ] ? no
-    paragraph_nr:         0
+  S                       = @_new_state source_route, { validate: false, }
+  S.bare                  = settings[ 'bare' ] ? no
   #.........................................................................................................
   XXX_tex_from_md_nr += +1
   md_readstream       = MD_READER.create_md_read_tee S, md_source
