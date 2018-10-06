@@ -38,8 +38,10 @@ lorem_settings            =
 
 #-----------------------------------------------------------------------------------------------------------
 @generate_zh = ->
-  chinesegen = require 'chinesegen'
-  return ( chinesegen { count: 50, freq: true, } ).text.replace /[？！]/g, '。'
+  R = ( ( require 'chinesegen' ) { count: 50, freq: true, } ).text
+  R = R.replace /[？！]/g, '。'
+  R = R.replace /。{2,}/g, '。'
+  return R
 
 #-----------------------------------------------------------------------------------------------------------
 @generators =
