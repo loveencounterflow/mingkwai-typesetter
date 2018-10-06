@@ -77,8 +77,8 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
       is_first        = no
       [ ..., meta, ]  = event
       sandbox_backup  = MK.TS.DIFFPATCH.snapshot sandbox
-      throw new Error "namespace collision: `S.sandbox.COLUMNS` already defined" if sandbox[ 'COLUMNS' ]?
-      sandbox[ 'COLUMNS' ] =
+      throw new Error "namespace collision: `S.sandbox.COLUMNS` already defined" if sandbox.COLUMNS?
+      sandbox.COLUMNS =
         count: 2 # default number of columns in document **when using multiple columns**
         stack: [ @_new_setting(), ]
       changeset = MKTS.DIFFPATCH.diff sandbox_backup, sandbox
