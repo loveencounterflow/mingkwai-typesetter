@@ -764,8 +764,8 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       switch Q.mode ? 'literal'
         when 'literal'
           send [ '.', 'text', content, ( copy meta ), ]
-        when 'mkts'
-          send [ '.', 'mktscript', content, ( copy meta ), ]
+        when 'mktscript'
+          send [ '.', 'mktscript', '<document/>' + content, ( copy meta ), ]
         when 'raw'
           send [ 'tex', content, ]
         else
