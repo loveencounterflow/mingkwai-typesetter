@@ -4,14 +4,17 @@
 % ==========================================================================================================
 % MKTS HEADINGS AND T.O.C.
 % ----------------------------------------------------------------------------------------------------------
-\newcommand{\mktsHOneBeg}{}%
-\newcommand{\mktsHOne}{}%
-\newcommand{\mktsHThreeBeg}{}%
-\newcommand{\mktsHThree}{}%
-\newcommand{\mktsHTwoBeg}{}%
-\newcommand{\mktsHTwo}{}%
-\newcommand{\mktsTocBeg}{}%
 \newcommand{\mktsToc}{}%
+\newcommand{\mktsHOne}{}%
+\newcommand{\mktsHTwo}{}%
+\newcommand{\mktsHThree}{}%
+\newcommand{\mktsHFour}{}%
+
+\newcommand{\mktsTocBeg}{}%
+\newcommand{\mktsHOneBeg}{}%
+\newcommand{\mktsHTwoBeg}{}%
+\newcommand{\mktsHThreeBeg}{}%
+\newcommand{\mktsHFourBeg}{}%
 
 
 % ==========================================================================================================
@@ -77,6 +80,23 @@
       \mktsVspace{1}%
       }%
     }
+  % ........................................................................................................
+  \renewcommand{\mktsHFour}{%
+    \Needspace{7.5\mktsLineheight}% ???
+    % \mktsVspace{1}%
+    ~\\%
+    \mktsStyleBold{}%
+    \mktsScaleFont{1.05}%
+    % \tfRaise{-1}%
+    % % ........................................................................................................
+    % \renewcommand{\mktsStyleFontCode}{\mktsScaleFont{1.25}\mktsFontfileBitterbold}%
+    % \renewcommand{\mktsStyleFontBold}{\mktsScaleFont{1.25}\mktsFontfileBitterbold}%
+    % \renewcommand{\mktsStyleFontItalic}{\mktsScaleFont{1.25}\mktsFontfileBitterbolditalic}%
+    % ........................................................................................................
+    % \AfterGroup{%
+    %   \mktsVspace{1}%
+    %   }%
+    }
 
   % ........................................................................................................
   % BEG = Before End Group; sadly not possible in TeX, see
@@ -90,6 +110,10 @@
     }
   % ........................................................................................................
   \renewcommand{\mktsHThreeBeg}{%
+    % \\%
+    }
+  % ........................................................................................................
+  \renewcommand{\mktsHFourBeg}{%
     % \\%
     }
 
@@ -135,14 +159,16 @@
 %
 % ----------------------------------------------------------------------------------------------------------
 \DeclareOption{null}{%
-  \renewcommand{\mktsHOneBeg}{}%
-  \renewcommand{\mktsHOne}{}%
-  \renewcommand{\mktsHThreeBeg}{}%
-  \renewcommand{\mktsHThree}{}%
-  \renewcommand{\mktsHTwoBeg}{}%
-  \renewcommand{\mktsHTwo}{}%
-  \renewcommand{\mktsTocBeg}{}%
   \renewcommand{\mktsToc}{}%
+  \renewcommand{\mktsHOne}{}%
+  \renewcommand{\mktsHTwo}{}%
+  \renewcommand{\mktsHThree}{}%
+  \renewcommand{\mktsHFour}{}%
+  \renewcommand{\mktsTocBeg}{}%
+  \renewcommand{\mktsHOneBeg}{}%
+  \renewcommand{\mktsHTwoBeg}{}%
+  \renewcommand{\mktsHThreeBeg}{}%
+  \renewcommand{\mktsHFourBeg}{}%
   }
 
 

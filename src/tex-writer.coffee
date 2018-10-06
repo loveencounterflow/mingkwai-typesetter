@@ -460,7 +460,7 @@ before '@MKTX.BLOCK.$heading', '@MKTX.COMMAND.$toc', \
 @MKTX.BLOCK.$heading = ( S ) =>
   ### TAINT make numbering style configurable ###
   ### TAINT generalize for more than 3 levels ###
-  h_nrs             = [ 1, 1, 1, ]
+  h_nrs             = [ 1, 1, 1, 1, ]
   h_idx             = -1
   #.........................................................................................................
   return $ ( event, send ) =>
@@ -469,9 +469,9 @@ before '@MKTX.BLOCK.$heading', '@MKTX.COMMAND.$toc', \
       [ type, name, level, meta, ] = event
       h_idx                += +1
       h_key                 = "h-#{h_idx}"
-      meta[ 'h' ]          ?= {}
-      meta[ 'h' ][ 'idx' ]  = h_idx
-      meta[ 'h' ][ 'key' ]  = h_key
+      meta.h               ?= {}
+      meta.h.idx            = h_idx
+      meta.h.key            = h_key
       #.....................................................................................................
       send [ 'tex', "\n", ]
       send stamp event
@@ -489,6 +489,9 @@ before '@MKTX.BLOCK.$heading', '@MKTX.COMMAND.$toc', \
           send [ '!', 'columns', [ 1, ], ( copy meta, { toc: 'omit' }, ), ]
           send [ 'tex', "{\\mktsHThree{}", ]
           send [ 'tex', "\\zlabel{#{h_key}}", { toc: 'omit' }, ]
+        when 4
+          send [ 'tex', "{\\mktsHFour{}", ]
+          send [ 'tex', "\\zlabel{#{h_key}}", { toc: 'omit' }, ]
         else return send [ '.', 'warning', "heading level #{level} not implemented", ( copy meta ), ]
     #.......................................................................................................
     else if select event, ')', 'h'
@@ -504,6 +507,8 @@ before '@MKTX.BLOCK.$heading', '@MKTX.COMMAND.$toc', \
         when 3
           send [ 'tex', "\\mktsHThreeBeg}%\n\n",        ]
           send [ '!', 'columns', [ 'pop', ], ( copy meta, { toc: 'omit' } ), ]
+        when 4
+          send [ 'tex', "\\mktsHFourBeg}%\n\n",        ]
         else return send [ '.', 'warning', "heading level #{level} not implemented", ( copy meta ), ]
       #.....................................................................................................
       send stamp event
