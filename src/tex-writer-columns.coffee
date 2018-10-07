@@ -332,11 +332,11 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
       [ type, name, text, meta, ] = event
     #.......................................................................................................
     if select event, '(', 'COLUMNS/group'
-      help '975', ( JSON.stringify event )[ .. 50 ]
+      # help '975', ( JSON.stringify event )[ .. 50 ]
       within_group = yes
     #.......................................................................................................
     else if select event, ')', 'COLUMNS/group'
-      warn '975', ( JSON.stringify event )[ .. 50 ]
+      # warn '975', ( JSON.stringify event )[ .. 50 ]
       if all_whitespace
         whisper "ignoring multicols b/c group only contains whitespace"
         ### remark not possible at this stage ###
