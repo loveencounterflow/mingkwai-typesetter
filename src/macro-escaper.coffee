@@ -38,7 +38,7 @@ MKTS                      = require './main'
 # is_hidden                 = MKTS.is_hidden.bind   MKTS
 # is_stamped                = MKTS.is_stamped.bind  MKTS
 XREGEXP                   = require 'xregexp'
-
+@_raw_tags                = []
 
 #===========================================================================================================
 # HELPERS
@@ -328,32 +328,44 @@ after it, thereby inhibiting any processing of those portions. ###
   #.........................................................................................................
   for pattern in @bracketed_raw_patterns
     R = R.replace pattern, ( _, markup, content ) =>
-      id = @_register_content S, 'raw', markup, content
+      id = @_register_content S, 'raw', markup, [ 'raw', content, ]
       return "\x15#{id}\x13"
   #.........................................................................................................
   return R
 
 #-----------------------------------------------------------------------------------------------------------
+@register_raw_tag = ( tag_name ) =>
+  start_tag   = "<#{tag_name}>"
+  stop_tag    = "</#{tag_name}>"
+  @_raw_tags.push [ tag_name, start_tag, stop_tag, ]
+#...........................................................................................................
+@register_raw_tag 'raw'
+
+#-----------------------------------------------------------------------------------------------------------
 @escape.taggish_raw_macros = ( S, text ) =>
-  R       = []
+  parts   = []
   markup  = null
   #.........................................................................................................
   settings  = { valueNames: [ 'between', 'left', 'match', 'right', ], }
-  matches   = XREGEXP.matchRecursive text, '<raw>', '</raw>', 'gi', settings
-  return text unless matches?
-  for match in matches
-    switch match.name
-      when 'between'
-        R.push match.value
-      when 'left'
-        markup = match.value
-      when 'match'
-        id = @_register_content S, 'raw', markup, match.value
-        R.push "\x15#{id}\x13"
-      when 'right'
-        null
+  for [ tag_name, start_tag, stop_tag, ] in @_raw_tags
+    matches   = XREGEXP.matchRecursive text, start_tag, stop_tag, 'g', settings
+    #.......................................................................................................
+    if matches?
+      for match in matches
+        switch match.name
+          when 'between'
+            parts.push match.value
+          when 'left'
+            markup = match.value
+          when 'match'
+            id = @_register_content S, 'raw', markup, [ tag_name, match.value, ]
+            parts.push "\x15#{id}\x13"
+          when 'right'
+            null
+      text          = parts.join ''
+      parts.length  = 0
   #.........................................................................................................
-  return R.join ''
+  return text
 
 #-----------------------------------------------------------------------------------------------------------
 @escape.action_macros = ( S, text ) =>
@@ -511,21 +523,20 @@ after it, thereby inhibiting any processing of those portions. ###
 #-----------------------------------------------------------------------------------------------------------
 @$expand.$html_comments = ( S ) =>
   return @_get_expander S, @html_comment_id_pattern, ( meta, entry ) =>
-    content       = entry[ 'raw' ]
+    [ tag_name, content, ] = entry[ 'raw' ]
     return [ '.', 'comment', content, ( MKTS.MD_READER.copy meta ), ]
 
 #-----------------------------------------------------------------------------------------------------------
 @$expand.$raw_macros  = ( S ) =>
   return @_get_expander S, @raw_id_pattern, ( meta, entry ) =>
-    content       = entry[ 'raw' ]
-    return [ '.', 'raw', content, ( MKTS.MD_READER.copy meta ), ]
+    [ tag_name, content, ] = entry[ 'raw' ]
+    return [ '.', tag_name, content, ( MKTS.MD_READER.copy meta ), ]
 
 #-----------------------------------------------------------------------------------------------------------
 @$expand.$action_macros  = ( S ) =>
   return @_get_expander S, @action_id_pattern, ( meta, entry ) =>
-    [ mode
-      language ]  = entry[ 'markup' ]
-    content       = entry[ 'raw' ]
+    [ mode, language ]      = entry[ 'markup' ]
+    [ tag_name, content, ]  = entry[ 'raw' ]
     # debug '©19694', rpr content
     return [ '.', 'action', content, ( MKTS.MD_READER.copy meta, { mode, language, } ), ]
 
@@ -537,7 +548,8 @@ after it, thereby inhibiting any processing of those portions. ###
 #-----------------------------------------------------------------------------------------------------------
 @$expand.$sensitive_ws  = ( S ) =>
   return @_get_expander S, @sws_id_pattern, ( meta, entry ) =>
-    return [ '.', 'text', entry[ 'raw' ], ( MKTS.MD_READER.copy meta, ), ]
+    [ tag_name, content, ]  = entry[ 'raw' ]
+    return [ '.', 'text', content, ( MKTS.MD_READER.copy meta, ), ]
 
 #-----------------------------------------------------------------------------------------------------------
 @$expand.$region_macros = ( S ) =>
