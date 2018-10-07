@@ -63,7 +63,13 @@
     "parse5": "^5.1.0",
     "pipedreams": "^3.0.9",
     "pipestreams": "^0.4.1",
+    "rehype-stringify": "^4.0.0",
+    "remark-grid-tables": "^1.1.1",
+    "remark-html": "^8.0.0",
+    "remark-parse": "^5.0.0",
+    "remark-rehype": "^3.0.1",
     "semver": "^5.5.1",
+    "unified": "^7.0.0",
     "xregexp": "^4.2.0"
   },
   "devDependencies": {
