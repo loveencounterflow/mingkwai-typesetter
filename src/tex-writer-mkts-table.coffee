@@ -102,13 +102,15 @@ MKTS.MACRO_ESCAPER.register_raw_tag 'mkts-table'
   ### ... more typesetting detail attached here ... ###
   #.........................................................................................................
   f = ->
-    @grid   = ( raws ) ->
-      MKTS_TABLE.grid  me, raws.join ''
+    @grid   = ( raw_parts ) ->
+      MKTS_TABLE.grid  me, raw_parts.join ''
       # debug '44343', 'grid ->', me
-    @merge  = ( raws ) ->
-      MKTS_TABLE.merge me, raws.join ''
+    @merge  = ( raw_parts ) ->
+      MKTS_TABLE.merge me, raw_parts.join ''
       # debug '44343', 'merge ->', me
     return @
   #.........................................................................................................
   return [ me, ( f.apply {} ), ]
+
+
 

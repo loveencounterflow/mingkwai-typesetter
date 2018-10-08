@@ -96,12 +96,66 @@ copy                      = ( x ) -> Object.assign {}, x
 
 #-----------------------------------------------------------------------------------------------------------
 @mkts_events_from_table_description = ( me ) ->
+  @_fill_out_tex_names me
   R = []
-  R.push [ 'tex', '\n\n', ]
+  #.........................................................................................................
+  R.push [ 'tex', '\\par{}', ]                                        ### isolate block content ###
+  R.push [ 'tex', '{%\n', ]                                           ### begin group ###
+  #.........................................................................................................
+  R.push [ 'tex', '\\setlength{\\fboxsep}{0mm}%\n', ]                 ### initialize ###
+  R.push event for event in @_get_newdimen_events me
+  #.........................................................................................................
+  R.push [ 'tex', '}%\n', ]                                           ### end group ###
+  #.........................................................................................................
+  R.push [ 'tex', '\\par{}', ]                                        ### description for debugging ###
   R.push [ '(', 'code', [], ( copy me ), ]
   R.push [ '.', 'text', ( rpr me ), ( copy me ), ]
   R.push [ ')', 'code', [], ( copy me ), ]
-  R.push [ 'tex', '\n\n', ]
+  #.........................................................................................................
+  # R.push [ 'tex', "\\〇一二三四五六七八九{} ", ]
+  # R.push [ '.', 'text', "Ⅷ六", ( copy me ), ]
+  R.push [ 'tex', '\\par{}', ]                                        ### isolate block content ###
+  #.........................................................................................................
+  return R
+
+#-----------------------------------------------------------------------------------------------------------
+@_fill_out_tex_names = ( me ) ->
+  for col in [ 0 .. me.grid.width ]
+    col_txt = @_obfuscate_integer col
+    for row in [ 0 .. me.grid.height ]
+      row_txt = @_obfuscate_integer row
+  return null
+
+#-----------------------------------------------------------------------------------------------------------
+@_get_newdimen_events = ( me ) ->
+  R = []
+  me.coordinates = []
+  for col in [ 0 .. me.grid.width ]
+    ### TAINT precompute array ###
+    col_txt = switch col
+      when 0 then 'O'
+      when me.grid.width then 'Z'
+      else String.fromCodePoint ( 'A'.codePointAt 0 ) - 1 + col
+    for row in [ 0 .. me.grid.height ]
+      row_txt = switch row
+        when 0 then 'O'
+        when me.grid.width then 'Z'
+        else String.fromCodePoint ( 'A'.codePointAt 0 ) - 1 + row
+      me.coordinates.push col_txt + row_txt
+  return R
+
+#-----------------------------------------------------------------------------------------------------------
+@_obfuscate_integer = ( n ) ->
+  R = "#{n}"
+  R = R.replace /0/g, '零'
+  R = R.replace /1/g, '壹'
+  R = R.replace /2/g, '貳'
+  R = R.replace /3/g, '叄'
+  R = R.replace /4/g, '肆'
+  R = R.replace /5/g, '陸'
+  R = R.replace /6/g, '柒'
+  R = R.replace /7/g, '捌'
+  R = R.replace /8/g, '玖'
   return R
 
 
