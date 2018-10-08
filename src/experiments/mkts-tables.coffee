@@ -24,6 +24,7 @@ stringify                 = require 'rehype-stringify'
 remark_to_rehype          = require 'remark-rehype'
 remark_to_html            = require 'remark-html'
 remark_grid_tables        = require 'remark-grid-tables'
+jr                        = JSON.stringify
 
 #-----------------------------------------------------------------------------------------------------------
 show_permutations = ->
@@ -35,38 +36,17 @@ show_permutations = ->
       echo "      \\node[color=gray] at ( \\c#{column}, \\r#{row} ) {{\\mktsStyleCode{}#{column}#{row}}};"
 
 #-----------------------------------------------------------------------------------------------------------
-x = unified()
-  .use remark_parse
-  .use remark_grid_tables
-  # .use remark_to_rehype
-  .use stringify
-  .use remark_to_html
+demo_tableparsing = ->
+  x = unified()
+    .use remark_parse
+    .use remark_grid_tables
+    # .use remark_to_rehype
+    .use stringify
+    .use remark_to_html
 
-demo_1 = """
-+-------+----------+------+
-| Table Headings   | Here |
-+-------+----------+------+
-| Sub   | Headings | Too  |
-+=======+==========+======+
-| cell  | column spanning |
-+ spans +----------+------+
-| rows  | normal   | cell |
-+-------+----------+------+
-| multi | cells can be    |
-| line  | *formatted*     |
-|       | **paragraphs**  |
-| cells |                 |
-| too   |                 |
-+-------+-----------------+
-
-"""
-debug x.stringify x.parse demo_1
-
-demo_2 = """
+  demo_1 = """
   +-------+----------+------+
   | Table Headings   | Here |
-  +-------+----------+------+
-  | Sub   | Headings | Too  |
   +-------+----------+------+
   | Sub   | Headings | Too  |
   +=======+==========+======+
@@ -81,8 +61,47 @@ demo_2 = """
   | too   |                 |
   +-------+-----------------+
 
+  """
+  debug x.stringify x.parse demo_1
+
+  demo_2 = """
+    +-------+----------+------+
+    | Table Headings   | Here |
+    +-------+----------+------+
+    | Sub   | Headings | Too  |
+    +-------+----------+------+
+    | Sub   | Headings | Too  |
+    +=======+==========+======+
+    | cell  | column spanning |
+    + spans +----------+------+
+    | rows  | normal   | cell |
+    +-------+----------+------+
+    | multi | cells can be    |
+    | line  | *formatted*     |
+    |       | **paragraphs**  |
+    | cells |                 |
+    | too   |                 |
+    +-------+-----------------+
 
 
-"""
-debug x.stringify x.parse demo_2
+
+  """
+  debug x.stringify x.parse demo_2
+
+
+### ==================================================================================================== ###
+
+debug EXCJSCC = require '../../src/experiments/exceljs-col-cache-module'
+
+
+# debug '77762-1', EXCJSCC.l2n               'A1'
+debug '77762-2', EXCJSCC.n2l               'AA1'
+debug '77762-3', EXCJSCC.validateAddress   'AA1'
+debug '77762-4', EXCJSCC.decodeAddress     'A1'
+debug '77762-4', EXCJSCC.decodeAddress     'AA1'
+debug '77762-5', EXCJSCC.getAddress        'AA1'
+debug '77762-6', EXCJSCC.decode            'AA1'
+debug '77762-7', EXCJSCC.decodeEx          'AA1'
+debug '77762-8', EXCJSCC.encodeAddress     'AA1'
+debug '77762-9', EXCJSCC.encode            'AA1'
 
