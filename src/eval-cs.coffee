@@ -28,7 +28,7 @@ VM                        = require 'vm'
   language                  = settings?.language ? 'coffee'
   local_filename            = '<STRING>'
   macro_output              = []
-  sandbox                   = {}
+  sandbox                   = settings?.sandbox ? {}
   # sandbox_backup            = MK.TS.DIFFPATCH.snapshot sandbox
   VM.createContext sandbox
   #.........................................................................................................
