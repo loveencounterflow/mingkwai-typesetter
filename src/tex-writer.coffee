@@ -51,7 +51,7 @@ MACRO_ESCAPER             = require './macro-escaper'
 MACRO_INTERPRETER         = require './macro-interpreter'
 LINEBREAKER               = require './linebreaker'
 @COLUMNS                  = require './tex-writer-columns'
-@MKTS_TABLES              = require './tex-writer-mkts-tables'
+@MKTS_TABLE               = require './tex-writer-mkts-table'
 AUX                       = require './tex-writer-aux'
 YADDA                     = require './yadda'
 #...........................................................................................................
@@ -2091,7 +2091,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @MKTX.INLINE.$tiny                                S
     .pipe @MKTX.INLINE.$fncr                                S
     .pipe @MKTX.INLINE.$xfsc                                S
-    .pipe @MKTS_TABLES.$main                                S
+    .pipe @MKTS_TABLE.$main                                 S
     #.......................................................................................................
     .pipe @MKTX.BLOCK.$blockquote                           S
     .pipe @MKTX.INLINE.$link                                S
