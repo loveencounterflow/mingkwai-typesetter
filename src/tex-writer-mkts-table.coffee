@@ -44,14 +44,14 @@ MKTS.MACRO_ESCAPER.register_raw_tag 'mkts-table'
   return D.TEE.from_pipeline [
     @$parse_description               S
     @$render_description              S
-    @$show_metrics                    S
+    @$dump_table_description          S
     ]
 
 #===========================================================================================================
 #
 #-----------------------------------------------------------------------------------------------------------
-@$show_metrics = ( S ) -> D.$observe ( event ) ->
-  return unless select event, '.', 'MKTS/TABLE/description'
+@$dump_table_description = ( S ) -> D.$observe ( event ) ->
+  return unless select event, '.', 'MKTS/TABLE/description', true
   help '99871', ( CND.blue rpr event[ 2 ] )
 
 #-----------------------------------------------------------------------------------------------------------
@@ -80,8 +80,9 @@ MKTS.MACRO_ESCAPER.register_raw_tag 'mkts-table'
   return $ ( event, send ) =>
     #.......................................................................................................
     if select event, '.', 'MKTS/TABLE/description'
+      send stamp event
       [ type, name, description, meta, ] = event
-      for sub_event in MKTS_TABLE.mkts_events_from_table_description description
+      for sub_event from MKTS_TABLE._walk_events description
         ### TAINT supply meta? ###
         send sub_event
     #.......................................................................................................
@@ -97,17 +98,18 @@ MKTS.MACRO_ESCAPER.register_raw_tag 'mkts-table'
   as data on the general typesetting context. All names are templating functions, such that each may be
   called as `grid'4x4'`, `merge'[a1]..[a4]'` and so on from the source within the MKTS document where the
   table is being defined. ###
-  me      = MKTS_TABLE.new_description S
+  me      = MKTS_TABLE._new_description S
   me.meta = event[ 3 ]
   ### ... more typesetting detail attached here ... ###
   #.........................................................................................................
   f = ->
-    @grid   = ( raw_parts ) ->
-      MKTS_TABLE.grid  me, raw_parts.join ''
-      # debug '44343', 'grid ->', me
-    @merge  = ( raw_parts ) ->
-      MKTS_TABLE.merge me, raw_parts.join ''
-      # debug '44343', 'merge ->', me
+    @gridwidth    = ( raw_parts ) -> MKTS_TABLE.gridwidth   me, raw_parts.join ''
+    @gridheight   = ( raw_parts ) -> MKTS_TABLE.gridheight  me, raw_parts.join ''
+    @cellspacing  = ( raw_parts ) -> MKTS_TABLE.cellspacing me, raw_parts.join ''
+    @unitwidth    = ( raw_parts ) -> MKTS_TABLE.unitwidth   me, raw_parts.join ''
+    @unitheight   = ( raw_parts ) -> MKTS_TABLE.unitheight  me, raw_parts.join ''
+    @cellgrid     = ( raw_parts ) -> MKTS_TABLE.cellgrid    me, raw_parts.join ''
+    @cell         = ( raw_parts ) -> MKTS_TABLE.cell        me, raw_parts.join ''
     return @
   #.........................................................................................................
   return [ me, ( f.apply {} ), ]
