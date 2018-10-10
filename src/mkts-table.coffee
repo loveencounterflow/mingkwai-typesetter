@@ -242,16 +242,25 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
 #-----------------------------------------------------------------------------------------------------------
 @_walk_events = ( me ) ->
   #.........................................................................................................
+  ### Preparatory ###
   yield from @_walk_opening_events                      me
   yield from @_walk_style_events                        me
-  yield from @_walk_cellspacing_events                  me
+  yield from @_walk_bordergap_events                  me
   yield from @_walk_column_and_row_coordinates_events   me
   yield from @_walk_joint_coordinates_events            me
   yield from @_walk_quad_sides_events                   me
   yield from @_walk_quad_coordinates_events             me
+  #.........................................................................................................
+  ### Debugging ###
+  ### TAINT should make ordering configurable so we can under- or overprint debugging ###
   yield from @_walk_debug_joints_events                 me
   yield from @_walk_debug_quadgrid_events               me
-  yield from @_walk_quad_borders_events                 me
+  #.........................................................................................................
+  ### Borders, content ###
+  # yield from @_walk_quad_borders_events                 me ### TAINT do we need quad borders? ###
+  yield from @_walk_cell_borders_events                 me
+  #.........................................................................................................
+  ### Finishing ###
   yield from @_walk_closing_events                      me
   #.........................................................................................................
   # ### dump description for debugging ###
@@ -296,11 +305,11 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
   yield return
 
 #-----------------------------------------------------------------------------------------------------------
-@_walk_cellspacing_events = ( me ) ->
-  ### TAINT should rather use default cellspacing ###
-  return null unless me.cellspacing?
-  yield [ 'tex', "\\coordinate (horizontal spacing)  at ( #{me.cellspacing.x}, 0 );%\n", ]
-  yield [ 'tex', "\\coordinate (vertical spacing)    at ( 0, #{me.cellspacing.y} );%\n", ]
+@_walk_bordergap_events = ( me ) ->
+  ### TAINT should rather use default bordergap ###
+  return null unless me.bordergap?
+  yield [ 'tex', "\\coordinate (horizontal spacing)  at ( #{me.bordergap.x}, 0 );%\n", ]
+  yield [ 'tex', "\\coordinate (vertical spacing)    at ( 0, #{me.bordergap.y} );%\n", ]
   yield return
 
 #-----------------------------------------------------------------------------------------------------------
@@ -423,24 +432,9 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
   yield return
 
 #-----------------------------------------------------------------------------------------------------------
-@_walk_quad_borders_events = ( me ) ->
-  #.........................................................................................................
-  for designation, cellquads of me.cellquads
-    continue unless ( cellborders = me.cellborders[ designation ] )?
-    for d from @_walk_cellquads_sides me, cellquads, '*'
-      continue unless ( borderstyle = cellborders[ d.side ] )?
-      switch d.side
-        when 'top', 'bottom'
-          yield [ 'tex', "\\draw[#{borderstyle}] (quad_#{d.quad} #{d.side} left) -- (quad_#{d.quad} #{d.side} right);\n", ]
-        when 'left', 'right'
-          yield [ 'tex', "\\draw[#{borderstyle}] (quad_#{d.quad} top #{d.side}) -- (quad_#{d.quad} bottom #{d.side});\n", ]
-        else
-          throw new Error "(MKTS/TABLE 2658) illegal value for side #{rpr d.side}"
-  #.........................................................................................................
-  yield return
-
-#-----------------------------------------------------------------------------------------------------------
 @_walk_debug_joints_events = ( me ) ->
+  unless me.debug
+    yield return
   @_ensure_joint_coordinates  me
   #.........................................................................................................
   ### TAINT code duplication; use iterator ###
