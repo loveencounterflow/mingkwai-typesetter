@@ -2210,7 +2210,9 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
 @pdf_from_md = ( source_route, handler ) ->
   RPC_SERVER              = require './rpc-server'
   server                  = await ( promisify RPC_SERVER.listen.bind RPC_SERVER )()
-  process.on 'exit', -> server.close()
+  process.on 'exit', ->
+    help '44092', "RPC server closing"
+    server.close()
   #.......................................................................................................
   S                       = @_new_state source_route
   content_output          = njs_fs.createWriteStream S.layout_info[ 'content-locator' ]
