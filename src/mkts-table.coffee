@@ -43,16 +43,22 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
 @_new_description = ( S ) ->
   R =
     '~isa':     'MKTS/TABLE/description'
-    # grid:       { width: 4, height: 4, }
-    # ### default unit for width, height: ###
-    # u:
-    #   width:    '10mm'
-    #   height:   '10mm'
-    cells:              []
+    cellquads:          {}
+    cellborders:        {}
     quadwidths:         null
     quadheights:        null
     joint_coordinates:  null
-    cellgrid:           false
+    quadgrid:           false
+    #.......................................................................................................
+    styles:
+      sThin:              'thin'
+      sThick:             'thick'
+      sDotted:            'dotted'
+      sDashed:            'dashed'
+      sRed:               'red'
+      sBlack:             'black'
+      sQuadgrid:          'sRed,sDotted,sThin'
+    #.......................................................................................................
     default:
       gridwidth:  4
       gridheight: 4
@@ -112,31 +118,50 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
   return null
 
 #-----------------------------------------------------------------------------------------------------------
-@cell = ( me, text ) ->
+@cellquads = ( me, text ) ->
   unless ( type = CND.type_of text ) is 'text'
-    throw new Error "(MKTS/TABLE 9791) need a text for mkts-table/cell, got a #{type}"
+    throw new Error "(MKTS/TABLE 9791) need a text for mkts-table/cellquads, got a #{type}"
   #.........................................................................................................
   @_ensure_gridwidth  me
   @_ensure_gridheight me
   @_ensure_unitvector me
-  cell = @_parse_range_quadref me, text
-  if cell.right > me.gridwidth
+  d           = @_parse_range_quadref me, text
+  designation = d.tl.toUpperCase()
+  if d.right > me.gridwidth
     throw new Error "(MKTS/TABLE 1274) cell exceeds grid width: #{rpr text}"
-  if cell.bottom > me.gridheight
+  if d.bottom > me.gridheight
     throw new Error "(MKTS/TABLE 6069) cell exceeds grid height: #{rpr text}"
-  me.cells.push cell
+  if me.cellquads[ designation ]?
+    throw new Error "(MKTS/TABLE 6069) unable to redefine cell #{designation}: #{rpr text}"
+  #.........................................................................................................
+  me.cellquads[ designation ] = d
+  return null
+
+#-----------------------------------------------------------------------------------------------------------
+@cellborder = ( me, text ) ->
+  unless ( type = CND.type_of text ) is 'text'
+    throw new Error "(MKTS/TABLE 9791) need a text for mkts-table/cellborder, got a #{type}"
+  #.........................................................................................................
+  d                 = @_parse_cellborder me, text
+  if d.side is '*'
+    for side in [ 'left', 'right', 'top', 'bottom', ]
+      target            = me.cellborders[ d.cellref ]?= {}
+      target[ side ]    = d.style
+  else
+    target            = me.cellborders[ d.cellref ]?= {}
+    target[ d.side ]  = d.style
   #.........................................................................................................
   return null
 
 #-----------------------------------------------------------------------------------------------------------
-@cellgrid = ( me, text ) ->
+@quadgrid = ( me, text ) ->
   unless ( type = CND.type_of text ) is 'text'
     throw new Error "(MKTS/TABLE 9791) need a text for mkts-table/cell, got a #{type}"
   #.........................................................................................................
   switch text
-    when 'true'   then me.cellgrid = true
-    when 'false'  then me.cellgrid = false
-    else throw new Error "(MKTS/TABLE 9791) expected 'true' or 'false' for mkts-table/cellgrid, got a #{rpr text}"
+    when 'true'   then me.quadgrid = true
+    when 'false'  then me.quadgrid = false
+    else throw new Error "(MKTS/TABLE 9791) expected 'true' or 'false' for mkts-table/quadgrid, got a #{rpr text}"
   #.........................................................................................................
   return null
 
@@ -198,6 +223,16 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
   [ _, x, y, ] = match
   return { x, y, }
 
+#-----------------------------------------------------------------------------------------------------------
+### TAINT use proper parsing tool ###
+@_parse_cellborder = ( me, cellborder ) ->
+  unless ( type = CND.type_of cellborder ) is 'text'
+    throw new Error "(MKTS/TABLE 3975) expected a text for cellborder, got a #{rpr type}"
+  unless ( match = cellborder.match /^\s*([A-Z]{1,3}[-0-9.]{1,4})-(left|right|top|bottom|\*)\s*:\s*(.+)$/ )?
+    throw new Error "(MKTS/TABLE 2658) expected a cellborder like 'a1-left:sDashed,sThick', got #{rpr cellborder}"
+  [ _, cellref, side, style, ] = match
+  return { cellref, side, style, }
+
 
 #===========================================================================================================
 # EVENT GENERATORS
@@ -205,13 +240,15 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
 @_walk_events = ( me ) ->
   #.........................................................................................................
   yield from @_walk_opening_events                      me
+  yield from @_walk_style_events                        me
   yield from @_walk_cellspacing_events                  me
   yield from @_walk_column_and_row_coordinates_events   me
   yield from @_walk_joint_coordinates_events            me
   yield from @_walk_quad_sides_events                   me
   yield from @_walk_quad_coordinates_events             me
   yield from @_walk_debugging_events                    me
-  yield from @_walk_cellgrid_events                     me
+  yield from @_walk_quadgrid_events                     me
+  yield from @_walk_borders_events                      me
   yield from @_walk_closing_events                      me
   #.........................................................................................................
   # ### dump description for debugging ###
@@ -224,7 +261,7 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
   # yield [ ')', 'code', [],                       ( copy me.meta ), ]
   # yield [ 'tex', '\\par{}', ]
   #.........................................................................................................
-  return null
+  yield return
 
 #-----------------------------------------------------------------------------------------------------------
 @_walk_opening_events = ( me ) ->
@@ -240,14 +277,20 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
   yield [ 'tex', "\\begin{tikzpicture}[ overlay, yshift = 0mm, yscale = -1, line cap = round ]%\n", ]
   yield [ 'tex', "\\tikzset{ x = #{me.unitheight} };%\n", ]
   yield [ 'tex', "\\tikzset{ y = #{me.unitheight} };%\n", ]
-  return null
+  yield return
 
 #-----------------------------------------------------------------------------------------------------------
 @_walk_closing_events = ( me ) ->
   yield [ 'tex', "\\end{tikzpicture}%\n", ]
   yield [ 'tex', "\\end{minipage}}}%\n", ]
   yield [ 'tex', "\\par% End of MKTS Table ====================================================================================\n\n", ]
-  return null
+  yield return
+
+#-----------------------------------------------------------------------------------------------------------
+@_walk_style_events = ( me ) ->
+  for key, value of me.styles
+    yield [ 'tex', "\\tikzset{#{key}/.style={#{value}}}%\n", ]
+  yield return
 
 #-----------------------------------------------------------------------------------------------------------
 @_walk_cellspacing_events = ( me ) ->
@@ -255,7 +298,7 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
   return null unless me.cellspacing?
   yield [ 'tex', "\\coordinate (horizontal spacing)  at ( #{me.cellspacing.x}, 0 );%\n", ]
   yield [ 'tex', "\\coordinate (vertical spacing)    at ( 0, #{me.cellspacing.y} );%\n", ]
-  return null
+  yield return
 
 #-----------------------------------------------------------------------------------------------------------
 @_walk_column_and_row_coordinates_events = ( me ) ->
@@ -264,14 +307,14 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
   y_position  = 0
   #.........................................................................................................
   for [ col_letter, col_nr, ] from @_walk_column_letters_and_numbers me, 'long'
-    yield [ 'tex', "\\coordinate (c#{col_letter}) at ( #{x_position}, 0 );%\n", ]
+    yield [ 'tex', "\\coordinate (col_#{col_letter}) at ( #{x_position}, 0 );%\n", ]
     x_position += me.quadwidths[ col_nr ]
   #.........................................................................................................
   for row_nr from @_walk_row_numbers me, 'long'
-    yield [ 'tex', "\\coordinate (r#{row_nr}) at ( 0, #{y_position} );%\n", ]
+    yield [ 'tex', "\\coordinate (row_#{row_nr}) at ( 0, #{y_position} );%\n", ]
     y_position += me.quadheights[ row_nr ]
   #.........................................................................................................
-  return null
+  yield return
 
 #-----------------------------------------------------------------------------------------------------------
 @_walk_joint_coordinates_events = ( me ) ->
@@ -283,23 +326,23 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
   for [ col_letter, col_nr, ] from @_walk_column_letters_and_numbers me, 'long'
     for row_nr from @_walk_row_numbers me, 'long'
       joint = "#{col_letter}#{row_nr}"
-      yield [ 'tex', "\\coordinate (joint #{joint}) at ($ (c#{col_letter}) + (r#{row_nr}) $);%\n", ]
+      yield [ 'tex', "\\coordinate (joint_#{joint}) at ($ (col_#{col_letter}) + (row_#{row_nr}) $);%\n", ]
   #.........................................................................................................
-  return null
+  yield return
 
 #-----------------------------------------------------------------------------------------------------------
 @_walk_quad_sides_events = ( me ) ->
   @_ensure_joint_coordinates  me
   #.........................................................................................................
   for [ col_letter, col_nr, ] from @_walk_column_letters_and_numbers me, 'long'
-    yield [ 'tex', "\\coordinate (c#{col_letter} W) at ($ (c#{col_letter}) - (horizontal spacing) $);%\n", ]
-    yield [ 'tex', "\\coordinate (c#{col_letter} E) at ($ (c#{col_letter}) + (horizontal spacing) $);%\n", ]
+    yield [ 'tex', "\\coordinate (col_#{col_letter} W) at ($ (col_#{col_letter}) - (horizontal spacing) $);%\n", ]
+    yield [ 'tex', "\\coordinate (col_#{col_letter} E) at ($ (col_#{col_letter}) + (horizontal spacing) $);%\n", ]
   #.........................................................................................................
   for row_nr from @_walk_row_numbers me, 'long'
-    yield [ 'tex', "\\coordinate (r#{row_nr} N) at ($ (r#{row_nr}) - (vertical spacing) $);%\n", ]
-    yield [ 'tex', "\\coordinate (r#{row_nr} S) at ($ (r#{row_nr}) + (vertical spacing) $);%\n", ]
+    yield [ 'tex', "\\coordinate (row_#{row_nr} N) at ($ (row_#{row_nr}) - (vertical spacing) $);%\n", ]
+    yield [ 'tex', "\\coordinate (row_#{row_nr} S) at ($ (row_#{row_nr}) + (vertical spacing) $);%\n", ]
   #.........................................................................................................
-  return null
+  yield return
 
 #-----------------------------------------------------------------------------------------------------------
 @_walk_quad_coordinates_events = ( me ) ->
@@ -313,16 +356,16 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
     for row_nr_1 from @_walk_row_numbers me, 'short'
       row_nr_2  = row_nr_1 + 1
       quad = "#{col_letter_1}#{row_nr_1}"
-      yield [ 'tex', "\\coordinate (quad #{quad} top left)      at ($ (r#{row_nr_1} S) + (c#{col_letter_1} E) $);%\n", ]
-      yield [ 'tex', "\\coordinate (quad #{quad} top right)     at ($ (r#{row_nr_1} S) + (c#{col_letter_2} W) $);%\n", ]
-      yield [ 'tex', "\\coordinate (quad #{quad} bottom left)   at ($ (r#{row_nr_2} N) + (c#{col_letter_1} E) $);%\n", ]
-      yield [ 'tex', "\\coordinate (quad #{quad} bottom right)  at ($ (r#{row_nr_2} N) + (c#{col_letter_2} W) $);%\n", ]
+      yield [ 'tex', "\\coordinate (quad_#{quad} top left)      at ($ (row_#{row_nr_1} S) + (col_#{col_letter_1} E) $);%\n", ]
+      yield [ 'tex', "\\coordinate (quad_#{quad} top right)     at ($ (row_#{row_nr_1} S) + (col_#{col_letter_2} W) $);%\n", ]
+      yield [ 'tex', "\\coordinate (quad_#{quad} bottom left)   at ($ (row_#{row_nr_2} N) + (col_#{col_letter_1} E) $);%\n", ]
+      yield [ 'tex', "\\coordinate (quad_#{quad} bottom right)  at ($ (row_#{row_nr_2} N) + (col_#{col_letter_2} W) $);%\n", ]
   #.........................................................................................................
-  return null
+  yield return
 
 #-----------------------------------------------------------------------------------------------------------
-@_walk_cellgrid_events = ( me ) ->
-  return null unless me.cellgrid
+@_walk_quadgrid_events = ( me ) ->
+  return null unless me.quadgrid
   #.........................................................................................................
   ### TAINT code duplication; use iterator ###
   for [ col_letter_1, col_nr_1, ] from @_walk_column_letters_and_numbers me, 'short'
@@ -332,12 +375,29 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
     for row_nr_1 from @_walk_row_numbers me, 'short'
       row_nr_2  = row_nr_1 + 1
       quad = "#{col_letter_1}#{row_nr_1}"
-      yield [ 'tex', "\\draw[ red, line width = 0.2mm ] (quad #{quad} top    left)  -- (quad #{quad} top    right); % Quad a1 top\n",    ]
-      yield [ 'tex', "\\draw[ red, line width = 0.2mm ] (quad #{quad} top    left)  -- (quad #{quad} bottom left);  % Quad a1 left\n",   ]
-      yield [ 'tex', "\\draw[ red, line width = 0.2mm ] (quad #{quad} bottom left)  -- (quad #{quad} bottom right); % Quad a1 bottom\n", ]
-      yield [ 'tex', "\\draw[ red, line width = 0.2mm ] (quad #{quad} top    right) -- (quad #{quad} bottom right); % Quad a1 right\n",  ]
+      yield [ 'tex', "\\draw[sQuadgrid] (quad_#{quad} top    left)  -- (quad_#{quad} top    right);%\n",  ]
+      yield [ 'tex', "\\draw[sQuadgrid] (quad_#{quad} top    left)  -- (quad_#{quad} bottom left);%\n",   ]
+      yield [ 'tex', "\\draw[sQuadgrid] (quad_#{quad} bottom left)  -- (quad_#{quad} bottom right);%\n",  ]
+      yield [ 'tex', "\\draw[sQuadgrid] (quad_#{quad} top    right) -- (quad_#{quad} bottom right);%\n",  ]
   #.........................................................................................................
-  return null
+  yield return
+
+#-----------------------------------------------------------------------------------------------------------
+@_walk_borders_events = ( me ) ->
+  #.........................................................................................................
+  for designation, cellquads of me.cellquads
+    continue unless ( cellborders = me.cellborders[ designation ] )?
+    for d from @_walk_cellquads_sides me, cellquads, '*'
+      continue unless ( borderstyle = cellborders[ d.side ] )?
+      switch d.side
+        when 'top', 'bottom'
+          yield [ 'tex', "\\draw[#{borderstyle}] (quad_#{d.quad} #{d.side} left) -- (quad_#{d.quad} #{d.side} right);\n", ]
+        when 'left', 'right'
+          yield [ 'tex', "\\draw[#{borderstyle}] (quad_#{d.quad} top #{d.side}) -- (quad_#{d.quad} bottom #{d.side});\n", ]
+        else
+          throw new Error "(MKTS/TABLE 2658) illegal value for side #{rpr d.side}"
+  #.........................................................................................................
+  yield return
 
 #-----------------------------------------------------------------------------------------------------------
 @_walk_debugging_events = ( me ) ->
@@ -347,10 +407,10 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
   for [ col_letter, col_nr, ] from @_walk_column_letters_and_numbers me, 'long'
     for row_nr from @_walk_row_numbers me, 'long'
       joint = "#{col_letter}#{row_nr}"
-      yield [ 'tex', "\\node[ color = gray ] at ($(joint #{joint})+(2mm,2mm)$) {{\\mktsStyleCode{}#{joint}}}; ", ]
-      yield [ 'tex', "\\node[ color = gray, shape = circle, draw ] at (joint #{joint}) {};%\n", ]
+      yield [ 'tex', "\\node[ color = gray ] at ($(joint_#{joint})+(2mm,2mm)$) {{\\mktsStyleCode{}#{joint}}}; ", ]
+      yield [ 'tex', "\\node[ color = gray, shape = circle, draw ] at (joint_#{joint}) {};%\n", ]
   #.........................................................................................................
-  return null
+  yield return
 
 
 #===========================================================================================================
@@ -405,12 +465,53 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
     ### TAINT don't use EXCJSCC directly ###
     col_letter  = ( EXCJSCC.n2l col_nr ).toLowerCase()
     yield [ col_letter, col_nr, ]
+  yield return
 
 #-----------------------------------------------------------------------------------------------------------
 @_walk_row_numbers = ( me, mode ) ->
   @_ensure_gridheight me
   delta = if mode is 'short' then 0 else 1
   yield row_nr for row_nr in [ 1 .. me.gridheight + delta ]
+  yield return
+
+#-----------------------------------------------------------------------------------------------------------
+@_walk_cellquads_sides = ( me, cellquads, side ) ->
+  switch side
+    when 'left'
+      row_nr_1    = cellquads.top
+      row_nr_2    = cellquads.bottom
+      col_nr_1    = cellquads.left
+      col_nr_2    = cellquads.left
+    when 'right'
+      row_nr_1    = cellquads.top
+      row_nr_2    = cellquads.bottom
+      col_nr_1    = cellquads.right
+      col_nr_2    = cellquads.right
+    when 'top'
+      row_nr_1    = cellquads.top
+      row_nr_2    = cellquads.top
+      col_nr_1    = cellquads.left
+      col_nr_2    = cellquads.right
+    when 'bottom'
+      row_nr_1    = cellquads.bottom
+      row_nr_2    = cellquads.bottom
+      col_nr_1    = cellquads.left
+      col_nr_2    = cellquads.right
+    when '*'
+      yield from @_walk_cellquads_sides me, cellquads, 'left'
+      yield from @_walk_cellquads_sides me, cellquads, 'right'
+      yield from @_walk_cellquads_sides me, cellquads, 'top'
+      yield from @_walk_cellquads_sides me, cellquads, 'bottom'
+      yield return
+    else
+      throw new Error "(MKTS/TABLE 2658) illegal argument for side #{rpr side}"
+  for row_nr in [ row_nr_1 .. row_nr_2 ]
+    for col_nr in [ col_nr_1 .. col_nr_2 ]
+      ### TAINT don't use EXCJSCC directly ###
+      col_letter  = ( EXCJSCC.n2l col_nr ).toLowerCase()
+      quad        = "#{col_letter}#{row_nr}"
+      yield { col_nr, row_nr, col_letter, quad, side, }
+  yield return
 
 
 #===========================================================================================================
