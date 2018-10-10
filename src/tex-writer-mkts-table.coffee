@@ -103,14 +103,14 @@ MKTS.MACRO_ESCAPER.register_raw_tag 'mkts-table'
   ### ... more typesetting detail attached here ... ###
   #.........................................................................................................
   f = ->
-    @gridwidth    = ( raw_parts ) -> MKTS_TABLE.gridwidth   me, raw_parts.join ''
-    @gridheight   = ( raw_parts ) -> MKTS_TABLE.gridheight  me, raw_parts.join ''
-    @cellspacing  = ( raw_parts ) -> MKTS_TABLE.cellspacing me, raw_parts.join ''
-    @unitwidth    = ( raw_parts ) -> MKTS_TABLE.unitwidth   me, raw_parts.join ''
-    @unitheight   = ( raw_parts ) -> MKTS_TABLE.unitheight  me, raw_parts.join ''
-    @quadgrid     = ( raw_parts ) -> MKTS_TABLE.quadgrid    me, raw_parts.join ''
-    @cellquads    = ( raw_parts ) -> MKTS_TABLE.cellquads   me, raw_parts.join ''
-    @cellborder   = ( raw_parts ) -> MKTS_TABLE.cellborder  me, raw_parts.join ''
+    @debug            = ( raw_parts ) -> MKTS_TABLE.debug           me, raw_parts.join ''
+    @gridwidth        = ( raw_parts ) -> MKTS_TABLE.gridwidth       me, raw_parts.join ''
+    @gridheight       = ( raw_parts ) -> MKTS_TABLE.gridheight      me, raw_parts.join ''
+    @bordergap        = ( raw_parts ) -> MKTS_TABLE.bordergap       me, raw_parts.join ''
+    @unitwidth        = ( raw_parts ) -> MKTS_TABLE.unitwidth       me, raw_parts.join ''
+    @unitheight       = ( raw_parts ) -> MKTS_TABLE.unitheight      me, raw_parts.join ''
+    @cellquads        = ( raw_parts ) -> MKTS_TABLE.cellquads       me, raw_parts.join ''
+    @cellborder       = ( raw_parts ) -> MKTS_TABLE.cellborder      me, raw_parts.join ''
     return @
   #.........................................................................................................
   return [ me, ( f.apply {} ), ]
