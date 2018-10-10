@@ -58,6 +58,7 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
       sRed:               'red'
       sBlack:             'black'
       sQuadgrid:          'sRed,sDotted,sThin'
+      sJoints:            'gray!30,sThick'
     #.......................................................................................................
     default:
       gridwidth:  4
