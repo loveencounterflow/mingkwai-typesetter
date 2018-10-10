@@ -57,8 +57,8 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
       sDashed:            'dashed'
       sRed:               'red'
       sBlack:             'black'
-      sQuadgrid:          'sRed,sDotted,sThin'
-      sJoints:            'gray!30,sThick'
+      sDebugQuadgrid:     'sRed,sDotted,sThin'
+      sDebugJoints:       'gray!30,sThick'
     #.......................................................................................................
     default:
       gridwidth:  4
@@ -247,9 +247,9 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
   yield from @_walk_joint_coordinates_events            me
   yield from @_walk_quad_sides_events                   me
   yield from @_walk_quad_coordinates_events             me
-  yield from @_walk_debugging_events                    me
-  yield from @_walk_quadgrid_events                     me
-  yield from @_walk_borders_events                      me
+  yield from @_walk_debug_joints_events                 me
+  yield from @_walk_debug_quadgrid_events               me
+  yield from @_walk_quad_borders_events                 me
   yield from @_walk_closing_events                      me
   #.........................................................................................................
   # ### dump description for debugging ###
@@ -365,7 +365,7 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
   yield return
 
 #-----------------------------------------------------------------------------------------------------------
-@_walk_quadgrid_events = ( me ) ->
+@_walk_debug_quadgrid_events = ( me ) ->
   return null unless me.quadgrid
   #.........................................................................................................
   ### TAINT code duplication; use iterator ###
@@ -376,15 +376,15 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
     for row_nr_1 from @_walk_row_numbers me, 'short'
       row_nr_2  = row_nr_1 + 1
       quad = "#{col_letter_1}#{row_nr_1}"
-      yield [ 'tex', "\\draw[sQuadgrid] (quad_#{quad} top    left)  -- (quad_#{quad} top    right);%\n",  ]
-      yield [ 'tex', "\\draw[sQuadgrid] (quad_#{quad} top    left)  -- (quad_#{quad} bottom left);%\n",   ]
-      yield [ 'tex', "\\draw[sQuadgrid] (quad_#{quad} bottom left)  -- (quad_#{quad} bottom right);%\n",  ]
-      yield [ 'tex', "\\draw[sQuadgrid] (quad_#{quad} top    right) -- (quad_#{quad} bottom right);%\n",  ]
+      yield [ 'tex', "\\draw[sDebugQuadgrid] (quad_#{quad} top    left)  -- (quad_#{quad} top    right);%\n",  ]
+      yield [ 'tex', "\\draw[sDebugQuadgrid] (quad_#{quad} top    left)  -- (quad_#{quad} bottom left);%\n",   ]
+      yield [ 'tex', "\\draw[sDebugQuadgrid] (quad_#{quad} bottom left)  -- (quad_#{quad} bottom right);%\n",  ]
+      yield [ 'tex', "\\draw[sDebugQuadgrid] (quad_#{quad} top    right) -- (quad_#{quad} bottom right);%\n",  ]
   #.........................................................................................................
   yield return
 
 #-----------------------------------------------------------------------------------------------------------
-@_walk_borders_events = ( me ) ->
+@_walk_quad_borders_events = ( me ) ->
   #.........................................................................................................
   for designation, cellquads of me.cellquads
     continue unless ( cellborders = me.cellborders[ designation ] )?
@@ -401,15 +401,15 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
   yield return
 
 #-----------------------------------------------------------------------------------------------------------
-@_walk_debugging_events = ( me ) ->
+@_walk_debug_joints_events = ( me ) ->
   @_ensure_joint_coordinates  me
   #.........................................................................................................
   ### TAINT code duplication; use iterator ###
   for [ col_letter, col_nr, ] from @_walk_column_letters_and_numbers me, 'long'
     for row_nr from @_walk_row_numbers me, 'long'
       joint = "#{col_letter}#{row_nr}"
-      yield [ 'tex', "\\node[ color = gray ] at ($(joint_#{joint})+(2mm,2mm)$) {{\\mktsStyleCode{}#{joint}}}; ", ]
-      yield [ 'tex', "\\node[ color = gray, shape = circle, draw ] at (joint_#{joint}) {};%\n", ]
+      yield [ 'tex', "\\node[sDebugJoints] at ($(joint_#{joint})+(2mm,2mm)$) {{\\mktsStyleCode{}#{joint}}}; ", ]
+      yield [ 'tex', "\\node[sDebugJoints, shape = circle, draw ] at (joint_#{joint}) {};%\n", ]
   #.........................................................................................................
   yield return
 
