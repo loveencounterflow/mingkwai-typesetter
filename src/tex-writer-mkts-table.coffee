@@ -108,8 +108,9 @@ MKTS.MACRO_ESCAPER.register_raw_tag 'mkts-table'
     @cellspacing  = ( raw_parts ) -> MKTS_TABLE.cellspacing me, raw_parts.join ''
     @unitwidth    = ( raw_parts ) -> MKTS_TABLE.unitwidth   me, raw_parts.join ''
     @unitheight   = ( raw_parts ) -> MKTS_TABLE.unitheight  me, raw_parts.join ''
-    @cellgrid     = ( raw_parts ) -> MKTS_TABLE.cellgrid    me, raw_parts.join ''
-    @cell         = ( raw_parts ) -> MKTS_TABLE.cell        me, raw_parts.join ''
+    @quadgrid     = ( raw_parts ) -> MKTS_TABLE.quadgrid    me, raw_parts.join ''
+    @cellquads    = ( raw_parts ) -> MKTS_TABLE.cellquads   me, raw_parts.join ''
+    @cellborder   = ( raw_parts ) -> MKTS_TABLE.cellborder  me, raw_parts.join ''
     return @
   #.........................................................................................................
   return [ me, ( f.apply {} ), ]
