@@ -202,6 +202,8 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
   delete R.dimensions
   R.tl = R.tl.toLowerCase()
   R.br = R.br.toLowerCase()
+  R.tr = "#{( EXCJSCC.n2l R.right ).toLowerCase()}#{R.top}"
+  R.bl = "#{( EXCJSCC.n2l R.left ).toLowerCase()}#{R.bottom}"
   return R
 
 #-----------------------------------------------------------------------------------------------------------
