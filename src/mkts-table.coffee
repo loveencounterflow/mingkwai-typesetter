@@ -367,8 +367,45 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
   yield return
 
 #-----------------------------------------------------------------------------------------------------------
+@_walk_quad_borders_events = ( me ) ->
+  #.........................................................................................................
+  for designation, cellquads of me.cellquads
+    continue unless ( cellborders = me.cellborders[ designation ] )?
+    for d from @_walk_cellquads_sides me, cellquads, '*'
+      continue unless ( borderstyle = cellborders[ d.side ] )?
+      switch d.side
+        when 'top', 'bottom'
+          yield [ 'tex', "\\draw[#{borderstyle}] (quad_#{d.quad} #{d.side} left) -- (quad_#{d.quad} #{d.side} right);\n", ]
+        when 'left', 'right'
+          yield [ 'tex', "\\draw[#{borderstyle}] (quad_#{d.quad} top #{d.side}) -- (quad_#{d.quad} bottom #{d.side});\n", ]
+        else
+          throw new Error "(MKTS/TABLE 2658) illegal value for side #{rpr d.side}"
+  #.........................................................................................................
+  yield return
+
+#-----------------------------------------------------------------------------------------------------------
+@_walk_cell_borders_events = ( me ) ->
+  #.........................................................................................................
+  for designation, cellquads of me.cellquads
+    continue unless ( cellborders = me.cellborders[ designation ] )?
+    if ( borderstyle = cellborders[ 'left' ] )?
+      yield [ 'tex', "\\draw[#{borderstyle}] (quad_#{cellquads.tl} top left) -- (quad_#{cellquads.bl} bottom left);\n", ]
+    if ( borderstyle = cellborders[ 'right' ] )?
+      yield [ 'tex', "\\draw[#{borderstyle}] (quad_#{cellquads.tr} top right) -- (quad_#{cellquads.br} bottom right);\n", ]
+    if ( borderstyle = cellborders[ 'top' ] )?
+      yield [ 'tex', "\\draw[#{borderstyle}] (quad_#{cellquads.tl} top left) -- (quad_#{cellquads.tr} top right);\n", ]
+    if ( borderstyle = cellborders[ 'bottom' ] )?
+      yield [ 'tex', "\\draw[#{borderstyle}] (quad_#{cellquads.bl} bottom left) -- (quad_#{cellquads.br} bottom right);\n", ]
+  #.........................................................................................................
+  yield return
+
+
+#===========================================================================================================
+# EVENT GENERATORS: DEBUGGING EVENTS
+#-----------------------------------------------------------------------------------------------------------
 @_walk_debug_quadgrid_events = ( me ) ->
-  return null unless me.quadgrid
+  unless me.debug
+    yield return
   #.........................................................................................................
   ### TAINT code duplication; use iterator ###
   for [ col_letter_1, col_nr_1, ] from @_walk_column_letters_and_numbers me, 'short'
