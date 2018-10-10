@@ -167,12 +167,12 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
   return null
 
 #-----------------------------------------------------------------------------------------------------------
-@bordergap = ( me, text ) ->
+@padding = ( me, text ) ->
   unless ( type = CND.type_of text ) is 'text'
-    throw new Error "(MKTS/TABLE 1539) need a text for mkts-table/bordergap, got a #{type}"
+    throw new Error "(MKTS/TABLE 1539) need a text for mkts-table/padding, got a #{type}"
   #.........................................................................................................
   @_ensure_unitvector me
-  me.bordergap = @_parse_coordinate_without_units me, text
+  me.padding = @_parse_coordinate_without_units me, text
   #.........................................................................................................
   return null
 
@@ -245,7 +245,7 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
   ### Preparatory ###
   yield from @_walk_opening_events                      me
   yield from @_walk_style_events                        me
-  yield from @_walk_bordergap_events                  me
+  yield from @_walk_padding_events                  me
   yield from @_walk_column_and_row_coordinates_events   me
   yield from @_walk_joint_coordinates_events            me
   yield from @_walk_quad_sides_events                   me
@@ -305,11 +305,11 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
   yield return
 
 #-----------------------------------------------------------------------------------------------------------
-@_walk_bordergap_events = ( me ) ->
-  ### TAINT should rather use default bordergap ###
-  return null unless me.bordergap?
-  yield [ 'tex', "\\coordinate (horizontal spacing)  at ( #{me.bordergap.x}, 0 );%\n", ]
-  yield [ 'tex', "\\coordinate (vertical spacing)    at ( 0, #{me.bordergap.y} );%\n", ]
+@_walk_padding_events = ( me ) ->
+  ### TAINT should rather use default padding ###
+  return null unless me.padding?
+  yield [ 'tex', "\\coordinate (horizontal spacing)  at ( #{me.padding.x}, 0 );%\n", ]
+  yield [ 'tex', "\\coordinate (vertical spacing)    at ( 0, #{me.padding.y} );%\n", ]
   yield return
 
 #-----------------------------------------------------------------------------------------------------------
