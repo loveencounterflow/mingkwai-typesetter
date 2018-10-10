@@ -48,7 +48,7 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
     quadwidths:         null
     quadheights:        null
     joint_coordinates:  null
-    quadgrid:           false
+    debug:              false
     #.......................................................................................................
     styles:
       sThin:              'thin'
@@ -57,7 +57,7 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
       sDashed:            'dashed'
       sRed:               'red'
       sBlack:             'black'
-      sDebugQuadgrid:     'sRed,sDotted,sThin'
+      sDebugQuadgrid:     'gray!40,sDotted,sThin'
       sDebugJoints:       'gray!30,sThick'
     #.......................................................................................................
     default:
@@ -155,24 +155,24 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
   return null
 
 #-----------------------------------------------------------------------------------------------------------
-@quadgrid = ( me, text ) ->
+@debug = ( me, text ) ->
   unless ( type = CND.type_of text ) is 'text'
     throw new Error "(MKTS/TABLE 9791) need a text for mkts-table/cell, got a #{type}"
   #.........................................................................................................
   switch text
-    when 'true'   then me.quadgrid = true
-    when 'false'  then me.quadgrid = false
-    else throw new Error "(MKTS/TABLE 9791) expected 'true' or 'false' for mkts-table/quadgrid, got a #{rpr text}"
+    when 'true'   then me.debug = true
+    when 'false'  then me.debug = false
+    else throw new Error "(MKTS/TABLE 9791) expected 'true' or 'false' for mkts-table/debug, got a #{rpr text}"
   #.........................................................................................................
   return null
 
 #-----------------------------------------------------------------------------------------------------------
-@cellspacing = ( me, text ) ->
+@bordergap = ( me, text ) ->
   unless ( type = CND.type_of text ) is 'text'
-    throw new Error "(MKTS/TABLE 1539) need a text for mkts-table/cellspacing, got a #{type}"
+    throw new Error "(MKTS/TABLE 1539) need a text for mkts-table/bordergap, got a #{type}"
   #.........................................................................................................
   @_ensure_unitvector me
-  me.cellspacing = @_parse_coordinate_without_units me, text
+  me.bordergap = @_parse_coordinate_without_units me, text
   #.........................................................................................................
   return null
 

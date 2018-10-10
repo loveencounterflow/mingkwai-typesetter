@@ -2085,13 +2085,13 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @$document                                        S
     #.......................................................................................................
     ### stuff using new HTML-ish syntax ###
+    .pipe @MKTS_TABLE.$main                                 S
     .pipe @MKTX.INLINE.$here_x                              S
     .pipe @MKTX.INLINE.$box                                 S
     .pipe @MKTX.INLINE.$hfill                               S
     .pipe @MKTX.INLINE.$tiny                                S
     .pipe @MKTX.INLINE.$fncr                                S
     .pipe @MKTX.INLINE.$xfsc                                S
-    .pipe @MKTS_TABLE.$main                                 S
     #.......................................................................................................
     .pipe @MKTX.BLOCK.$blockquote                           S
     .pipe @MKTX.INLINE.$link                                S
