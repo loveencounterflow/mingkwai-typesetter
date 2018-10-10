@@ -148,7 +148,7 @@ EXCJSCC                   = require '../exceljs-spreadsheet-address-codec'
       yield from @_walk_cellquad_sides me, cellquad, 'bottom'
       yield return
     else
-      throw new Error "xxx"
+      throw new Error "(MKTS/TABLE 2658) illegal argument for side #{rpr side}"
   for row_nr in [ row_nr_1 .. row_nr_2 ]
     for col_nr in [ col_nr_1 .. col_nr_2 ]
       ### TAINT don't use EXCJSCC directly ###
@@ -159,21 +159,10 @@ EXCJSCC                   = require '../exceljs-spreadsheet-address-codec'
 
 #-----------------------------------------------------------------------------------------------------------
 cellquad = { top: 1, left: 1, bottom: 4, right: 3, tl: 'a1', br: 'c4' }
-for d from @_walk_cellquad_sides null, cellquad, 'left'
-  urge 'left',   jr d
-for d from @_walk_cellquad_sides null, cellquad, 'right'
-  urge 'right',  jr d
-for d from @_walk_cellquad_sides null, cellquad, 'top'
-  urge 'top',    jr d
-for d from @_walk_cellquad_sides null, cellquad, 'bottom'
-  urge 'bottom', jr d
-for d from @_walk_cellquad_sides null, cellquad, '*'
-  urge '*',      jr d
 
-
-
-
-
-
-
-
+( urge 'cellquad left   ', jr d ) for d from @_walk_cellquad_sides null, cellquad, 'left'
+( urge 'cellquad right  ', jr d ) for d from @_walk_cellquad_sides null, cellquad, 'right'
+( urge 'cellquad top    ', jr d ) for d from @_walk_cellquad_sides null, cellquad, 'top'
+( urge 'cellquad bottom ', jr d ) for d from @_walk_cellquad_sides null, cellquad, 'bottom'
+( urge '*',      jr d ) for d from @_walk_cellquad_sides null, cellquad, '*'
+echo()
