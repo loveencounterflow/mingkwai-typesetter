@@ -42,13 +42,10 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
 #-----------------------------------------------------------------------------------------------------------
 @_new_description = ( S ) ->
   R =
-    '~isa':     'MKTS/TABLE/description'
+    '~isa':     'MKTS/TABLE/description-1'
     cellquads:          {} ### cell extents in terms of quads, by designations ###
-    quad_dimensions:    {}
     cellborders:        {} ### cell borders, as TikZ styles by sides ###
-    cell_dimensions:    {} ### cell extents in terms of (unitwidth,unitheight), by designations ###
-    border_dimensions:  {} ### border extents in terms of (unitwidth,unitheight), by designations ###
-    pod_dimensions:     {} ### pod extents in terms of (unitwidth,unitheight), by designations ###
+    celldimensions:     {} ### cell extents in terms of (unitwidth,unitheight), by designations ###
     quadwidths:         [ null, ] ### [ 0 ] is default, [ 1 .. gridwidth ] explicit or implicit widths ###
     quadheights:        [ null, ] ### [ 0 ] is default, [ 1 .. gridheight ] explicit or implicit heights ###
     joint_coordinates:  null
@@ -61,8 +58,7 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
       sDashed:            'dashed'
       sRed:               'red'
       sBlack:             'black'
-      sDebugQuadgrid:     'gray!30,sThin'
-      sDebugCellgrid:     'gray!30,sThin'
+      sDebugQuadgrid:     'gray!40,sDotted,sThin'
       sDebugJoints:       'gray!30,sThick'
     #.......................................................................................................
     default:
@@ -302,23 +298,25 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
 # EVENT GENERATORS
 #-----------------------------------------------------------------------------------------------------------
 @_walk_events = ( me ) ->
-  @_compute_quad_dimensions     me
-  @_compute_cell_dimensions     me
-  @_compute_border_dimensions   me
-  @_compute_pod_dimensions      me
   #.........................................................................................................
   ### Preparatory ###
   yield from @_walk_opening_events                      me
-  yield from @_walk_style_events                        me ### TAINT should write to document preamble ###
+  yield from @_walk_style_events                        me
+  yield from @_walk_margin_events                       me
+  yield from @_walk_column_and_row_coordinates_events   me
+  yield from @_walk_joint_coordinates_events            me
+  yield from @_walk_quad_sides_events                   me
+  yield from @_walk_quad_coordinates_events             me
+  yield from @_walk_pod_events                          me
   #.........................................................................................................
-  ### Debugging ### ### TAINT should make ordering configurable so we can under- or overprint debugging ###
-  # yield from @_walk_debug_joints_events                 me
+  ### Debugging ###
+  ### TAINT should make ordering configurable so we can under- or overprint debugging ###
+  yield from @_walk_debug_joints_events                 me
   yield from @_walk_debug_quadgrid_events               me
-  yield from @_walk_debug_cellgrid_events               me
   #.........................................................................................................
   ### Borders, content ###
+  # yield from @_walk_quad_borders_events                 me ### TAINT do we need quad borders? ###
   yield from @_walk_cell_borders_events                 me
-  yield from @_walk_pod_events                          me
   #.........................................................................................................
   ### Finishing ###
   yield from @_walk_closing_events                      me
@@ -347,7 +345,8 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
   yield [ 'tex', "\\newdimen\\mktsTableUnitwidth\\setlength{\\mktsTableUnitwidth}{#{me.unitwidth}}%\n", ]
   yield [ 'tex', "\\newdimen\\mktsTableUnitheight\\setlength{\\mktsTableUnitheight}{#{me.unitheight}}%\n", ]
   yield [ 'tex', "\\begin{tikzpicture}[ overlay, yshift = 0mm, yscale = -1, line cap = round ]%\n", ]
-  yield [ 'tex', "\\tikzset{x=#{me.unitwidth}};\\tikzset{y=#{me.unitheight}};%\n", ]
+  yield [ 'tex', "\\tikzset{ x = #{me.unitwidth} };%\n", ]
+  yield [ 'tex', "\\tikzset{ y = #{me.unitheight} };%\n", ]
   yield return
 
 #-----------------------------------------------------------------------------------------------------------
@@ -365,29 +364,125 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
   yield return
 
 #-----------------------------------------------------------------------------------------------------------
+@_walk_margin_events = ( me ) ->
+  @_ensure_margin me
+  yield [ 'tex', "\\coordinate (marginwidth)   at ( #{me.marginwidth}, 0 );%\n", ]
+  yield [ 'tex', "\\coordinate (marginheight)  at ( 0, #{me.marginheight} );%\n", ]
+  yield return
+
+#-----------------------------------------------------------------------------------------------------------
+@_walk_padding_events = ( me ) ->
+  @_ensure_padding me
+  yield [ 'tex', "\\coordinate (paddingwidth)   at ( #{me.paddingwidth}, 0 );%\n", ]
+  yield [ 'tex', "\\coordinate (paddingheight)  at ( 0, #{me.paddingheight} );%\n", ]
+  yield return
+
+#-----------------------------------------------------------------------------------------------------------
+@_walk_column_and_row_coordinates_events = ( me ) ->
+  @_ensure_joint_coordinates  me
+  x_position  = 0
+  y_position  = 0
+  #.........................................................................................................
+  for [ col_letter, col_nr, ] from @_walk_column_letters_and_numbers me, 'long'
+    yield [ 'tex', "\\coordinate (col_#{col_letter}) at ( #{x_position}, 0 );%\n", ]
+    x_position += me.quadwidths[ col_nr ]
+  #.........................................................................................................
+  for row_nr from @_walk_row_numbers me, 'long'
+    yield [ 'tex', "\\coordinate (row_#{row_nr}) at ( 0, #{y_position} );%\n", ]
+    y_position += me.quadheights[ row_nr ]
+  #.........................................................................................................
+  yield return
+
+#-----------------------------------------------------------------------------------------------------------
+@_walk_joint_coordinates_events = ( me ) ->
+  @_ensure_joint_coordinates  me
+  x_position  = 0
+  y_position  = 0
+  #.........................................................................................................
+  ### TAINT code duplication; use iterator ###
+  for [ col_letter, col_nr, ] from @_walk_column_letters_and_numbers me, 'long'
+    for row_nr from @_walk_row_numbers me, 'long'
+      joint = "#{col_letter}#{row_nr}"
+      yield [ 'tex', "\\coordinate (joint_#{joint}) at ($ (col_#{col_letter}) + (row_#{row_nr}) $);%\n", ]
+  #.........................................................................................................
+  yield return
+
+#-----------------------------------------------------------------------------------------------------------
+@_walk_quad_sides_events = ( me ) ->
+  @_ensure_joint_coordinates  me
+  #.........................................................................................................
+  for [ col_letter, col_nr, ] from @_walk_column_letters_and_numbers me, 'long'
+    yield [ 'tex', "\\coordinate (col_#{col_letter} W border) at ($ (col_#{col_letter}) - (marginwidth) $);%\n", ]
+    yield [ 'tex', "\\coordinate (col_#{col_letter} E border) at ($ (col_#{col_letter}) + (marginwidth) $);%\n", ]
+  #.........................................................................................................
+  for row_nr from @_walk_row_numbers me, 'long'
+    yield [ 'tex', "\\coordinate (row_#{row_nr} N border) at ($ (row_#{row_nr}) - (marginheight) $);%\n", ]
+    yield [ 'tex', "\\coordinate (row_#{row_nr} S border) at ($ (row_#{row_nr}) + (marginheight) $);%\n", ]
+  #.........................................................................................................
+  yield return
+
+#-----------------------------------------------------------------------------------------------------------
+@_walk_quad_coordinates_events = ( me ) ->
+  @_ensure_joint_coordinates  me
+  #.........................................................................................................
+  ### TAINT code duplication; use iterator ###
+  for [ col_letter_1, col_nr_1, ] from @_walk_column_letters_and_numbers me, 'short'
+    col_nr_2      = col_nr_1 + 1
+    ### TAINT don't use EXCJSCC directly ###
+    col_letter_2  = ( EXCJSCC.n2l col_nr_2 ).toLowerCase()
+    for row_nr_1 from @_walk_row_numbers me, 'short'
+      row_nr_2  = row_nr_1 + 1
+      quad = "#{col_letter_1}#{row_nr_1}"
+      yield [ 'tex', "\\coordinate (quad_#{quad} top left)      at ($ (row_#{row_nr_1} S border) + (col_#{col_letter_1} E border) $);%\n", ]
+      yield [ 'tex', "\\coordinate (quad_#{quad} top right)     at ($ (row_#{row_nr_1} S border) + (col_#{col_letter_2} W border) $);%\n", ]
+      yield [ 'tex', "\\coordinate (quad_#{quad} bottom left)   at ($ (row_#{row_nr_2} N border) + (col_#{col_letter_1} E border) $);%\n", ]
+      yield [ 'tex', "\\coordinate (quad_#{quad} bottom right)  at ($ (row_#{row_nr_2} N border) + (col_#{col_letter_2} W border) $);%\n", ]
+  #.........................................................................................................
+  yield return
+
+#-----------------------------------------------------------------------------------------------------------
+@_walk_quad_borders_events = ( me ) ->
+  #.........................................................................................................
+  for designation, cellquads of me.cellquads
+    continue unless ( cellborders = me.cellborders[ designation ] )?
+    for d from @_walk_cellquads_sides me, cellquads, '*'
+      continue unless ( borderstyle = cellborders[ d.side ] )?
+      switch d.side
+        when 'top', 'bottom'
+          yield [ 'tex', "\\draw[#{borderstyle}] (quad_#{d.quad} #{d.side} left) -- (quad_#{d.quad} #{d.side} right);\n", ]
+        when 'left', 'right'
+          yield [ 'tex', "\\draw[#{borderstyle}] (quad_#{d.quad} top #{d.side}) -- (quad_#{d.quad} bottom #{d.side});\n", ]
+        else
+          throw new Error "(MKTS/TABLE 1634) illegal value for side #{rpr d.side}"
+  #.........................................................................................................
+  yield return
+
+#-----------------------------------------------------------------------------------------------------------
 @_walk_cell_borders_events = ( me ) ->
   #.........................................................................................................
-  for designation, d of me.border_dimensions
+  for designation, cellquads of me.cellquads
     continue unless ( cellborders = me.cellborders[ designation ] )?
     if ( borderstyle = cellborders[ 'left' ] )?
-      yield [ 'tex', "\\draw[#{borderstyle}] (#{d.left},#{d.top}) -- (#{d.left},#{d.bottom});\n", ]
+      yield [ 'tex', "\\draw[#{borderstyle}] (quad_#{cellquads.tl} top left) -- (quad_#{cellquads.bl} bottom left);\n", ]
     if ( borderstyle = cellborders[ 'right' ] )?
-      yield [ 'tex', "\\draw[#{borderstyle}] (#{d.right},#{d.top}) -- (#{d.right},#{d.bottom});\n", ]
+      yield [ 'tex', "\\draw[#{borderstyle}] (quad_#{cellquads.tr} top right) -- (quad_#{cellquads.br} bottom right);\n", ]
     if ( borderstyle = cellborders[ 'top' ] )?
-      yield [ 'tex', "\\draw[#{borderstyle}] (#{d.left},#{d.top}) -- (#{d.right},#{d.top});\n", ]
+      yield [ 'tex', "\\draw[#{borderstyle}] (quad_#{cellquads.tl} top left) -- (quad_#{cellquads.tr} top right);\n", ]
     if ( borderstyle = cellborders[ 'bottom' ] )?
-      yield [ 'tex', "\\draw[#{borderstyle}] (#{d.left},#{d.bottom}) -- (#{d.right},#{d.bottom});\n", ]
+      yield [ 'tex', "\\draw[#{borderstyle}] (quad_#{cellquads.bl} bottom left) -- (quad_#{cellquads.br} bottom right);\n", ]
   #.........................................................................................................
   yield return
 
 #-----------------------------------------------------------------------------------------------------------
 @_walk_pod_events = ( me ) ->
+  @_ensure_pod_dimensions me
+  #.........................................................................................................
   for designation, cellquads of me.cellquads
-    d = me.pod_dimensions[ designation ]
-    yield [ 'tex', "\\node[anchor=north west,inner sep=0mm] at (#{d.left},#{d.top})%\n", ]
-    yield [ 'tex', "{\\begin{minipage}[t][#{d.height_u}\\mktsTableUnitheight][t]{#{d.width_u}\\mktsTableUnitwidth}%\n", ]
+    d = me.celldimensions[ designation ]
+    yield [ 'tex', "\\node[anchor=north west,inner sep=0mm] at ($ (quad_#{cellquads.tl} top left) + (#{me.paddingwidth},#{me.paddingheight}) $)%\n", ]
+    yield [ 'tex', "{\\begin{minipage}[t][#{d.podheight_u}\\mktsTableUnitheight][t]{#{d.podwidth_u}\\mktsTableUnitwidth}%\n", ]
     yield [ 'tex', "A\\hfill{}B\\hfill{}C\\end{minipage}};%\n", ]
-    # yield [ 'tex', "{\\framebox{\\begin{minipage}[t][#{d.height_u}\\mktsTableUnitheight][t]{#{d.width_u}\\mktsTableUnitwidth}%\n", ]
+    # yield [ 'tex', "{\\framebox{\\begin{minipage}[t][#{d.podheight_u}\\mktsTableUnitheight][t]{#{d.podwidth_u}\\mktsTableUnitwidth}%\n", ]
     # yield [ 'tex', "A\\hfill{}B\\hfill{}C\\end{minipage}}};%\n", ]
   #.........................................................................................................
   yield return
@@ -400,41 +495,18 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
   unless me.debug
     yield return
   #.........................................................................................................
-  ### TAINT use fixed size like 1mm ###
-  top       = ( @_top_from_row_nr     me, 1             ) - 3
-  bottom    = ( @_bottom_from_row_nr  me, me.gridheight ) + 3
-  for col_nr in [ 1 .. me.gridwidth + 1 ]
-    x = @_left_from_col_nr me, col_nr
-    yield [ 'tex', "\\draw[sDebugQuadgrid] (#{x},#{top}) -- (#{x},#{bottom});\n", ]
-  #.........................................................................................................
-  ### TAINT use fixed size like 1mm ###
-  left      = ( @_left_from_col_nr    me, 1             ) - 3
-  right     = ( @_right_from_col_nr   me, me.gridwidth  ) + 3
-  for row_nr in [ 1 .. me.gridheight + 1 ]
-    y = @_top_from_row_nr me, row_nr
-    yield [ 'tex', "\\draw[sDebugQuadgrid] (#{left},#{y}) -- (#{right},#{y});\n", ]
-  #.........................................................................................................
-  yield return
-
-#-----------------------------------------------------------------------------------------------------------
-@_walk_debug_cellgrid_events = ( me ) ->
-  unless me.debug
-    yield return
-  #.........................................................................................................
-  for designation, d of me.cell_dimensions
-    ### TAINT use fixed size like 1mm ###
-    left   = d.left   + 0.5
-    right  = d.right  - 0.5
-    top    = d.top    + 0.5
-    bottom = d.bottom - 0.5
-    yield [ 'tex', "\\draw[sDebugCellgrid] (#{left},#{bottom})" \
-                 + " -- (#{left},#{top})"                       \
-                 + " -- (#{right},#{top});", ]
-    yield [ 'tex', " \\draw[sDebugCellgrid] (#{right},#{top}) " \
-                 + " -- (#{right},#{bottom});", ]
-    yield [ 'tex', " \\draw[sDebugCellgrid] (#{left},#{bottom}) " \
-                 + " -- (#{right},#{bottom});", ]
-    yield [ 'tex', "\n", ]
+  ### TAINT code duplication; use iterator ###
+  for [ col_letter_1, col_nr_1, ] from @_walk_column_letters_and_numbers me, 'short'
+    col_nr_2      = col_nr_1 + 1
+    ### TAINT don't use EXCJSCC directly ###
+    col_letter_2  = ( EXCJSCC.n2l col_nr_2 ).toLowerCase()
+    for row_nr_1 from @_walk_row_numbers me, 'short'
+      row_nr_2  = row_nr_1 + 1
+      quad = "#{col_letter_1}#{row_nr_1}"
+      yield [ 'tex', "\\draw[sDebugQuadgrid] (quad_#{quad} top    left)  -- (quad_#{quad} top    right);%\n",  ]
+      yield [ 'tex', "\\draw[sDebugQuadgrid] (quad_#{quad} top    left)  -- (quad_#{quad} bottom left);%\n",   ]
+      yield [ 'tex', "\\draw[sDebugQuadgrid] (quad_#{quad} bottom left)  -- (quad_#{quad} bottom right);%\n",  ]
+      yield [ 'tex', "\\draw[sDebugQuadgrid] (quad_#{quad} top    right) -- (quad_#{quad} bottom right);%\n",  ]
   #.........................................................................................................
   yield return
 
@@ -502,70 +574,24 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
   return null
 
 #-----------------------------------------------------------------------------------------------------------
-@_compute_quad_dimensions = ( me ) ->
-  for [ col_letter, col_nr, ] from @_walk_column_letters_and_numbers me, 'short'
-    for row_nr from @_walk_row_numbers me, 'short'
-      designation   = "#{col_letter}#{row_nr}"
-      left   = @_left_from_col_nr   me, col_nr
-      right  = @_right_from_col_nr  me, col_nr
-      top    = @_top_from_row_nr    me, row_nr
-      bottom = @_bottom_from_row_nr me, row_nr
-      # ### TAINT must not become negative ###
-      # quadwidth_u   = right  - left # - 2 * me.marginwidth
-      # quadheight_u  = bottom - top  # - 2 * me.marginheight
-      me.quad_dimensions[ designation ] = {
-        col_nr,         row_nr,
-        left,    right,
-        top,     bottom, }
-  return null
-
-#-----------------------------------------------------------------------------------------------------------
-@_compute_cell_dimensions = ( me ) ->
-  ### TAINT use me.cell_dimensions ###
+@_ensure_pod_dimensions = ( me ) ->
   for designation, cellquads of me.cellquads
-    left   = ( @_left_from_col_nr   me, cellquads.left    )
-    right  = ( @_right_from_col_nr  me, cellquads.right   )
-    top    = ( @_top_from_row_nr    me, cellquads.top     )
-    bottom = ( @_bottom_from_row_nr me, cellquads.bottom  )
-    width_u       = right  - left
-    height_u      = bottom - top
-    me.cell_dimensions[ designation ] = {
-      left,  right,   width_u,
-      top,   bottom,  height_u, }
-  return null
-
-#-----------------------------------------------------------------------------------------------------------
-@_compute_border_dimensions = ( me ) ->
-  for designation, d of me.cell_dimensions
-    left   = d.left   + me.marginwidth
-    right  = d.right  - me.marginwidth
-    top    = d.top    + me.marginheight
-    bottom = d.bottom - me.marginheight
+    continue if me.celldimensions[ designation ]?
+    left_edge_u   = @_left_edge_u_from_col_nr   me, cellquads.left
+    right_edge_u  = @_right_edge_u_from_col_nr  me, cellquads.right
+    top_edge_u    = @_top_edge_u_from_col_nr    me, cellquads.top
+    bottom_edge_u = @_bottom_edge_u_from_col_nr me, cellquads.bottom
     ### TAINT must not become negative ###
-    width_u       = right  - left
-    height_u      = bottom - top
-    me.border_dimensions[ designation ] = {
-      left,  right,   width_u,
-      top,   bottom,  height_u, }
+    podwidth_u    = right_edge_u  - left_edge_u - 2 * me.paddingwidth
+    podheight_u   = bottom_edge_u - top_edge_u  - 2 * me.paddingheight
+    me.celldimensions[ designation ] = {
+      left_edge_u,   right_edge_u,  podwidth_u,
+      top_edge_u,   bottom_edge_u, podheight_u, }
+  debug '66533', me.celldimensions
   return null
 
 #-----------------------------------------------------------------------------------------------------------
-@_compute_pod_dimensions = ( me ) ->
-  for designation, d of me.cell_dimensions
-    left   = d.left   + me.paddingwidth
-    right  = d.right  - me.paddingwidth
-    top    = d.top    + me.paddingheight
-    bottom = d.bottom - me.paddingheight
-    ### TAINT must not become negative ###
-    width_u       = right  - left
-    height_u      = bottom - top
-    me.pod_dimensions[ designation ] = {
-      left,  right,   width_u,
-      top,   bottom,  height_u, }
-  return null
-
-#-----------------------------------------------------------------------------------------------------------
-@_left_from_col_nr = ( me, col_nr ) ->
+@_left_edge_u_from_col_nr = ( me, col_nr ) ->
   ### TAINT should precompute ###
   @_ensure_quadwidths me
   R = 0
@@ -573,20 +599,20 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
   return R
 
 #-----------------------------------------------------------------------------------------------------------
-@_right_from_col_nr = ( me, col_nr ) ->
-  return ( @_left_from_col_nr me, col_nr ) + me.quadwidths[ col_nr ]
+@_right_edge_u_from_col_nr = ( me, col_nr ) ->
+  return ( @_left_edge_u_from_col_nr me, col_nr ) + me.quadwidths[ col_nr ]
 
 #-----------------------------------------------------------------------------------------------------------
-@_top_from_row_nr = ( me, row_nr ) ->
+@_top_edge_u_from_col_nr = ( me, col_nr ) ->
   ### TAINT should precompute ###
   @_ensure_quadheights me
   R = 0
-  R += me.quadheights[ nr ] for nr in [ 1 ... row_nr ]
+  R += me.quadheights[ nr ] for nr in [ 1 ... col_nr ]
   return R
 
 #-----------------------------------------------------------------------------------------------------------
-@_bottom_from_row_nr = ( me, row_nr ) ->
-  return ( @_top_from_row_nr me, row_nr ) + me.quadheights[ row_nr ]
+@_bottom_edge_u_from_col_nr = ( me, col_nr ) ->
+  return ( @_top_edge_u_from_col_nr me, col_nr ) + me.quadheights[ col_nr ]
 
 
 #===========================================================================================================

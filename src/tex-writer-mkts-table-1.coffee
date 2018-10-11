@@ -32,8 +32,8 @@ select                    = MD_READER.select.bind      MD_READER
 is_hidden                 = MD_READER.is_hidden.bind   MD_READER
 is_stamped                = MD_READER.is_stamped.bind  MD_READER
 #...........................................................................................................
-MKTS_TABLE                = require './mkts-table'
-MKTS.MACRO_ESCAPER.register_raw_tag 'mkts-table-description'
+MKTS_TABLE                = require './mkts-table-1'
+MKTS.MACRO_ESCAPER.register_raw_tag 'mkts-table-description-1'
 
 
 #===========================================================================================================
@@ -51,7 +51,7 @@ MKTS.MACRO_ESCAPER.register_raw_tag 'mkts-table-description'
 #
 #-----------------------------------------------------------------------------------------------------------
 @$dump_table_description = ( S ) -> D.$observe ( event ) ->
-  return unless select event, '.', 'MKTS/TABLE/description', true
+  return unless select event, '.', 'MKTS/TABLE/description-1', true
   help '99871', ( CND.blue rpr event[ 2 ] )
 
 #-----------------------------------------------------------------------------------------------------------
@@ -59,7 +59,7 @@ MKTS.MACRO_ESCAPER.register_raw_tag 'mkts-table-description'
   within_mkts_table = false
   return $ ( event, send ) =>
     #.......................................................................................................
-    if select event, '.', 'mkts-table-description'
+    if select event, '.', 'mkts-table-description-1'
       [ type, name, text, meta, ] = event
       [ description, sandbox, ]   = @get_mkts_table_description_and_sandbox S, event
       try
@@ -69,7 +69,7 @@ MKTS.MACRO_ESCAPER.register_raw_tag 'mkts-table-description'
         warn "an error occurred"
         throw error
       send stamp event
-      send [ '.', 'MKTS/TABLE/description', description, ( copy meta ), ]
+      send [ '.', 'MKTS/TABLE/description-1', description, ( copy meta ), ]
     #.......................................................................................................
     else
       send event
@@ -79,7 +79,7 @@ MKTS.MACRO_ESCAPER.register_raw_tag 'mkts-table-description'
 #-----------------------------------------------------------------------------------------------------------
 @$render_description = ( S ) ->
   return $ ( event, send ) =>
-    return send event unless select event, '.', 'MKTS/TABLE/description'
+    return send event unless select event, '.', 'MKTS/TABLE/description-1'
     [ type, name, description, meta, ] = event
     send sub_event for sub_event from MKTS_TABLE._walk_events description
     send stamp event

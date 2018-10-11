@@ -51,6 +51,7 @@ MACRO_ESCAPER             = require './macro-escaper'
 MACRO_INTERPRETER         = require './macro-interpreter'
 LINEBREAKER               = require './linebreaker'
 @COLUMNS                  = require './tex-writer-columns'
+@MKTS_TABLE1              = require './tex-writer-mkts-table-1'
 @MKTS_TABLE               = require './tex-writer-mkts-table'
 AUX                       = require './tex-writer-aux'
 YADDA                     = require './yadda'
@@ -2085,6 +2086,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @$document                                        S
     #.......................................................................................................
     ### stuff using new HTML-ish syntax ###
+    .pipe @MKTS_TABLE1.$main                                S
     .pipe @MKTS_TABLE.$main                                 S
     .pipe @MKTX.INLINE.$here_x                              S
     .pipe @MKTX.INLINE.$box                                 S
