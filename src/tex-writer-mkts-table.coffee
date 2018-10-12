@@ -31,6 +31,7 @@ unstamp                   = MD_READER.unstamp.bind     MD_READER
 select                    = MD_READER.select.bind      MD_READER
 is_hidden                 = MD_READER.is_hidden.bind   MD_READER
 is_stamped                = MD_READER.is_stamped.bind  MD_READER
+jr                        = JSON.stringify
 #...........................................................................................................
 MKTS_TABLE                = require './mkts-table'
 MKTS.MACRO_ESCAPER.register_raw_tag 'mkts-table-description'
@@ -44,7 +45,7 @@ MKTS.MACRO_ESCAPER.register_raw_tag 'mkts-table-description'
   return D.TEE.from_pipeline [
     @$parse_description               S
     @$render_description              S
-    @$dump_table_description          S
+    # @$dump_table_description          S
     ]
 
 #===========================================================================================================
@@ -78,11 +79,61 @@ MKTS.MACRO_ESCAPER.register_raw_tag 'mkts-table-description'
 
 #-----------------------------------------------------------------------------------------------------------
 @$render_description = ( S ) ->
+  ### TAINT should allow to name tables in description and content tags ###
+  prv_description       = null
+  within_table_content  = false
+  within_cell           = false
+  cells                 = {}
+  current_cell          = null
+  #.........................................................................................................
   return $ ( event, send ) =>
-    return send event unless select event, '.', 'MKTS/TABLE/description'
-    [ type, name, description, meta, ] = event
-    send sub_event for sub_event from MKTS_TABLE._walk_events description
-    send stamp event
+    if select event, '.', 'MKTS/TABLE/description'
+      [ type, name, description, meta, ]  = event
+      prv_description                     = description
+      return send stamp event
+    #.......................................................................................................
+    if select event, '(', 'mkts-table-content'
+      within_table_content = true
+      return send stamp event
+    #.......................................................................................................
+    if select event, ')', 'mkts-table-content'
+      within_table_content = false
+      # send sub_event for sub_event from MKTS_TABLE._walk_events description
+      ### TAINT render table now ###
+      debug '66522', cells
+      return send stamp event
+    #.......................................................................................................
+    if within_table_content
+      #.....................................................................................................
+      if select event, '(', 'cell'
+        within_cell = true
+        [ type, name, Q, meta, ]  = event
+        if not Q? and Q.key?
+          throw new Error "need key for cell"
+        ### TAINT must validate key at some point; like this, content with an unknown key will just vanish ###
+        current_cell = cells[ Q.key ] = []
+        return send stamp event
+      #.....................................................................................................
+      if select event, ')', 'cell'
+        within_cell   = false
+        current_cell  = null
+        return send stamp event
+      #.....................................................................................................
+      if within_cell
+        current_cell.push event
+        urge '27762', jr event
+        return send stamp event
+      #.....................................................................................................
+      if ( select event, '.', 'text' ) and ( event[ 2 ].match /^\s*$/ )?
+        whisper '27762', jr event
+        return send stamp event
+      #.....................................................................................................
+      # throw new Error "detected illegal content: #{rpr event}"
+      warn '27762', jr event
+      return
+    #.......................................................................................................
+    send event
+    #.......................................................................................................
     return null
 
 #-----------------------------------------------------------------------------------------------------------
