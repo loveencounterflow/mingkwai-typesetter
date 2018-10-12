@@ -552,11 +552,16 @@ tracker_pattern = /// ^
             send [ ')', 'image', null, meta, ]
           #.................................................................................................
           when 'code_inline'
+            # debug '77622', jr token
+            name = switch token.markup
+              when '`'    then 'code-span'
+              when '``'   then 'code-box'
+              else throw new Error "unknown markup for code_inline #{rpr token.markup}"
             text_meta             = ( @copy meta )
             text_meta[ 'markup' ] = ''
-            send [ '(', 'code-span',  null,                       meta,   ]
-            send [ '.', 'text',       token[ 'content' ],    text_meta,   ]
-            send [ ')', 'code-span',  null,               ( @copy meta ),  ]
+            send [ '(', name,         null,          meta,            ]
+            send [ '.', 'text',       token.content, text_meta,       ]
+            send [ ')', name,         null,          ( @copy meta ),  ]
           #.................................................................................................
           when 'footnote_ref'
             id = token[ 'meta' ][ 'id' ]

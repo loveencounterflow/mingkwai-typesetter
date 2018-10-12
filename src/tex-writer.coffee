@@ -1128,18 +1128,41 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
 
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.INLINE.$code_span = ( S ) =>
-  within_code_span = false
+  within_smallcaps  = false
+  within_code_span  = false
   #.........................................................................................................
   return $ ( event, send ) =>
     #.......................................................................................................
-    if select event, '(', [ 'code-span', 'tt', ]
+    if select event, '(', [ 'smallcaps-lower', ], true
+      send event
+      within_smallcaps = true
+    #.......................................................................................................
+    else if select event, ')', [ 'smallcaps-lower', ], true
+      send event
+      within_smallcaps = false
+    #.......................................................................................................
+    else if select event, '(', [ 'code-span', 'tt', ]
       send stamp event
-      send [ 'tex', '{\\mktsStyleCode{}', ]
+      if within_smallcaps then  send [ 'tex', '{\\mktsStyleCode{}\\mktsUnderline{', ]
+      else                      send [ 'tex', '{\\mktsStyleCode{}', ]
       within_code_span = true
     #.......................................................................................................
     else if select event, ')', [ 'code-span', 'tt', ]
       send stamp event
-      send [ 'tex', "}", ]
+      if within_smallcaps then  send [ 'tex', "}}", ]
+      else                      send [ 'tex', "}", ]
+      within_code_span = false
+    #.......................................................................................................
+    else if select event, '(', [ 'code-box', 'tt', ]
+      send stamp event
+      ### NOTE can dispend with `\makebox` as underline inhibits linebreaks as well ###
+      if within_smallcaps then  send [ 'tex', '{\\mktsStyleCode{}\\mktsUnderline{', ]
+      else                      send [ 'tex', '\\makebox{{\\mktsStyleCode{}', ]
+      within_code_span = true
+    #.......................................................................................................
+    else if select event, ')', [ 'code-box', 'tt', ]
+      send stamp event
+      send [ 'tex', "}}", ]
       within_code_span = false
     #.......................................................................................................
     else if within_code_span and select event, '.', 'text'
