@@ -166,3 +166,8 @@ cellquad = { top: 1, left: 1, bottom: 4, right: 3, tl: 'a1', br: 'c4' }
 ( urge 'cellquad bottom ', jr d ) for d from @_walk_cellquad_sides null, cellquad, 'bottom'
 ( urge '*',      jr d ) for d from @_walk_cellquad_sides null, cellquad, '*'
 echo()
+
+
+
+
+
