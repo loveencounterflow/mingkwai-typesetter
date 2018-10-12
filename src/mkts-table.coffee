@@ -294,18 +294,27 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
     throw new Error "(MKTS/TABLE 6043) expected a text for cellborder, got a #{rpr type}"
   unless ( groups = cellborder.match /^(.+):(.+):(.*)$/ )?
     throw new Error "(MKTS/TABLE 5822) expected a cellborder like 'a1:left:sDashed,sThick', got #{rpr cellborder}"
-  [ _, quads, sides, style, ] = groups
+  [ _, cellhints, sides, style, ] = groups
+  #.........................................................................................................
+  sides = ( _.trim() for _ in sides.split ',' )
+  sides = [ 'top', 'left', 'bottom', 'right', ] if '*' in sides
   #.........................................................................................................
   ### TAINT this will have to be changed to allow for named cells ###
-  cells = if '*' in quads
-    Object.keys me.cellquads
+  cellhints = new Set ( _.trim() for _ in cellhints.split ',' )
+  if cellhints.has '*'
+    cells = Object.keys me.cellquads
   else
-    @_cellnames_from_quadkeys me, ( _.trim() for _ in quads.split ',' )
-  #.........................................................................................................
-  sides = if '*' in sides
-    [ 'top', 'left', 'bottom', 'right', ]
-  else
-    ( _.trim() for _ in sides.split ',' )
+    ### TAINT as it stands, `cellborder'table:bottom,right:red'` will style all bottom and right borders
+    of all cells that have real estate along the bottom and right borders of the table. An improved version
+    should probably only affect the bottom borders of table-bottom cells and the right borders of
+    table-right cells. Use two statements `cellborder'table:bottom:red'`, `cellborder'table:right:red'` to
+    express that meaning FTTB. ###
+    if cellhints.has 'table'
+      cellhints.delete 'table'
+      for side in sides
+        cellhints.add d.quadkey for d from @_walk_table_edge_quads me, side
+    quadkeys  = ( cellhint for cellhint from cellhints )
+    cells     = @_cellnames_from_quadkeys me, quadkeys
   #.........................................................................................................
   style = style.trim()
   style = null if style in [ 'none', '', ]
@@ -607,7 +616,8 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
 @_cellnames_from_quadkeys = ( me, quadkeys ) ->
   R = new Set()
   for quadkey in quadkeys
-    R.add cellname for cellname in me.quadcells
+    continue unless ( quadcells = me.quadcells[ quadkey ] )?
+    R.add cellname for cellname in quadcells
   return ( cellname for cellname from R )
 
 
@@ -638,6 +648,56 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
       col_letter  = ( EXCJSCC.n2l col_nr ).toLowerCase()
       designation = "#{col_letter}#{row_nr}"
       yield { col_nr, row_nr, col_letter, designation, }
+  yield return
+
+#-----------------------------------------------------------------------------------------------------------
+@_walk_table_edge_cellnames = ( me, edge ) ->
+  seen_cellnames = new Set()
+  for d from @_walk_table_edge_quads me, edge
+    continue unless ( cellnames = me.quadcells[ d.quadkey ] )?
+    for cellname in cellnames
+      continue if seen_cellnames.has cellname
+      seen_cellnames.add cellname
+      yield cellname
+  yield return
+
+#-----------------------------------------------------------------------------------------------------------
+@_walk_table_edge_quads = ( me, edge ) ->
+  switch edge
+    when 'left'
+      col_nr_1    = 1
+      col_nr_2    = 1
+      row_nr_1    = 1
+      row_nr_2    = me.gridheight
+    when 'right'
+      col_nr_1    = me.gridwidth
+      col_nr_2    = me.gridwidth
+      row_nr_1    = 1
+      row_nr_2    = me.gridheight
+    when 'top'
+      col_nr_1    = 1
+      col_nr_2    = me.gridwidth
+      row_nr_1    = 1
+      row_nr_2    = 1
+    when 'bottom'
+      col_nr_1    = 1
+      col_nr_2    = me.gridwidth
+      row_nr_1    = me.gridheight
+      row_nr_2    = me.gridheight
+    when '*'
+      yield from @_walk_table_edge_quads me, 'left'
+      yield from @_walk_table_edge_quads me, 'right'
+      yield from @_walk_table_edge_quads me, 'top'
+      yield from @_walk_table_edge_quads me, 'bottom'
+      yield return
+    else
+      throw new Error "(MKTS/TABLE 4550) illegal argument for edge #{rpr edge}"
+  for row_nr in [ row_nr_1 .. row_nr_2 ]
+    for col_nr in [ col_nr_1 .. col_nr_2 ]
+      ### TAINT don't use EXCJSCC directly ###
+      col_letter  = ( EXCJSCC.n2l col_nr ).toLowerCase()
+      quadkey     = "#{col_letter}#{row_nr}"
+      yield { col_nr, row_nr, col_letter, quadkey, edge, }
   yield return
 
 
