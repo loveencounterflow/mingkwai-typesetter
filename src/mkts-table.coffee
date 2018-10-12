@@ -336,7 +336,7 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
   yield from @_walk_style_events                        me ### TAINT should write to document preamble ###
   #.........................................................................................................
   ### Debugging ### ### TAINT should make ordering configurable so we can under- or overprint debugging ###
-  # yield from @_walk_debug_joints_events                 me
+  yield from @_walk_debug_joints_events                 me
   yield from @_walk_debug_quadgrid_events               me
   yield from @_walk_debug_cellgrid_events               me
   #.........................................................................................................
@@ -468,12 +468,13 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
     yield return
   @_ensure_joint_coordinates  me
   #.........................................................................................................
-  ### TAINT code duplication; use iterator ###
-  for [ col_letter, col_nr, ] from @_walk_column_letters_and_numbers me, 'long'
-    for row_nr from @_walk_row_numbers me, 'long'
-      joint = "#{col_letter}#{row_nr}"
-      yield [ 'tex', "\\node[sDebugJoints] at ($(joint_#{joint})+(2mm,2mm)$) {{\\mktsStyleCode{}#{joint}}}; ", ]
-      yield [ 'tex', "\\node[sDebugJoints, shape = circle, draw ] at (joint_#{joint}) {};%\n", ]
+  ### TAINT use fixed size like 1mm ###
+  for [ col_letter, col_nr, ] from @_walk_column_letters_and_numbers me, 'short'
+    for row_nr from @_walk_row_numbers me, 'short'
+      x = ( @_left_from_col_nr  me, col_nr ) + 2
+      y = ( @_top_from_row_nr   me, row_nr ) + 2
+      quadkey = "#{col_letter}#{row_nr}"
+      yield [ 'tex', "\\node[sDebugJoints] at (#{x},#{y}) {{\\mktsStyleCode{}#{quadkey}}}; ", ]
   #.........................................................................................................
   yield return
 
@@ -722,3 +723,5 @@ _stackerr = ( ref, message, error = null ) ->
     ### TAINT elide current line from stack trace ###
     error = new Error message
   return error
+
+
