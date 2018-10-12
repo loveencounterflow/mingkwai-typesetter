@@ -414,7 +414,7 @@ tracker_pattern = /// ^
     ### TAINT `map` location data is borked with this method ###
     ### add extraneous text content; this causes the parser to parse the HTML block as a paragraph
     with some inline HTML: ###
-    XXX_source  = "XXX" + token[ 'content' ]
+    XXX_source  = "XXX" + token.content
     # debug '33392-1', token
     # debug '33392-2', XXX_source
     ### for `environment` see https://markdown-it.github.io/markdown-it/#MarkdownIt.parse ###
@@ -443,7 +443,7 @@ tracker_pattern = /// ^
   #.........................................................................................................
   send_unknown = ( token, meta ) =>
     { type, } = token
-    _send [ '?', type, token[ 'content' ], meta, ]
+    _send [ '?', type, token.content, meta, ]
     unknown_tokens.push type unless type in unknown_tokens
   #.........................................................................................................
   # return $ ( token, send, end ) =>
@@ -504,8 +504,8 @@ tracker_pattern = /// ^
           when 'blockquote_close'   then send [ ')', 'blockquote',    null,                         meta, ]
           # inlines
           # singles
-          when 'text'               then send [ '.', 'text',          token[ 'content' ],           meta, ]
-          when 'hr'                 then send [ '.', 'hr',            token[ 'markup' ],            meta, ]
+          when 'text'               then send [ '.', 'text',          token.content,                meta, ]
+          when 'hr'                 then send [ '.', 'hr',            token.markup,                 meta, ]
           #.................................................................................................
           # specials
           #.................................................................................................
@@ -515,7 +515,7 @@ tracker_pattern = /// ^
           # when 'em_close'           then send [ ')', 'em',            null,                         meta, ]
           when 'strong_open', 'strong_close', 'em_open', 'em_close'
             type = if token[ 'type' ].endsWith 'open' then '(' else ')'
-            name = switch token[ 'markup' ]
+            name = switch token.markup
               when '*'  then 'em'
               when '**' then 'strong'
               when '_'  then 'smallcaps-lower'
@@ -603,13 +603,13 @@ tracker_pattern = /// ^
                 language_name = token[ 'info' ]
                 language_name = 'text' if language_name.length is 0
                 send [ '(', 'code', language_name,              meta,    ]
-                send [ '.', 'text', token[ 'content' ], ( @copy meta ),  ]
+                send [ '.', 'text', token.content, ( @copy meta ),  ]
                 send [ ')', 'code', language_name,      ( @copy meta ),  ]
               else send_unknown token, meta
           #.................................................................................................
           when 'html_inline'
-            [ position, name, extra, ]  = @_parse_html_tag token[ 'content' ]
-            meta.markup                 = token[ 'content' ]
+            [ position, name, extra, ]  = @_parse_html_tag token.content
+            meta.markup                 = token.content
             switch position
               when 'comment'
                 send [ '.', 'comment', extra.trim(), meta, ]
