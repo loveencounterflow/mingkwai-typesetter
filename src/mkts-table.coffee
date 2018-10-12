@@ -43,7 +43,8 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
 @_new_description = ( S ) ->
   R =
     '~isa':     'MKTS/TABLE/description'
-    cellquads:          {} ### cell extents in terms of quads, by designations ###
+    cellquads:          {} ### cell extents in terms of quads, by cell designations ###
+    quadcells:          {} ### which quads belong to what cells, by quad designations ###
     quad_dimensions:    {}
     cellborders:        {} ### cell borders, as TikZ styles by sides ###
     cell_dimensions:    {} ### cell extents in terms of (unitwidth,unitheight), by designations ###
@@ -154,7 +155,7 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
   @_ensure_gridheight me
   @_ensure_unitvector me
   d           = @_parse_range_quadref me, text
-  designation = d.tl.toUpperCase()
+  designation = d.tl
   if d.right > me.gridwidth
     throw new Error "(MKTS/TABLE 2282) cell exceeds grid width: #{rpr text}"
   if d.bottom > me.gridheight
@@ -163,6 +164,9 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
     throw new Error "(MKTS/TABLE 1246) unable to redefine cell #{designation}: #{rpr text}"
   #.........................................................................................................
   me.cellquads[ designation ] = d
+  for cellquad from @_walk_cellquads me, d
+    ( me.quadcells[ cellquad.designation ]?= [] ).push designation
+  #.........................................................................................................
   return null
 
 #-----------------------------------------------------------------------------------------------------------
@@ -170,14 +174,10 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
   unless ( type = CND.type_of text ) is 'text'
     throw new Error "(MKTS/TABLE 2034) need a text for mkts-table/cellborder, got a #{type}"
   #.........................................................................................................
-  d                 = @_parse_cellborder me, text
-  if d.side is '*'
-    for side in [ 'left', 'right', 'top', 'bottom', ]
-      target            = me.cellborders[ d.cellref ]?= {}
-      target[ side ]    = if d.style is 'none' then null else d.style
-  else
-    target            = me.cellborders[ d.cellref ]?= {}
-    target[ d.side ]  = if d.style is 'none' then null else d.style
+  d = @_parse_cellborder me, text
+  for cell in d.cells
+    for side in d.sides
+      ( me.cellborders[ cell ]?= {} )[ side ] = d.style
   #.........................................................................................................
   return null
 
@@ -292,10 +292,25 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
 @_parse_cellborder = ( me, cellborder ) ->
   unless ( type = CND.type_of cellborder ) is 'text'
     throw new Error "(MKTS/TABLE 6043) expected a text for cellborder, got a #{rpr type}"
-  unless ( match = cellborder.match /^\s*([A-Z]{1,3}[-0-9.]{1,4})-(left|right|top|bottom|\*)\s*:\s*(.+)$/ )?
-    throw new Error "(MKTS/TABLE 5822) expected a cellborder like 'a1-left:sDashed,sThick', got #{rpr cellborder}"
-  [ _, cellref, side, style, ] = match
-  return { cellref, side, style, }
+  unless ( groups = cellborder.match /^(.+):(.+):(.*)$/ )?
+    throw new Error "(MKTS/TABLE 5822) expected a cellborder like 'a1:left:sDashed,sThick', got #{rpr cellborder}"
+  [ _, quads, sides, style, ] = groups
+  #.........................................................................................................
+  ### TAINT this will have to be changed to allow for named cells ###
+  cells = if '*' in quads
+    Object.keys me.cellquads
+  else
+    @_cellnames_from_quadkeys me, ( _.trim() for _ in quads.split ',' )
+  #.........................................................................................................
+  sides = if '*' in sides
+    [ 'top', 'left', 'bottom', 'right', ]
+  else
+    ( _.trim() for _ in sides.split ',' )
+  #.........................................................................................................
+  style = style.trim()
+  style = null if style in [ 'none', '', ]
+  #.........................................................................................................
+  return { cells, sides, style, }
 
 
 #===========================================================================================================
@@ -346,7 +361,7 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
   yield [ 'tex', "\\begin{minipage}[t][45mm][t]{100mm}%\n", ]
   yield [ 'tex', "\\newdimen\\mktsTableUnitwidth\\setlength{\\mktsTableUnitwidth}{#{me.unitwidth}}%\n", ]
   yield [ 'tex', "\\newdimen\\mktsTableUnitheight\\setlength{\\mktsTableUnitheight}{#{me.unitheight}}%\n", ]
-  yield [ 'tex', "\\begin{tikzpicture}[ overlay, yshift = 0mm, yscale = -1, line cap = round ]%\n", ]
+  yield [ 'tex', "\\begin{tikzpicture}[ overlay, yshift = 0mm, yscale = -1, line cap = rect ]%\n", ]
   yield [ 'tex', "\\tikzset{x=#{me.unitwidth}};\\tikzset{y=#{me.unitheight}};%\n", ]
   yield return
 
@@ -385,9 +400,9 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
   for designation, cellquads of me.cellquads
     d = me.pod_dimensions[ designation ]
     yield [ 'tex', "\\node[anchor=north west,inner sep=0mm] at (#{d.left},#{d.top})%\n", ]
-    yield [ 'tex', "{\\begin{minipage}[t][#{d.height_u}\\mktsTableUnitheight][t]{#{d.width_u}\\mktsTableUnitwidth}%\n", ]
+    yield [ 'tex', "{\\begin{minipage}[t][#{d.height}\\mktsTableUnitheight][t]{#{d.width}\\mktsTableUnitwidth}%\n", ]
     yield [ 'tex', "A\\hfill{}B\\hfill{}C\\end{minipage}};%\n", ]
-    # yield [ 'tex', "{\\framebox{\\begin{minipage}[t][#{d.height_u}\\mktsTableUnitheight][t]{#{d.width_u}\\mktsTableUnitwidth}%\n", ]
+    # yield [ 'tex', "{\\framebox{\\begin{minipage}[t][#{d.height}\\mktsTableUnitheight][t]{#{d.width}\\mktsTableUnitwidth}%\n", ]
     # yield [ 'tex', "A\\hfill{}B\\hfill{}C\\end{minipage}}};%\n", ]
   #.........................................................................................................
   yield return
@@ -527,11 +542,11 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
     right  = ( @_right_from_col_nr  me, cellquads.right   )
     top    = ( @_top_from_row_nr    me, cellquads.top     )
     bottom = ( @_bottom_from_row_nr me, cellquads.bottom  )
-    width_u       = right  - left
-    height_u      = bottom - top
+    width       = right  - left
+    height      = bottom - top
     me.cell_dimensions[ designation ] = {
-      left,  right,   width_u,
-      top,   bottom,  height_u, }
+      left,  right,   width,
+      top,   bottom,  height, }
   return null
 
 #-----------------------------------------------------------------------------------------------------------
@@ -542,11 +557,11 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
     top    = d.top    + me.marginheight
     bottom = d.bottom - me.marginheight
     ### TAINT must not become negative ###
-    width_u       = right  - left
-    height_u      = bottom - top
+    width       = right  - left
+    height      = bottom - top
     me.border_dimensions[ designation ] = {
-      left,  right,   width_u,
-      top,   bottom,  height_u, }
+      left,  right,   width,
+      top,   bottom,  height, }
   return null
 
 #-----------------------------------------------------------------------------------------------------------
@@ -557,11 +572,11 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
     top    = d.top    + me.paddingheight
     bottom = d.bottom - me.paddingheight
     ### TAINT must not become negative ###
-    width_u       = right  - left
-    height_u      = bottom - top
+    width       = right  - left
+    height      = bottom - top
     me.pod_dimensions[ designation ] = {
-      left,  right,   width_u,
-      top,   bottom,  height_u, }
+      left,  right,   width,
+      top,   bottom,  height, }
   return null
 
 #-----------------------------------------------------------------------------------------------------------
@@ -588,6 +603,13 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
 @_bottom_from_row_nr = ( me, row_nr ) ->
   return ( @_top_from_row_nr me, row_nr ) + me.quadheights[ row_nr ]
 
+#-----------------------------------------------------------------------------------------------------------
+@_cellnames_from_quadkeys = ( me, quadkeys ) ->
+  R = new Set()
+  for quadkey in quadkeys
+    R.add cellname for cellname in me.quadcells
+  return ( cellname for cellname from R )
+
 
 #===========================================================================================================
 # ITERATORS
@@ -609,42 +631,13 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
   yield return
 
 #-----------------------------------------------------------------------------------------------------------
-@_walk_cellquads_sides = ( me, cellquads, side ) ->
-  switch side
-    when 'left'
-      row_nr_1    = cellquads.top
-      row_nr_2    = cellquads.bottom
-      col_nr_1    = cellquads.left
-      col_nr_2    = cellquads.left
-    when 'right'
-      row_nr_1    = cellquads.top
-      row_nr_2    = cellquads.bottom
-      col_nr_1    = cellquads.right
-      col_nr_2    = cellquads.right
-    when 'top'
-      row_nr_1    = cellquads.top
-      row_nr_2    = cellquads.top
-      col_nr_1    = cellquads.left
-      col_nr_2    = cellquads.right
-    when 'bottom'
-      row_nr_1    = cellquads.bottom
-      row_nr_2    = cellquads.bottom
-      col_nr_1    = cellquads.left
-      col_nr_2    = cellquads.right
-    when '*'
-      yield from @_walk_cellquads_sides me, cellquads, 'left'
-      yield from @_walk_cellquads_sides me, cellquads, 'right'
-      yield from @_walk_cellquads_sides me, cellquads, 'top'
-      yield from @_walk_cellquads_sides me, cellquads, 'bottom'
-      yield return
-    else
-      throw new Error "(MKTS/TABLE 4550) illegal argument for side #{rpr side}"
-  for row_nr in [ row_nr_1 .. row_nr_2 ]
-    for col_nr in [ col_nr_1 .. col_nr_2 ]
+@_walk_cellquads = ( me, cellquads ) ->
+  for row_nr in [ cellquads.top .. cellquads.bottom ]
+    for col_nr in [ cellquads.left .. cellquads.right ]
       ### TAINT don't use EXCJSCC directly ###
       col_letter  = ( EXCJSCC.n2l col_nr ).toLowerCase()
-      quad        = "#{col_letter}#{row_nr}"
-      yield { col_nr, row_nr, col_letter, quad, side, }
+      designation = "#{col_letter}#{row_nr}"
+      yield { col_nr, row_nr, col_letter, designation, }
   yield return
 
 
