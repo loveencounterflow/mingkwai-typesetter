@@ -293,7 +293,7 @@ after = ( names..., method ) ->
         send [ 'tex', "\n% begin of MD document\n", ]
         send [ 'tex', "\\begin{document}\\mktsStyleNormal{}", ]
         ### TAINT this should not be here, be part of style, be configurable ###
-        send [ 'tex', "\\spaceskip 1ex plus 1ex minus 0.5ex \\relax%\n", ]
+        send [ 'tex', "\\spaceskip 0.75ex plus 0.75ex minus 0.5ex \\relax%\n", ]
     #.......................................................................................................
     else if select event, ')', 'document'
       within_document             = false
