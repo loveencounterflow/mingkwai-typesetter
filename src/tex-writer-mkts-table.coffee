@@ -82,9 +82,9 @@ MKTS.MACRO_ESCAPER.register_raw_tag 'mkts-table-description'
   ### TAINT should allow to name tables in description and content tags ###
   prv_description       = null
   within_table_content  = false
-  within_cell           = false
-  cells                 = {}
-  current_cell          = null
+  within_field           = false
+  fields                 = {}
+  current_field          = null
   #.........................................................................................................
   return $ ( event, send ) =>
     if select event, '.', 'MKTS/TABLE/description'
@@ -100,27 +100,27 @@ MKTS.MACRO_ESCAPER.register_raw_tag 'mkts-table-description'
       within_table_content = false
       # send sub_event for sub_event from MKTS_TABLE._walk_events description
       ### TAINT render table now ###
-      debug '66522', cells
+      debug '66522', fields
       return send stamp event
     #.......................................................................................................
     if within_table_content
       #.....................................................................................................
-      if select event, '(', 'cell'
-        within_cell = true
+      if select event, '(', 'field'
+        within_field = true
         [ type, name, Q, meta, ]  = event
         if not Q? and Q.key?
-          throw new Error "need key for cell"
+          throw new Error "need key for field"
         ### TAINT must validate key at some point; like this, content with an unknown key will just vanish ###
-        current_cell = cells[ Q.key ] = []
+        current_field = fields[ Q.key ] = []
         return send stamp event
       #.....................................................................................................
-      if select event, ')', 'cell'
-        within_cell   = false
-        current_cell  = null
+      if select event, ')', 'field'
+        within_field   = false
+        current_field  = null
         return send stamp event
       #.....................................................................................................
-      if within_cell
-        current_cell.push event
+      if within_field
+        current_field.push event
         urge '27762', jr event
         return send stamp event
       #.....................................................................................................
@@ -157,10 +157,10 @@ MKTS.MACRO_ESCAPER.register_raw_tag 'mkts-table-description'
     @marginheight     = ( raw_parts ) -> MKTS_TABLE.marginheight    me, raw_parts.join ''
     @unitwidth        = ( raw_parts ) -> MKTS_TABLE.unitwidth       me, raw_parts.join ''
     @unitheight       = ( raw_parts ) -> MKTS_TABLE.unitheight      me, raw_parts.join ''
-    @quadwidths       = ( raw_parts ) -> MKTS_TABLE.quadwidths      me, raw_parts.join ''
-    @quadheights      = ( raw_parts ) -> MKTS_TABLE.quadheights     me, raw_parts.join ''
-    @cellquads        = ( raw_parts ) -> MKTS_TABLE.cellquads       me, raw_parts.join ''
-    @cellborder       = ( raw_parts ) -> MKTS_TABLE.cellborder      me, raw_parts.join ''
+    @cellwidths       = ( raw_parts ) -> MKTS_TABLE.cellwidths      me, raw_parts.join ''
+    @cellheights      = ( raw_parts ) -> MKTS_TABLE.cellheights     me, raw_parts.join ''
+    @fieldcells       = ( raw_parts ) -> MKTS_TABLE.fieldcells      me, raw_parts.join ''
+    @fieldborder      = ( raw_parts ) -> MKTS_TABLE.fieldborder     me, raw_parts.join ''
     return @
   #.........................................................................................................
   return [ me, ( f.apply {} ), ]

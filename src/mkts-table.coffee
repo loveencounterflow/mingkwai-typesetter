@@ -43,15 +43,15 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
 @_new_description = ( S ) ->
   R =
     '~isa':     'MKTS/TABLE/description'
-    cellquads:          {} ### cell extents in terms of quads, by cell designations ###
-    quadcells:          {} ### which quads belong to what cells, by quad designations ###
-    quad_dimensions:    {}
-    cellborders:        {} ### cell borders, as TikZ styles by sides ###
-    cell_dimensions:    {} ### cell extents in terms of (unitwidth,unitheight), by designations ###
+    fieldcells:         {} ### field extents in terms of cells, by field designations ###
+    cellfields:         {} ### which cells belong to what fields, by cell designations ###
+    cell_dimensions:    {}
+    fieldborders:       {} ### field borders, as TikZ styles by sides ###
+    field_dimensions:   {} ### field extents in terms of (unitwidth,unitheight), by designations ###
     border_dimensions:  {} ### border extents in terms of (unitwidth,unitheight), by designations ###
     pod_dimensions:     {} ### pod extents in terms of (unitwidth,unitheight), by designations ###
-    quadwidths:         [ null, ] ### [ 0 ] is default, [ 1 .. gridwidth ] explicit or implicit widths ###
-    quadheights:        [ null, ] ### [ 0 ] is default, [ 1 .. gridheight ] explicit or implicit heights ###
+    cellwidths:         [ null, ] ### [ 0 ] is default, [ 1 .. gridwidth ] explicit or implicit widths ###
+    cellheights:        [ null, ] ### [ 0 ] is default, [ 1 .. gridheight ] explicit or implicit heights ###
     joint_coordinates:  null
     debug:              false
     #.......................................................................................................
@@ -71,8 +71,8 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
       # gridheight:    4
       unitwidth:    '1mm'
       unitheight:   '1mm'
-      # quadwidth:     10
-      # quadheight:    10
+      # cellwidth:     10
+      # cellheight:    10
       marginwidth:   0
       marginheight:  0
       paddingwidth:  0
@@ -129,62 +129,62 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
   return null
 
 #-----------------------------------------------------------------------------------------------------------
-@quadwidths = ( me, text ) ->
+@cellwidths = ( me, text ) ->
   ### TAINT should validate ###
   @_ensure_gridwidth me
   value = parseFloat text
-  me.quadwidths[  0 ] = value ### set default ###
-  me.quadwidths[ nr ] = value for nr in [ 1 .. me.gridwidth ]
+  me.cellwidths[  0 ] = value ### set default ###
+  me.cellwidths[ nr ] = value for nr in [ 1 .. me.gridwidth ]
   return null
 
 #-----------------------------------------------------------------------------------------------------------
-@quadheights = ( me, text ) ->
+@cellheights = ( me, text ) ->
   ### TAINT should validate ###
   @_ensure_gridheight me
   value = parseFloat text
-  me.quadheights[  0 ] = value ### set default ###
-  me.quadheights[ nr ] = value for nr in [ 1 .. me.gridheight ]
+  me.cellheights[  0 ] = value ### set default ###
+  me.cellheights[ nr ] = value for nr in [ 1 .. me.gridheight ]
   return null
 
 #-----------------------------------------------------------------------------------------------------------
-@cellquads = ( me, text ) ->
+@fieldcells = ( me, text ) ->
   unless ( type = CND.type_of text ) is 'text'
-    throw new Error "(MKTS/TABLE 8532) need a text for mkts-table/cellquads, got a #{type}"
+    throw new Error "(MKTS/TABLE 8532) need a text for mkts-table/fieldcells, got a #{type}"
   #.........................................................................................................
   @_ensure_gridwidth  me
   @_ensure_gridheight me
   @_ensure_unitvector me
-  d           = @_parse_range_quadref me, text
+  d           = @_parse_range_cellref me, text
   designation = d.tl
   if d.right > me.gridwidth
-    throw new Error "(MKTS/TABLE 2282) cell exceeds grid width: #{rpr text}"
+    throw new Error "(MKTS/TABLE 2282) field exceeds grid width: #{rpr text}"
   if d.bottom > me.gridheight
-    throw new Error "(MKTS/TABLE 2523) cell exceeds grid height: #{rpr text}"
-  if me.cellquads[ designation ]?
-    throw new Error "(MKTS/TABLE 1246) unable to redefine cell #{designation}: #{rpr text}"
+    throw new Error "(MKTS/TABLE 2523) field exceeds grid height: #{rpr text}"
+  if me.fieldcells[ designation ]?
+    throw new Error "(MKTS/TABLE 1246) unable to redefine field #{designation}: #{rpr text}"
   #.........................................................................................................
-  me.cellquads[ designation ] = d
-  for cellquad from @_walk_cellquads me, d
-    ( me.quadcells[ cellquad.designation ]?= [] ).push designation
+  me.fieldcells[ designation ] = d
+  for fieldcell from @_walk_fieldcells me, d
+    ( me.cellfields[ fieldcell.designation ]?= [] ).push designation
   #.........................................................................................................
   return null
 
 #-----------------------------------------------------------------------------------------------------------
-@cellborder = ( me, text ) ->
+@fieldborder = ( me, text ) ->
   unless ( type = CND.type_of text ) is 'text'
-    throw new Error "(MKTS/TABLE 2034) need a text for mkts-table/cellborder, got a #{type}"
+    throw new Error "(MKTS/TABLE 2034) need a text for mkts-table/fieldborder, got a #{type}"
   #.........................................................................................................
-  d = @_parse_cellborder me, text
-  for cell in d.cells
+  d = @_parse_fieldborder me, text
+  for field in d.fields
     for side in d.sides
-      ( me.cellborders[ cell ]?= {} )[ side ] = d.style
+      ( me.fieldborders[ field ]?= {} )[ side ] = d.style
   #.........................................................................................................
   return null
 
 #-----------------------------------------------------------------------------------------------------------
 @debug = ( me, text ) ->
   unless ( type = CND.type_of text ) is 'text'
-    throw new Error "(MKTS/TABLE 8055) need a text for mkts-table/cell, got a #{type}"
+    throw new Error "(MKTS/TABLE 8055) need a text for mkts-table/field, got a #{type}"
   #.........................................................................................................
   switch text
     when 'true'   then me.debug = true
@@ -253,13 +253,13 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
 
 #-----------------------------------------------------------------------------------------------------------
 ### TAINT use proper parsing tool ###
-@_parse_range_quadref = ( me, quad_range ) ->
-  unless ( type = CND.type_of quad_range ) is 'text'
-    throw new Error "(MKTS/TABLE 6402) expected a text for quad_range, got a #{rpr type}"
-  unless ( match = quad_range.match /^([a-z]{1,3})([0-9]{1,4}):([a-z]{1,3})([0-9]{1,4})$/ )?
-    throw new Error "(MKTS/TABLE 2499) expected a quad range like 'a1:d4', got #{rpr quad_range}"
+@_parse_range_cellref = ( me, cell_range ) ->
+  unless ( type = CND.type_of cell_range ) is 'text'
+    throw new Error "(MKTS/TABLE 6402) expected a text for cell_range, got a #{rpr type}"
+  unless ( match = cell_range.match /^([a-z]{1,3})([0-9]{1,4}):([a-z]{1,3})([0-9]{1,4})$/ )?
+    throw new Error "(MKTS/TABLE 2499) expected a cell range like 'a1:d4', got #{rpr cell_range}"
   ### TAINT don't use EXCJSCC directly ###
-  R = EXCJSCC.decode quad_range.toUpperCase()
+  R = EXCJSCC.decode cell_range.toUpperCase()
   delete R.dimensions
   R.tl = R.tl.toLowerCase()
   R.br = R.br.toLowerCase()
@@ -289,45 +289,45 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
 
 #-----------------------------------------------------------------------------------------------------------
 ### TAINT use proper parsing tool ###
-@_parse_cellborder = ( me, cellborder ) ->
-  unless ( type = CND.type_of cellborder ) is 'text'
-    throw new Error "(MKTS/TABLE 6043) expected a text for cellborder, got a #{rpr type}"
-  unless ( groups = cellborder.match /^(.+):(.+):(.*)$/ )?
-    throw new Error "(MKTS/TABLE 5822) expected a cellborder like 'a1:left:sDashed,sThick', got #{rpr cellborder}"
-  [ _, cellhints, sides, style, ] = groups
+@_parse_fieldborder = ( me, fieldborder ) ->
+  unless ( type = CND.type_of fieldborder ) is 'text'
+    throw new Error "(MKTS/TABLE 6043) expected a text for fieldborder, got a #{rpr type}"
+  unless ( groups = fieldborder.match /^(.+):(.+):(.*)$/ )?
+    throw new Error "(MKTS/TABLE 5822) expected a fieldborder like 'a1:left:sDashed,sThick', got #{rpr fieldborder}"
+  [ _, fieldhints, sides, style, ] = groups
   #.........................................................................................................
   sides = ( _.trim() for _ in sides.split ',' )
   sides = [ 'top', 'left', 'bottom', 'right', ] if '*' in sides
   #.........................................................................................................
-  ### TAINT this will have to be changed to allow for named cells ###
-  cellhints = new Set ( _.trim() for _ in cellhints.split ',' )
-  if cellhints.has '*'
-    cells = Object.keys me.cellquads
+  ### TAINT this will have to be changed to allow for named fields ###
+  fieldhints = new Set ( _.trim() for _ in fieldhints.split ',' )
+  if fieldhints.has '*'
+    fields = Object.keys me.fieldcells
   else
-    ### TAINT as it stands, `cellborder'table:bottom,right:red'` will style all bottom and right borders
-    of all cells that have real estate along the bottom and right borders of the table. An improved version
-    should probably only affect the bottom borders of table-bottom cells and the right borders of
-    table-right cells. Use two statements `cellborder'table:bottom:red'`, `cellborder'table:right:red'` to
+    ### TAINT as it stands, `fieldborder'table:bottom,right:red'` will style all bottom and right borders
+    of all fields that have real estate along the bottom and right borders of the table. An improved version
+    should probably only affect the bottom borders of table-bottom fields and the right borders of
+    table-right fields. Use two statements `fieldborder'table:bottom:red'`, `fieldborder'table:right:red'` to
     express that meaning FTTB. ###
-    if cellhints.has 'table'
-      cellhints.delete 'table'
+    if fieldhints.has 'table'
+      fieldhints.delete 'table'
       for side in sides
-        cellhints.add d.quadkey for d from @_walk_table_edge_quads me, side
-    quadkeys  = ( cellhint for cellhint from cellhints )
-    cells     = @_cellnames_from_quadkeys me, quadkeys
+        fieldhints.add d.cellkey for d from @_walk_table_edge_cells me, side
+    cellkeys  = ( fieldhint for fieldhint from fieldhints )
+    fields     = @_fieldnames_from_cellkeys me, cellkeys
   #.........................................................................................................
   style = style.trim()
   style = null if style in [ 'none', '', ]
   #.........................................................................................................
-  return { cells, sides, style, }
+  return { fields, sides, style, }
 
 
 #===========================================================================================================
 # EVENT GENERATORS
 #-----------------------------------------------------------------------------------------------------------
 @_walk_events = ( me ) ->
-  @_compute_quad_dimensions     me
   @_compute_cell_dimensions     me
+  @_compute_field_dimensions     me
   @_compute_border_dimensions   me
   @_compute_pod_dimensions      me
   #.........................................................................................................
@@ -337,11 +337,11 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
   #.........................................................................................................
   ### Debugging ### ### TAINT should make ordering configurable so we can under- or overprint debugging ###
   yield from @_walk_debug_joints_events                 me
-  yield from @_walk_debug_quadgrid_events               me
   yield from @_walk_debug_cellgrid_events               me
+  yield from @_walk_debug_fieldgrid_events               me
   #.........................................................................................................
   ### Borders, content ###
-  yield from @_walk_cell_borders_events                 me
+  yield from @_walk_field_borders_events                 me
   yield from @_walk_pod_events                          me
   #.........................................................................................................
   ### Finishing ###
@@ -389,24 +389,24 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
   yield return
 
 #-----------------------------------------------------------------------------------------------------------
-@_walk_cell_borders_events = ( me ) ->
+@_walk_field_borders_events = ( me ) ->
   #.........................................................................................................
   for designation, d of me.border_dimensions
-    continue unless ( cellborders = me.cellborders[ designation ] )?
-    if ( borderstyle = cellborders[ 'left' ] )?
+    continue unless ( fieldborders = me.fieldborders[ designation ] )?
+    if ( borderstyle = fieldborders[ 'left' ] )?
       yield [ 'tex', "\\draw[#{borderstyle}] (#{d.left},#{d.top}) -- (#{d.left},#{d.bottom});\n", ]
-    if ( borderstyle = cellborders[ 'right' ] )?
+    if ( borderstyle = fieldborders[ 'right' ] )?
       yield [ 'tex', "\\draw[#{borderstyle}] (#{d.right},#{d.top}) -- (#{d.right},#{d.bottom});\n", ]
-    if ( borderstyle = cellborders[ 'top' ] )?
+    if ( borderstyle = fieldborders[ 'top' ] )?
       yield [ 'tex', "\\draw[#{borderstyle}] (#{d.left},#{d.top}) -- (#{d.right},#{d.top});\n", ]
-    if ( borderstyle = cellborders[ 'bottom' ] )?
+    if ( borderstyle = fieldborders[ 'bottom' ] )?
       yield [ 'tex', "\\draw[#{borderstyle}] (#{d.left},#{d.bottom}) -- (#{d.right},#{d.bottom});\n", ]
   #.........................................................................................................
   yield return
 
 #-----------------------------------------------------------------------------------------------------------
 @_walk_pod_events = ( me ) ->
-  for designation, cellquads of me.cellquads
+  for designation, fieldcells of me.fieldcells
     d = me.pod_dimensions[ designation ]
     yield [ 'tex', "\\node[anchor=north west,inner sep=0mm] at (#{d.left},#{d.top})%\n", ]
     yield [ 'tex', "{\\begin{minipage}[t][#{d.height}\\mktsTableUnitheight][t]{#{d.width}\\mktsTableUnitwidth}%\n", ]
@@ -420,7 +420,7 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
 #===========================================================================================================
 # EVENT GENERATORS: DEBUGGING EVENTS
 #-----------------------------------------------------------------------------------------------------------
-@_walk_debug_quadgrid_events = ( me ) ->
+@_walk_debug_cellgrid_events = ( me ) ->
   unless me.debug
     yield return
   #.........................................................................................................
@@ -441,11 +441,11 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
   yield return
 
 #-----------------------------------------------------------------------------------------------------------
-@_walk_debug_cellgrid_events = ( me ) ->
+@_walk_debug_fieldgrid_events = ( me ) ->
   unless me.debug
     yield return
   #.........................................................................................................
-  for designation, d of me.cell_dimensions
+  for designation, d of me.field_dimensions
     ### TAINT use fixed size like 1mm ###
     left   = d.left   + 0.5
     right  = d.right  - 0.5
@@ -473,8 +473,8 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
     for row_nr from @_walk_row_numbers me, 'short'
       x = ( @_left_from_col_nr  me, col_nr ) + 2
       y = ( @_top_from_row_nr   me, row_nr ) + 2
-      quadkey = "#{col_letter}#{row_nr}"
-      yield [ 'tex', "\\node[sDebugJoints] at (#{x},#{y}) {{\\mktsStyleCode{}#{quadkey}}}; ", ]
+      cellkey = "#{col_letter}#{row_nr}"
+      yield [ 'tex', "\\node[sDebugJoints] at (#{x},#{y}) {{\\mktsStyleCode{}#{cellkey}}}; ", ]
   #.........................................................................................................
   yield return
 
@@ -490,8 +490,8 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
 #-----------------------------------------------------------------------------------------------------------
 @_ensure_joint_coordinates = ( me ) ->
   return null if me.joint_coordinates?
-  @_ensure_quadwidths   me
-  @_ensure_quadheights  me
+  @_ensure_cellwidths   me
+  @_ensure_cellheights  me
   return null
 
 #-----------------------------------------------------------------------------------------------------------
@@ -505,14 +505,14 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
   throw new Error "(MKTS/TABLE 5822) gridheight must be set"
 
 #-----------------------------------------------------------------------------------------------------------
-@_ensure_quadwidths = ( me ) ->
-  return null if ( me.quadwidths.length is me.gridwidth + 1 ) and ( null not in me.quadwidths[ 1 .. ] )
-  throw new Error "(MKTS/TABLE 5822) quadwidths must be all set; got #{rpr me.quadwidths}"
+@_ensure_cellwidths = ( me ) ->
+  return null if ( me.cellwidths.length is me.gridwidth + 1 ) and ( null not in me.cellwidths[ 1 .. ] )
+  throw new Error "(MKTS/TABLE 5822) cellwidths must be all set; got #{rpr me.cellwidths}"
 
 #-----------------------------------------------------------------------------------------------------------
-@_ensure_quadheights = ( me ) ->
-  return null if ( me.quadheights.length is me.gridheight + 1 ) and ( null not in me.quadheights[ 1 .. ] )
-  throw new Error "(MKTS/TABLE 5822) quadheights must be all set; got #{rpr me.quadheights}"
+@_ensure_cellheights = ( me ) ->
+  return null if ( me.cellheights.length is me.gridheight + 1 ) and ( null not in me.cellheights[ 1 .. ] )
+  throw new Error "(MKTS/TABLE 5822) cellheights must be all set; got #{rpr me.cellheights}"
 
 #-----------------------------------------------------------------------------------------------------------
 @_ensure_margin = ( me ) ->
@@ -527,7 +527,7 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
   return null
 
 #-----------------------------------------------------------------------------------------------------------
-@_compute_quad_dimensions = ( me ) ->
+@_compute_cell_dimensions = ( me ) ->
   for [ col_letter, col_nr, ] from @_walk_column_letters_and_numbers me, 'short'
     for row_nr from @_walk_row_numbers me, 'short'
       designation   = "#{col_letter}#{row_nr}"
@@ -536,32 +536,32 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
       top    = @_top_from_row_nr    me, row_nr
       bottom = @_bottom_from_row_nr me, row_nr
       # ### TAINT must not become negative ###
-      # quadwidth_u   = right  - left # - 2 * me.marginwidth
-      # quadheight_u  = bottom - top  # - 2 * me.marginheight
-      me.quad_dimensions[ designation ] = {
+      # cellwidth_u   = right  - left # - 2 * me.marginwidth
+      # cellheight_u  = bottom - top  # - 2 * me.marginheight
+      me.cell_dimensions[ designation ] = {
         col_nr,         row_nr,
         left,    right,
         top,     bottom, }
   return null
 
 #-----------------------------------------------------------------------------------------------------------
-@_compute_cell_dimensions = ( me ) ->
-  ### TAINT use me.cell_dimensions ###
-  for designation, cellquads of me.cellquads
-    left   = ( @_left_from_col_nr   me, cellquads.left    )
-    right  = ( @_right_from_col_nr  me, cellquads.right   )
-    top    = ( @_top_from_row_nr    me, cellquads.top     )
-    bottom = ( @_bottom_from_row_nr me, cellquads.bottom  )
+@_compute_field_dimensions = ( me ) ->
+  ### TAINT use me.field_dimensions ###
+  for designation, fieldcells of me.fieldcells
+    left   = ( @_left_from_col_nr   me, fieldcells.left    )
+    right  = ( @_right_from_col_nr  me, fieldcells.right   )
+    top    = ( @_top_from_row_nr    me, fieldcells.top     )
+    bottom = ( @_bottom_from_row_nr me, fieldcells.bottom  )
     width       = right  - left
     height      = bottom - top
-    me.cell_dimensions[ designation ] = {
+    me.field_dimensions[ designation ] = {
       left,  right,   width,
       top,   bottom,  height, }
   return null
 
 #-----------------------------------------------------------------------------------------------------------
 @_compute_border_dimensions = ( me ) ->
-  for designation, d of me.cell_dimensions
+  for designation, d of me.field_dimensions
     left   = d.left   + me.marginwidth
     right  = d.right  - me.marginwidth
     top    = d.top    + me.marginheight
@@ -576,7 +576,7 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
 
 #-----------------------------------------------------------------------------------------------------------
 @_compute_pod_dimensions = ( me ) ->
-  for designation, d of me.cell_dimensions
+  for designation, d of me.field_dimensions
     left   = d.left   + me.paddingwidth
     right  = d.right  - me.paddingwidth
     top    = d.top    + me.paddingheight
@@ -592,34 +592,34 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
 #-----------------------------------------------------------------------------------------------------------
 @_left_from_col_nr = ( me, col_nr ) ->
   ### TAINT should precompute ###
-  @_ensure_quadwidths me
+  @_ensure_cellwidths me
   R = 0
-  R += me.quadwidths[ nr ] for nr in [ 1 ... col_nr ]
+  R += me.cellwidths[ nr ] for nr in [ 1 ... col_nr ]
   return R
 
 #-----------------------------------------------------------------------------------------------------------
 @_right_from_col_nr = ( me, col_nr ) ->
-  return ( @_left_from_col_nr me, col_nr ) + me.quadwidths[ col_nr ]
+  return ( @_left_from_col_nr me, col_nr ) + me.cellwidths[ col_nr ]
 
 #-----------------------------------------------------------------------------------------------------------
 @_top_from_row_nr = ( me, row_nr ) ->
   ### TAINT should precompute ###
-  @_ensure_quadheights me
+  @_ensure_cellheights me
   R = 0
-  R += me.quadheights[ nr ] for nr in [ 1 ... row_nr ]
+  R += me.cellheights[ nr ] for nr in [ 1 ... row_nr ]
   return R
 
 #-----------------------------------------------------------------------------------------------------------
 @_bottom_from_row_nr = ( me, row_nr ) ->
-  return ( @_top_from_row_nr me, row_nr ) + me.quadheights[ row_nr ]
+  return ( @_top_from_row_nr me, row_nr ) + me.cellheights[ row_nr ]
 
 #-----------------------------------------------------------------------------------------------------------
-@_cellnames_from_quadkeys = ( me, quadkeys ) ->
+@_fieldnames_from_cellkeys = ( me, cellkeys ) ->
   R = new Set()
-  for quadkey in quadkeys
-    continue unless ( quadcells = me.quadcells[ quadkey ] )?
-    R.add cellname for cellname in quadcells
-  return ( cellname for cellname from R )
+  for cellkey in cellkeys
+    continue unless ( cellfields = me.cellfields[ cellkey ] )?
+    R.add fieldname for fieldname in cellfields
+  return ( fieldname for fieldname from R )
 
 
 #===========================================================================================================
@@ -642,9 +642,9 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
   yield return
 
 #-----------------------------------------------------------------------------------------------------------
-@_walk_cellquads = ( me, cellquads ) ->
-  for row_nr in [ cellquads.top .. cellquads.bottom ]
-    for col_nr in [ cellquads.left .. cellquads.right ]
+@_walk_fieldcells = ( me, fieldcells ) ->
+  for row_nr in [ fieldcells.top .. fieldcells.bottom ]
+    for col_nr in [ fieldcells.left .. fieldcells.right ]
       ### TAINT don't use EXCJSCC directly ###
       col_letter  = ( EXCJSCC.n2l col_nr ).toLowerCase()
       designation = "#{col_letter}#{row_nr}"
@@ -652,18 +652,18 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
   yield return
 
 #-----------------------------------------------------------------------------------------------------------
-@_walk_table_edge_cellnames = ( me, edge ) ->
-  seen_cellnames = new Set()
-  for d from @_walk_table_edge_quads me, edge
-    continue unless ( cellnames = me.quadcells[ d.quadkey ] )?
-    for cellname in cellnames
-      continue if seen_cellnames.has cellname
-      seen_cellnames.add cellname
-      yield cellname
+@_walk_table_edge_fieldnames = ( me, edge ) ->
+  seen_fieldnames = new Set()
+  for d from @_walk_table_edge_cells me, edge
+    continue unless ( fieldnames = me.cellfields[ d.cellkey ] )?
+    for fieldname in fieldnames
+      continue if seen_fieldnames.has fieldname
+      seen_fieldnames.add fieldname
+      yield fieldname
   yield return
 
 #-----------------------------------------------------------------------------------------------------------
-@_walk_table_edge_quads = ( me, edge ) ->
+@_walk_table_edge_cells = ( me, edge ) ->
   switch edge
     when 'left'
       col_nr_1    = 1
@@ -686,10 +686,10 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
       row_nr_1    = me.gridheight
       row_nr_2    = me.gridheight
     when '*'
-      yield from @_walk_table_edge_quads me, 'left'
-      yield from @_walk_table_edge_quads me, 'right'
-      yield from @_walk_table_edge_quads me, 'top'
-      yield from @_walk_table_edge_quads me, 'bottom'
+      yield from @_walk_table_edge_cells me, 'left'
+      yield from @_walk_table_edge_cells me, 'right'
+      yield from @_walk_table_edge_cells me, 'top'
+      yield from @_walk_table_edge_cells me, 'bottom'
       yield return
     else
       throw new Error "(MKTS/TABLE 4550) illegal argument for edge #{rpr edge}"
@@ -697,8 +697,8 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
     for col_nr in [ col_nr_1 .. col_nr_2 ]
       ### TAINT don't use EXCJSCC directly ###
       col_letter  = ( EXCJSCC.n2l col_nr ).toLowerCase()
-      quadkey     = "#{col_letter}#{row_nr}"
-      yield { col_nr, row_nr, col_letter, quadkey, edge, }
+      cellkey     = "#{col_letter}#{row_nr}"
+      yield { col_nr, row_nr, col_letter, cellkey, edge, }
   yield return
 
 
