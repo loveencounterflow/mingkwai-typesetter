@@ -34,7 +34,7 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
 #...........................................................................................................
 copy                      = ( x ) -> Object.assign {}, x
 EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
-
+jr                        = JSON.stringify
 
 
 #===========================================================================================================
@@ -42,18 +42,19 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
 #-----------------------------------------------------------------------------------------------------------
 @_new_description = ( S ) ->
   R =
-    '~isa':     'MKTS/TABLE/description'
-    fieldcells:         {} ### field extents in terms of cells, by field designations ###
-    cellfields:         {} ### which cells belong to what fields, by cell designations ###
-    cell_dimensions:    {}
-    fieldborders:       {} ### field borders, as TikZ styles by sides ###
-    field_dimensions:   {} ### field extents in terms of (unitwidth,unitheight), by designations ###
-    border_dimensions:  {} ### border extents in terms of (unitwidth,unitheight), by designations ###
-    pod_dimensions:     {} ### pod extents in terms of (unitwidth,unitheight), by designations ###
-    cellwidths:         [ null, ] ### [ 0 ] is default, [ 1 .. gridwidth ] explicit or implicit widths ###
-    cellheights:        [ null, ] ### [ 0 ] is default, [ 1 .. gridheight ] explicit or implicit heights ###
-    joint_coordinates:  null
-    debug:              false
+    '~isa':               'MKTS/TABLE/description'
+    fieldcells:           {} ### field extents in terms of cells, by field designations ###
+    cellfields:           {} ### which cells belong to what fields, by cellkeys ###
+    cell_dimensions:      {}
+    fieldborders:         {} ### field borders, as TikZ styles by sides ###
+    field_dimensions:     {} ### field extents in terms of (unitwidth,unitheight), by field designations ###
+    border_dimensions:    {} ### border extents in terms of (unitwidth,unitheight), by field designations ###
+    pod_dimensions:       {} ### pod extents in terms of (unitwidth,unitheight), by field designations ###
+    valigns:              {} ### vertical pod alignments, by field designations ###
+    cellwidths:           [ null, ] ### [ 0 ] is default, [ 1 .. gridwidth ] explicit or implicit widths ###
+    cellheights:          [ null, ] ### [ 0 ] is default, [ 1 .. gridheight ] explicit or implicit heights ###
+    joint_coordinates:    null
+    debug:                false
     #.......................................................................................................
     styles:
       sThin:              'thin'
@@ -178,6 +179,23 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
   for field in d.fields
     for side in d.sides
       ( me.fieldborders[ field ]?= {} )[ side ] = d.style
+  #.........................................................................................................
+  return null
+
+#-----------------------------------------------------------------------------------------------------------
+@fieldalignvertical = ( me, text ) ->
+  unless ( type = CND.type_of text ) is 'text'
+    throw new Error "(MKTS/TABLE 2034) need a text for mkts-table/fieldalignvertical, got a #{type}"
+  #.........................................................................................................
+  unless ( match = text.match /^(.+?):([^:]+)$/ )?
+    throw new Error "(MKTS/TABLE 2034) expected something like 'c3:top' for mkts-table/fieldalignvertical, got #{rpr text}"
+  [ _, fieldhints, value, ] = match
+  #.........................................................................................................
+  unless value in [ 'top', 'bottom', 'center', 'spread', ]
+    throw new Error "(MKTS/TABLE 2034) expected one of 'top', 'bottom', 'center', 'spread' for mkts-table/fieldalignvertical, got #{rpr value}"
+  #.........................................................................................................
+  for field_designation from @_walk_field_designations_from_hints me, fieldhints
+    me.valigns[ field_designation ] = value
   #.........................................................................................................
   return null
 
@@ -405,11 +423,17 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
   yield return
 
 #-----------------------------------------------------------------------------------------------------------
-@_walk_pod_events = ( me ) ->
-  for designation, fieldcells of me.fieldcells
-    d = me.pod_dimensions[ designation ]
+@_get_valign_tex = ( me, valign ) ->
+  return switch valign
+    when 'top'    then 't'
+    when 'bottom' then 'b'
+    when 'center' then 'c'
+    when 'spread' then 's'
+    else throw new Error "(MKTS/TABLE 5822) illegal value for valign #{rpr valign}"
+
+    valign_tex  = @_get_valign_tex me, me.valigns[ field_designation ] ? me.valigns[ '*' ] ? 'center'
     yield [ 'tex', "\\node[anchor=north west,inner sep=0mm] at (#{d.left},#{d.top})%\n", ]
-    yield [ 'tex', "{\\begin{minipage}[t][#{d.height}\\mktsTableUnitheight][t]{#{d.width}\\mktsTableUnitwidth}%\n", ]
+    yield [ 'tex', "{\\begin{minipage}[t][#{d.height}\\mktsTableUnitheight][#{valign_tex}]{#{d.width}\\mktsTableUnitwidth}%\n", ]
     yield [ 'tex', "A\\hfill{}B\\hfill{}C\\end{minipage}};%\n", ]
     # yield [ 'tex', "{\\framebox{\\begin{minipage}[t][#{d.height}\\mktsTableUnitheight][t]{#{d.width}\\mktsTableUnitwidth}%\n", ]
     # yield [ 'tex', "A\\hfill{}B\\hfill{}C\\end{minipage}}};%\n", ]

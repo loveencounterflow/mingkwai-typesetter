@@ -148,19 +148,20 @@ MKTS.MACRO_ESCAPER.register_raw_tag 'mkts-table-description'
   ### ... more typesetting detail attached here ... ###
   #.........................................................................................................
   f = ->
-    @debug            = ( raw_parts ) -> MKTS_TABLE.debug           me, raw_parts.join ''
-    @gridwidth        = ( raw_parts ) -> MKTS_TABLE.gridwidth       me, raw_parts.join ''
-    @gridheight       = ( raw_parts ) -> MKTS_TABLE.gridheight      me, raw_parts.join ''
-    @paddingwidth     = ( raw_parts ) -> MKTS_TABLE.paddingwidth    me, raw_parts.join ''
-    @paddingheight    = ( raw_parts ) -> MKTS_TABLE.paddingheight   me, raw_parts.join ''
-    @marginwidth      = ( raw_parts ) -> MKTS_TABLE.marginwidth     me, raw_parts.join ''
-    @marginheight     = ( raw_parts ) -> MKTS_TABLE.marginheight    me, raw_parts.join ''
-    @unitwidth        = ( raw_parts ) -> MKTS_TABLE.unitwidth       me, raw_parts.join ''
-    @unitheight       = ( raw_parts ) -> MKTS_TABLE.unitheight      me, raw_parts.join ''
-    @cellwidths       = ( raw_parts ) -> MKTS_TABLE.cellwidths      me, raw_parts.join ''
-    @cellheights      = ( raw_parts ) -> MKTS_TABLE.cellheights     me, raw_parts.join ''
-    @fieldcells       = ( raw_parts ) -> MKTS_TABLE.fieldcells      me, raw_parts.join ''
-    @fieldborder      = ( raw_parts ) -> MKTS_TABLE.fieldborder     me, raw_parts.join ''
+    @debug                = ( raw_parts ) -> MKTS_TABLE.debug                 me, raw_parts.join ''
+    @gridwidth            = ( raw_parts ) -> MKTS_TABLE.gridwidth             me, raw_parts.join ''
+    @gridheight           = ( raw_parts ) -> MKTS_TABLE.gridheight            me, raw_parts.join ''
+    @paddingwidth         = ( raw_parts ) -> MKTS_TABLE.paddingwidth          me, raw_parts.join ''
+    @paddingheight        = ( raw_parts ) -> MKTS_TABLE.paddingheight         me, raw_parts.join ''
+    @marginwidth          = ( raw_parts ) -> MKTS_TABLE.marginwidth           me, raw_parts.join ''
+    @marginheight         = ( raw_parts ) -> MKTS_TABLE.marginheight          me, raw_parts.join ''
+    @unitwidth            = ( raw_parts ) -> MKTS_TABLE.unitwidth             me, raw_parts.join ''
+    @unitheight           = ( raw_parts ) -> MKTS_TABLE.unitheight            me, raw_parts.join ''
+    @cellwidths           = ( raw_parts ) -> MKTS_TABLE.cellwidths            me, raw_parts.join ''
+    @cellheights          = ( raw_parts ) -> MKTS_TABLE.cellheights           me, raw_parts.join ''
+    @fieldcells           = ( raw_parts ) -> MKTS_TABLE.fieldcells            me, raw_parts.join ''
+    @fieldborder          = ( raw_parts ) -> MKTS_TABLE.fieldborder           me, raw_parts.join ''
+    @fieldalignvertical   = ( raw_parts ) -> MKTS_TABLE.fieldalignvertical    me, raw_parts.join ''
     return @
   #.........................................................................................................
   return [ me, ( f.apply {} ), ]
