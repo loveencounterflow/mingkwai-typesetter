@@ -285,25 +285,25 @@ jr                        = JSON.stringify
   R.bl = "#{( EXCJSCC.n2l R.left ).toLowerCase()}#{R.bottom}"
   return R
 
-#-----------------------------------------------------------------------------------------------------------
-### TAINT use proper parsing tool ###
-@_parse_coordinate_with_units = ( me, coordinate ) ->
-  unless ( type = CND.type_of coordinate ) is 'text'
-    throw new Error "(MKTS/TABLE 1045) expected a text for coordinate, got a #{rpr type}"
-  unless ( match = coordinate.match /^\s*\(\s*([-0-9.]{1,8}[a-z]{0,3})\s*,\s*([-0-9.]{1,8}[a-z]{0,3})\s*\)\s*$/ )?
-    throw new Error "(MKTS/TABLE 2032) expected a coordinate with units like '( 1mm, 2.4cm )', got #{rpr coordinate}"
-  [ _, x, y, ] = match
-  return { x, y, }
+# #-----------------------------------------------------------------------------------------------------------
+# ### TAINT use proper parsing tool ###
+# @_parse_coordinate_with_units = ( me, coordinate ) ->
+#   unless ( type = CND.type_of coordinate ) is 'text'
+#     throw new Error "(MKTS/TABLE 1045) expected a text for coordinate, got a #{rpr type}"
+#   unless ( match = coordinate.match /^\s*\(\s*([-0-9.]{1,8}[a-z]{0,3})\s*,\s*([-0-9.]{1,8}[a-z]{0,3})\s*\)\s*$/ )?
+#     throw new Error "(MKTS/TABLE 2032) expected a coordinate with units like '( 1mm, 2.4cm )', got #{rpr coordinate}"
+#   [ _, x, y, ] = match
+#   return { x, y, }
 
-#-----------------------------------------------------------------------------------------------------------
-### TAINT use proper parsing tool ###
-@_parse_coordinate_without_units = ( me, coordinate ) ->
-  unless ( type = CND.type_of coordinate ) is 'text'
-    throw new Error "(MKTS/TABLE 2262) expected a text for coordinate, got a #{rpr type}"
-  unless ( match = coordinate.match /^\s*\(\s*([-0-9.]{1,8})\s*,\s*([-0-9.]{1,8})\s*\)\s*$/ )?
-    throw new Error "(MKTS/TABLE 6904) expected a unitless coordinate like '( 1, 2.4 )', got #{rpr coordinate}"
-  [ _, x, y, ] = match
-  return { x, y, }
+# #-----------------------------------------------------------------------------------------------------------
+# ### TAINT use proper parsing tool ###
+# @_parse_coordinate_without_units = ( me, coordinate ) ->
+#   unless ( type = CND.type_of coordinate ) is 'text'
+#     throw new Error "(MKTS/TABLE 2262) expected a text for coordinate, got a #{rpr type}"
+#   unless ( match = coordinate.match /^\s*\(\s*([-0-9.]{1,8})\s*,\s*([-0-9.]{1,8})\s*\)\s*$/ )?
+#     throw new Error "(MKTS/TABLE 6904) expected a unitless coordinate like '( 1, 2.4 )', got #{rpr coordinate}"
+#   [ _, x, y, ] = match
+#   return { x, y, }
 
 #-----------------------------------------------------------------------------------------------------------
 ### TAINT use proper parsing tool ###
