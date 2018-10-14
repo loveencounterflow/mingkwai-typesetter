@@ -159,11 +159,11 @@ jr                        = JSON.stringify
   d           = @_parse_range_cellref me, text
   designation = d.tl
   if d.right > me.gridwidth
-    throw new Error "(MKTS/TABLE 2282) field exceeds grid width: #{rpr text}"
+    throw new Error "(MKTS/TABLE µ6376) field exceeds grid width: #{rpr text}"
   if d.bottom > me.gridheight
-    throw new Error "(MKTS/TABLE 2523) field exceeds grid height: #{rpr text}"
+    throw new Error "(MKTS/TABLE µ1709) field exceeds grid height: #{rpr text}"
   if me.fieldcells[ designation ]?
-    throw new Error "(MKTS/TABLE 1246) unable to redefine field #{designation}: #{rpr text}"
+    throw new Error "(MKTS/TABLE µ5375) unable to redefine field #{designation}: #{rpr text}"
   #.........................................................................................................
   me.fieldcells[ designation ] = d
   for fieldcell from @_walk_fieldcells me, d
@@ -174,7 +174,7 @@ jr                        = JSON.stringify
 #-----------------------------------------------------------------------------------------------------------
 @fieldborder = ( me, text ) ->
   unless ( type = CND.type_of text ) is 'text'
-    throw new Error "(MKTS/TABLE 2034) need a text for mkts-table/fieldborder, got a #{type}"
+    throw new Error "(MKTS/TABLE µ9222) need a text for mkts-table/fieldborder, got a #{type}"
   #.........................................................................................................
   d = @_parse_fieldborder me, text
   for field in d.fields
@@ -186,14 +186,14 @@ jr                        = JSON.stringify
 #-----------------------------------------------------------------------------------------------------------
 @fieldalignvertical = ( me, text ) ->
   unless ( type = CND.type_of text ) is 'text'
-    throw new Error "(MKTS/TABLE 2034) need a text for mkts-table/fieldalignvertical, got a #{type}"
+    throw new Error "(MKTS/TABLE µ9289) need a text for mkts-table/fieldalignvertical, got a #{type}"
   #.........................................................................................................
   unless ( match = text.match /^(.+?):([^:]+)$/ )?
-    throw new Error "(MKTS/TABLE 2034) expected something like 'c3:top' for mkts-table/fieldalignvertical, got #{rpr text}"
+    throw new Error "(MKTS/TABLE µ5229) expected something like 'c3:top' for mkts-table/fieldalignvertical, got #{rpr text}"
   [ _, fieldhints, value, ] = match
   #.........................................................................................................
   unless value in [ 'top', 'bottom', 'center', 'spread', ]
-    throw new Error "(MKTS/TABLE 2034) expected one of 'top', 'bottom', 'center', 'spread' for mkts-table/fieldalignvertical, got #{rpr value}"
+    throw new Error "(MKTS/TABLE µ1876) expected one of 'top', 'bottom', 'center', 'spread' for mkts-table/fieldalignvertical, got #{rpr value}"
   #.........................................................................................................
   for field_designation from @_walk_field_designations_from_hints me, fieldhints
     me.valigns[ field_designation ] = value
@@ -203,19 +203,19 @@ jr                        = JSON.stringify
 #-----------------------------------------------------------------------------------------------------------
 @debug = ( me, text ) ->
   unless ( type = CND.type_of text ) is 'text'
-    throw new Error "(MKTS/TABLE 8055) need a text for mkts-table/field, got a #{type}"
+    throw new Error "(MKTS/TABLE µ9299) need a text for mkts-table/field, got a #{type}"
   #.........................................................................................................
   switch text
     when 'true'   then me.debug = true
     when 'false'  then me.debug = false
-    else throw new Error "(MKTS/TABLE 9035) expected 'true' or 'false' for mkts-table/debug, got #{rpr text}"
+    else throw new Error "(MKTS/TABLE µ1343) expected 'true' or 'false' for mkts-table/debug, got #{rpr text}"
   #.........................................................................................................
   return null
 
 #-----------------------------------------------------------------------------------------------------------
 @marginwidth = ( me, text ) ->
   unless ( type = CND.type_of text ) is 'text'
-    throw new Error "(MKTS/TABLE 1811) need a text for mkts-table/marginwidth, got a #{type}"
+    throw new Error "(MKTS/TABLE µ7503) need a text for mkts-table/marginwidth, got a #{type}"
   #.........................................................................................................
   @_ensure_unitvector me
   ### TAINT use parser, validate syntax ###
@@ -226,7 +226,7 @@ jr                        = JSON.stringify
 #-----------------------------------------------------------------------------------------------------------
 @marginheight = ( me, text ) ->
   unless ( type = CND.type_of text ) is 'text'
-    throw new Error "(MKTS/TABLE 9480) need a text for mkts-table/marginheight, got a #{type}"
+    throw new Error "(MKTS/TABLE µ2371) need a text for mkts-table/marginheight, got a #{type}"
   #.........................................................................................................
   @_ensure_unitvector me
   ### TAINT use parser, validate syntax ###
@@ -237,7 +237,7 @@ jr                        = JSON.stringify
 #-----------------------------------------------------------------------------------------------------------
 @paddingwidth = ( me, text ) ->
   unless ( type = CND.type_of text ) is 'text'
-    throw new Error "(MKTS/TABLE 8254) need a text for mkts-table/paddingwidth, got a #{type}"
+    throw new Error "(MKTS/TABLE µ3859) need a text for mkts-table/paddingwidth, got a #{type}"
   #.........................................................................................................
   @_ensure_unitvector me
   ### TAINT use parser, validate syntax ###
@@ -248,7 +248,7 @@ jr                        = JSON.stringify
 #-----------------------------------------------------------------------------------------------------------
 @paddingheight = ( me, text ) ->
   unless ( type = CND.type_of text ) is 'text'
-    throw new Error "(MKTS/TABLE 7209) need a text for mkts-table/paddingheight, got a #{type}"
+    throw new Error "(MKTS/TABLE µ4525) need a text for mkts-table/paddingheight, got a #{type}"
   #.........................................................................................................
   @_ensure_unitvector me
   ### TAINT use parser, validate syntax ###
@@ -262,9 +262,9 @@ jr                        = JSON.stringify
 #-----------------------------------------------------------------------------------------------------------
 @_idx_from_col_and_row = ( col, row ) ->
   unless ( type = CND.type_of col ) is 'text'
-    throw new Error "(MKTS/TABLE 4182) expected a text for col, got a #{rpr type}"
+    throw new Error "(MKTS/TABLE µ6848) expected a text for col, got a #{rpr type}"
   unless ( type = CND.type_of row ) is 'text'
-    throw new Error "(MKTS/TABLE 5931) expected a text for row, got a #{rpr type}"
+    throw new Error "(MKTS/TABLE µ1080) expected a text for row, got a #{rpr type}"
   #.........................................................................................................
   col_idx = ( col.codePointAt 0 ) - ( 'a'.codePointAt 0 )
   row_idx = ( parseInt row, 10 ) - 1
@@ -274,9 +274,9 @@ jr                        = JSON.stringify
 ### TAINT use proper parsing tool ###
 @_parse_range_cellref = ( me, cell_range ) ->
   unless ( type = CND.type_of cell_range ) is 'text'
-    throw new Error "(MKTS/TABLE 6402) expected a text for cell_range, got a #{rpr type}"
+    throw new Error "(MKTS/TABLE µ2870) expected a text for cell_range, got a #{rpr type}"
   unless ( match = cell_range.match /^([a-z]{1,3})([0-9]{1,4}):([a-z]{1,3})([0-9]{1,4})$/ )?
-    throw new Error "(MKTS/TABLE 2499) expected a cell range like 'a1:d4', got #{rpr cell_range}"
+    throw new Error "(MKTS/TABLE µ6344) expected a cell range like 'a1:d4', got #{rpr cell_range}"
   ### TAINT don't use EXCJSCC directly ###
   R = EXCJSCC.decode cell_range.toUpperCase()
   delete R.dimensions
@@ -286,33 +286,13 @@ jr                        = JSON.stringify
   R.bl = "#{( EXCJSCC.n2l R.left ).toLowerCase()}#{R.bottom}"
   return R
 
-# #-----------------------------------------------------------------------------------------------------------
-# ### TAINT use proper parsing tool ###
-# @_parse_coordinate_with_units = ( me, coordinate ) ->
-#   unless ( type = CND.type_of coordinate ) is 'text'
-#     throw new Error "(MKTS/TABLE 1045) expected a text for coordinate, got a #{rpr type}"
-#   unless ( match = coordinate.match /^\s*\(\s*([-0-9.]{1,8}[a-z]{0,3})\s*,\s*([-0-9.]{1,8}[a-z]{0,3})\s*\)\s*$/ )?
-#     throw new Error "(MKTS/TABLE 2032) expected a coordinate with units like '( 1mm, 2.4cm )', got #{rpr coordinate}"
-#   [ _, x, y, ] = match
-#   return { x, y, }
-
-# #-----------------------------------------------------------------------------------------------------------
-# ### TAINT use proper parsing tool ###
-# @_parse_coordinate_without_units = ( me, coordinate ) ->
-#   unless ( type = CND.type_of coordinate ) is 'text'
-#     throw new Error "(MKTS/TABLE 2262) expected a text for coordinate, got a #{rpr type}"
-#   unless ( match = coordinate.match /^\s*\(\s*([-0-9.]{1,8})\s*,\s*([-0-9.]{1,8})\s*\)\s*$/ )?
-#     throw new Error "(MKTS/TABLE 6904) expected a unitless coordinate like '( 1, 2.4 )', got #{rpr coordinate}"
-#   [ _, x, y, ] = match
-#   return { x, y, }
-
 #-----------------------------------------------------------------------------------------------------------
 ### TAINT use proper parsing tool ###
 @_parse_fieldborder = ( me, fieldborder ) ->
   unless ( type = CND.type_of fieldborder ) is 'text'
-    throw new Error "(MKTS/TABLE 6043) expected a text for fieldborder, got a #{rpr type}"
+    throw new Error "(MKTS/TABLE µ1225) expected a text for fieldborder, got a #{rpr type}"
   unless ( groups = fieldborder.match /^(.+):(.+):(.*)$/ )?
-    throw new Error "(MKTS/TABLE 5822) expected a fieldborder like 'a1:left:sDashed,sThick', got #{rpr fieldborder}"
+    throw new Error "(MKTS/TABLE µ2582) expected a fieldborder like 'a1:left:sDashed,sThick', got #{rpr fieldborder}"
   [ _, fieldhints, sides, style, ] = groups
   #.........................................................................................................
   sides = ( _.trim() for _ in sides.split ',' )
@@ -431,7 +411,7 @@ jr                        = JSON.stringify
     when 'bottom' then 'b'
     when 'center' then 'c'
     when 'spread' then 's'
-    else throw new Error "(MKTS/TABLE 5822) illegal value for valign #{rpr valign}"
+    else throw new Error "(MKTS/TABLE µ4799) illegal value for valign #{rpr valign}"
 
 #-----------------------------------------------------------------------------------------------------------
 @_walk_most_recent_field_designations = ( me, fieldhints_and_stuff ) ->
@@ -547,22 +527,22 @@ jr                        = JSON.stringify
 #-----------------------------------------------------------------------------------------------------------
 @_ensure_gridwidth = ( me ) ->
   return null if me.gridwidth?
-  throw new Error "(MKTS/TABLE 5822) gridwidth must be set"
+  throw new Error "(MKTS/TABLE µ5307) gridwidth must be set"
 
 #-----------------------------------------------------------------------------------------------------------
 @_ensure_gridheight = ( me ) ->
   return null if me.gridheight?
-  throw new Error "(MKTS/TABLE 5822) gridheight must be set"
+  throw new Error "(MKTS/TABLE µ6708) gridheight must be set"
 
 #-----------------------------------------------------------------------------------------------------------
 @_ensure_cellwidths = ( me ) ->
   return null if ( me.cellwidths.length is me.gridwidth + 1 ) and ( null not in me.cellwidths[ 1 .. ] )
-  throw new Error "(MKTS/TABLE 5822) cellwidths must be all set; got #{rpr me.cellwidths}"
+  throw new Error "(MKTS/TABLE µ4039) cellwidths must be all set; got #{rpr me.cellwidths}"
 
 #-----------------------------------------------------------------------------------------------------------
 @_ensure_cellheights = ( me ) ->
   return null if ( me.cellheights.length is me.gridheight + 1 ) and ( null not in me.cellheights[ 1 .. ] )
-  throw new Error "(MKTS/TABLE 5822) cellheights must be all set; got #{rpr me.cellheights}"
+  throw new Error "(MKTS/TABLE µ8054) cellheights must be all set; got #{rpr me.cellheights}"
 
 #-----------------------------------------------------------------------------------------------------------
 @_ensure_margin = ( me ) ->
@@ -764,7 +744,7 @@ jr                        = JSON.stringify
       yield from @_walk_table_edge_cells me, 'bottom'
       yield return
     else
-      throw new Error "(MKTS/TABLE 4550) illegal argument for edge #{rpr edge}"
+      throw new Error "(MKTS/TABLE µ9803) illegal argument for edge #{rpr edge}"
   for row_nr in [ row_nr_1 .. row_nr_2 ]
     for col_nr in [ col_nr_1 .. col_nr_2 ]
       ### TAINT don't use EXCJSCC directly ###
@@ -785,7 +765,7 @@ _stackerr = ( ref, message, error = null ) ->
   try
     ...
   catch error
-    throw _stackerr error, "(MKTS/TABLE 2406) ... new message ..."
+    throw _stackerr error, "(MKTS/TABLE µ4781) ... new message ..."
   ```
   ###
   message = "(MKTS/TABLE##{ref}) #{message}"
