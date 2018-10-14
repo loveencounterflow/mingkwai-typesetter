@@ -22,7 +22,7 @@ echo                      = CND.echo.bind CND
 @exit_handler = ( exception ) ->
   # debug '55567', rpr exception
   print               = alert
-  message             = 'ROGUE EXCEPTION: ' + ( exception.message ? "an unrecoverable condition occurred" )
+  message             = 'ROGUE EXCEPTION:\n' + ( exception.message ? "an unrecoverable condition occurred" )
   if exception.where?
     message += '\n--------------------\n' + exception.where + '\n--------------------'
   [ head, tail..., ]  = message.split '\n'
