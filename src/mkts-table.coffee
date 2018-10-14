@@ -698,9 +698,11 @@ jr                        = JSON.stringify
         continue if seen_field_designations.has field_designation
         seen_field_designations.add field_designation
         count += +1
-        yield field_designation
+        yield [ null, field_designation, ]
+  #.........................................................................................................
   if count is 0
-    throw new Error "(MKTS/TABLE 5822) field hints #{rpr fieldhints} do not match any field"
+    yield [ ( _fail me, 'µ5131', "field hints #{rpr fieldhints} do not match any field" ), null ]
+  #.........................................................................................................
   yield return
 
 #-----------------------------------------------------------------------------------------------------------
@@ -757,7 +759,7 @@ jr                        = JSON.stringify
 #===========================================================================================================
 # HELPERS
 #-----------------------------------------------------------------------------------------------------------
-_stackerr = ( ref, message, error = null ) ->
+_stackerr = ( me, ref, message, error = null ) ->
   ###
   Prepends local error message to the original one so we get more informative traces. Usage:
 
@@ -768,7 +770,9 @@ _stackerr = ( ref, message, error = null ) ->
     throw _stackerr error, "(MKTS/TABLE µ4781) ... new message ..."
   ```
   ###
-  message = "(MKTS/TABLE##{ref}) #{message}"
+  filename  = me.meta.filename ? '<NOFILENAME>'
+  line_nr   = me.meta.line_nr ? '(NOLINENR)'
+  message   = "[#{badge}##{ref}: #{filename}##{line_nr}]: #{message}"
   if error?
     error.message = "#{message}\n#{error.message}"
   else
