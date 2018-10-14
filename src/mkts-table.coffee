@@ -701,14 +701,36 @@ jr                        = JSON.stringify
   yield return
 
 #-----------------------------------------------------------------------------------------------------------
-@_walk_table_edge_fieldnames = ( me, edge ) ->
-  seen_fieldnames = new Set()
+@_walk_field_designations_from_hints = ( me, fieldhints ) ->
+  ### TAINT this will have to be changed to allow for named fields ###
+  count           = 0
+  fieldhints_set  = new Set ( _.trim() for _ in fieldhints.split ',' )
+  if fieldhints_set.has '*'
+    keys    = Object.keys me.fieldcells
+    count  += keys.length
+    yield key for key in keys
+  else
+    seen_field_designations = new Set()
+    for fieldhint from fieldhints_set
+      continue unless ( field_designations = me.cellfields[ fieldhint ] )?
+      for field_designation in field_designations
+        continue if seen_field_designations.has field_designation
+        seen_field_designations.add field_designation
+        count += +1
+        yield field_designation
+  if count is 0
+    throw new Error "(MKTS/TABLE 5822) field hints #{rpr fieldhints} do not match any field"
+  yield return
+
+#-----------------------------------------------------------------------------------------------------------
+@_walk_table_edge_field_designations = ( me, edge ) ->
+  seen_field_designations = new Set()
   for d from @_walk_table_edge_cells me, edge
-    continue unless ( fieldnames = me.cellfields[ d.cellkey ] )?
-    for fieldname in fieldnames
-      continue if seen_fieldnames.has fieldname
-      seen_fieldnames.add fieldname
-      yield fieldname
+    continue unless ( field_designations = me.cellfields[ d.cellkey ] )?
+    for field_designation in field_designations
+      continue if seen_field_designations.has field_designation
+      seen_field_designations.add field_designation
+      yield field_designation
   yield return
 
 #-----------------------------------------------------------------------------------------------------------
