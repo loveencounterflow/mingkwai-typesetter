@@ -68,12 +68,12 @@ jr                        = JSON.stringify
       sDebugJoints:       'gray!30,sThick'
     #.......................................................................................................
     default:
-      # gridwidth:     4
-      # gridheight:    4
+      gridwidth:     4
+      gridheight:    4
       unitwidth:    '1mm'
       unitheight:   '1mm'
-      # cellwidth:     10
-      # cellheight:    10
+      cellwidths:    10
+      cellheights:   10
       marginwidth:   0
       marginheight:  0
       paddingwidth:  0
