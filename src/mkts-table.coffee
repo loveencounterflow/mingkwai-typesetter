@@ -63,8 +63,8 @@ jr                        = JSON.stringify
       sDashed:            'dashed'
       sRed:               'red'
       sBlack:             'black'
-      sDebugQuadgrid:     'gray!30,sThin'
       sDebugCellgrid:     'gray!30,sThin'
+      sDebugFieldgrid:    'gray!30,sThin'
       sDebugJoints:       'gray!30,sThick'
     #.......................................................................................................
     default:
@@ -317,6 +317,7 @@ jr                        = JSON.stringify
   sides = ( _.trim() for _ in sides.split ',' )
   sides = [ 'top', 'left', 'bottom', 'right', ] if '*' in sides
   #.........................................................................................................
+  ### TAINT code duplication ###
   ### TAINT this will have to be changed to allow for named fields ###
   fieldhints = new Set ( _.trim() for _ in fieldhints.split ',' )
   if fieldhints.has '*'
@@ -331,8 +332,8 @@ jr                        = JSON.stringify
       fieldhints.delete 'table'
       for side in sides
         fieldhints.add d.cellkey for d from @_walk_table_edge_cells me, side
-    cellkeys  = ( fieldhint for fieldhint from fieldhints )
-    fields     = @_fieldnames_from_cellkeys me, cellkeys
+    cellkeys    = ( fieldhint for fieldhint from fieldhints )
+    fields      = @_fieldnames_from_cellkeys me, cellkeys
   #.........................................................................................................
   style = style.trim()
   style = null if style in [ 'none', '', ]
@@ -345,7 +346,7 @@ jr                        = JSON.stringify
 #-----------------------------------------------------------------------------------------------------------
 @_walk_events = ( me, fieldhints_and_content_events ) ->
   @_compute_cell_dimensions     me
-  @_compute_field_dimensions     me
+  @_compute_field_dimensions    me
   @_compute_border_dimensions   me
   @_compute_pod_dimensions      me
   #.........................................................................................................
@@ -356,10 +357,10 @@ jr                        = JSON.stringify
   ### Debugging ### ### TAINT should make ordering configurable so we can under- or overprint debugging ###
   yield from @_walk_debug_joints_events                 me
   yield from @_walk_debug_cellgrid_events               me
-  yield from @_walk_debug_fieldgrid_events               me
+  yield from @_walk_debug_fieldgrid_events              me
   #.........................................................................................................
   ### Borders, content ###
-  yield from @_walk_field_borders_events                 me
+  yield from @_walk_field_borders_events                me
   yield from @_walk_pod_events                          me, fieldhints_and_content_events
   #.........................................................................................................
   ### Finishing ###
@@ -451,7 +452,14 @@ jr                        = JSON.stringify
     valign_tex  = @_get_valign_tex me, me.valigns[ field_designation ] ? me.valigns[ '*' ] ? 'center'
     yield [ 'tex', "\\node[anchor=north west,inner sep=0mm] at (#{d.left},#{d.top})%\n", ]
     yield [ 'tex', "{\\begin{minipage}[t][#{d.height}\\mktsTableUnitheight][#{valign_tex}]{#{d.width}\\mktsTableUnitwidth}%\n", ]
-    yield [ 'tex', "A\\hfill{}B\\hfill{}C\\end{minipage}};%\n", ]
+    # yield [ 'tex', "\\vfill{}", ]
+    yield [ '.', 'noindent', null, {}, ]
+    # yield [ 'tex', "\\begin{flushright}", ]
+    yield sub_event for sub_event in content
+    # yield [ 'tex', "\\par\\end{flushright}", ]
+    # yield [ 'tex', "\\par", ]
+    # yield [ 'tex', "\\vfill{}", ]
+    yield [ 'tex', "\\end{minipage}};%\n", ]
     # yield [ 'tex', "{\\framebox{\\begin{minipage}[t][#{d.height}\\mktsTableUnitheight][t]{#{d.width}\\mktsTableUnitwidth}%\n", ]
     # yield [ 'tex', "A\\hfill{}B\\hfill{}C\\end{minipage}}};%\n", ]
   #.........................................................................................................
@@ -470,14 +478,14 @@ jr                        = JSON.stringify
   bottom    = ( @_bottom_from_row_nr  me, me.gridheight ) + 3
   for col_nr in [ 1 .. me.gridwidth + 1 ]
     x = @_left_from_col_nr me, col_nr
-    yield [ 'tex', "\\draw[sDebugQuadgrid] (#{x},#{top}) -- (#{x},#{bottom});\n", ]
+    yield [ 'tex', "\\draw[sDebugCellgrid] (#{x},#{top}) -- (#{x},#{bottom});\n", ]
   #.........................................................................................................
   ### TAINT use fixed size like 1mm ###
   left      = ( @_left_from_col_nr    me, 1             ) - 3
   right     = ( @_right_from_col_nr   me, me.gridwidth  ) + 3
   for row_nr in [ 1 .. me.gridheight + 1 ]
     y = @_top_from_row_nr me, row_nr
-    yield [ 'tex', "\\draw[sDebugQuadgrid] (#{left},#{y}) -- (#{right},#{y});\n", ]
+    yield [ 'tex', "\\draw[sDebugCellgrid] (#{left},#{y}) -- (#{right},#{y});\n", ]
   #.........................................................................................................
   yield return
 
@@ -492,12 +500,12 @@ jr                        = JSON.stringify
     right  = d.right  - 0.5
     top    = d.top    + 0.5
     bottom = d.bottom - 0.5
-    yield [ 'tex', "\\draw[sDebugCellgrid] (#{left},#{bottom})" \
+    yield [ 'tex', "\\draw[sDebugFieldgrid] (#{left},#{bottom})" \
                  + " -- (#{left},#{top})"                       \
                  + " -- (#{right},#{top});", ]
-    yield [ 'tex', " \\draw[sDebugCellgrid] (#{right},#{top}) " \
+    yield [ 'tex', " \\draw[sDebugFieldgrid] (#{right},#{top}) " \
                  + " -- (#{right},#{bottom});", ]
-    yield [ 'tex', " \\draw[sDebugCellgrid] (#{left},#{bottom}) " \
+    yield [ 'tex', " \\draw[sDebugFieldgrid] (#{left},#{bottom}) " \
                  + " -- (#{right},#{bottom});", ]
     yield [ 'tex', "\n", ]
   #.........................................................................................................

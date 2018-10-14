@@ -44,8 +44,8 @@ MKTS.MACRO_ESCAPER.register_raw_tag 'mkts-table-description'
   #.........................................................................................................
   return D.TEE.from_pipeline [
     @$parse_description               S
-    @$render_description              S
-    # @$dump_table_description          S
+    @$collect_field_contents          S
+    @$dump_table_description          S
     ]
 
 #===========================================================================================================
@@ -121,11 +121,12 @@ MKTS.MACRO_ESCAPER.register_raw_tag 'mkts-table-description'
       if within_field
         current_field.push event
         urge '27762', jr event
-        return send stamp event
+        return # send stamp event
       #.....................................................................................................
       if ( select event, '.', 'text' ) and ( event[ 2 ].match /^\s*$/ )?
         whisper '27762', jr event
-        return send stamp event
+        return
+        # return send stamp event
       #.....................................................................................................
       # throw new Error "detected illegal content: #{rpr event}"
       warn '27762', jr event
@@ -134,6 +135,9 @@ MKTS.MACRO_ESCAPER.register_raw_tag 'mkts-table-description'
     send event
     #.......................................................................................................
     return null
+
+#-----------------------------------------------------------------------------------------------------------
+@$render_description = ( S ) ->
 
 #-----------------------------------------------------------------------------------------------------------
 @get_mkts_table_description_and_sandbox = ( S, event ) ->
