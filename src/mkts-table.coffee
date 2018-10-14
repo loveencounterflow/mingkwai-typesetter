@@ -85,73 +85,76 @@ jr                        = JSON.stringify
 #===========================================================================================================
 # PUBLIC API
 #-----------------------------------------------------------------------------------------------------------
-@gridwidth = ( me, text ) ->
+@_set_gridsize = ( me, direction, text ) ->
+  unless direction in [ 'width', 'height', ]
+    throw _stackerr me, 'µ9061', "expected 'width' or 'height', got #{rpr direction}"
+  p = "grid#{direction}"
   #.........................................................................................................
-  unless ( type = CND.type_of text ) is 'text'
-    throw new Error "(MKTS/TABLE 4517) need a text for mkts-table/gridwidth, got a #{type}"
+  ### Apply default unless text matches integer pattern: ###
   unless ( match = text.match /^\s*(\d+)\s*$/ )?
-    throw new Error "(MKTS/TABLE 4300) need a text like '3' or similar for mkts-table/gridwidth, got #{rpr text}"
-  if me.gridwidth?
-    throw new Error "(MKTS/TABLE 5827) unable to re-define gridwidth"
+    me[ p ] = me.default[ p ]
+    return _record_fail  me, 'µ4833', "need a text like '3' or similar for mkts-table/#{p}, got #{rpr text}"
+  #.......................................................................................................
+  ### Do nothing if dimension already defined: ###
+  if me[ p ]?
+    return _record_fail me, 'µ5689', "unable to re-define #{p}"
   #.........................................................................................................
-  me.gridwidth      = parseInt match[ 1 ], 10
+  me[ p ] = parseInt match[ 1 ], 10
   return null
 
 #-----------------------------------------------------------------------------------------------------------
-@gridheight = ( me, text ) ->
+@_set_unitsize = ( me, direction, text ) ->
+  unless direction in [ 'width', 'height', ]
+    throw _stackerr me, 'µ4613', "expected 'width' or 'height', got #{rpr direction}"
+  p = "unit#{direction}"
   #.........................................................................................................
-  unless ( type = CND.type_of text ) is 'text'
-    throw new Error "(MKTS/TABLE 9150) need a text for mkts-table/gridheight, got a #{type}"
-  unless ( match = text.match /^\s*(\d+)\s*$/ )?
-    throw new Error "(MKTS/TABLE 6572) need a text like '3' or similar for mkts-table/gridheight, got #{rpr text}"
-  if me.gridheight?
-    throw new Error "(MKTS/TABLE 6501) unable to re-define gridheight"
+  ### Do nothing if dimension already defined: ###
+  if me[ p ]?
+    return _record_fail me, 'µ5661', "unable to re-define #{p}"
   #.........................................................................................................
-  me.gridheight     = parseInt match[ 1 ], 10
+  me[ p ] = text
   return null
 
 #-----------------------------------------------------------------------------------------------------------
-@unitwidth = ( me, text ) ->
-  unless ( type = CND.type_of text ) is 'text'
-    throw new Error "(MKTS/TABLE 9131) need a text for mkts-table/unitwidth, got a #{type}"
-  if me.unitwidth?
-    throw new Error "(MKTS/TABLE 6477) unable to re-define unitheight"
+@_set_cellsizes = ( me, direction, text ) ->
+  unless direction in [ 'width', 'height', ]
+    throw _stackerr me, 'µ2352', "expected 'width' or 'height', got #{rpr direction}"
+  p = "cell#{direction}s"
   #.........................................................................................................
-  me.unitwidth = text
-  return null
-
-#-----------------------------------------------------------------------------------------------------------
-@unitheight = ( me, text ) ->
-  unless ( type = CND.type_of text ) is 'text'
-    throw new Error "(MKTS/TABLE 7680) need a text for mkts-table/unitheight, got a #{type}"
-  if me.unitheight?
-    throw new Error "(MKTS/TABLE 2142) unable to re-define unitheight"
+  ### Do nothing if dimension already defined: ###
+  if me[ p ].length > 1
+    return _record_fail me, 'µ8613', "unable to re-define #{p}"
   #.........................................................................................................
-  me.unitheight = text
+  if direction is 'width'
+    @_ensure_gridwidth me
+    lane_count = me.gridwidth
+  else
+    @_ensure_gridheight me
+    lane_count = me.gridheight
+  #.........................................................................................................
+  ### Apply default unless text matches (simplified) float pattern: ###
+  unless ( match = text.match /^([+\d.]+)$/ )?
+    _record_fail me, 'µ6377', "need a text like '2.7' or similar for mkts-table/#{p}, got #{rpr text}"
+    value = me.default[ p ]
+  else
+    value = parseFloat text
+  me[ p ][  0 ] = value ### set default ###
+  me[ p ][ nr ] = value for nr in [ 1 .. lane_count ]
+  #.........................................................................................................
   return null
 
 #-----------------------------------------------------------------------------------------------------------
-@cellwidths = ( me, text ) ->
-  ### TAINT should validate ###
-  @_ensure_gridwidth me
-  value = parseFloat text
-  me.cellwidths[  0 ] = value ### set default ###
-  me.cellwidths[ nr ] = value for nr in [ 1 .. me.gridwidth ]
-  return null
-
-#-----------------------------------------------------------------------------------------------------------
-@cellheights = ( me, text ) ->
-  ### TAINT should validate ###
-  @_ensure_gridheight me
-  value = parseFloat text
-  me.cellheights[  0 ] = value ### set default ###
-  me.cellheights[ nr ] = value for nr in [ 1 .. me.gridheight ]
-  return null
+@gridwidth    = ( me, text ) -> @_set_gridsize  me, 'width',    text
+@gridheight   = ( me, text ) -> @_set_gridsize  me, 'height',   text
+@unitwidth    = ( me, text ) -> @_set_unitsize  me, 'width',    text
+@unitheight   = ( me, text ) -> @_set_unitsize  me, 'height',   text
+@cellwidths   = ( me, text ) -> @_set_cellsizes me, 'width',    text
+@cellheights  = ( me, text ) -> @_set_cellsizes me, 'height',   text
 
 #-----------------------------------------------------------------------------------------------------------
 @fieldcells = ( me, text ) ->
   unless ( type = CND.type_of text ) is 'text'
-    throw new Error "(MKTS/TABLE 8532) need a text for mkts-table/fieldcells, got a #{type}"
+    throw new Error "(MKTS/TABLE µ1064) need a text for mkts-table/fieldcells, got a #{type}"
   #.........................................................................................................
   @_ensure_gridwidth  me
   @_ensure_gridheight me
@@ -195,8 +198,10 @@ jr                        = JSON.stringify
   unless value in [ 'top', 'bottom', 'center', 'spread', ]
     throw new Error "(MKTS/TABLE µ1876) expected one of 'top', 'bottom', 'center', 'spread' for mkts-table/fieldalignvertical, got #{rpr value}"
   #.........................................................................................................
-  for field_designation from @_walk_field_designations_from_hints me, fieldhints
-    me.valigns[ field_designation ] = value
+  for [ fail, field_designation, ] from @_walk_f_field_designations_from_hints me, fieldhints
+    ### TAINT ad-hoc fail message production, use method ###
+    if fail? then _record me, "#{fail} (#{jr {field_designation}})"
+    else          me.valigns[ field_designation ] = value
   #.........................................................................................................
   return null
 
@@ -346,6 +351,7 @@ jr                        = JSON.stringify
   #.........................................................................................................
   ### Finishing ###
   yield from @_walk_closing_events                      me
+  yield from @_walk_fail_events                         me
   #.........................................................................................................
   # ### dump description for debugging ###
   # ### TAINT make dump configurable ###
@@ -421,8 +427,9 @@ jr                        = JSON.stringify
   designations, and later occurrences of a given field will replace earlier appearances. ###
   R = {}
   for [ fieldhints, stuff..., ] in fieldhints_and_stuff
-    for field_designation from @_walk_field_designations_from_hints me, fieldhints
-      R[ field_designation ] = stuff
+    for [ fail, field_designation, ] from @_walk_f_field_designations_from_hints me, fieldhints
+      if fail? then _record me, fail
+      else          R[ field_designation ]  = stuff
   yield [ field_designation, stuff..., ] for field_designation, stuff of R
   yield return
 
@@ -506,6 +513,13 @@ jr                        = JSON.stringify
       cellkey = "#{col_letter}#{row_nr}"
       yield [ 'tex', "\\node[sDebugJoints] at (#{x},#{y}) {{\\mktsStyleCode{}#{cellkey}}}; ", ]
   #.........................................................................................................
+  yield return
+
+#-----------------------------------------------------------------------------------------------------------
+@_walk_fail_events = ( me ) ->
+  for fail in me.fails
+    yield [ '.', 'warning', fail, ( copy me.meta ), ]
+    yield [ 'tex', '\\par\n', ]
   yield return
 
 
@@ -682,14 +696,16 @@ jr                        = JSON.stringify
   yield return
 
 #-----------------------------------------------------------------------------------------------------------
-@_walk_field_designations_from_hints = ( me, fieldhints ) ->
+@_walk_f_field_designations_from_hints = ( me, fieldhints ) ->
   ### TAINT this will have to be changed to allow for named fields ###
   count           = 0
   fieldhints_set  = new Set ( _.trim() for _ in fieldhints.split ',' )
+  #.........................................................................................................
   if fieldhints_set.has '*'
     keys    = Object.keys me.fieldcells
     count  += keys.length
-    yield key for key in keys
+    yield [ null, key, ] for key in keys
+  #.........................................................................................................
   else
     seen_field_designations = new Set()
     for fieldhint from fieldhints_set
