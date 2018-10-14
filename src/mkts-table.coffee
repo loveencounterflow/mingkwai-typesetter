@@ -43,6 +43,7 @@ jr                        = JSON.stringify
 @_new_description = ( S ) ->
   R =
     '~isa':               'MKTS/TABLE/description'
+    fails:                [] ### recoverable errors / fails warnings ###
     fieldcells:           {} ### field extents in terms of cells, by field designations ###
     cellfields:           {} ### which cells belong to what fields, by cellkeys ###
     cell_dimensions:      {}
@@ -794,5 +795,20 @@ _stackerr = ( ref, message, error = null ) ->
     ### TAINT elide current line from stack trace ###
     error = new Error message
   return error
+
+#-----------------------------------------------------------------------------------------------------------
+_fail = ( me, ref, message ) ->
+  ### TAINT using strings as error values is generally being frowned upon ###
+  filename  = me.meta.filename ? '<NOFILENAME>'
+  line_nr   = me.meta.line_nr ? '(NOLINENR)'
+  return "[#{badge}##{ref}: #{filename}##{line_nr}]: #{message}"
+
+#-----------------------------------------------------------------------------------------------------------
+_record = ( me, message ) ->
+  me.fails.push message
+  return null
+
+#-----------------------------------------------------------------------------------------------------------
+_record_fail = ( me, ref, message ) -> _record me, _fail me, ref, message
 
 
