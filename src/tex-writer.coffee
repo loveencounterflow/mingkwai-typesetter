@@ -1867,13 +1867,20 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
         source_locator              = '<STRING>' if ( source_locator.match /<STRING>/ )?
         text                        = "#{text} (#{source_locator}#{line_nr}:#{col_nr})"
         warn '39833-1', text
-        warnings.push text
+        warnings.push event
         send event
       else
         send event
     #.......................................................................................................
     if end?
-      warn '39833-2', text for text in warnings
+      if warnings.length > 0
+        send [ 'tex', '\\newpage{}' ]
+        send [ 'tex', "{\\mktsHTwo{}\\zlabel{mktsGeneratedWarnings}Generated Warnings}\n\n", ]
+        for event in warnings
+          [ type, name, text, meta, ] = event
+          warn '39833-2', text
+          send [ '.', 'warning', text, ( copy meta ), ]
+          send [ 'tex', '\\par\n' ]
       end()
     #.......................................................................................................
     return null
