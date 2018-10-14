@@ -343,7 +343,7 @@ jr                        = JSON.stringify
 #===========================================================================================================
 # EVENT GENERATORS
 #-----------------------------------------------------------------------------------------------------------
-@_walk_events = ( me ) ->
+@_walk_events = ( me, fieldhints_and_content_events ) ->
   @_compute_cell_dimensions     me
   @_compute_field_dimensions     me
   @_compute_border_dimensions   me
@@ -360,7 +360,7 @@ jr                        = JSON.stringify
   #.........................................................................................................
   ### Borders, content ###
   yield from @_walk_field_borders_events                 me
-  yield from @_walk_pod_events                          me
+  yield from @_walk_pod_events                          me, fieldhints_and_content_events
   #.........................................................................................................
   ### Finishing ###
   yield from @_walk_closing_events                      me
@@ -431,6 +431,23 @@ jr                        = JSON.stringify
     when 'spread' then 's'
     else throw new Error "(MKTS/TABLE 5822) illegal value for valign #{rpr valign}"
 
+#-----------------------------------------------------------------------------------------------------------
+@_walk_most_recent_field_designations = ( me, fieldhints_and_stuff ) ->
+  ### Given a list of `[ fieldhints, x... ]` lists, return a list of `[ designation, x... ]` lists such
+  that each `designation` that resulted from each of the `fieldhints` is only kept from the instance
+  that appeared last in the list. Each `fieldhints` can produce an arbitrary number of matching field
+  designations, and later occurrences of a given field will replace earlier appearances. ###
+  R = {}
+  for [ fieldhints, stuff..., ] in fieldhints_and_stuff
+    for field_designation from @_walk_field_designations_from_hints me, fieldhints
+      R[ field_designation ] = stuff
+  yield [ field_designation, stuff..., ] for field_designation, stuff of R
+  yield return
+
+#-----------------------------------------------------------------------------------------------------------
+@_walk_pod_events = ( me, fieldhints_and_content_events ) ->
+  for [ field_designation, content, ] from @_walk_most_recent_field_designations me, fieldhints_and_content_events
+    d           = me.pod_dimensions[ field_designation ]
     valign_tex  = @_get_valign_tex me, me.valigns[ field_designation ] ? me.valigns[ '*' ] ? 'center'
     yield [ 'tex', "\\node[anchor=north west,inner sep=0mm] at (#{d.left},#{d.top})%\n", ]
     yield [ 'tex', "{\\begin{minipage}[t][#{d.height}\\mktsTableUnitheight][#{valign_tex}]{#{d.width}\\mktsTableUnitwidth}%\n", ]

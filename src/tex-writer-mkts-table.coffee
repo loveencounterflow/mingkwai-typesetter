@@ -78,13 +78,13 @@ MKTS.MACRO_ESCAPER.register_raw_tag 'mkts-table-description'
     return null
 
 #-----------------------------------------------------------------------------------------------------------
-@$render_description = ( S ) ->
+@$collect_field_contents = ( S ) ->
   ### TAINT should allow to name tables in description and content tags ###
-  prv_description       = null
-  within_table_content  = false
-  within_field           = false
-  fields                 = {}
-  current_field          = null
+  prv_description               = null
+  within_table_content          = false
+  within_field                  = false
+  fieldhints_and_content_events = []
+  current_field                 = null
   #.........................................................................................................
   return $ ( event, send ) =>
     if select event, '.', 'MKTS/TABLE/description'
@@ -98,9 +98,7 @@ MKTS.MACRO_ESCAPER.register_raw_tag 'mkts-table-description'
     #.......................................................................................................
     if select event, ')', 'mkts-table-content'
       within_table_content = false
-      # send sub_event for sub_event from MKTS_TABLE._walk_events description
-      ### TAINT render table now ###
-      debug '66522', fields
+      send sub_event for sub_event from MKTS_TABLE._walk_events prv_description, fieldhints_and_content_events
       return send stamp event
     #.......................................................................................................
     if within_table_content
@@ -111,7 +109,8 @@ MKTS.MACRO_ESCAPER.register_raw_tag 'mkts-table-description'
         if not Q? and Q.key?
           throw new Error "need key for field"
         ### TAINT must validate key at some point; like this, content with an unknown key will just vanish ###
-        current_field = fields[ Q.key ] = []
+        current_field = []
+        fieldhints_and_content_events.push [ Q.key, current_field, ]
         return send stamp event
       #.....................................................................................................
       if select event, ')', 'field'
