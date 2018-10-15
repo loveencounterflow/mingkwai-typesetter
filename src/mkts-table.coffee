@@ -43,6 +43,7 @@ jr                        = JSON.stringify
 @_new_description = ( S ) ->
   R =
     '~isa':               'MKTS/TABLE/description'
+    debug:                false
     fails:                [] ### recoverable errors / fails warnings ###
     fieldcells:           {} ### field extents in terms of cells, by field designations ###
     cellfields:           {} ### which cells belong to what fields, by cellkeys ###
@@ -55,7 +56,6 @@ jr                        = JSON.stringify
     cellwidths:           [ null, ] ### [ 0 ] is default, [ 1 .. gridwidth ] explicit or implicit widths ###
     cellheights:          [ null, ] ### [ 0 ] is default, [ 1 .. gridheight ] explicit or implicit heights ###
     joint_coordinates:    null
-    debug:                false
     #.......................................................................................................
     styles:
       sThin:              'thin'
@@ -69,16 +69,16 @@ jr                        = JSON.stringify
       sDebugJoints:       'gray!30,sThick'
     #.......................................................................................................
     default:
-      gridwidth:     4
-      gridheight:    4
-      unitwidth:    '1mm'
-      unitheight:   '1mm'
-      cellwidths:    10
-      cellheights:   10
-      marginwidth:   0
-      marginheight:  0
-      paddingwidth:  0
-      paddingheight: 0
+      gridwidth:            4
+      gridheight:           4
+      unitwidth:            '1mm'
+      unitheight:           '1mm'
+      cellwidths:           10
+      cellheights:          10
+      marginwidth:          0
+      marginheight:         0
+      paddingwidth:         0
+      paddingheight:        0
   return R
 
 
@@ -799,8 +799,8 @@ _stackerr = ( me, ref, message, error = null ) ->
 #-----------------------------------------------------------------------------------------------------------
 _fail = ( me, ref, message ) ->
   ### TAINT using strings as error values is generally being frowned upon ###
-  filename  = me.meta.filename ? '<NOFILENAME>'
-  line_nr   = me.meta.line_nr ? '(NOLINENR)'
+  filename    = me.meta.filename  ? '<NOFILENAME>'
+  line_nr     = me.meta.line_nr   ? '(NOLINENR)'
   return "[#{badge}##{ref}: #{filename}##{line_nr}]: #{message}"
 
 #-----------------------------------------------------------------------------------------------------------

@@ -45,7 +45,7 @@ MKTS.MACRO_ESCAPER.register_raw_tag 'mkts-table-description'
   return D.TEE.from_pipeline [
     @$parse_description               S
     @$collect_field_contents          S
-    # @$dump_table_description          S
+    @$dump_table_description          S
     ]
 
 #===========================================================================================================
