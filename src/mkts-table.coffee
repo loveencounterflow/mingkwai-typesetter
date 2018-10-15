@@ -316,18 +316,18 @@ jr                        = JSON.stringify
   yield from @_walk_opening_events                      me
   yield from @_walk_style_events                        me ### TAINT should write to document preamble ###
   #.........................................................................................................
+  ### Borders, content ###
+  yield from @_walk_field_borders_events                me
+  yield from @_walk_pod_events                          me, fieldhints_and_content_events
+  #.........................................................................................................
   ### Debugging ### ### TAINT should make ordering configurable so we can under- or overprint debugging ###
   yield from @_walk_debug_joints_events                 me
   yield from @_walk_debug_cellgrid_events               me
   yield from @_walk_debug_fieldgrid_events              me
   #.........................................................................................................
-  ### Borders, content ###
-  yield from @_walk_field_borders_events                me
-  yield from @_walk_pod_events                          me, fieldhints_and_content_events
-  #.........................................................................................................
   ### Finishing ###
   yield from @_walk_closing_events                      me
-  yield from @_walk_fail_events                         me
+  yield from @_convert_fails_to_warnings                me
   #.........................................................................................................
   # ### dump description for debugging ###
   # ### TAINT make dump configurable ###
@@ -433,8 +433,11 @@ jr                        = JSON.stringify
 #===========================================================================================================
 # EVENT GENERATORS: DEBUGGING EVENTS
 #-----------------------------------------------------------------------------------------------------------
+@_should_debug = ( me ) -> me.debug or ( me.fails.length != 0 )
+
+#-----------------------------------------------------------------------------------------------------------
 @_walk_debug_cellgrid_events = ( me ) ->
-  unless me.debug
+  unless @_should_debug me
     yield return
   #.........................................................................................................
   ### TAINT use fixed size like 1mm ###
@@ -455,7 +458,7 @@ jr                        = JSON.stringify
 
 #-----------------------------------------------------------------------------------------------------------
 @_walk_debug_fieldgrid_events = ( me ) ->
-  unless me.debug
+  unless @_should_debug me
     yield return
   #.........................................................................................................
   for designation, d of me.field_dimensions
@@ -477,7 +480,7 @@ jr                        = JSON.stringify
 
 #-----------------------------------------------------------------------------------------------------------
 @_walk_debug_joints_events = ( me ) ->
-  unless me.debug
+  unless @_should_debug me
     yield return
   @_ensure_joint_coordinates  me
   #.........................................................................................................
