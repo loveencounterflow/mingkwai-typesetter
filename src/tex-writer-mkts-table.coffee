@@ -92,15 +92,31 @@ MKTS.MACRO_ESCAPER.register_raw_tag 'mkts-table-description'
       prv_description_event = event
       return null
     #.......................................................................................................
+    ### When table contents start, we register that and do not send anything: ###
     if select event, '(', 'mkts-table-content'
       within_table_content = true
       return send stamp event
     #.......................................................................................................
+    ### When table contents end, we send all the sub-events needed to draw the table, and then the
+    description-end and description events: ###
     if select event, ')', 'mkts-table-content'
-      within_table_content = false
+      within_table_content  = false
       description           = prv_description_event[ 2 ]
-      return send stamp event
+      #.....................................................................................................
+      for sub_event from MKTS_TABLE._walk_events description, fieldhints_and_content_events
+        send sub_event
+      #.....................................................................................................
+      send stamp prv_description_event
+      send stamp event
+      #.....................................................................................................
+      ### TAINT this will become obsolete when we get named table descriptions: ###
+      fieldhints_and_content_events.length  = 0
+      prv_description_event                 = null
+      #.....................................................................................................
+      return null
     #.......................................................................................................
+    ### If we are within table contents, we collect all field events and their contents as table field
+    contents; outside that, whitespace events are ignored, and other material generates errors: ###
     if within_table_content
       #.....................................................................................................
       if select event, '(', 'field'
@@ -108,7 +124,6 @@ MKTS.MACRO_ESCAPER.register_raw_tag 'mkts-table-description'
         [ type, name, Q, meta, ]  = event
         if not Q? and Q.key?
           throw new Error "need key for field"
-        ### TAINT must validate key at some point; like this, content with an unknown key will just vanish ###
         current_field = []
         fieldhints_and_content_events.push [ Q.key, current_field, ]
         return send stamp event
@@ -121,16 +136,16 @@ MKTS.MACRO_ESCAPER.register_raw_tag 'mkts-table-description'
       if within_field
         current_field.push event
         urge '27762', jr event
-        return # send stamp event
+        return null
       #.....................................................................................................
       if ( select event, '.', 'text' ) and ( event[ 2 ].match /^\s*$/ )?
         whisper '27762', jr event
-        return
-        # return send stamp event
+        return null
       #.....................................................................................................
+      ### TAINT should be a fail, not an exception: ###
       # throw new Error "detected illegal content: #{rpr event}"
       warn '27762', jr event
-      return
+      return null
     #.......................................................................................................
     send event
     #.......................................................................................................
