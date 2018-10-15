@@ -80,17 +80,17 @@ MKTS.MACRO_ESCAPER.register_raw_tag 'mkts-table-description'
 #-----------------------------------------------------------------------------------------------------------
 @$collect_field_contents = ( S ) ->
   ### TAINT should allow to name tables in description and content tags ###
-  prv_description               = null
+  prv_description_event         = null
   within_table_content          = false
   within_field                  = false
   fieldhints_and_content_events = []
   current_field                 = null
   #.........................................................................................................
   return $ ( event, send ) =>
+    ### When a table description comes along, we save it for later and do not send anything: ###
     if select event, '.', 'MKTS/TABLE/description'
-      [ type, name, description, meta, ]  = event
-      prv_description                     = description
-      return send stamp event
+      prv_description_event = event
+      return null
     #.......................................................................................................
     if select event, '(', 'mkts-table-content'
       within_table_content = true
@@ -98,7 +98,7 @@ MKTS.MACRO_ESCAPER.register_raw_tag 'mkts-table-description'
     #.......................................................................................................
     if select event, ')', 'mkts-table-content'
       within_table_content = false
-      send sub_event for sub_event from MKTS_TABLE._walk_events prv_description, fieldhints_and_content_events
+      description           = prv_description_event[ 2 ]
       return send stamp event
     #.......................................................................................................
     if within_table_content
