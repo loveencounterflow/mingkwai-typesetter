@@ -153,9 +153,6 @@ jr                        = JSON.stringify
 
 #-----------------------------------------------------------------------------------------------------------
 @fieldcells = ( me, text ) ->
-  unless ( type = CND.type_of text ) is 'text'
-    throw new Error "(MKTS/TABLE µ1064) need a text for mkts-table/fieldcells, got a #{type}"
-  #.........................................................................................................
   @_ensure_gridwidth  me
   @_ensure_gridheight me
   @_ensure_unitvector me
@@ -176,9 +173,6 @@ jr                        = JSON.stringify
 
 #-----------------------------------------------------------------------------------------------------------
 @fieldborder = ( me, text ) ->
-  unless ( type = CND.type_of text ) is 'text'
-    throw new Error "(MKTS/TABLE µ9222) need a text for mkts-table/fieldborder, got a #{type}"
-  #.........................................................................................................
   d = @_parse_fieldborder me, text
   for field in d.fields
     for side in d.sides
@@ -188,9 +182,6 @@ jr                        = JSON.stringify
 
 #-----------------------------------------------------------------------------------------------------------
 @fieldalignvertical = ( me, text ) ->
-  unless ( type = CND.type_of text ) is 'text'
-    throw new Error "(MKTS/TABLE µ9289) need a text for mkts-table/fieldalignvertical, got a #{type}"
-  #.........................................................................................................
   unless ( match = text.match /^(.+?):([^:]+)$/ )?
     throw new Error "(MKTS/TABLE µ5229) expected something like 'c3:top' for mkts-table/fieldalignvertical, got #{rpr text}"
   [ _, fieldhints, value, ] = match
@@ -207,9 +198,6 @@ jr                        = JSON.stringify
 
 #-----------------------------------------------------------------------------------------------------------
 @debug = ( me, text ) ->
-  unless ( type = CND.type_of text ) is 'text'
-    throw new Error "(MKTS/TABLE µ9299) need a text for mkts-table/field, got a #{type}"
-  #.........................................................................................................
   switch text
     when 'true'   then me.debug = true
     when 'false'  then me.debug = false
@@ -219,9 +207,6 @@ jr                        = JSON.stringify
 
 #-----------------------------------------------------------------------------------------------------------
 @marginwidth = ( me, text ) ->
-  unless ( type = CND.type_of text ) is 'text'
-    throw new Error "(MKTS/TABLE µ7503) need a text for mkts-table/marginwidth, got a #{type}"
-  #.........................................................................................................
   @_ensure_unitvector me
   ### TAINT use parser, validate syntax ###
   me.marginwidth = parseFloat text
@@ -230,9 +215,6 @@ jr                        = JSON.stringify
 
 #-----------------------------------------------------------------------------------------------------------
 @marginheight = ( me, text ) ->
-  unless ( type = CND.type_of text ) is 'text'
-    throw new Error "(MKTS/TABLE µ2371) need a text for mkts-table/marginheight, got a #{type}"
-  #.........................................................................................................
   @_ensure_unitvector me
   ### TAINT use parser, validate syntax ###
   me.marginheight = parseFloat text
@@ -241,9 +223,6 @@ jr                        = JSON.stringify
 
 #-----------------------------------------------------------------------------------------------------------
 @paddingwidth = ( me, text ) ->
-  unless ( type = CND.type_of text ) is 'text'
-    throw new Error "(MKTS/TABLE µ3859) need a text for mkts-table/paddingwidth, got a #{type}"
-  #.........................................................................................................
   @_ensure_unitvector me
   ### TAINT use parser, validate syntax ###
   me.paddingwidth = parseFloat text
@@ -252,9 +231,6 @@ jr                        = JSON.stringify
 
 #-----------------------------------------------------------------------------------------------------------
 @paddingheight = ( me, text ) ->
-  unless ( type = CND.type_of text ) is 'text'
-    throw new Error "(MKTS/TABLE µ4525) need a text for mkts-table/paddingheight, got a #{type}"
-  #.........................................................................................................
   @_ensure_unitvector me
   ### TAINT use parser, validate syntax ###
   me.paddingheight = parseFloat text
