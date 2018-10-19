@@ -596,6 +596,7 @@ texr = ( ref, source ) ->
 
 #-----------------------------------------------------------------------------------------------------------
 @_compute_border_dimensions = ( me ) ->
+  @_ensure_margin me
   for designation, d of me.field_dimensions
     left   = d.left   + me.marginwidth
     right  = d.right  - me.marginwidth
@@ -611,6 +612,7 @@ texr = ( ref, source ) ->
 
 #-----------------------------------------------------------------------------------------------------------
 @_compute_pod_dimensions = ( me ) ->
+  @_ensure_padding me
   for designation, d of me.field_dimensions
     left   = d.left   + me.paddingwidth
     right  = d.right  - me.paddingwidth
