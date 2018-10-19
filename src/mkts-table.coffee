@@ -33,7 +33,6 @@ is_hidden                 = MD_READER.is_hidden.bind   MD_READER
 is_stamped                = MD_READER.is_stamped.bind  MD_READER
 #...........................................................................................................
 copy                      = ( x ) -> Object.assign {}, x
-EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
 jr                        = JSON.stringify
 IG                        = require 'intergrid'
 
@@ -145,18 +144,16 @@ texr = ( ref, source ) ->
 @fieldcells = ( me, text ) ->
   @_ensure_grid       me
   @_ensure_unitvector me
-  d           = @_parse_range_cellref me, text
-  designation = d.tl
-  if d.right > me.grid.width
-    throw new Error "(MKTS/TABLE µ6376) field exceeds grid width: #{rpr text}"
-  if d.bottom > me.grid.height
-    throw new Error "(MKTS/TABLE µ1709) field exceeds grid height: #{rpr text}"
+  # { left_colnr, right_colnr, top_rownr, bottom_rownr, }
+  d           = IG.GRID.parse_rangekey me.grid, text
+  designation = IG.CELLS.get_cellkey { colnr: d.left_colnr, rownr: d.top_rownr, }
+  ### TAINT we should allow multiple fields with same designation ###
   if me.fieldcells[ designation ]?
     throw new Error "(MKTS/TABLE µ5375) unable to redefine field #{designation}: #{rpr text}"
   #.........................................................................................................
   me.fieldcells[ designation ] = d
-  for fieldcell from @_walk_fieldcells me, d
-    ( me.cellfields[ fieldcell.designation ]?= [] ).push designation
+  for fieldcell from IG.GRID.walk_cells_from_rangeref me.grid, d
+    ( me.cellfields[ fieldcell.cellkey ]?= [] ).push designation
   #.........................................................................................................
   return null
 
@@ -239,22 +236,6 @@ texr = ( ref, source ) ->
   col_idx = ( col.codePointAt 0 ) - ( 'a'.codePointAt 0 )
   row_idx = ( parseInt row, 10 ) - 1
   return { col: col_idx, row: row_idx, }
-
-#-----------------------------------------------------------------------------------------------------------
-### TAINT use proper parsing tool ###
-@_parse_range_cellref = ( me, cell_range ) ->
-  unless ( type = CND.type_of cell_range ) is 'text'
-    throw new Error "(MKTS/TABLE µ2870) expected a text for cell_range, got a #{rpr type}"
-  unless ( match = cell_range.match /^([a-z]{1,3})([0-9]{1,4}):([a-z]{1,3})([0-9]{1,4})$/ )?
-    throw new Error "(MKTS/TABLE µ6344) expected a cell range like 'a1:d4', got #{rpr cell_range}"
-  ### TAINT don't use EXCJSCC directly ###
-  R = EXCJSCC.decode cell_range.toUpperCase()
-  delete R.dimensions
-  R.tl = R.tl.toLowerCase()
-  R.br = R.br.toLowerCase()
-  R.tr = "#{( EXCJSCC.n2l R.right ).toLowerCase()}#{R.top}"
-  R.bl = "#{( EXCJSCC.n2l R.left ).toLowerCase()}#{R.bottom}"
-  return R
 
 #-----------------------------------------------------------------------------------------------------------
 ### TAINT use proper parsing tool ###
@@ -420,20 +401,20 @@ texr = ( ref, source ) ->
   unless @_should_debug me
     yield return
   #.........................................................................................................
-  yield texr '@1', "\\begin{scope}[on background layer]"
+  yield texr 'µ17', "\\begin{scope}[on background layer]"
   #.........................................................................................................
   ### TAINT use fixed size like 1mm ###
-  top       = ( @_top_from_row_nr     me, 1             ) - 3
-  bottom    = ( @_bottom_from_row_nr  me, me.grid.height ) + 3
-  for col_nr in [ 1 .. me.grid.width + 1 ]
-    x = @_left_from_col_nr me, col_nr
+  top       = ( @_top_from_rownr     me, 1             ) - 3
+  bottom    = ( @_bottom_from_rownr  me, me.grid.height ) + 3
+  for colnr in [ 1 .. me.grid.width + 1 ]
+    x = @_left_from_colnr me, colnr
     yield texr 'µ18', "\\draw[sDebugCellgrid] (#{x},#{top}) -- (#{x},#{bottom});"
   #.........................................................................................................
   ### TAINT use fixed size like 1mm ###
-  left      = ( @_left_from_col_nr    me, 1             ) - 3
-  right     = ( @_right_from_col_nr   me, me.grid.width  ) + 3
-  for row_nr in [ 1 .. me.grid.height + 1 ]
-    y = @_top_from_row_nr me, row_nr
+  left      = ( @_left_from_colnr    me, 1             ) - 3
+  right     = ( @_right_from_colnr   me, me.grid.width  ) + 3
+  for rownr in [ 1 .. me.grid.height + 1 ]
+    y = @_top_from_rownr me, rownr
     yield texr 'µ19', "\\draw[sDebugCellgrid] (#{left},#{y}) -- (#{right},#{y});"
   #.........................................................................................................
   yield texr 'µ20', "\\end{scope}"
@@ -539,18 +520,19 @@ texr = ( ref, source ) ->
 
 #-----------------------------------------------------------------------------------------------------------
 @_compute_cell_dimensions = ( me ) ->
-  for [ col_letter, col_nr, ] from @_walk_column_letters_and_numbers me, 'short'
-    for row_nr from @_walk_row_numbers me, 'short'
-      designation   = "#{col_letter}#{row_nr}"
-      left   = @_left_from_col_nr   me, col_nr
-      right  = @_right_from_col_nr  me, col_nr
-      top    = @_top_from_row_nr    me, row_nr
-      bottom = @_bottom_from_row_nr me, row_nr
+  @_ensure_grid me
+  for [ colletters, colnr, ] from IG.GRID.walk_colletters_and_colnrs me.grid
+    for rownr from IG.GRID.walk_rownrs me.grid
+      designation   = "#{colletters}#{rownr}"
+      left   = @_left_from_colnr   me, colnr
+      right  = @_right_from_colnr  me, colnr
+      top    = @_top_from_rownr    me, rownr
+      bottom = @_bottom_from_rownr me, rownr
       # ### TAINT must not become negative ###
       # cellwidth_u   = right  - left # - 2 * me.marginwidth
       # cellheight_u  = bottom - top  # - 2 * me.marginheight
       me.cell_dimensions[ designation ] = {
-        col_nr,         row_nr,
+        colnr,         rownr,
         left,    right,
         top,     bottom, }
   return null
@@ -559,10 +541,10 @@ texr = ( ref, source ) ->
 @_compute_field_dimensions = ( me ) ->
   ### TAINT use me.field_dimensions ###
   for designation, fieldcells of me.fieldcells
-    left   = ( @_left_from_col_nr   me, fieldcells.left    )
-    right  = ( @_right_from_col_nr  me, fieldcells.right   )
-    top    = ( @_top_from_row_nr    me, fieldcells.top     )
-    bottom = ( @_bottom_from_row_nr me, fieldcells.bottom  )
+    left   = ( @_left_from_colnr   me, fieldcells.left_colnr    )
+    right  = ( @_right_from_colnr  me, fieldcells.right_colnr   )
+    top    = ( @_top_from_rownr    me, fieldcells.top_rownr     )
+    bottom = ( @_bottom_from_rownr me, fieldcells.bottom_rownr  )
     width       = right  - left
     height      = bottom - top
     me.field_dimensions[ designation ] = {
@@ -603,28 +585,28 @@ texr = ( ref, source ) ->
   return null
 
 #-----------------------------------------------------------------------------------------------------------
-@_left_from_col_nr = ( me, col_nr ) ->
+@_left_from_colnr = ( me, colnr ) ->
   ### TAINT should precompute ###
   @_ensure_cellwidths me
   R = 0
-  R += me.cellwidths[ nr ] for nr in [ 1 ... col_nr ]
+  R += me.cellwidths[ nr ] for nr in [ 1 ... colnr ]
   return R
 
 #-----------------------------------------------------------------------------------------------------------
-@_right_from_col_nr = ( me, col_nr ) ->
-  return ( @_left_from_col_nr me, col_nr ) + me.cellwidths[ col_nr ]
+@_right_from_colnr = ( me, colnr ) ->
+  return ( @_left_from_colnr me, colnr ) + me.cellwidths[ colnr ]
 
 #-----------------------------------------------------------------------------------------------------------
-@_top_from_row_nr = ( me, row_nr ) ->
+@_top_from_rownr = ( me, rownr ) ->
   ### TAINT should precompute ###
   @_ensure_cellheights me
   R = 0
-  R += me.cellheights[ nr ] for nr in [ 1 ... row_nr ]
+  R += me.cellheights[ nr ] for nr in [ 1 ... rownr ]
   return R
 
 #-----------------------------------------------------------------------------------------------------------
-@_bottom_from_row_nr = ( me, row_nr ) ->
-  return ( @_top_from_row_nr me, row_nr ) + me.cellheights[ row_nr ]
+@_bottom_from_rownr = ( me, rownr ) ->
+  return ( @_top_from_rownr me, rownr ) + me.cellheights[ rownr ]
 
 #-----------------------------------------------------------------------------------------------------------
 @_fieldnames_from_cellkeys = ( me, cellkeys ) ->
@@ -637,33 +619,6 @@ texr = ( ref, source ) ->
 
 #===========================================================================================================
 # ITERATORS
-#-----------------------------------------------------------------------------------------------------------
-@_walk_column_letters_and_numbers = ( me, mode ) ->
-  @_ensure_grid me
-  delta = if mode is 'short' then 0 else 1
-  for col_nr in [ 1 .. me.grid.width + delta ]
-    ### TAINT don't use EXCJSCC directly ###
-    col_letter  = ( EXCJSCC.n2l col_nr ).toLowerCase()
-    yield [ col_letter, col_nr, ]
-  yield return
-
-#-----------------------------------------------------------------------------------------------------------
-@_walk_row_numbers = ( me, mode ) ->
-  @_ensure_grid me
-  delta = if mode is 'short' then 0 else 1
-  yield row_nr for row_nr in [ 1 .. me.grid.height + delta ]
-  yield return
-
-#-----------------------------------------------------------------------------------------------------------
-@_walk_fieldcells = ( me, fieldcells ) ->
-  for row_nr in [ fieldcells.top .. fieldcells.bottom ]
-    for col_nr in [ fieldcells.left .. fieldcells.right ]
-      ### TAINT don't use EXCJSCC directly ###
-      col_letter  = ( EXCJSCC.n2l col_nr ).toLowerCase()
-      designation = "#{col_letter}#{row_nr}"
-      yield { col_nr, row_nr, col_letter, designation, }
-  yield return
-
 #-----------------------------------------------------------------------------------------------------------
 @_walk_f_field_designations_from_hints = ( me, fieldhints ) ->
   ### TAINT this will have to be changed to allow for named fields ###
@@ -686,58 +641,19 @@ texr = ( ref, source ) ->
         yield [ null, field_designation, ]
   #.........................................................................................................
   if count is 0
-    yield [ ( _fail me, 'µ5131', "field hints #{rpr fieldhints} do not match any field" ), null ]
+    yield [ ( _fail me, 'µ5131', "field hint #{rpr fieldhints} do not match any field" ), null ]
   #.........................................................................................................
   yield return
 
 #-----------------------------------------------------------------------------------------------------------
 @_walk_table_edge_field_designations = ( me, edge ) ->
   seen_field_designations = new Set()
-  for d from @_walk_table_edge_cells me, edge
+  for d from IG.GRID.walk_edge_cellrefs me.grid, edge
     continue unless ( field_designations = me.cellfields[ d.cellkey ] )?
     for field_designation in field_designations
       continue if seen_field_designations.has field_designation
       seen_field_designations.add field_designation
       yield field_designation
-  yield return
-
-#-----------------------------------------------------------------------------------------------------------
-@_walk_table_edge_cells = ( me, edge ) ->
-  switch edge
-    when 'left'
-      col_nr_1    = 1
-      col_nr_2    = 1
-      row_nr_1    = 1
-      row_nr_2    = me.grid.height
-    when 'right'
-      col_nr_1    = me.grid.width
-      col_nr_2    = me.grid.width
-      row_nr_1    = 1
-      row_nr_2    = me.grid.height
-    when 'top'
-      col_nr_1    = 1
-      col_nr_2    = me.grid.width
-      row_nr_1    = 1
-      row_nr_2    = 1
-    when 'bottom'
-      col_nr_1    = 1
-      col_nr_2    = me.grid.width
-      row_nr_1    = me.grid.height
-      row_nr_2    = me.grid.height
-    when '*'
-      yield from @_walk_table_edge_cells me, 'left'
-      yield from @_walk_table_edge_cells me, 'right'
-      yield from @_walk_table_edge_cells me, 'top'
-      yield from @_walk_table_edge_cells me, 'bottom'
-      yield return
-    else
-      throw new Error "(MKTS/TABLE µ9803) illegal argument for edge #{rpr edge}"
-  for row_nr in [ row_nr_1 .. row_nr_2 ]
-    for col_nr in [ col_nr_1 .. col_nr_2 ]
-      ### TAINT don't use EXCJSCC directly ###
-      col_letter  = ( EXCJSCC.n2l col_nr ).toLowerCase()
-      cellkey     = "#{col_letter}#{row_nr}"
-      yield { col_nr, row_nr, col_letter, cellkey, edge, }
   yield return
 
 
