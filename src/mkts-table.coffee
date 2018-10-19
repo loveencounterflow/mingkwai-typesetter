@@ -335,26 +335,26 @@ texr = ( ref, source ) ->
   @_ensure_unitvector me
   yield tex "\n\n"
   yield tex "\\par% Beginning of MKTS Table ==============================================================================\n"
-  yield texr '@1', "{\\setlength{\\fboxsep}{0mm}"
+  yield texr 'µ1', "{\\setlength{\\fboxsep}{0mm}"
   ### TAINT insert proper dimensions ###
-  yield texr '@1', "\\begin{minipage}[t][45mm][t]{100mm}"
-  yield texr '@1', "\\newdimen\\mktsTableUnitwidth\\setlength{\\mktsTableUnitwidth}{#{me.unitwidth}}"
-  yield texr '@1', "\\newdimen\\mktsTableUnitheight\\setlength{\\mktsTableUnitheight}{#{me.unitheight}}"
-  yield texr '@1', "\\begin{tikzpicture}[ overlay, yshift = 0mm, yscale = -1, line cap = rect ]"
-  yield texr '@1', "\\tikzset{x=#{me.unitwidth}};\\tikzset{y=#{me.unitheight}};"
+  yield texr 'µ2', "\\begin{minipage}[t][45mm][t]{100mm}"
+  yield texr 'µ3', "\\newdimen\\mktsTableUnitwidth\\setlength{\\mktsTableUnitwidth}{#{me.unitwidth}}"
+  yield texr 'µ4', "\\newdimen\\mktsTableUnitheight\\setlength{\\mktsTableUnitheight}{#{me.unitheight}}"
+  yield texr 'µ5', "\\begin{tikzpicture}[ overlay, yshift = 0mm, yscale = -1, line cap = rect ]"
+  yield texr 'µ6', "\\tikzset{x=#{me.unitwidth}};\\tikzset{y=#{me.unitheight}};"
   yield return
 
 #-----------------------------------------------------------------------------------------------------------
 @_walk_closing_events = ( me ) ->
-  yield texr '@1', "\\end{tikzpicture}"
-  yield texr '@1', "\\end{minipage}}"
+  yield texr 'µ7', "\\end{tikzpicture}"
+  yield texr 'µ8', "\\end{minipage}}"
   yield tex "\\par% End of MKTS Table ====================================================================================\n\n"
   yield return
 
 #-----------------------------------------------------------------------------------------------------------
 @_walk_style_events = ( me ) ->
   for key, value of me.styles
-    yield texr '@1', "\\tikzset{#{key}/.style={#{value}}}"
+    yield texr 'µ9', "\\tikzset{#{key}/.style={#{value}}}"
   yield return
 
 #-----------------------------------------------------------------------------------------------------------
@@ -363,13 +363,13 @@ texr = ( ref, source ) ->
   for designation, d of me.border_dimensions
     continue unless ( fieldborders = me.fieldborders[ designation ] )?
     if ( borderstyle = fieldborders[ 'left' ] )?
-      yield texr '@1', "\\draw[#{borderstyle}] (#{d.left},#{d.top}) -- (#{d.left},#{d.bottom});"
+      yield texr 'µ10', "\\draw[#{borderstyle}] (#{d.left},#{d.top}) -- (#{d.left},#{d.bottom});"
     if ( borderstyle = fieldborders[ 'right' ] )?
-      yield texr '@2', "\\draw[#{borderstyle}] (#{d.right},#{d.top}) -- (#{d.right},#{d.bottom});"
+      yield texr 'µ11', "\\draw[#{borderstyle}] (#{d.right},#{d.top}) -- (#{d.right},#{d.bottom});"
     if ( borderstyle = fieldborders[ 'top' ] )?
-      yield texr '@4', "\\draw[#{borderstyle}] (#{d.left},#{d.top}) -- (#{d.right},#{d.top});"
+      yield texr 'µ12', "\\draw[#{borderstyle}] (#{d.left},#{d.top}) -- (#{d.right},#{d.top});"
     if ( borderstyle = fieldborders[ 'bottom' ] )?
-      yield texr '@5', "\\draw[#{borderstyle}] (#{d.left},#{d.bottom}) -- (#{d.right},#{d.bottom});"
+      yield texr 'µ13', "\\draw[#{borderstyle}] (#{d.left},#{d.bottom}) -- (#{d.right},#{d.bottom});"
   #.........................................................................................................
   yield return
 
@@ -401,11 +401,11 @@ texr = ( ref, source ) ->
   for [ field_designation, content, ] from @_walk_most_recent_field_designations me, fieldhints_and_content_events
     d           = me.pod_dimensions[ field_designation ]
     valign_tex  = @_get_valign_tex me, me.valigns[ field_designation ] ? me.valigns[ '*' ] ? 'center'
-    yield texr '@1', "\\node[anchor=north west,inner sep=0mm] at (#{d.left},#{d.top})"
-    yield texr '@1', "{\\begin{minipage}[t][#{d.height}\\mktsTableUnitheight][#{valign_tex}]{#{d.width}\\mktsTableUnitwidth}"
+    yield texr 'µ14', "\\node[anchor=north west,inner sep=0mm] at (#{d.left},#{d.top})"
+    yield texr 'µ15', "{\\begin{minipage}[t][#{d.height}\\mktsTableUnitheight][#{valign_tex}]{#{d.width}\\mktsTableUnitwidth}"
     yield [ '.', 'noindent', null, {}, ]
     yield sub_event for sub_event in content
-    yield texr '@1', "\\end{minipage}};"
+    yield texr 'µ16', "\\end{minipage}};"
   #.........................................................................................................
   yield return
 
@@ -427,16 +427,16 @@ texr = ( ref, source ) ->
   bottom    = ( @_bottom_from_row_nr  me, me.grid.height ) + 3
   for col_nr in [ 1 .. me.grid.width + 1 ]
     x = @_left_from_col_nr me, col_nr
-    yield texr '@1', "\\draw[sDebugCellgrid] (#{x},#{top}) -- (#{x},#{bottom});"
+    yield texr 'µ18', "\\draw[sDebugCellgrid] (#{x},#{top}) -- (#{x},#{bottom});"
   #.........................................................................................................
   ### TAINT use fixed size like 1mm ###
   left      = ( @_left_from_col_nr    me, 1             ) - 3
   right     = ( @_right_from_col_nr   me, me.grid.width  ) + 3
   for row_nr in [ 1 .. me.grid.height + 1 ]
     y = @_top_from_row_nr me, row_nr
-    yield texr '@1', "\\draw[sDebugCellgrid] (#{left},#{y}) -- (#{right},#{y});"
+    yield texr 'µ19', "\\draw[sDebugCellgrid] (#{left},#{y}) -- (#{right},#{y});"
   #.........................................................................................................
-  yield texr '@1', "\\end{scope}"
+  yield texr 'µ20', "\\end{scope}"
   #.........................................................................................................
   yield return
 
@@ -445,7 +445,7 @@ texr = ( ref, source ) ->
   unless @_should_debug me
     yield return
   #.........................................................................................................
-  yield texr '@1', "\\begin{scope}[on background layer]"
+  yield texr 'µ21', "\\begin{scope}[on background layer]"
   #.........................................................................................................
   for designation, d of me.field_dimensions
     ### TAINT use fixed size like 1mm ###
@@ -462,7 +462,7 @@ texr = ( ref, source ) ->
                  + " -- (#{right},#{bottom});", ]
     yield [ 'tex', "% MKTSTBL@26\n", ]
   #.........................................................................................................
-  yield texr '@1', "\\end{scope}"
+  yield texr 'µ22', "\\end{scope}"
   #.........................................................................................................
   yield return
 
@@ -470,19 +470,20 @@ texr = ( ref, source ) ->
 @_walk_debug_joints_events = ( me ) ->
   unless @_should_debug me
     yield return
+  @_ensure_grid me
   @_ensure_joint_coordinates  me
   #.........................................................................................................
-  yield texr '@1', "\\begin{scope}[on background layer]"
+  yield texr 'µ23', "\\begin{scope}[on background layer]"
   #.........................................................................................................
   ### TAINT use fixed size like 1mm ###
-  for [ col_letter, col_nr, ] from @_walk_column_letters_and_numbers me, 'short'
-    for row_nr from @_walk_row_numbers me, 'short'
-      x = ( @_left_from_col_nr  me, col_nr ) + 2
-      y = ( @_top_from_row_nr   me, row_nr ) + 2
-      cellkey = "#{col_letter}#{row_nr}"
+  for [ colletters, colnr, ] from IG.GRID.walk_colletters_and_colnrs me.grid
+    for rownr from IG.GRID.walk_rownrs me.grid
+      x = ( @_left_from_colnr  me, colnr ) + 2
+      y = ( @_top_from_rownr   me, rownr ) + 2
+      cellkey = "#{colletters}#{rownr}"
       yield tex "\\node[sDebugJoints] at (#{x},#{y}) {{\\mktsStyleCode{}#{cellkey}}}; "
   #.........................................................................................................
-  yield texr '@1', "\\end{scope}"
+  yield texr 'µ24', "\\end{scope}"
   #.........................................................................................................
   yield return
 
