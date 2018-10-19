@@ -35,6 +35,7 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
 copy                      = ( x ) -> Object.assign {}, x
 EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
 jr                        = JSON.stringify
+IG                        = require 'intergrid'
 
 
 #===========================================================================================================
