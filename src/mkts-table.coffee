@@ -44,6 +44,13 @@ texr = ( ref, source ) ->
   source = if ref? then "#{source}% MKTSTBL #{ref}\n" else "#{source}%\n"
   return tex source
 
+#-----------------------------------------------------------------------------------------------------------
+contains = ( text, pattern ) ->
+  switch CND.type_of pattern
+    when 'regex' then return ( text.match pattern )?
+    else throw new Error "pattern not supported: #{rpr pattern}"
+  return null
+
 
 #===========================================================================================================
 # INITIALIZATION
