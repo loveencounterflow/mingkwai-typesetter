@@ -271,8 +271,7 @@ contains = ( text, pattern ) ->
       fieldhint_set.delete 'table'
       for edge in edges
         fieldhint_set.add d.cellkey for d from IG.GRID.walk_edge_cellrefs me.grid, edge
-    cellkeys    = ( fieldhint for fieldhint from fieldhints )
-    fields      = @_fieldnames_from_cellkeys me, cellkeys
+    fieldnames = @_fieldnames_from_hints me, fieldhint_set
   #.........................................................................................................
   if fieldnames.length is 0
     throw new Error "(MKTS/TABLE µ2583) fieldhints #{rpr fieldhints} did not select any field"
@@ -619,12 +618,13 @@ contains = ( text, pattern ) ->
   return ( @_top_from_rownr me, rownr ) + me.cellheights[ rownr ]
 
 #-----------------------------------------------------------------------------------------------------------
-@_fieldnames_from_cellkeys = ( me, cellkeys ) ->
+@_fieldnames_from_hints = ( me, fieldhints ) ->
   R = new Set()
-  for cellkey in cellkeys
-    continue unless ( cellfields = me.cellfields[ cellkey ] )?
-    R.add fieldname for fieldname in cellfields
-  return ( fieldname for fieldname from R )
+  for fieldhint from fieldhints
+    for cellref from IG.GRID.walk_cells_from_key me.grid, fieldhint
+      continue unless ( cellfields = me.cellfields[ cellref.cellkey ] )?
+      R.add fieldname for fieldname in cellfields
+  return [ R... ]
 
 
 #===========================================================================================================
