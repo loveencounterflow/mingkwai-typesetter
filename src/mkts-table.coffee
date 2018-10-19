@@ -62,8 +62,8 @@ texr = ( ref, source ) ->
     border_dimensions:    {} ### border extents in terms of (unitwidth,unitheight), by field designations ###
     pod_dimensions:       {} ### pod extents in terms of (unitwidth,unitheight), by field designations ###
     valigns:              {} ### vertical pod alignments, by field designations ###
-    cellwidths:           [ null, ] ### [ 0 ] is default, [ 1 .. gridwidth ] explicit or implicit widths ###
-    cellheights:          [ null, ] ### [ 0 ] is default, [ 1 .. gridheight ] explicit or implicit heights ###
+    cellwidths:           [ null, ] ### [ 0 ] is default, [ 1 .. grid.width ] explicit or implicit widths ###
+    cellheights:          [ null, ] ### [ 0 ] is default, [ 1 .. grid.height ] explicit or implicit heights ###
     joint_coordinates:    null
     #.......................................................................................................
     styles:
@@ -78,8 +78,6 @@ texr = ( ref, source ) ->
       sDebugJoints:       'gray!30,sThick'
     #.......................................................................................................
     default:
-      gridwidth:            4
-      gridheight:           4
       unitwidth:            '1mm'
       unitheight:           '1mm'
       cellwidths:           10
@@ -93,24 +91,6 @@ texr = ( ref, source ) ->
 
 #===========================================================================================================
 # PUBLIC API
-#-----------------------------------------------------------------------------------------------------------
-@_set_gridsize = ( me, direction, text ) ->
-  unless direction in [ 'width', 'height', ]
-    throw _stackerr me, 'µ9061', "expected 'width' or 'height', got #{rpr direction}"
-  p = "grid#{direction}"
-  #.........................................................................................................
-  ### Apply default unless text matches integer pattern: ###
-  unless ( match = text.match /^\s*(\d+)\s*$/ )?
-    me[ p ] = me.default[ p ]
-    return _record_fail  me, 'µ4833', "need a text like '3' or similar for mkts-table/#{p}, got #{rpr text}"
-  #.......................................................................................................
-  ### Do nothing if dimension already defined: ###
-  if me[ p ]?
-    return _record_fail me, 'µ5689', "unable to re-define #{p}"
-  #.........................................................................................................
-  me[ p ] = parseInt match[ 1 ], 10
-  return null
-
 #-----------------------------------------------------------------------------------------------------------
 @_set_unitsize = ( me, direction, text ) ->
   unless direction in [ 'width', 'height', ]
@@ -134,12 +114,8 @@ texr = ( ref, source ) ->
   if me[ p ].length > 1
     return _record_fail me, 'µ8613', "unable to re-define #{p}"
   #.........................................................................................................
-  if direction is 'width'
-    @_ensure_gridwidth me
-    lane_count = me.gridwidth
-  else
-    @_ensure_gridheight me
-    lane_count = me.gridheight
+  @_ensure_grid me
+  lane_count = me.grid[ direction ]
   #.........................................................................................................
   ### Apply default unless text matches (simplified) float pattern: ###
   unless ( match = text.match /^([+\d.]+)$/ )?
@@ -153,8 +129,13 @@ texr = ( ref, source ) ->
   return null
 
 #-----------------------------------------------------------------------------------------------------------
-@gridwidth    = ( me, text ) -> @_set_gridsize  me, 'width',    text
-@gridheight   = ( me, text ) -> @_set_gridsize  me, 'height',   text
+@grid = ( me, text ) ->
+  if me.grid?
+    return _record_fail me, 'µ5689', "unable to re-define grid"
+  me.grid = IG.GRID.new_grid_from_cellkey text
+  return null
+
+#-----------------------------------------------------------------------------------------------------------
 @unitwidth    = ( me, text ) -> @_set_unitsize  me, 'width',    text
 @unitheight   = ( me, text ) -> @_set_unitsize  me, 'height',   text
 @cellwidths   = ( me, text ) -> @_set_cellsizes me, 'width',    text
@@ -162,14 +143,13 @@ texr = ( ref, source ) ->
 
 #-----------------------------------------------------------------------------------------------------------
 @fieldcells = ( me, text ) ->
-  @_ensure_gridwidth  me
-  @_ensure_gridheight me
+  @_ensure_grid       me
   @_ensure_unitvector me
   d           = @_parse_range_cellref me, text
   designation = d.tl
-  if d.right > me.gridwidth
+  if d.right > me.grid.width
     throw new Error "(MKTS/TABLE µ6376) field exceeds grid width: #{rpr text}"
-  if d.bottom > me.gridheight
+  if d.bottom > me.grid.height
     throw new Error "(MKTS/TABLE µ1709) field exceeds grid height: #{rpr text}"
   if me.fieldcells[ designation ]?
     throw new Error "(MKTS/TABLE µ5375) unable to redefine field #{designation}: #{rpr text}"
@@ -530,23 +510,18 @@ texr = ( ref, source ) ->
   return null
 
 #-----------------------------------------------------------------------------------------------------------
-@_ensure_gridwidth = ( me ) ->
-  return null if me.gridwidth?
-  throw new Error "(MKTS/TABLE µ5307) gridwidth must be set"
-
-#-----------------------------------------------------------------------------------------------------------
-@_ensure_gridheight = ( me ) ->
-  return null if me.gridheight?
-  throw new Error "(MKTS/TABLE µ6708) gridheight must be set"
+@_ensure_grid = ( me ) ->
+  return null if me.grid?
+  throw new Error "(MKTS/TABLE µ5307) grid must be set"
 
 #-----------------------------------------------------------------------------------------------------------
 @_ensure_cellwidths = ( me ) ->
-  return null if ( me.cellwidths.length is me.gridwidth + 1 ) and ( null not in me.cellwidths[ 1 .. ] )
+  return null if ( me.cellwidths.length is me.grid.width + 1 ) and ( null not in me.cellwidths[ 1 .. ] )
   throw new Error "(MKTS/TABLE µ4039) cellwidths must be all set; got #{rpr me.cellwidths}"
 
 #-----------------------------------------------------------------------------------------------------------
 @_ensure_cellheights = ( me ) ->
-  return null if ( me.cellheights.length is me.gridheight + 1 ) and ( null not in me.cellheights[ 1 .. ] )
+  return null if ( me.cellheights.length is me.grid.height + 1 ) and ( null not in me.cellheights[ 1 .. ] )
   throw new Error "(MKTS/TABLE µ8054) cellheights must be all set; got #{rpr me.cellheights}"
 
 #-----------------------------------------------------------------------------------------------------------
@@ -663,9 +638,9 @@ texr = ( ref, source ) ->
 # ITERATORS
 #-----------------------------------------------------------------------------------------------------------
 @_walk_column_letters_and_numbers = ( me, mode ) ->
-  @_ensure_gridwidth me
+  @_ensure_grid me
   delta = if mode is 'short' then 0 else 1
-  for col_nr in [ 1 .. me.gridwidth + delta ]
+  for col_nr in [ 1 .. me.grid.width + delta ]
     ### TAINT don't use EXCJSCC directly ###
     col_letter  = ( EXCJSCC.n2l col_nr ).toLowerCase()
     yield [ col_letter, col_nr, ]
@@ -673,9 +648,9 @@ texr = ( ref, source ) ->
 
 #-----------------------------------------------------------------------------------------------------------
 @_walk_row_numbers = ( me, mode ) ->
-  @_ensure_gridheight me
+  @_ensure_grid me
   delta = if mode is 'short' then 0 else 1
-  yield row_nr for row_nr in [ 1 .. me.gridheight + delta ]
+  yield row_nr for row_nr in [ 1 .. me.grid.height + delta ]
   yield return
 
 #-----------------------------------------------------------------------------------------------------------
@@ -732,22 +707,22 @@ texr = ( ref, source ) ->
       col_nr_1    = 1
       col_nr_2    = 1
       row_nr_1    = 1
-      row_nr_2    = me.gridheight
+      row_nr_2    = me.grid.height
     when 'right'
-      col_nr_1    = me.gridwidth
-      col_nr_2    = me.gridwidth
+      col_nr_1    = me.grid.width
+      col_nr_2    = me.grid.width
       row_nr_1    = 1
-      row_nr_2    = me.gridheight
+      row_nr_2    = me.grid.height
     when 'top'
       col_nr_1    = 1
-      col_nr_2    = me.gridwidth
+      col_nr_2    = me.grid.width
       row_nr_1    = 1
       row_nr_2    = 1
     when 'bottom'
       col_nr_1    = 1
-      col_nr_2    = me.gridwidth
-      row_nr_1    = me.gridheight
-      row_nr_2    = me.gridheight
+      col_nr_2    = me.grid.width
+      row_nr_1    = me.grid.height
+      row_nr_2    = me.grid.height
     when '*'
       yield from @_walk_table_edge_cells me, 'left'
       yield from @_walk_table_edge_cells me, 'right'

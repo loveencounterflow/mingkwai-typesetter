@@ -167,8 +167,7 @@ MKTS.MACRO_ESCAPER.register_raw_tag 'mkts-table-description'
   #.........................................................................................................
   f = ->
     @debug                = ( raw_parts ) -> MKTS_TABLE.debug                 me, raw_parts.join ''
-    @gridwidth            = ( raw_parts ) -> MKTS_TABLE.gridwidth             me, raw_parts.join ''
-    @gridheight           = ( raw_parts ) -> MKTS_TABLE.gridheight            me, raw_parts.join ''
+    @grid                 = ( raw_parts ) -> MKTS_TABLE.grid                  me, raw_parts.join ''
     @paddingwidth         = ( raw_parts ) -> MKTS_TABLE.paddingwidth          me, raw_parts.join ''
     @paddingheight        = ( raw_parts ) -> MKTS_TABLE.paddingheight         me, raw_parts.join ''
     @marginwidth          = ( raw_parts ) -> MKTS_TABLE.marginwidth           me, raw_parts.join ''
