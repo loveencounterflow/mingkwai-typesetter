@@ -37,6 +37,14 @@ EXCJSCC                   = require './exceljs-spreadsheet-address-codec'
 jr                        = JSON.stringify
 IG                        = require 'intergrid'
 
+#-----------------------------------------------------------------------------------------------------------
+tex = ( source ) -> [ 'tex', source, ]
+
+#-----------------------------------------------------------------------------------------------------------
+texr = ( ref, source ) ->
+  source = if ref? then "#{source}% MKTSTBL #{ref}\n" else "#{source}%\n"
+  return tex source
+
 
 #===========================================================================================================
 # INITIALIZATION
@@ -345,30 +353,28 @@ IG                        = require 'intergrid'
 #-----------------------------------------------------------------------------------------------------------
 @_walk_opening_events = ( me ) ->
   @_ensure_unitvector me
-  yield [ 'tex', "\n\n", ]
-  yield [ 'tex', "\\par% Beginning of MKTS Table ==============================================================================\n", ]
-  yield [ 'tex', "{\\setlength{\\fboxsep}{0mm}%\n", ]
+  yield tex "\n\n"
+  yield tex "\\par% Beginning of MKTS Table ==============================================================================\n"
+  yield texr '@1', "{\\setlength{\\fboxsep}{0mm}"
   ### TAINT insert proper dimensions ###
-  # yield [ 'tex', "\\framebox{%\n", ] ### framebox ###
-  yield [ 'tex', "\\begin{minipage}[t][45mm][t]{100mm}%\n", ]
-  yield [ 'tex', "\\newdimen\\mktsTableUnitwidth\\setlength{\\mktsTableUnitwidth}{#{me.unitwidth}}%\n", ]
-  yield [ 'tex', "\\newdimen\\mktsTableUnitheight\\setlength{\\mktsTableUnitheight}{#{me.unitheight}}%\n", ]
-  yield [ 'tex', "\\begin{tikzpicture}[ overlay, yshift = 0mm, yscale = -1, line cap = rect ]%\n", ]
-  yield [ 'tex', "\\tikzset{x=#{me.unitwidth}};\\tikzset{y=#{me.unitheight}};%\n", ]
+  yield texr '@1', "\\begin{minipage}[t][45mm][t]{100mm}"
+  yield texr '@1', "\\newdimen\\mktsTableUnitwidth\\setlength{\\mktsTableUnitwidth}{#{me.unitwidth}}"
+  yield texr '@1', "\\newdimen\\mktsTableUnitheight\\setlength{\\mktsTableUnitheight}{#{me.unitheight}}"
+  yield texr '@1', "\\begin{tikzpicture}[ overlay, yshift = 0mm, yscale = -1, line cap = rect ]"
+  yield texr '@1', "\\tikzset{x=#{me.unitwidth}};\\tikzset{y=#{me.unitheight}};"
   yield return
 
 #-----------------------------------------------------------------------------------------------------------
 @_walk_closing_events = ( me ) ->
-  yield [ 'tex', "\\end{tikzpicture}%\n", ]
-  yield [ 'tex', "\\end{minipage}}%\n", ]
-  # yield [ 'tex', "}%\n", ] ### framebox ###
-  yield [ 'tex', "\\par% End of MKTS Table ====================================================================================\n\n", ]
+  yield texr '@1', "\\end{tikzpicture}"
+  yield texr '@1', "\\end{minipage}}"
+  yield tex "\\par% End of MKTS Table ====================================================================================\n\n"
   yield return
 
 #-----------------------------------------------------------------------------------------------------------
 @_walk_style_events = ( me ) ->
   for key, value of me.styles
-    yield [ 'tex', "\\tikzset{#{key}/.style={#{value}}}%\n", ]
+    yield texr '@1', "\\tikzset{#{key}/.style={#{value}}}"
   yield return
 
 #-----------------------------------------------------------------------------------------------------------
@@ -377,13 +383,13 @@ IG                        = require 'intergrid'
   for designation, d of me.border_dimensions
     continue unless ( fieldborders = me.fieldborders[ designation ] )?
     if ( borderstyle = fieldborders[ 'left' ] )?
-      yield [ 'tex', "\\draw[#{borderstyle}] (#{d.left},#{d.top}) -- (#{d.left},#{d.bottom});\n", ]
+      yield texr '@1', "\\draw[#{borderstyle}] (#{d.left},#{d.top}) -- (#{d.left},#{d.bottom});"
     if ( borderstyle = fieldborders[ 'right' ] )?
-      yield [ 'tex', "\\draw[#{borderstyle}] (#{d.right},#{d.top}) -- (#{d.right},#{d.bottom});\n", ]
+      yield texr '@2', "\\draw[#{borderstyle}] (#{d.right},#{d.top}) -- (#{d.right},#{d.bottom});"
     if ( borderstyle = fieldborders[ 'top' ] )?
-      yield [ 'tex', "\\draw[#{borderstyle}] (#{d.left},#{d.top}) -- (#{d.right},#{d.top});\n", ]
+      yield texr '@4', "\\draw[#{borderstyle}] (#{d.left},#{d.top}) -- (#{d.right},#{d.top});"
     if ( borderstyle = fieldborders[ 'bottom' ] )?
-      yield [ 'tex', "\\draw[#{borderstyle}] (#{d.left},#{d.bottom}) -- (#{d.right},#{d.bottom});\n", ]
+      yield texr '@5', "\\draw[#{borderstyle}] (#{d.left},#{d.bottom}) -- (#{d.right},#{d.bottom});"
   #.........................................................................................................
   yield return
 
@@ -415,18 +421,11 @@ IG                        = require 'intergrid'
   for [ field_designation, content, ] from @_walk_most_recent_field_designations me, fieldhints_and_content_events
     d           = me.pod_dimensions[ field_designation ]
     valign_tex  = @_get_valign_tex me, me.valigns[ field_designation ] ? me.valigns[ '*' ] ? 'center'
-    yield [ 'tex', "\\node[anchor=north west,inner sep=0mm] at (#{d.left},#{d.top})%\n", ]
-    yield [ 'tex', "{\\begin{minipage}[t][#{d.height}\\mktsTableUnitheight][#{valign_tex}]{#{d.width}\\mktsTableUnitwidth}%\n", ]
-    # yield [ 'tex', "\\vfill{}", ]
+    yield texr '@1', "\\node[anchor=north west,inner sep=0mm] at (#{d.left},#{d.top})"
+    yield texr '@1', "{\\begin{minipage}[t][#{d.height}\\mktsTableUnitheight][#{valign_tex}]{#{d.width}\\mktsTableUnitwidth}"
     yield [ '.', 'noindent', null, {}, ]
-    # yield [ 'tex', "\\begin{flushright}", ]
     yield sub_event for sub_event in content
-    # yield [ 'tex', "\\par\\end{flushright}", ]
-    # yield [ 'tex', "\\par", ]
-    # yield [ 'tex', "\\vfill{}", ]
-    yield [ 'tex', "\\end{minipage}};%\n", ]
-    # yield [ 'tex', "{\\framebox{\\begin{minipage}[t][#{d.height}\\mktsTableUnitheight][t]{#{d.width}\\mktsTableUnitwidth}%\n", ]
-    # yield [ 'tex', "A\\hfill{}B\\hfill{}C\\end{minipage}}};%\n", ]
+    yield texr '@1', "\\end{minipage}};"
   #.........................................................................................................
   yield return
 
@@ -441,23 +440,23 @@ IG                        = require 'intergrid'
   unless @_should_debug me
     yield return
   #.........................................................................................................
-  yield [ 'tex', "\\begin{scope}[on background layer]\n", ]
+  yield texr '@1', "\\begin{scope}[on background layer]"
   #.........................................................................................................
   ### TAINT use fixed size like 1mm ###
   top       = ( @_top_from_row_nr     me, 1             ) - 3
-  bottom    = ( @_bottom_from_row_nr  me, me.gridheight ) + 3
-  for col_nr in [ 1 .. me.gridwidth + 1 ]
+  bottom    = ( @_bottom_from_row_nr  me, me.grid.height ) + 3
+  for col_nr in [ 1 .. me.grid.width + 1 ]
     x = @_left_from_col_nr me, col_nr
-    yield [ 'tex', "\\draw[sDebugCellgrid] (#{x},#{top}) -- (#{x},#{bottom});\n", ]
+    yield texr '@1', "\\draw[sDebugCellgrid] (#{x},#{top}) -- (#{x},#{bottom});"
   #.........................................................................................................
   ### TAINT use fixed size like 1mm ###
   left      = ( @_left_from_col_nr    me, 1             ) - 3
-  right     = ( @_right_from_col_nr   me, me.gridwidth  ) + 3
-  for row_nr in [ 1 .. me.gridheight + 1 ]
+  right     = ( @_right_from_col_nr   me, me.grid.width  ) + 3
+  for row_nr in [ 1 .. me.grid.height + 1 ]
     y = @_top_from_row_nr me, row_nr
-    yield [ 'tex', "\\draw[sDebugCellgrid] (#{left},#{y}) -- (#{right},#{y});\n", ]
+    yield texr '@1', "\\draw[sDebugCellgrid] (#{left},#{y}) -- (#{right},#{y});"
   #.........................................................................................................
-  yield [ 'tex', "\\end{scope}\n", ]
+  yield texr '@1', "\\end{scope}"
   #.........................................................................................................
   yield return
 
@@ -466,7 +465,7 @@ IG                        = require 'intergrid'
   unless @_should_debug me
     yield return
   #.........................................................................................................
-  yield [ 'tex', "\\begin{scope}[on background layer]\n", ]
+  yield texr '@1', "\\begin{scope}[on background layer]"
   #.........................................................................................................
   for designation, d of me.field_dimensions
     ### TAINT use fixed size like 1mm ###
@@ -481,9 +480,9 @@ IG                        = require 'intergrid'
                  + " -- (#{right},#{bottom});", ]
     yield [ 'tex', " \\draw[sDebugFieldgrid] (#{left},#{bottom}) " \
                  + " -- (#{right},#{bottom});", ]
-    yield [ 'tex', "\n", ]
+    yield [ 'tex', "% MKTSTBL@26\n", ]
   #.........................................................................................................
-  yield [ 'tex', "\\end{scope}\n", ]
+  yield texr '@1', "\\end{scope}"
   #.........................................................................................................
   yield return
 
@@ -493,7 +492,7 @@ IG                        = require 'intergrid'
     yield return
   @_ensure_joint_coordinates  me
   #.........................................................................................................
-  yield [ 'tex', "\\begin{scope}[on background layer]\n", ]
+  yield texr '@1', "\\begin{scope}[on background layer]"
   #.........................................................................................................
   ### TAINT use fixed size like 1mm ###
   for [ col_letter, col_nr, ] from @_walk_column_letters_and_numbers me, 'short'
@@ -501,9 +500,9 @@ IG                        = require 'intergrid'
       x = ( @_left_from_col_nr  me, col_nr ) + 2
       y = ( @_top_from_row_nr   me, row_nr ) + 2
       cellkey = "#{col_letter}#{row_nr}"
-      yield [ 'tex', "\\node[sDebugJoints] at (#{x},#{y}) {{\\mktsStyleCode{}#{cellkey}}}; ", ]
+      yield tex "\\node[sDebugJoints] at (#{x},#{y}) {{\\mktsStyleCode{}#{cellkey}}}; "
   #.........................................................................................................
-  yield [ 'tex', "\\end{scope}\n", ]
+  yield texr '@1', "\\end{scope}"
   #.........................................................................................................
   yield return
 
