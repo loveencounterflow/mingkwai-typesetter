@@ -57,7 +57,7 @@ texr = ( ref, source ) ->
     fieldcells:           {} ### field extents in terms of cells, by field designations ###
     cellfields:           {} ### which cells belong to what fields, by cellkeys ###
     cell_dimensions:      {}
-    fieldborders:         {} ### field borders, as TikZ styles by sides ###
+    fieldborders:         {} ### field borders, as TikZ styles by edges ###
     field_dimensions:     {} ### field extents in terms of (unitwidth,unitheight), by field designations ###
     border_dimensions:    {} ### border extents in terms of (unitwidth,unitheight), by field designations ###
     pod_dimensions:       {} ### pod extents in terms of (unitwidth,unitheight), by field designations ###
@@ -164,8 +164,8 @@ texr = ( ref, source ) ->
 @fieldborder = ( me, text ) ->
   d = @_parse_fieldborder me, text
   for field in d.fields
-    for side in d.sides
-      ( me.fieldborders[ field ]?= {} )[ side ] = d.style
+    for edge in d.edges
+      ( me.fieldborders[ field ]?= {} )[ edge ] = d.style
   #.........................................................................................................
   return null
 
@@ -263,10 +263,10 @@ texr = ( ref, source ) ->
     throw new Error "(MKTS/TABLE µ1225) expected a text for fieldborder, got a #{rpr type}"
   unless ( groups = fieldborder.match /^(.+):(.+):(.*)$/ )?
     throw new Error "(MKTS/TABLE µ2582) expected a fieldborder like 'a1:left:sDashed,sThick', got #{rpr fieldborder}"
-  [ _, fieldhints, sides, style, ] = groups
+  [ _, fieldhints, edges, style, ] = groups
   #.........................................................................................................
-  sides = ( _.trim() for _ in sides.split ',' )
-  sides = [ 'top', 'left', 'bottom', 'right', ] if '*' in sides
+  edges = ( _.trim() for _ in edges.split ',' )
+  edges = [ 'top', 'left', 'bottom', 'right', ] if '*' in edges
   #.........................................................................................................
   ### TAINT code duplication ###
   ### TAINT this will have to be changed to allow for named fields ###
@@ -281,15 +281,15 @@ texr = ( ref, source ) ->
     express that meaning FTTB. ###
     if fieldhints.has 'table'
       fieldhints.delete 'table'
-      for side in sides
-        fieldhints.add d.cellkey for d from @_walk_table_edge_cells me, side
+      for edge in edges
+        fieldhints.add d.cellkey for d from IG.GRID.walk_edge_cellrefs me.grid, edge
     cellkeys    = ( fieldhint for fieldhint from fieldhints )
     fields      = @_fieldnames_from_cellkeys me, cellkeys
   #.........................................................................................................
   style = style.trim()
   style = null if style in [ 'none', '', ]
   #.........................................................................................................
-  return { fields, sides, style, }
+  return { fields, edges, style, }
 
 
 #===========================================================================================================
