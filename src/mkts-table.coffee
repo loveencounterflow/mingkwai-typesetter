@@ -258,26 +258,26 @@ contains = ( text, pattern ) ->
   #.........................................................................................................
   ### TAINT code duplication ###
   ### TAINT this will have to be changed to allow for named fields ###
-  fieldhints = new Set ( _.trim() for _ in fieldhints.split ',' )
-  if fieldhints.has '*'
-    fields = Object.keys me.fieldcells
+  fieldhint_set = new Set ( _.trim() for _ in fieldhints.split ',' )
+  if fieldhint_set.has '*'
+    fieldnames = Object.keys me.fieldcells
   else
     ### TAINT as it stands, `fieldborder'table:bottom,right:red'` will style all bottom and right borders
     of all fields that have real estate along the bottom and right borders of the table. An improved version
     should probably only affect the bottom borders of table-bottom fields and the right borders of
     table-right fields. Use two statements `fieldborder'table:bottom:red'`, `fieldborder'table:right:red'` to
     express that meaning FTTB. ###
-    if fieldhints.has 'table'
-      fieldhints.delete 'table'
+    if fieldhint_set.has 'table'
+      fieldhint_set.delete 'table'
       for edge in edges
-        fieldhints.add d.cellkey for d from IG.GRID.walk_edge_cellrefs me.grid, edge
+        fieldhint_set.add d.cellkey for d from IG.GRID.walk_edge_cellrefs me.grid, edge
     cellkeys    = ( fieldhint for fieldhint from fieldhints )
     fields      = @_fieldnames_from_cellkeys me, cellkeys
   #.........................................................................................................
   style = style.trim()
   style = null if style in [ 'none', '', ]
   #.........................................................................................................
-  return { fields, edges, style, }
+  return { fieldnames, edges, style, }
 
 
 #===========================================================================================================
