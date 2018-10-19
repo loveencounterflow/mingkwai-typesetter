@@ -274,6 +274,9 @@ contains = ( text, pattern ) ->
     cellkeys    = ( fieldhint for fieldhint from fieldhints )
     fields      = @_fieldnames_from_cellkeys me, cellkeys
   #.........................................................................................................
+  if fieldnames.length is 0
+    throw new Error "(MKTS/TABLE µ2583) fieldhints #{rpr fieldhints} did not select any field"
+  #.........................................................................................................
   style = style.trim()
   style = null if style in [ 'none', '', ]
   #.........................................................................................................
