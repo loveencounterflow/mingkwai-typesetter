@@ -151,7 +151,7 @@ contains = ( text, pattern ) ->
 @fieldcells = ( me, text ) ->
   @_ensure_grid       me
   @_ensure_unitvector me
-  # { left_colnr, right_colnr, top_rownr, bottom_rownr, }
+  text        = text + '..' + text unless contains text, /\.\./
   d           = IG.GRID.parse_rangekey me.grid, text
   designation = IG.CELLS.get_cellkey { colnr: d.left_colnr, rownr: d.top_rownr, }
   ### TAINT we should allow multiple fields with same designation ###
