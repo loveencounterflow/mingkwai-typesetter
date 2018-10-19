@@ -260,7 +260,7 @@ after = ( names..., method ) ->
 @MKTX.COMMAND.$new_page = ( S ) =>
   #.........................................................................................................
   return $ ( event, send ) =>
-    return send event unless select event, '!', 'new-page'
+    return send event unless select event, [ '!', '.', ], 'new-page'
     send stamp event
     [ type, name, text, meta, ] = event
     send [ 'tex', "\\null\\newpage{}", ]
