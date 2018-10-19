@@ -167,9 +167,9 @@ contains = ( text, pattern ) ->
 #-----------------------------------------------------------------------------------------------------------
 @fieldborder = ( me, text ) ->
   d = @_parse_fieldborder me, text
-  for field in d.fields
+  for fieldname in d.fieldnames
     for edge in d.edges
-      ( me.fieldborders[ field ]?= {} )[ edge ] = d.style
+      ( me.fieldborders[ fieldname ]?= {} )[ edge ] = d.style
   #.........................................................................................................
   return null
 
