@@ -35,7 +35,6 @@ options_route             = '../options.coffee'
 { CACHE, OPTIONS, }       = require './options-and-cache'
 SEMVER                    = require 'semver'
 #...........................................................................................................
-TEXT                      = require 'coffeenode-text'
 XNCHR                     = require './xnchr'
 MKTS                      = require './main'
 MKTSCRIPT_WRITER          = require './mktscript-writer'
@@ -2221,11 +2220,11 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     events_per_s_txt  = ( S.event_count / dt_s ).toFixed 3
     chr_count_txt     = ƒ S.chr_count
     event_count_txt   = ƒ S.event_count
-    help "#{TEXT.flush_right    chr_count_txt, 10}       chrs (approx.)"
-    help "#{TEXT.flush_right  event_count_txt, 10}     events (approx.)"
-    help "#{TEXT.flush_right         dt_s_txt, 14}          s"
-    help "#{TEXT.flush_right   chrs_per_s_txt, 14}   chrs / s"
-    help "#{TEXT.flush_right events_per_s_txt, 14} events / s"
+    help "#{   chr_count_txt.padStart 10, ' '}       chrs (approx.)"
+    help "#{ event_count_txt.padStart 10, ' '}     events (approx.)"
+    help "#{        dt_s_txt.padStart 14, ' '}          s"
+    help "#{  chrs_per_s_txt.padStart 14, ' '}   chrs / s"
+    help "#{events_per_s_txt.padStart 14, ' '} events / s"
     process.exit 0
 
 #-----------------------------------------------------------------------------------------------------------

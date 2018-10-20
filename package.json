@@ -39,7 +39,6 @@
     "cnd": "^4.3.1",
     "coffeenode-chr": "^1.0.4",
     "coffeenode-suspend": "^0.1.11",
-    "coffeenode-text": "^0.1.9",
     "coffeescript": "^2.3.2",
     "commander": "^2.18.0",
     "cxltx-styles": "^1.4.7",
