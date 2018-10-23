@@ -254,28 +254,14 @@ contains = ( text, pattern ) ->
     throw new Error "(MKTS/TABLE µ2582) expected a fieldborder like 'a1:left:sDashed,sThick', got #{rpr fieldborder}"
   [ _, fieldhints, edges, style, ] = groups
   #.........................................................................................................
-  edges = ( _.trim() for _ in edges.split ',' )
-  edges = [ 'top', 'left', 'bottom', 'right', ] if '*' in edges
+  edges       = ( _.trim() for _ in edges.split ',' )
+  edges       = [ 'top', 'left', 'bottom', 'right', ] if '*' in edges
+  fieldnames  = []
   #.........................................................................................................
-  ### TAINT code duplication ###
-  ### TAINT this will have to be changed to allow for named fields ###
-  fieldhint_set = new Set ( _.trim() for _ in fieldhints.split ',' )
-  if fieldhint_set.has '*'
-    fieldnames = Object.keys me.fieldcells
-  else
-    ### TAINT as it stands, `fieldborder'table:bottom,right:red'` will style all bottom and right borders
-    of all fields that have real estate along the bottom and right borders of the table. An improved version
-    should probably only affect the bottom borders of table-bottom fields and the right borders of
-    table-right fields. Use two statements `fieldborder'table:bottom:red'`, `fieldborder'table:right:red'` to
-    express that meaning FTTB. ###
-    if fieldhint_set.has 'table'
-      fieldhint_set.delete 'table'
-      for edge in edges
-        fieldhint_set.add d.cellkey for d from IG.GRID.walk_edge_cellrefs me.grid, edge
-    fieldnames = @_fieldnames_from_hints me, fieldhint_set
-  #.........................................................................................................
-  if fieldnames.length is 0
-    throw new Error "(MKTS/TABLE µ2583) fieldhints #{rpr fieldhints} did not select any field"
+  for [ fail, field_designation, ] from @_walk_fails_and_field_designations_from_hints me, fieldhints
+    ### TAINT ad-hoc fail message production, use method ###
+    if fail? then _record me, "#{fail} (#{jr {field_designation}})"
+    else          fieldnames.push field_designation
   #.........................................................................................................
   style = style.trim()
   style = null if style in [ 'none', '', ]
@@ -637,14 +623,17 @@ contains = ( text, pattern ) ->
   yield return
 
 #-----------------------------------------------------------------------------------------------------------
-@_walk_table_edge_field_designations = ( me, edge ) ->
-  seen_field_designations = new Set()
-  for d from IG.GRID.walk_edge_cellrefs me.grid, edge
-    continue unless ( field_designations = me.cellfields[ d.cellkey ] )?
-    for field_designation in field_designations
-      continue if seen_field_designations.has field_designation
-      seen_field_designations.add field_designation
-      yield field_designation
+@_walk_most_recent_field_designations = ( me, fieldhints_and_stuff ) ->
+  ### Given a list of `[ fieldhints, x... ]` lists, return a list of `[ designation, x... ]` lists such
+  that each `designation` that resulted from each of the `fieldhints` is only kept from the instance
+  that appeared last in the list. Each `fieldhints` can produce an arbitrary number of matching field
+  designations, and later occurrences of a given field will replace earlier appearances. ###
+  R = {}
+  for [ fieldhints, stuff..., ] in fieldhints_and_stuff
+    for [ fail, field_designation, ] from @_walk_fails_and_field_designations_from_hints me, fieldhints
+      if fail? then _record me, fail
+      else          R[ field_designation ]  = stuff
+  yield [ field_designation, stuff..., ] for field_designation, stuff of R
   yield return
 
 # #-----------------------------------------------------------------------------------------------------------
