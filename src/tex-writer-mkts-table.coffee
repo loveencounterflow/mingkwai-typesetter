@@ -45,7 +45,7 @@ MKTS.MACRO_ESCAPER.register_raw_tag 'mkts-table-description'
   return D.TEE.from_pipeline [
     @$parse_description               S
     @$collect_field_contents          S
-    @$dump_table_description          S
+    # @$dump_table_description          S
     ]
 
 #===========================================================================================================
@@ -135,16 +135,16 @@ MKTS.MACRO_ESCAPER.register_raw_tag 'mkts-table-description'
       #.....................................................................................................
       if within_field
         current_field.push event
-        urge '27762', jr event
+        # urge '27762', jr event
         return null
       #.....................................................................................................
       if ( select event, '.', 'text' ) and ( event[ 2 ].match /^\s*$/ )?
-        whisper '27762', jr event
+        # whisper '27762', jr event
         return null
       #.....................................................................................................
       ### TAINT should be a fail, not an exception: ###
       # throw new Error "detected illegal content: #{rpr event}"
-      warn '27762', jr event
+      # warn '27762', jr event
       return null
     #.......................................................................................................
     send event
