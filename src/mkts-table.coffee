@@ -87,8 +87,8 @@ contains = ( text, pattern ) ->
     default:
       unitwidth:            '1mm'
       unitheight:           '1mm'
-      colwidths:            10
-      rowheights:           10
+      colwidth:             10
+      rowheight:            10
       marginwidth:          0
       marginheight:         0
       paddingwidth:         0
@@ -609,7 +609,7 @@ contains = ( text, pattern ) ->
   count                   = 0
   seen_field_designations = new Set()
   #.........................................................................................................
-  for cell from IG.GRID.walk_cells_from_keys me.grid, fieldhints
+  for cell from IG.GRID.walk_cells_from_selector me.grid, fieldhints
     continue unless ( field_designations = me.cellfields[ cell.cellkey ] )?
     for field_designation in field_designations
       continue if seen_field_designations.has field_designation
