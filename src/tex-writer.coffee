@@ -153,8 +153,8 @@ after = ( names..., method ) ->
   write "% IN-DOCUMENT CONFIGURATION"
   ### TAINT use default configuration *.ptv file ###
   ### TAINT make more general; ATM can only decide on boolean ###
-  S.configuration[ 'document/geometry/show/cmgrid'      ]?= false
-  S.configuration[ 'document/geometry/show/mmgrid'      ]?= false
+  S.configuration[ 'document/geometry/show/textgrid'    ]?= false
+  S.configuration[ 'document/geometry/show/papergrid'   ]?= false
   S.configuration[ 'document/geometry/show/linebands'   ]?= false
   S.configuration[ 'document/geometry/show/columns'     ]?= false
   S.configuration[ 'document/geometry/show/baselines'   ]?= false
