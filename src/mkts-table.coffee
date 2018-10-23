@@ -115,23 +115,32 @@ contains = ( text, pattern ) ->
 @_set_lanesizes = ( me, direction, text ) ->
   unless direction in [ 'width', 'height', ]
     throw _stackerr me, 'µ2352', "expected 'width' or 'height', got #{rpr direction}"
-  p = "cell#{direction}s"
-  #.........................................................................................................
-  ### Do nothing if dimension already defined: ###
-  if me[ p ].length > 1
-    return _record_fail me, 'µ8613', "unable to re-define #{p}"
+  p   = if direction is 'width' then 'colwidth'   else 'rowheight'
+  ps  = if direction is 'width' then 'colwidths'  else 'rowheights'
   #.........................................................................................................
   @_ensure_grid me
   lane_count = me.grid[ direction ]
   #.........................................................................................................
-  ### Apply default unless text matches (simplified) float pattern: ###
-  unless ( match = text.match /^([+\d.]+)$/ )?
-    _record_fail me, 'µ6377', "need a text like '2.7' or similar for mkts-table/#{p}, got #{rpr text}"
-    value = me.default[ p ]
+  unless ( match = text.match /^(?:(?<selector>[^:]+):)?(?<length>[+\d.]+)$/ )?
+    _record_fail me, 'µ6377', "need a text like '2.7', 'A*,C3:20' or similar for mkts-table/#{p}, got #{rpr text}"
+    return null
+  #.........................................................................................................
+  { selector, length, } = match.groups
+  length                = parseFloat length
+  debug '37733', ( rpr p ), ( rpr text ), match.groups
+  #.........................................................................................................
+  if selector?
+    me[ ps ][  0 ]  ?= me.default[ p ] ### set default ###
+    me[ ps ][ nr ]  ?= me.default[ p ] for nr in [ 1 .. lane_count ] ### set defaults where missing ###
+    debug '37734-1', me[ ps ]
+    for [ fail, lanenr, ] from @_walk_fails_and_lanenrs_from_direction_and_selector me, direction, selector
+      ### TAINT ad-hoc fail message production, use method ###
+      if fail? then _record me, fail
+      else          me[ ps ][ lanenr ] = length
+    debug '37734-2', me[ ps ]
   else
-    value = parseFloat text
-  me[ p ][  0 ] = value ### set default ###
-  me[ p ][ nr ] = value for nr in [ 1 .. lane_count ]
+    me[ ps ][  0 ]  = length ### set default ###
+    me[ ps ][ nr ]  = length for nr in [ 1 .. lane_count ]
   #.........................................................................................................
   return null
 
