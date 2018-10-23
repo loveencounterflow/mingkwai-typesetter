@@ -378,20 +378,6 @@ contains = ( text, pattern ) ->
     else throw new Error "(MKTS/TABLE µ4799) illegal value for valign #{rpr valign}"
 
 #-----------------------------------------------------------------------------------------------------------
-@_walk_most_recent_field_designations = ( me, fieldhints_and_stuff ) ->
-  ### Given a list of `[ fieldhints, x... ]` lists, return a list of `[ designation, x... ]` lists such
-  that each `designation` that resulted from each of the `fieldhints` is only kept from the instance
-  that appeared last in the list. Each `fieldhints` can produce an arbitrary number of matching field
-  designations, and later occurrences of a given field will replace earlier appearances. ###
-  R = {}
-  for [ fieldhints, stuff..., ] in fieldhints_and_stuff
-    for [ fail, field_designation, ] from @_walk_fails_and_field_designations_from_hints me, fieldhints
-      if fail? then _record me, fail
-      else          R[ field_designation ]  = stuff
-  yield [ field_designation, stuff..., ] for field_designation, stuff of R
-  yield return
-
-#-----------------------------------------------------------------------------------------------------------
 @_walk_pod_events = ( me, fieldhints_and_content_events ) ->
   for [ field_designation, content, ] from @_walk_most_recent_field_designations me, fieldhints_and_content_events
     d           = me.pod_dimensions[ field_designation ]
@@ -628,38 +614,22 @@ contains = ( text, pattern ) ->
 @_bottom_from_rownr = ( me, rownr ) ->
   return ( @_top_from_rownr me, rownr ) + me.rowheights[ rownr ]
 
-#-----------------------------------------------------------------------------------------------------------
-@_fieldnames_from_hints = ( me, fieldhints ) ->
-  R = new Set()
-  for fieldhint from fieldhints
-    for cellref from IG.GRID.walk_cells_from_key me.grid, fieldhint
-      continue unless ( cellfields = me.cellfields[ cellref.cellkey ] )?
-      R.add fieldname for fieldname in cellfields
-  return [ R... ]
-
 
 #===========================================================================================================
 # ITERATORS
 #-----------------------------------------------------------------------------------------------------------
 @_walk_fails_and_field_designations_from_hints = ( me, fieldhints ) ->
   ### TAINT this will have to be changed to allow for named fields ###
-  count           = 0
-  fieldhints_set  = new Set ( _.trim() for _ in fieldhints.split ',' )
+  count                   = 0
+  seen_field_designations = new Set()
   #.........................................................................................................
-  if fieldhints_set.has '*'
-    keys    = Object.keys me.fieldcells
-    count  += keys.length
-    yield [ null, key, ] for key in keys
-  #.........................................................................................................
-  else
-    seen_field_designations = new Set()
-    for fieldhint from fieldhints_set
-      continue unless ( field_designations = me.cellfields[ fieldhint ] )?
-      for field_designation in field_designations
-        continue if seen_field_designations.has field_designation
-        seen_field_designations.add field_designation
-        count += +1
-        yield [ null, field_designation, ]
+  for cell from IG.GRID.walk_cells_from_keys me.grid, fieldhints
+    continue unless ( field_designations = me.cellfields[ cell.cellkey ] )?
+    for field_designation in field_designations
+      continue if seen_field_designations.has field_designation
+      seen_field_designations.add field_designation
+      count += +1
+      yield [ null, field_designation, ]
   #.........................................................................................................
   if count is 0
     yield [ ( _fail me, 'µ5131', "field hint #{rpr fieldhints} do not match any field" ), null ]
@@ -676,6 +646,17 @@ contains = ( text, pattern ) ->
       seen_field_designations.add field_designation
       yield field_designation
   yield return
+
+# #-----------------------------------------------------------------------------------------------------------
+# @_walk_table_edge_field_designations = ( me, edge ) ->
+#   seen_field_designations = new Set()
+#   for d from IG.GRID.walk_edge_cellrefs me.grid, edge
+#     continue unless ( field_designations = me.cellfields[ d.cellkey ] )?
+#     for field_designation in field_designations
+#       continue if seen_field_designations.has field_designation
+#       seen_field_designations.add field_designation
+#       yield field_designation
+#   yield return
 
 
 #===========================================================================================================
