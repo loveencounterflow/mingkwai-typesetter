@@ -62,6 +62,7 @@ contains = ( text, pattern ) ->
     fails:                [] ### recoverable errors / fails warnings ###
     fieldcells:           {} ### field extents in terms of cells, by field designations ###
     cellfields:           {} ### which cells belong to what fields, by cellkeys ###
+    table_dimensions:     {} ### width and height of enclosing `\minipage`, in terms of (unitwidth,unitheight) ###
     cell_dimensions:      {}
     fieldborders:         {} ### field borders, as TikZ styles by edges ###
     field_dimensions:     {} ### field extents in terms of (unitwidth,unitheight), by field designations ###
@@ -290,6 +291,7 @@ contains = ( text, pattern ) ->
   @_compute_field_dimensions    me
   @_compute_border_dimensions   me
   @_compute_pod_dimensions      me
+  @_compute_table_height        me
   #.........................................................................................................
   ### Preparatory ###
   yield from @_walk_opening_events                      me
@@ -329,9 +331,9 @@ contains = ( text, pattern ) ->
   yield texr 'µ2', "\\mktsColorframebox{red}{% debugging framebox" if me.debug
   ### NOTE only height of minipage is important; TikZ will happily draw outside of minipage when told ###
   ### TAINT calculate proper height so text will keep register ###
-  yield texr 'µ2', "\\begin{minipage}[t][45mm][t]{\\linewidth}"
   yield texr 'µ3', "\\newdimen\\mktsTableUnitwidth\\setlength{\\mktsTableUnitwidth}{#{me.unitwidth}}"
   yield texr 'µ4', "\\newdimen\\mktsTableUnitheight\\setlength{\\mktsTableUnitheight}{#{me.unitheight}}"
+  yield texr 'µ2', "\\begin{minipage}[t][#{me.table_dimensions.height}\\mktsTableUnitheight][t]{\\linewidth}"
   yield texr 'µ5', "\\begin{tikzpicture}[ overlay, yshift = 0mm, yscale = -1, line cap = rect ]"
   yield texr 'µ6', "\\tikzset{x=#{me.unitwidth}};\\tikzset{y=#{me.unitheight}};"
   yield return
@@ -594,6 +596,12 @@ contains = ( text, pattern ) ->
     me.pod_dimensions[ designation ] = {
       left,  right,   width,
       top,   bottom,  height, }
+  return null
+
+#-----------------------------------------------------------------------------------------------------------
+@_compute_table_height = ( me ) ->
+  me.table_dimensions.height  = @_bottom_from_rownr me, me.grid.height
+  me.table_dimensions.width   = null ### not used ATM, all tables are nominally as wide as column ###
   return null
 
 #-----------------------------------------------------------------------------------------------------------
