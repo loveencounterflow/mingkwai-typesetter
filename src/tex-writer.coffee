@@ -1261,12 +1261,14 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       row_count                += +1
       buffered_field_separator  = null
       send stamp hide copy event
-      # ### thx to http://tex.stackexchange.com/a/159260 ###
-      # if row_count is description[ 'row_count' ]
-      #   send [ 'tex', "\\\\[\\mktsTabularLineheightDeltaLast]\n", ]
-      # else
-      #   send [ 'tex', "\\\\[\\mktsTabularLineheightDelta]\n", ]
-      # # last_zerohline_idx = send [ 'tex', "\\mktsZerohline\n", ]
+      ### thx to http://tex.stackexchange.com/a/159260 ###
+      if row_count is description[ 'row_count' ]
+        send [ 'tex', "\\\\\n", ]
+        # send [ 'tex', "\\\\[\\mktsTabularLineheightDeltaLast]\n", ]
+      else
+        send [ 'tex', "\\\\\n", ]
+        # send [ 'tex', "\\\\[\\mktsTabularLineheightDelta]\n", ]
+      # last_zerohline_idx = send [ 'tex', "\\mktsZerohline\n", ]
     #.......................................................................................................
     else
       send buffered_field_separator if buffered_field_separator
@@ -1285,14 +1287,14 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
             else               col_styles.push 'l'
         col_styles  = '| ' + ( col_styles.join ' | ' ) + ' |'
         send [ 'tex', "{", ]
-        # send [ 'tex', "\\mktsVspace{\\mktsTabularTopDelta}", ]
+        send [ 'tex', "\\mktsVspace{1}", ] ### TAINT arbitrary length ###
         send [ 'tex', "\\begin{tabular}[pos]{ #{col_styles} }\n", ]
       #.....................................................................................................
       else if select event, ')', 'table'
         send stamp hide copy event
         send [ 'tex', "\\hline\n", ]
         send [ 'tex', "\\end{tabular}\n", ]
-        # send [ 'tex', "\\mktsVspace{\\mktsTabularBottomDelta}", ]
+        send [ 'tex', "\\mktsVspace{1}", ] ### TAINT arbitrary length ###
         send [ 'tex', "}", ]
         send [ 'tex', "\n\n", ]
         description = null
