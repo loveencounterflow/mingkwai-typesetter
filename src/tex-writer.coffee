@@ -624,12 +624,12 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       send stamp event
     #.......................................................................................................
     else if select event, '!', 'toc'
+      [ type, name, text, meta, ] = event
       send stamp event
       #.....................................................................................................
       unless headings?
         return send [ '.', 'warning', "expecting toc-headings event before this", ( copy meta ), ]
       #.....................................................................................................
-      [ type, name, text, meta, ] = event
       send [ 'tex', '{\\mktsToc%\n', ]
       # send [ '!', 'mark', 'toc', ( copy meta ), ]
       for heading in headings
