@@ -623,6 +623,29 @@ contains = ( text, pattern ) ->
   yield return
 
 #-----------------------------------------------------------------------------------------------------------
+@_walk_fails_and_lanenrs_from_direction_and_selector = ( me, direction, selector ) ->
+  unless direction in [ 'width', 'height', ]
+    throw _stackerr me, 'µ4656', "expected 'width' or 'height', got #{rpr direction}"
+  #.........................................................................................................
+  count         = 0
+  seen_lanenrs  = new Set()
+  p             = if direction is 'width' then 'colnr' else 'rownr'
+  #.........................................................................................................
+  ### TAINT should implement this in intergrid ###
+  for cell from IG.GRID.walk_cells_from_selector me.grid, selector
+    lanenr = cell[ p ]
+    continue if seen_lanenrs.has lanenr
+    seen_lanenrs.add lanenr
+    count += +1
+    yield [ null, lanenr, ]
+  #.........................................................................................................
+  if count is 0
+    ### should never happen ###
+    yield [ ( _fail me, 'µ5131', "selector #{rpr selector} doesn't match any lane" ), null ]
+  #.........................................................................................................
+  yield return
+
+#-----------------------------------------------------------------------------------------------------------
 @_walk_most_recent_field_designations = ( me, fieldhints_and_stuff ) ->
   ### Given a list of `[ fieldhints, x... ]` lists, return a list of `[ designation, x... ]` lists such
   that each `designation` that resulted from each of the `fieldhints` is only kept from the instance
