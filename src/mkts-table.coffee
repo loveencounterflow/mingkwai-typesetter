@@ -69,8 +69,8 @@ contains = ( text, pattern ) ->
     border_dimensions:    {} ### border extents in terms of (unitwidth,unitheight), by field designations ###
     pod_dimensions:       {} ### pod extents in terms of (unitwidth,unitheight), by field designations ###
     valigns:              {} ### vertical pod alignments, by field designations ###
-    cellwidths:           [ null, ] ### [ 0 ] is default, [ 1 .. grid.width ] explicit or implicit widths ###
-    cellheights:          [ null, ] ### [ 0 ] is default, [ 1 .. grid.height ] explicit or implicit heights ###
+    colwidths:            [ null, ] ### [ 0 ] is default, [ 1 .. grid.width ] explicit or implicit widths ###
+    rowheights:           [ null, ] ### [ 0 ] is default, [ 1 .. grid.height ] explicit or implicit heights ###
     joint_coordinates:    null
     #.......................................................................................................
     styles:
@@ -87,8 +87,8 @@ contains = ( text, pattern ) ->
     default:
       unitwidth:            '1mm'
       unitheight:           '1mm'
-      cellwidths:           10
-      cellheights:          10
+      colwidths:            10
+      rowheights:           10
       marginwidth:          0
       marginheight:         0
       paddingwidth:         0
@@ -112,7 +112,7 @@ contains = ( text, pattern ) ->
   return null
 
 #-----------------------------------------------------------------------------------------------------------
-@_set_cellsizes = ( me, direction, text ) ->
+@_set_lanesizes = ( me, direction, text ) ->
   unless direction in [ 'width', 'height', ]
     throw _stackerr me, 'µ2352', "expected 'width' or 'height', got #{rpr direction}"
   p = "cell#{direction}s"
@@ -145,8 +145,8 @@ contains = ( text, pattern ) ->
 #-----------------------------------------------------------------------------------------------------------
 @unitwidth    = ( me, text ) -> @_set_unitsize  me, 'width',    text
 @unitheight   = ( me, text ) -> @_set_unitsize  me, 'height',   text
-@cellwidths   = ( me, text ) -> @_set_cellsizes me, 'width',    text
-@cellheights  = ( me, text ) -> @_set_cellsizes me, 'height',   text
+@columnwidth  = ( me, text ) -> @_set_lanesizes me, 'width',    text
+@rowheight    = ( me, text ) -> @_set_lanesizes me, 'height',   text
 
 #-----------------------------------------------------------------------------------------------------------
 @fieldcells = ( me, text ) ->
@@ -512,13 +512,13 @@ contains = ( text, pattern ) ->
 
 #-----------------------------------------------------------------------------------------------------------
 @_ensure_cellwidths = ( me ) ->
-  return null if ( me.cellwidths.length is me.grid.width + 1 ) and ( null not in me.cellwidths[ 1 .. ] )
-  throw new Error "(MKTS/TABLE µ4039) cellwidths must be all set; got #{rpr me.cellwidths}"
+  return null if ( me.colwidths.length is me.grid.width + 1 ) and ( null not in me.colwidths[ 1 .. ] )
+  throw new Error "(MKTS/TABLE µ4039) colwidths must be all set; got #{rpr me.colwidths}"
 
 #-----------------------------------------------------------------------------------------------------------
 @_ensure_cellheights = ( me ) ->
-  return null if ( me.cellheights.length is me.grid.height + 1 ) and ( null not in me.cellheights[ 1 .. ] )
-  throw new Error "(MKTS/TABLE µ8054) cellheights must be all set; got #{rpr me.cellheights}"
+  return null if ( me.rowheights.length is me.grid.height + 1 ) and ( null not in me.rowheights[ 1 .. ] )
+  throw new Error "(MKTS/TABLE µ8054) rowheights must be all set; got #{rpr me.rowheights}"
 
 #-----------------------------------------------------------------------------------------------------------
 @_ensure_margin = ( me ) ->
@@ -609,24 +609,24 @@ contains = ( text, pattern ) ->
   ### TAINT should precompute ###
   @_ensure_cellwidths me
   R = 0
-  R += me.cellwidths[ nr ] for nr in [ 1 ... colnr ]
+  R += me.colwidths[ nr ] for nr in [ 1 ... colnr ]
   return R
 
 #-----------------------------------------------------------------------------------------------------------
 @_right_from_colnr = ( me, colnr ) ->
-  return ( @_left_from_colnr me, colnr ) + me.cellwidths[ colnr ]
+  return ( @_left_from_colnr me, colnr ) + me.colwidths[ colnr ]
 
 #-----------------------------------------------------------------------------------------------------------
 @_top_from_rownr = ( me, rownr ) ->
   ### TAINT should precompute ###
   @_ensure_cellheights me
   R = 0
-  R += me.cellheights[ nr ] for nr in [ 1 ... rownr ]
+  R += me.rowheights[ nr ] for nr in [ 1 ... rownr ]
   return R
 
 #-----------------------------------------------------------------------------------------------------------
 @_bottom_from_rownr = ( me, rownr ) ->
-  return ( @_top_from_rownr me, rownr ) + me.cellheights[ rownr ]
+  return ( @_top_from_rownr me, rownr ) + me.rowheights[ rownr ]
 
 #-----------------------------------------------------------------------------------------------------------
 @_fieldnames_from_hints = ( me, fieldhints ) ->
