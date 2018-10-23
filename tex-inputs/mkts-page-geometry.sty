@@ -226,6 +226,8 @@
       \setlength{\mktsGeoTmpOne}{\mktsGeoLeftmostTextXEven}}{%
       \setlength{\mktsGeoTmpOne}{\mktsGeoLeftmostTextXOdd}}%
     \begin{tikzpicture}[ overlay, remember picture, xshift = \mktsGeoTmpOne,  yshift = \mktsGeoHighestTextY, yscale = -1 ]%
+      \draw[ blue!50, line width = 0.8mm ] ( 0mm, 0mm )
+        grid[ xstep = 50mm, ystep = 50mm ] ( \textwidth, \textheight );
       \draw[ red!25, line width = 0.4mm ] ( 0mm, 0mm )
         grid[ xstep = 10mm, ystep = 10mm ] ( \textwidth, \textheight );
       \draw[ red!40, line width = 0.2mm ] ( 0mm, 0mm )
