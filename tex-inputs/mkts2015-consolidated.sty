@@ -575,6 +575,11 @@
 \contourlength{0.8pt}%                ### TAINT use fontsize-relative length
 \newcommand{\mktsUnderline}[1]{\uline{\phantom{#1}}\llap{\contour{white}{#1}}}%
 
+% thx to https://tex.stackexchange.com/a/22928/128255
+\newcommand{\mktsColorframebox}[2]{%
+  \colorlet{currentcolor}{.}%
+  {\color{#1}%
+  \fbox{\color{currentcolor}#2}}}%
 
 
 
