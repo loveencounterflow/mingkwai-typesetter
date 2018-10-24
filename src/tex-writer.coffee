@@ -657,9 +657,16 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
   #.........................................................................................................
   return $ ( event, send ) =>
     if select event, '.', 'yadda'
-      [ type, name, Q, meta, ]          = event
       send stamp event
-      send [ '.', 'text', ( YADDA.generate Q ), ( copy meta ), ]
+      [ type, name, Q, meta, ] = event
+      #.....................................................................................................
+      if Q.paragraphs?
+        p_count = parseInt Q.paragraphs, 10
+        for nr in [ 1 .. p_count ] by +1
+          send [ '.', 'text', ( YADDA.generate Q ) + '\n\n', ( copy meta ), ]
+      #.....................................................................................................
+      else
+        send [ '.', 'text', ( YADDA.generate Q ), ( copy meta ), ]
     #.......................................................................................................
     else
       send event

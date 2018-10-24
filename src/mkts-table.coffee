@@ -338,6 +338,7 @@ contains = ( text, pattern ) ->
   yield texr 'µ7', "\\end{tikzpicture}"
   yield texr 'µ8', "\\end{minipage}}"
   yield texr 'µ8', "}% debugging framebox" if me.debug
+  yield texr 'µ81', "\\mktsVspace{1}"
   yield tex "\\par% End of MKTS Table ====================================================================================\n\n"
   yield return
 
