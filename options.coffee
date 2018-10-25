@@ -545,41 +545,41 @@ module.exports = options =
 
       #.....................................................................................................
       '囗':                                cmd: 'cnjzr',       glyph: ''
-      '亻':  push: 0.4
-      '釒':  push: 0.4
-      '冫':  push: 0.5
-      '灬':             raise: 0.25
-      '爫':             raise: -0.125
-      '牜':  push: 0.4
-      '飠':  push: 0.4
-      '扌':  push: 0.05
       # '扌':  push: 0.5
-      '钅':  push: 0.3
+      '扌':  push: 0.05
+      '亻':  push: 0.6
+      '釒':  push: 0.5
+      '钅':  push: 0.4
+      '冫':  push: 0.55
+      '牜':  push: 0.5
+      '飠':  push: 0.4
       '犭':  push: 0.3
-      '忄':  push: 0.4
-      '礻':  push: 0.2
-      '衤':  push: 0.1
-      '覀':             raise: -0.125
-      '讠':  push: 0.4
-      '𧾷':  push: 0.4,                    cmd: 'cnxb'
+      '忄':  push: 0.5
+      '礻':  push: 0.3
+      '衤':  push: 0.2
+      '讠':  push: 0.5
+      '𧾷':  push: 0.5,                    cmd: 'cnxb'
       '卩':  push: -0.4
-      '癶':             raise: -0.2,       cmd: 'cnxBabel'
-      '':             raise: 0.1,        cmd: 'cnxJzr'
       '':  push: 0.5, raise: -0.2
-      '乛':             raise: -0.2
       '糹':  push: 0.4
       '纟':  push: 0.4
+      '阝':  push: 0.6
+      '𩰊':  push: -0.25,                  cmd: 'cnxb'
+      '𩰋':  push: 0.25,                   cmd: 'cnxb'
+      '彳':  push: 0.15
+      '灬':             raise: 0.4
+      '爫':             raise: -0.125
+      '覀':             raise: -0.0
+      '癶':             raise: -0.2,       cmd: 'cnxBabel'
+      '':             raise: 0.1,        cmd: 'cnxJzr'
+      '乛':             raise: -0.25
+      '龸':             raise: -0.15
+      '䒑':             raise: -0.1,      cmd: 'cnxa'
+      '宀':             raise: -0.2
       '𥫗':             raise: -0.2,       cmd: 'cnxb'
       '罓':             raise: -0.2
-      '阝':  push: 0.4
       '龵':             raise: -0.1,       cmd: 'cnxBabel'
-      '𩰊':  push: -0.15,                  cmd: 'cnxb'
-      '𩰋':  push: 0.15,                   cmd: 'cnxb'
-      '彳':  push: 0.15
       '龹':             raise: -0.12
-      '龸':             raise: -0.15
-      '䒑':             raise: -0.15,      cmd: 'cnxa'
-      '宀':             raise: -0.15
       '〇':             raise: -0.05,      cmd: 'cnxBabel'
       # '⺍':                                cmd: 'cnjzr',       glyph: ''
       #.....................................................................................................
