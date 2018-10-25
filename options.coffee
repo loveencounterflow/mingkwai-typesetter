@@ -389,7 +389,9 @@ module.exports = options =
       'u-cjk-kata':             'ka'
       'u-cjk-hira':             'hi'
       'u-hang-syl':             'hg'
-      'fallback':               'mktsRsgFb'
+      'u-cjk-encsupp':          'cnencsupp'
+      #.....................................................................................................
+      'fallback':               'mktsRsgFb' ### Fallback Font ###
     #.......................................................................................................
     ### LIST of Unicode Range Sigils that contain codepoints to be treated as CJK characters: ###
     'cjk-rsgs': [
@@ -414,6 +416,7 @@ module.exports = options =
       'u-cjk-hira'
       'u-hang-syl'
       'u-cjk-enclett'
+      'u-cjk-encsupp'
       ]
     #.......................................................................................................
     'glyph-styles':
