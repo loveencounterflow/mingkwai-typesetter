@@ -336,6 +336,13 @@ module.exports = options =
 
       { texname: 'mktsFontfileSushikii',                      subfolder: 'sushiki_ub',  filename: 'sushikii.ttf', }
 
+      ### TAINT TTC fonts from the Sarasa series have several regional / usage variants, as seen in BabelMap, these should
+                be selected and made available here ###
+      { texname: 'mktsFontfileSarasabold',                    subfolder: 'sarasa-gothic-0.6.0', filename: 'sarasa-bold.ttc',        }
+      { texname: 'mktsFontfileSarasabolditalic',              subfolder: 'sarasa-gothic-0.6.0', filename: 'sarasa-bolditalic.ttc',  }
+      { texname: 'mktsFontfileSarasaitalic',                  subfolder: 'sarasa-gothic-0.6.0', filename: 'sarasa-italic.ttc',      }
+      { texname: 'mktsFontfileSarasaregular',                 subfolder: 'sarasa-gothic-0.6.0', filename: 'sarasa-regular.ttc',     }
+
 
       ]
 
