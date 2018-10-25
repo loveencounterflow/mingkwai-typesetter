@@ -323,7 +323,7 @@ contains = ( text, pattern ) ->
   yield tex "\n\n"
   yield tex "\\par% Beginning of MKTS Table ==============================================================================\n"
   yield texr 'µ1', "{\\setlength{\\fboxsep}{0mm}"
-  yield texr 'µ2', "\\mktsColorframebox{red}{% debugging framebox" if me.debug
+  # yield texr 'µ2', "\\mktsColorframebox{red}{% debugging framebox" if me.debug
   ### NOTE only height of minipage is important; TikZ will happily draw outside of minipage when told ###
   ### TAINT calculate proper height so text will keep register ###
   yield texr 'µ3', "\\newdimen\\mktsTableUnitwidth\\setlength{\\mktsTableUnitwidth}{#{me.unitwidth}}"
@@ -337,7 +337,7 @@ contains = ( text, pattern ) ->
 @_walk_closing_events = ( me ) ->
   yield texr 'µ7', "\\end{tikzpicture}"
   yield texr 'µ8', "\\end{minipage}}"
-  yield texr 'µ8', "}% debugging framebox" if me.debug
+  # yield texr 'µ8', "}% debugging framebox" if me.debug
   yield texr 'µ81', "\\mktsVspace{1}"
   yield tex "\\par% End of MKTS Table ====================================================================================\n\n"
   yield return
