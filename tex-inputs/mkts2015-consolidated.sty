@@ -242,6 +242,7 @@
 \newcommand{\cnrtwo}{\cjkgGlue\mktsFontfileSunexta\AfterGroup{\cjkgGlue}}       % CJK Radicals 2
 \newcommand{\cnsym}{\cjkgGlue\mktsFontfileHanamina\AfterGroup{\cjkgGlue}}
 \newcommand{\cnstrk}{\cjkgGlue\mktsFontfileSunexta\AfterGroup{\cjkgGlue}}
+\newcommand{\cnencsupp}{\cjkgGlue\mktsFontfileSarasaregular\AfterGroup{\cjkgGlue}}
 % ..........................................................................................................
 \newcommand{\cnxBabel}{\cjkgGlue\mktsFontfileBabelstonehan\AfterGroup{\cjkgGlue}}
 \newcommand{\cnxHanaA}{\cjkgGlue\mktsFontfileHanamina\AfterGroup{\cjkgGlue}}
@@ -580,6 +581,10 @@
   \colorlet{currentcolor}{.}%
   {\color{#1}%
   \fbox{\color{currentcolor}#2}}}%
+
+% ----------------------------------------------------------------------------------------------------------
+\newcommand{\mktsStyleCjkRoundSymbol}[1]{%
+  \phantom{{\cn{}國}}\makebox[0mm]{\tfPushRaise{-1.25}{-0.15}\mktsFontfileThtshynpone\mktsScaleFont{1.7}#1}}%
 
 
 
