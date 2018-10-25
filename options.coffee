@@ -477,6 +477,14 @@ module.exports = options =
       '䗍':                                cmd: 'cnxHanaA'
 
       #.....................................................................................................
+      '🈻':                                cmd: 'mktsFontfileThtshynpone'
+      '🉠':                                cmd: 'mktsStyleCjkRoundSymbol{🉠}', glyph: '' ### TAINT dirty trick, update configuration syntax ###
+      '🉡':                                cmd: 'mktsStyleCjkRoundSymbol{🉡}', glyph: '' ### TAINT dirty trick, update configuration syntax ###
+      '🉢':                                cmd: 'mktsStyleCjkRoundSymbol{🉢}', glyph: '' ### TAINT dirty trick, update configuration syntax ###
+      '🉣':                                cmd: 'mktsStyleCjkRoundSymbol{🉣}', glyph: '' ### TAINT dirty trick, update configuration syntax ###
+      '🉤':                                cmd: 'mktsStyleCjkRoundSymbol{🉤}', glyph: '' ### TAINT dirty trick, update configuration syntax ###
+      '🉥':                                cmd: 'mktsStyleCjkRoundSymbol{🉥}', glyph: '' ### TAINT dirty trick, update configuration syntax ###
+      #.....................................................................................................
       ### Ideographic Space: ###
       # '&#x3000;':                         cmd: 'cnjzr',       glyph: ''
 
