@@ -128,17 +128,14 @@ contains = ( text, pattern ) ->
   #.........................................................................................................
   { selector, length, } = match.groups
   length                = parseFloat length
-  debug '37733', ( rpr p ), ( rpr text ), match.groups
   #.........................................................................................................
   if selector?
     me[ ps ][  0 ]  ?= me.default[ p ] ### set default ###
     me[ ps ][ nr ]  ?= me.default[ p ] for nr in [ 1 .. lane_count ] ### set defaults where missing ###
-    debug '37734-1', me[ ps ]
     for [ fail, lanenr, ] from @_walk_fails_and_lanenrs_from_direction_and_selector me, direction, selector
       ### TAINT ad-hoc fail message production, use method ###
       if fail? then _record me, fail
       else          me[ ps ][ lanenr ] = length
-    debug '37734-2', me[ ps ]
   else
     me[ ps ][  0 ]  = length ### set default ###
     me[ ps ][ nr ]  = length for nr in [ 1 .. lane_count ]
@@ -337,8 +334,9 @@ contains = ( text, pattern ) ->
 #-----------------------------------------------------------------------------------------------------------
 @_walk_opening_events = ( me ) ->
   @_ensure_unitvector me
+  layout = me.name
   yield tex "\n\n"
-  yield tex "\\par% Beginning of MKTS Table ==============================================================================\n"
+  yield tex "\\par% Beginning of MKTS Table #{jr {layout}} ==============================================================================\n"
   yield texr 'µ1', "{\\setlength{\\fboxsep}{0mm}"
   # yield texr 'µ2', "\\mktsColorframebox{red}{% debugging framebox" if me.debug
   ### NOTE only height of minipage is important; TikZ will happily draw outside of minipage when told ###

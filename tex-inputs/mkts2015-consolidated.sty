@@ -589,16 +589,18 @@
   \phantom{{\cn{}國}}\makebox[0mm]{\tfPushRaise{-1.25}{-0.15}\mktsFontfileThtshynpone\mktsScaleFont{1.7}#1}}%
 
 % ----------------------------------------------------------------------------------------------------------
+% ### TAINT untested ###
+% consider to implement using `\begin{flushleft}` etc from package `ragged2e`
+% as per https://www.overleaf.com/learn/latex/Text_alignment
+% also see https://en.wikibooks.org/wiki/LaTeX/Paragraph_Formatting
 \newcommand{\mktsLeft}{%
   \raggedright}%
-
-% ----------------------------------------------------------------------------------------------------------
 \newcommand{\mktsRight}{%
   \raggedleft}%
-
-% ----------------------------------------------------------------------------------------------------------
 \newcommand{\mktsCenter}{%
   \centering}%
+\newcommand{\mktsJustify}{%
+  \justify}%
 
 
 

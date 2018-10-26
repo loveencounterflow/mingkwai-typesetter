@@ -335,6 +335,7 @@ after it, thereby inhibiting any processing of those portions. ###
 
 #-----------------------------------------------------------------------------------------------------------
 @register_raw_tag = ( tag_name ) =>
+  ### TAINT extend to match tag with attributes ###
   start_tag   = "<#{tag_name}>"
   stop_tag    = "</#{tag_name}>"
   @_raw_tags.push [ tag_name, start_tag, stop_tag, ]
