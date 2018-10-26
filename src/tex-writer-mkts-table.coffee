@@ -179,6 +179,7 @@ MKTS.MACRO_ESCAPER.register_raw_tag 'mkts-table-description'
     @fieldcells           = ( raw_parts ) -> MKTS_TABLE.fieldcells            me, raw_parts.join ''
     @fieldborder          = ( raw_parts ) -> MKTS_TABLE.fieldborder           me, raw_parts.join ''
     @fieldalignvertical   = ( raw_parts ) -> MKTS_TABLE.fieldalignvertical    me, raw_parts.join ''
+    @fieldalignhorizontal = ( raw_parts ) -> MKTS_TABLE.fieldalignhorizontal  me, raw_parts.join ''
     return @
   #.........................................................................................................
   return [ me, ( f.apply {} ), ]

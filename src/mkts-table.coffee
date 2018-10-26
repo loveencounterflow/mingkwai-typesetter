@@ -69,6 +69,7 @@ contains = ( text, pattern ) ->
     border_dimensions:    {} ### border extents in terms of (unitwidth,unitheight), by field designations ###
     pod_dimensions:       {} ### pod extents in terms of (unitwidth,unitheight), by field designations ###
     valigns:              {} ### vertical pod alignments, by field designations ###
+    haligns:              {} ### horizontal pod alignments, by field designations ###
     colwidths:            [ null, ] ### [ 0 ] is default, [ 1 .. grid.width ] explicit or implicit widths ###
     rowheights:           [ null, ] ### [ 0 ] is default, [ 1 .. grid.height ] explicit or implicit heights ###
     joint_coordinates:    null
@@ -186,7 +187,7 @@ contains = ( text, pattern ) ->
 #-----------------------------------------------------------------------------------------------------------
 @fieldalignvertical = ( me, text ) ->
   unless ( match = text.match /^(.+?):([^:]+)$/ )?
-    throw new Error "(MKTS/TABLE µ5229) expected something like 'c3:top' for mkts-table/fieldalignvertical, got #{rpr text}"
+    throw new Error "(MKTS/TABLE µ5229) expected something like 'C3:top' for mkts-table/fieldalignvertical, got #{rpr text}"
   [ _, fieldhints, value, ] = match
   #.........................................................................................................
   unless value in [ 'top', 'bottom', 'center', 'spread', ]
@@ -196,6 +197,22 @@ contains = ( text, pattern ) ->
     ### TAINT ad-hoc fail message production, use method ###
     if fail? then _record me, "#{fail} (#{jr {field_designation}})"
     else          me.valigns[ field_designation ] = value
+  #.........................................................................................................
+  return null
+
+#-----------------------------------------------------------------------------------------------------------
+@fieldalignhorizontal = ( me, text ) ->
+  unless ( match = text.match /^(.+?):([^:]+)$/ )?
+    throw new Error "(MKTS/TABLE µ5229) expected something like 'C3:left' for mkts-table/fieldalignhorizontal, got #{rpr text}"
+  [ _, fieldhints, value, ] = match
+  #.........................................................................................................
+  unless value in [ 'left', 'right', 'center', 'justified', ]
+    throw new Error "(MKTS/TABLE µ1876) expected one of 'left', 'right', 'center', 'justified' for mkts-table/fieldalignhorizontal, got #{rpr value}"
+  #.........................................................................................................
+  for [ fail, field_designation, ] from @_walk_fails_and_field_designations_from_hints me, fieldhints
+    ### TAINT ad-hoc fail message production, use method ###
+    if fail? then _record me, "#{fail} (#{jr {field_designation}})"
+    else          me.haligns[ field_designation ] = value
   #.........................................................................................................
   return null
 
@@ -365,6 +382,15 @@ contains = ( text, pattern ) ->
   yield return
 
 #-----------------------------------------------------------------------------------------------------------
+@_get_halign_tex = ( me, halign ) ->
+  return switch halign
+    when 'left'       then '\\mktsLeft{}'
+    when 'right'      then '\\mktsRight{}'
+    when 'center'     then '\\mktsCenter{}'
+    when 'justified'  then ''
+    else throw new Error "(MKTS/TABLE µ4799) illegal value for halign #{rpr halign}"
+
+#-----------------------------------------------------------------------------------------------------------
 @_get_valign_tex = ( me, valign ) ->
   return switch valign
     when 'top'    then 't'
@@ -378,8 +404,9 @@ contains = ( text, pattern ) ->
   for [ field_designation, content, ] from @_walk_most_recent_field_designations me, fieldhints_and_content_events
     d           = me.pod_dimensions[ field_designation ]
     valign_tex  = @_get_valign_tex me, me.valigns[ field_designation ] ? me.valigns[ '*' ] ? 'center'
+    halign_tex  = @_get_halign_tex me, me.haligns[ field_designation ] ? me.haligns[ '*' ] ? 'left'
     yield texr 'µ14', "\\node[anchor=north west,inner sep=0mm] at (#{d.left},#{d.top})"
-    yield texr 'µ15', "{\\begin{minipage}[t][#{d.height}\\mktsTableUnitheight][#{valign_tex}]{#{d.width}\\mktsTableUnitwidth}"
+    yield texr 'µ15', "{\\begin{minipage}[t][#{d.height}\\mktsTableUnitheight][#{valign_tex}]{#{d.width}\\mktsTableUnitwidth}#{halign_tex}"
     yield [ '.', 'noindent', null, {}, ]
     yield sub_event for sub_event in content
     yield texr 'µ16', "\\end{minipage}};"
