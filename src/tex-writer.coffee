@@ -821,6 +821,47 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     #.......................................................................................................
     return null
 
+#-----------------------------------------------------------------------------------------------------------
+@MKTX.BLOCK.$fontlist = ( S ) =>
+  within_fontlist = false
+  buffer          = []
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    #.......................................................................................................
+    if select event, '(', 'fontlist'
+      send stamp event
+      within_fontlist = true
+    #.......................................................................................................
+    else if select event, ')', 'fontlist'
+      send stamp event
+      within_fontlist             = false
+      sample                      = buffer.join ''
+      buffer.length               = 0
+      #.....................................................................................................
+      send [ 'tex', "\\begin{tabbing}\n" ]
+      send [ 'tex', "\\phantom{XXXXXXXXXXXXXXXXXXXXXXXXX} \\= \\phantom{XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX} \\\\\n" ]
+      #.....................................................................................................
+      for { texname, } in S.options[ 'fonts' ][ 'files' ]
+        shortname = texname.replace /^mktsFontfile/, ''
+        tex       = "#{shortname} \\> {\\#{texname}{}#{sample}} \\\\\n"
+        send [ 'tex', tex, ]
+      #.....................................................................................................
+      send [ 'tex', "\\end{tabbing}\n" ]
+    #.......................................................................................................
+    else if within_fontlist and select event, '.', 'text'
+      [ type, name, text, meta, ] = event
+      # send stamp event
+      buffer.push text
+    #.......................................................................................................
+    else
+      if within_fontlist
+        [ type, name, text, meta, ] = event
+        send [ '.', 'warning', "ignoring event #{type}", ( copy meta ? {} ), ]
+      else
+        send event
+    #.......................................................................................................
+    return null
+
 
 #===========================================================================================================
 #
@@ -2132,6 +2173,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @MKTX.INLINE.$tiny                                S
     .pipe @MKTX.INLINE.$fncr                                S
     .pipe @MKTX.INLINE.$xfsc                                S
+    .pipe @MKTX.BLOCK.$fontlist                             S
     #.......................................................................................................
     .pipe @MKTX.BLOCK.$blockquote                           S
     .pipe @MKTX.INLINE.$link                                S
