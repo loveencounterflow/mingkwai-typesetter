@@ -378,8 +378,17 @@ module.exports = options =
       'u-cjk-xb':               'cnxb'
       'u-cjk-xc':               'cnxc'
       'u-cjk-xd':               'cnxd'
-      'u-cjk-cmpi1':            'cncone'
-      'u-cjk-cmpi2':            'cnctwo'
+
+      ### NOTE in anticipation of upcoming version where all codepoins will get simply
+      annotated with their RSGs, which in turn are LaTeX commands: ###
+      'u-cjk-cmp':              'cnUcjkcmp'       ### CJK Compatibility                       ###
+      'u-cjk-cmpf':             'cnUcjkcmpf'      ### CJK Compatibility Forms                 ###
+      'u-cjk-cmpi1':            'cnUcjkcmpione'   ### CJK Compatibility Ideographs            ###
+      'u-cjk-cmpi2':            'cnUcjkcmpitwo'   ### CJK Compatibility Ideographs Supplement ###
+
+      # 'u-cjk-cmp':              'cncone'
+      # 'u-cjk-cmpi1':            'cncone'
+      # 'u-cjk-cmpi2':            'cnctwo'
       'u-cjk-rad1':             'cnrone'
       'u-cjk-rad2':             'cnrtwo'
       'u-cjk-sym':              'cnsym'
