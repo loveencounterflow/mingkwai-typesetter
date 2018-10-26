@@ -58,6 +58,7 @@ contains = ( text, pattern ) ->
 @_new_description = ( S ) ->
   R =
     '~isa':               'MKTS/TABLE/description'
+    name:                 null
     debug:                false
     fails:                [] ### recoverable errors / fails warnings ###
     fieldcells:           {} ### field extents in terms of cells, by field designations ###
@@ -211,6 +212,15 @@ contains = ( text, pattern ) ->
     if fail? then _record me, "#{fail} (#{jr {field_designation}})"
     else          me.haligns[ field_designation ] = value
   #.........................................................................................................
+  return null
+
+#-----------------------------------------------------------------------------------------------------------
+@name = ( me, text ) ->
+  if me.name?
+    throw new Error "(MKTS/TABLE µ1344) refused to rename table layout #{rpr me.name} to #{rpr text}"
+  #.........................................................................................................
+  ### TAINT should check syntax (no whitespace etc) ###
+  me.name = text
   return null
 
 #-----------------------------------------------------------------------------------------------------------
