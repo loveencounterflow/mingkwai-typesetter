@@ -409,7 +409,7 @@ contains = ( text, pattern ) ->
 
 #-----------------------------------------------------------------------------------------------------------
 @_walk_pod_events = ( me, fieldhints_and_content_events ) ->
-  for [ field_designation, content, ] from @_walk_most_recent_field_designations me, fieldhints_and_content_events
+  for [ field_designation, content..., ] from @_walk_most_recent_field_designations me, fieldhints_and_content_events
     d           = me.pod_dimensions[ field_designation ]
     valign_tex  = @_get_valign_tex me, me.valigns[ field_designation ] ? me.valigns[ '*' ] ? 'center'
     halign_tex  = @_get_halign_tex me, me.haligns[ field_designation ] ? me.haligns[ '*' ] ? 'left'
