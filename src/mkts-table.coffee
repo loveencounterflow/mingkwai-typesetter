@@ -678,6 +678,7 @@ contains = ( text, pattern ) ->
   p             = if direction is 'width' then 'colnr' else 'rownr'
   #.........................................................................................................
   ### TAINT should implement this in intergrid ###
+  debug '33944', Object.keys IG.GRID
   for cell from IG.GRID.walk_cells_from_selector me.grid, selector
     lanenr = cell[ p ]
     continue if seen_lanenrs.has lanenr
