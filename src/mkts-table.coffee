@@ -344,9 +344,10 @@ contains = ( text, pattern ) ->
 #-----------------------------------------------------------------------------------------------------------
 @_walk_opening_events = ( me ) ->
   @_ensure_unitvector me
-  layout = me.name
+  layout_name = me.name
   yield tex "\n\n"
-  yield tex "\\par% Beginning of MKTS Table #{jr {layout}} ==============================================================================\n"
+  yield tex "% ============================================================================================================\n"
+  yield tex "\\par% Beginning of MKTS Table (layout: #{rpr layout_name})\n"
   yield texr 'µ1', "{\\setlength{\\fboxsep}{0mm}"
   # yield texr 'µ2', "\\mktsColorframebox{red}{% debugging framebox" if me.debug
   ### NOTE only height of minipage is important; TikZ will happily draw outside of minipage when told ###

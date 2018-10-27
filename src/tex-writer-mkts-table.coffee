@@ -42,6 +42,8 @@ MKTS.MACRO_ESCAPER.register_raw_tag 'mkts-table-description'
 #-----------------------------------------------------------------------------------------------------------
 @$main = ( S ) ->
   #.........................................................................................................
+  ### TAINT tie local state to events to avoid difficulties with non-synchronous / non-lockstepping
+  transforms ###
   L = new_local_state()
   return D.TEE.from_pipeline [
     @$parse_description               S, L
@@ -215,7 +217,7 @@ new_local_state = ->
     #.......................................................................................................
     ### If we are within table contents, we collect all field events and their contents as table field
     contents; outside that, whitespace events are ignored, and other material generates errors: ###
-    #.....................................................................................................
+    #.......................................................................................................
     if select event, '(', 'field'
       within_field = true
       [ type, name, Q, meta, ]  = event
@@ -224,25 +226,25 @@ new_local_state = ->
       layout_name     = @get_current_layout_name S, L
       content_buffer  = @content_buffer_from_layout_name_and_selector S, L, layout_name, Q.key
       return send stamp event
-    #.....................................................................................................
+    #.......................................................................................................
     if select event, ')', 'field'
       within_field   = false
       content_buffer = null
       return send stamp event
-    #.....................................................................................................
+    #.......................................................................................................
     if within_field
       content_buffer.push event
       # urge '77782', jr content_buffer
       # urge '27762', jr event
       return null
-    #.....................................................................................................
+    #.......................................................................................................
     if ( select event, '.', 'text' ) and ( event[ 2 ].match /^\s*$/ )?
       # whisper '27762', jr event
       return null
-    #.....................................................................................................
+    #.......................................................................................................
     ### TAINT should be a fail, not an exception: ###
     # throw new Error "detected illegal content: #{rpr event}"
-    warn '27762', jr event
+    # warn '27762', ( within_field ), jr event
     # return null
     #.......................................................................................................
     send event
