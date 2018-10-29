@@ -68,12 +68,38 @@ UNITS                     = require '../mkts-table-units'
   #.........................................................................................................
   done()
 
+#-----------------------------------------------------------------------------------------------------------
+@[ "UNITS.as_text 1" ] = ( T, done ) ->
+  probes_and_matchers = [
+    ["1mm","1mm"]
+    ["1.2mm","1.2mm"]
+    ["0.3\\mktsLineheight","0.3\\mktsLineheight"]
+    ["123456.2mm","123456.2mm"]
+    ["300mm","300mm"]
+    [" 300mm","300mm"]
+    [" 300 mm","300mm"]
+    [" 300 mm   ","300mm"]
+    ]
+  #.........................................................................................................
+  for [ probe_txt, matcher, ] in probes_and_matchers
+    try
+      probe   = UNITS.parse_nonnegative_quantity probe_txt
+      result  = UNITS.as_text probe
+    catch error
+      T.fail "unexpected error for probe #{rpr probe_txt}: #{rpr error.message}"
+      continue
+    urge '36633', ( jr [ probe_txt, result, ] )
+    T.eq result, matcher
+  #.........................................................................................................
+  done()
+
 
 
 ############################################################################################################
 unless module.parent?
   include = [
     "UNITS.parse_nonnegative_quantity 1"
+    "UNITS.as_text 1"
     ]
   @_prune()
   @_main()

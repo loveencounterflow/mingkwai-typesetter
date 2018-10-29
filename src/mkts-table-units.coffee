@@ -37,6 +37,11 @@ jr                        = JSON.stringify
   R.value = parseFloat R.value
   return R
 
-
+#-----------------------------------------------------------------------------------------------------------
+@as_text = ( me ) ->
+  unless ( type = CND.type_of me ) is 'MKTS/TABLE/quantity'
+    throw new Error "(MKTS/TABLE µ5375) expected a 'MKTS/TABLE/quantity', got a #{rpr type}"
+  #.........................................................................................................
+  return "#{me.value}#{me.unit}"
 
 
