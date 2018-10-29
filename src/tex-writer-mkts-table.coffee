@@ -65,6 +65,12 @@ new_local_state = ->
     layout_events:                  {}
     content_buffer:                 null
     within_field:                   false
+    ### TAINT we use this attribute to communicate the current selector from `$handle_fields()` back to
+    `$handle_content_events()`; this works b/c we're assuming that all event handling is happening in
+    lockstep. It might stop working as soon as the lockstepping is broken by an intervening asynchronous
+    or buffering stream transform. ###
+    ### TAINT use `field_selector_stack` ###
+    current_field_selector:         null
   return R
 
 
@@ -76,6 +82,16 @@ new_local_state = ->
   unless ( R = L.layout_name_stack[ L.layout_name_stack.length - 1 ] )?
     throw new Error "#{badge}#µ4451 layout stack empty"
   return R
+
+#-----------------------------------------------------------------------------------------------------------
+@get_enclosing_layout_name = ( S, L ) ->
+  ### I've come to thoroughly dislike zero-based indexing paired with non-existing negative indexes.
+  We all should be writing `d[ 1 ]`, `d[ 2 ]` for the first and second elements from the left, and
+  `d[ -1 ]`, `d[ -2 ]` for the first and second elements from the right end of a list. ###
+  length    = L.layout_name_stack.length
+  last_idx  = L.layout_name_stack.length - 1
+  return null if length < 2
+  return L.layout_name_stack[ last_idx - 1 ]
 
 #-----------------------------------------------------------------------------------------------------------
 @pop_layout_name = ( S, L ) ->
@@ -111,11 +127,17 @@ new_local_state = ->
   return null
 
 #-----------------------------------------------------------------------------------------------------------
-@content_buffer_from_layout_name_and_selector = ( S, L, layout_name, selector ) ->
+@new_content_buffer = ( S, L, layout_name, selector ) ->
   unless ( target = L.selectors_and_content_events[ layout_name ] )?
     throw new Error "#{badge}#µ4432 unknown layout #{rpr layout_name}"
   R = [ selector, ]
   target.push R
+  return R
+
+#-----------------------------------------------------------------------------------------------------------
+@content_buffers_from_layout_name = ( S, L, layout_name ) ->
+  unless ( R = L.selectors_and_content_events[ layout_name ] )?
+    throw new Error "#{badge}#µ4433 unknown layout #{rpr layout_name}"
   return R
 
 #-----------------------------------------------------------------------------------------------------------
@@ -180,7 +202,6 @@ new_local_state = ->
       unless Q.layout?
         throw new Error "#{badge}#µ1180 missing required attribute `layout` for <mkts-table-content>"
       @push_layout_name S, L, Q.layout
-      # debug '44942-1', '------------->', jr event
       send stamp event
     #.......................................................................................................
     ### When table contents end, we send all the sub-events needed to draw the table, and then the
@@ -190,26 +211,35 @@ new_local_state = ->
       layout_name                   = @get_current_layout_name          S, L
       layout                        = @layout_from_name                 S, L, layout_name
       selectors_and_content_events  = @get_selectors_and_content_events S, L, layout_name
-      @pop_layout_name S, L
-      # urge '33444', jr selectors_and_content_events
-      for sub_event from MKTS_TABLE._walk_events layout, selectors_and_content_events
-        # debug '44942-2', '------------->', jr sub_event
-        send sub_event
-      # catch error
-      #   ### TAINT ###
-      #   alert '55443', error.message
+      enclosing_layout_name         = @get_enclosing_layout_name        S, L
+      content_events                = MKTS_TABLE._walk_events layout, selectors_and_content_events, L.layout_name_stack
+      urge '99983', enclosing_layout_name, L.current_field_selector
       #.....................................................................................................
-      # debug '44942-3', '------------->', jr event
+      if enclosing_layout_name?
+        unless L.current_field_selector?
+          throw new Error "#{badge}#µ1181 (should never happen) missing `L.current_field_selector`"
+        enclosing_content_events  = @content_buffers_from_layout_name S, L, enclosing_layout_name
+        # enclosed_content_events   = [ L.current_field_selector, content_events..., ]
+        enclosed_content_events   = [ 'B1', content_events..., ]
+        debug '55563', CND.gold enclosing_content_events
+        debug '55563', CND.lime enclosed_content_events
+        enclosing_content_events.push enclosed_content_events
+        # send sub_event for sub_event from MKTS_TABLE._walk_events layout, selectors_and_content_events
+      #.....................................................................................................
+      else
+        send sub_event for sub_event from content_events
+      #.....................................................................................................
       send stamp event
+      @pop_layout_name S, L
     #.......................................................................................................
     else
-      # debug '44942-4', '------------->', jr event
       send event
     return null
 
 #-----------------------------------------------------------------------------------------------------------
 @$handle_fields = ( S, L ) ->
   content_buffer  = null
+  layout_name     = null
   within_field    = false
   return $ ( event, send ) =>
     return send event unless @is_within_table S, L
@@ -219,31 +249,38 @@ new_local_state = ->
     contents; outside that, whitespace events are ignored, and other material generates errors: ###
     #.......................................................................................................
     if select event, '(', 'field'
-      within_field = true
+      layout_name = @get_current_layout_name  S, L
+      ### TAINT should throw error when <field> nested within <field> *without* intervening <mkts-table-content> ###
+      # if within_field
+      #   throw new Error "#{badge}#µ2131 detected nested <field> tag (#{jr event}) in table #{rpr layout_name}"
+      within_field              = true
       [ type, name, Q, meta, ]  = event
-      if not Q? and Q.key?
-        throw new Error "need key for field"
-      layout_name     = @get_current_layout_name S, L
-      content_buffer  = @content_buffer_from_layout_name_and_selector S, L, layout_name, Q.key
+      unless Q? and Q.key?
+        throw new Error "#{badge}#µ2132 missing <field> tag attribute 'key' in table #{rpr layout_name} (#{jr event})"
+      ### TAINT this is exactly the kind of dangerous 'sound have happened anywhere, anytime' state mutation
+      that advocates of immutable state are warning us about: ###
+      L.current_field_selector  = Q.key
+      content_buffer            = @new_content_buffer S, L, layout_name,  L.current_field_selector
       return send stamp event
     #.......................................................................................................
     if select event, ')', 'field'
-      within_field   = false
-      content_buffer = null
+      within_field              = false
+      content_buffer            = null
+      # L.current_field_selector  = null
       return send stamp event
     #.......................................................................................................
     if within_field
+      debug '37734', layout_name, jr event
       content_buffer.push event
-      # urge '77782', jr content_buffer
-      # urge '27762', jr event
       return null
     #.......................................................................................................
+    ### Ignore whitespace between fields: ###
     if ( select event, '.', 'text' ) and ( event[ 2 ].match /^\s*$/ )?
       # whisper '27762', jr event
       return null
     #.......................................................................................................
     ### TAINT should be a fail, not an exception: ###
-    # throw new Error "detected illegal content: #{rpr event}"
+    # throw new Error "detected illegal content: #{jr event}"
     # warn '27762', ( within_field ), jr event
     # return null
     #.......................................................................................................

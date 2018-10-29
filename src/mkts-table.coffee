@@ -307,20 +307,22 @@ contains = ( text, pattern ) ->
 #===========================================================================================================
 # EVENT GENERATORS
 #-----------------------------------------------------------------------------------------------------------
-@_walk_events = ( me, fieldhints_and_content_events ) ->
+@_walk_events = ( me, selectors_and_content_events, layout_name_stack ) ->
   @_compute_cell_dimensions     me
   @_compute_field_dimensions    me
   @_compute_border_dimensions   me
   @_compute_pod_dimensions      me
   @_compute_table_height        me
   #.........................................................................................................
+  me._tmp_is_outermost  = layout_name_stack.length > 1
+  me._tmp_name          = layout_name_stack.join '/'
   ### Preparatory ###
   yield from @_walk_opening_events                      me
   yield from @_walk_style_events                        me ### TAINT should write to document preamble ###
   #.........................................................................................................
   ### Borders, content ###
   yield from @_walk_field_borders_events                me
-  yield from @_walk_pod_events                          me, fieldhints_and_content_events
+  yield from @_walk_pod_events                          me, selectors_and_content_events
   #.........................................................................................................
   ### Debugging ### ### TAINT should make ordering configurable so we can under- or overprint debugging ###
   yield from @_walk_debug_joints_events                 me
@@ -411,16 +413,24 @@ contains = ( text, pattern ) ->
     else throw new Error "(MKTS/TABLE µ4799) illegal value for valign #{rpr valign}"
 
 #-----------------------------------------------------------------------------------------------------------
-@_walk_pod_events = ( me, fieldhints_and_content_events ) ->
-  for [ field_designation, content..., ] from @_walk_most_recent_field_designations me, fieldhints_and_content_events
-    d           = me.pod_dimensions[ field_designation ]
-    valign_tex  = @_get_valign_tex me, me.valigns[ field_designation ] ? me.valigns[ '*' ] ? 'center'
-    halign_tex  = @_get_halign_tex me, me.haligns[ field_designation ] ? me.haligns[ '*' ] ? 'left'
-    yield texr 'µ14', "\\node[anchor=north west,inner sep=0mm] at (#{d.left},#{d.top})"
-    yield texr 'µ15', "{\\begin{minipage}[t][#{d.height}\\mktsTableUnitheight][#{valign_tex}]{#{d.width}\\mktsTableUnitwidth}#{halign_tex}"
+@_walk_pod_events = ( me, selectors_and_content_events ) ->
+  for [ selector, content..., ] from @_walk_most_recent_field_designations me, selectors_and_content_events
+    d           = me.pod_dimensions[ selector ]
+    if me._tmp_is_outermost then  valign_tex  = @_get_valign_tex me, me.valigns[ selector ] ? me.valigns[ '*' ] ? 'center'
+    else                          valign_tex  = @_get_valign_tex me, 'top'
+    halign_tex  = @_get_halign_tex me, me.haligns[ selector ] ? me.haligns[ '*' ] ? 'left'
+    # debug '88984-1', 'me._tmp_is_outermost  ', me._tmp_is_outermost
+    # debug '88984-1', 'me._tmp_name          ', me._tmp_name
+    _ref = " field #{me._tmp_name}:#{selector} "
+    yield texr 'ð17', "\\node[anchor=north west,inner sep=0mm] at (#{d.left},#{d.top}) {%#{_ref}"
+    yield texr 'ð18', "\\mktsColorframebox{orange}{%#{_ref} debugging sub-framebox " if me.debug
+    yield texr 'ð19', "\\begin{minipage}[t][#{d.height}\\mktsTableUnitheight][#{valign_tex}]{#{d.width}\\mktsTableUnitwidth}#{halign_tex}%#{_ref}"
     yield [ '.', 'noindent', null, {}, ]
     yield sub_event for sub_event in content
-    yield texr 'µ16', "\\end{minipage}};"
+    if me.debug
+      yield texr 'ð20', "\\end{minipage}}};%#{_ref} debugging sub-framebox"
+    else
+      yield texr 'ð21', "\\end{minipage}};%#{_ref}"
   #.........................................................................................................
   yield return
 
