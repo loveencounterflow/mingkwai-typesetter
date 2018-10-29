@@ -37,6 +37,7 @@ jr                        = JSON.stringify
 IG                        = require 'intergrid'
 UNITS                     = require './mkts-table-units'
 
+
 #-----------------------------------------------------------------------------------------------------------
 tex = ( source ) -> [ 'tex', source, ]
 
@@ -343,6 +344,7 @@ contains = ( text, pattern ) ->
   # yield [ ')', 'code', [],                       ( copy me.meta ), ]
   # yield [ 'tex', '\\par{}', ]
   #.........................................................................................................
+  delete me._tmp_name
   yield return
 
 #-----------------------------------------------------------------------------------------------------------
@@ -350,32 +352,34 @@ contains = ( text, pattern ) ->
   @_ensure_unitvector me
   layout_name = me.name
   yield tex "\n\n"
-  yield tex "% ============================================================================================================\n"
+  yield tex "% ==========================================================================================================\n"
   yield tex "\\par% Beginning of MKTS Table (layout: #{rpr layout_name})\n"
-  yield texr 'µ1', "{\\setlength{\\fboxsep}{0mm}"
-  # yield texr 'µ2', "\\mktsColorframebox{red}{% debugging framebox" if me.debug
+  yield texr 'ð1', "{\\setlength{\\fboxsep}{0mm}"
+  yield texr 'ð2', "\\mktsColorframebox{green}{% debugging framebox" if me.debug
   ### NOTE only height of minipage is important; TikZ will happily draw outside of minipage when told ###
   ### TAINT calculate proper height so text will keep register ###
-  yield texr 'µ3', "\\newdimen\\mktsTableUnitwidth\\setlength{\\mktsTableUnitwidth}{#{me.unitwidth}}"
-  yield texr 'µ4', "\\newdimen\\mktsTableUnitheight\\setlength{\\mktsTableUnitheight}{#{me.unitheight}}"
-  yield texr 'µ2', "\\begin{minipage}[t][#{me.table_dimensions.height}\\mktsTableUnitheight][t]{\\linewidth}"
-  yield texr 'µ5', "\\begin{tikzpicture}[ overlay, yshift = 0mm, yscale = -1, line cap = rect ]"
-  yield texr 'µ6', "\\tikzset{x=#{me.unitwidth}};\\tikzset{y=#{me.unitheight}};"
+  yield texr 'ð3', "\\newdimen\\mktsTableUnitwidth\\setlength{\\mktsTableUnitwidth}{#{me.unitwidth}}"
+  yield texr 'ð4', "\\newdimen\\mktsTableUnitheight\\setlength{\\mktsTableUnitheight}{#{me.unitheight}}"
+  yield texr 'ð5', "\\begin{minipage}[t][#{me.table_dimensions.height}\\mktsTableUnitheight][t]{\\linewidth}"
+  yield texr 'ð6', "\\begin{tikzpicture}[ overlay, yshift = 0mm, yscale = -1, line cap = rect ]"
+  yield texr 'ð7', "\\tikzset{x=#{me.unitwidth}};\\tikzset{y=#{me.unitheight}};"
   yield return
 
 #-----------------------------------------------------------------------------------------------------------
 @_walk_closing_events = ( me ) ->
-  yield texr 'µ7', "\\end{tikzpicture}"
-  yield texr 'µ8', "\\end{minipage}}"
-  # yield texr 'µ8', "}% debugging framebox" if me.debug
-  yield texr 'µ81', "\\mktsVspace{1}"
-  yield tex "\\par% End of MKTS Table ====================================================================================\n\n"
+  layout_name = me.name
+  yield texr 'ð8', "\\end{tikzpicture}"
+  yield texr 'ð9', "\\end{minipage}}"
+  yield texr 'ð10', "}% debugging framebox" if me.debug
+  yield texr 'ð11', "\\mktsVspace{1}"
+  yield tex "\\par% End of MKTS Table (layout: #{rpr layout_name})\n"
+  yield tex "% ==========================================================================================================\n"
   yield return
 
 #-----------------------------------------------------------------------------------------------------------
 @_walk_style_events = ( me ) ->
   for key, value of me.styles
-    yield texr 'µ9', "\\tikzset{#{key}/.style={#{value}}}"
+    yield texr 'ð12', "\\tikzset{#{key}/.style={#{value}}}"
   yield return
 
 #-----------------------------------------------------------------------------------------------------------
@@ -384,13 +388,13 @@ contains = ( text, pattern ) ->
   for designation, d of me.border_dimensions
     continue unless ( fieldborders = me.fieldborders[ designation ] )?
     if ( borderstyle = fieldborders[ 'left' ] )?
-      yield texr 'µ10', "\\draw[#{borderstyle}] (#{d.left},#{d.top}) -- (#{d.left},#{d.bottom});"
+      yield texr 'ð13', "\\draw[#{borderstyle}] (#{d.left},#{d.top}) -- (#{d.left},#{d.bottom});"
     if ( borderstyle = fieldborders[ 'right' ] )?
-      yield texr 'µ11', "\\draw[#{borderstyle}] (#{d.right},#{d.top}) -- (#{d.right},#{d.bottom});"
+      yield texr 'ð14', "\\draw[#{borderstyle}] (#{d.right},#{d.top}) -- (#{d.right},#{d.bottom});"
     if ( borderstyle = fieldborders[ 'top' ] )?
-      yield texr 'µ12', "\\draw[#{borderstyle}] (#{d.left},#{d.top}) -- (#{d.right},#{d.top});"
+      yield texr 'ð15', "\\draw[#{borderstyle}] (#{d.left},#{d.top}) -- (#{d.right},#{d.top});"
     if ( borderstyle = fieldborders[ 'bottom' ] )?
-      yield texr 'µ13', "\\draw[#{borderstyle}] (#{d.left},#{d.bottom}) -- (#{d.right},#{d.bottom});"
+      yield texr 'ð16', "\\draw[#{borderstyle}] (#{d.left},#{d.bottom}) -- (#{d.right},#{d.bottom});"
   #.........................................................................................................
   yield return
 
@@ -445,23 +449,23 @@ contains = ( text, pattern ) ->
   unless @_should_debug me
     yield return
   #.........................................................................................................
-  yield texr 'µ17', "\\begin{scope}[on background layer]"
+  yield texr 'ð22', "\\begin{scope}[on background layer]"
   #.........................................................................................................
   ### TAINT use fixed size like 1mm ###
   top       = ( @_top_from_rownr     me, 1             ) - 3
   bottom    = ( @_bottom_from_rownr  me, me.grid.height ) + 3
   for colnr in [ 1 .. me.grid.width + 1 ]
     x = @_left_from_colnr me, colnr
-    yield texr 'µ18', "\\draw[sDebugCellgrid] (#{x},#{top}) -- (#{x},#{bottom});"
+    yield texr 'ð23', "\\draw[sDebugCellgrid] (#{x},#{top}) -- (#{x},#{bottom});"
   #.........................................................................................................
   ### TAINT use fixed size like 1mm ###
   left      = ( @_left_from_colnr    me, 1             ) - 3
   right     = ( @_right_from_colnr   me, me.grid.width  ) + 3
   for rownr in [ 1 .. me.grid.height + 1 ]
     y = @_top_from_rownr me, rownr
-    yield texr 'µ19', "\\draw[sDebugCellgrid] (#{left},#{y}) -- (#{right},#{y});"
+    yield texr 'ð24', "\\draw[sDebugCellgrid] (#{left},#{y}) -- (#{right},#{y});"
   #.........................................................................................................
-  yield texr 'µ20', "\\end{scope}"
+  yield texr 'ð25', "\\end{scope}"
   #.........................................................................................................
   yield return
 
@@ -470,7 +474,7 @@ contains = ( text, pattern ) ->
   unless @_should_debug me
     yield return
   #.........................................................................................................
-  yield texr 'µ21', "\\begin{scope}[on background layer]"
+  yield texr 'ð26', "\\begin{scope}[on background layer]"
   #.........................................................................................................
   for designation, d of me.field_dimensions
     ### TAINT use fixed size like 1mm ###
@@ -487,7 +491,7 @@ contains = ( text, pattern ) ->
                  + " -- (#{right},#{bottom});", ]
     yield [ 'tex', "% MKTSTBL@26\n", ]
   #.........................................................................................................
-  yield texr 'µ22', "\\end{scope}"
+  yield texr 'ð27', "\\end{scope}"
   #.........................................................................................................
   yield return
 
@@ -498,7 +502,7 @@ contains = ( text, pattern ) ->
   @_ensure_grid me
   @_ensure_joint_coordinates  me
   #.........................................................................................................
-  yield texr 'µ23', "\\begin{scope}[on background layer]"
+  yield texr 'ð28', "\\begin{scope}[on background layer]"
   #.........................................................................................................
   ### TAINT use fixed size like 1mm ###
   for [ colletters, colnr, ] from IG.GRID.walk_colletters_and_colnrs me.grid
@@ -508,7 +512,7 @@ contains = ( text, pattern ) ->
       cellkey = "#{colletters}#{rownr}"
       yield tex "\\node[sDebugJoints] at (#{x},#{y}) {{\\mktsStyleCode{}#{cellkey}}}; "
   #.........................................................................................................
-  yield texr 'µ24', "\\end{scope}"
+  yield texr 'ð29', "\\end{scope}"
   #.........................................................................................................
   yield return
 
@@ -690,7 +694,6 @@ contains = ( text, pattern ) ->
   p             = if direction is 'width' then 'colnr' else 'rownr'
   #.........................................................................................................
   ### TAINT should implement this in intergrid ###
-  debug '33944', Object.keys IG.GRID
   for cell from IG.GRID.walk_cells_from_selector me.grid, selector
     lanenr = cell[ p ]
     continue if seen_lanenrs.has lanenr
