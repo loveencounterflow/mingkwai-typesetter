@@ -35,6 +35,7 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
 copy                      = ( x ) -> Object.assign {}, x
 jr                        = JSON.stringify
 IG                        = require 'intergrid'
+UNITS                     = require './mkts-table-units'
 
 #-----------------------------------------------------------------------------------------------------------
 tex = ( source ) -> [ 'tex', source, ]
@@ -110,6 +111,7 @@ contains = ( text, pattern ) ->
   if me[ p ]?
     return _record_fail me, 'µ5661', "unable to re-define #{p}"
   #.........................................................................................................
+  debug '37736', UNITS.parse_nonnegative_quantity text
   me[ p ] = text
   return null
 
