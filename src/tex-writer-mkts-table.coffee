@@ -268,7 +268,7 @@ new_local_state = ->
       [ type, name, Q, meta, ]  = event
       unless Q? and Q.key?
         throw new Error "#{badge} µ33810 missing <field> tag attribute 'key' in table #{rpr layout_name} (#{jr event})"
-      ### TAINT this is exactly the kind of dangerous 'sound have happened anywhere, anytime' state mutation
+      ### TAINT this is exactly the kind of dangerous 'could have happened anywhere, anytime' state mutation
       that advocates of immutable state are warning us about: ###
       @push_field_selector S, L, layout_name, Q.key
       content_buffer            = @new_content_buffer S, L, layout_name,  Q.key
