@@ -108,13 +108,13 @@ new_local_state = ->
 #-----------------------------------------------------------------------------------------------------------
 @layout_from_name = ( S, L, layout_name ) ->
   unless ( R = L.layout_events[ layout_name ] )?
-    throw new Error "#{badge}#µ4450 unknown layout #{rpr layout_name}"
+    throw new Error "#{badge} µ47753 unknown layout #{rpr layout_name}"
   return R[ 2 ]
 
 #-----------------------------------------------------------------------------------------------------------
 @push_layout_name = ( S, L, layout_name ) ->
   unless L.layout_events[ layout_name ]?
-    throw new Error "#{badge}#µ4445 unknown layout #{rpr layout_name}"
+    throw new Error "#{badge} µ42558 unknown layout #{rpr layout_name}"
   L.layout_name_stack.push layout_name
   return null
 
@@ -122,7 +122,7 @@ new_local_state = ->
 @store_layout_event = ( S, L, event ) ->
   [ _, _, layout, _, ] = event
   if L.layout_events[ layout.name ]?
-    throw new Error "#{badge}#µ4449 refusing to re-define layout #{rpr layout.name}"
+    throw new Error "#{badge} µ36339 refusing to re-define layout #{rpr layout.name}"
   L.layout_events[ layout.name ] = event
   @_initialize_layout S, L, layout.name
   return null
@@ -135,7 +135,7 @@ new_local_state = ->
 #-----------------------------------------------------------------------------------------------------------
 @new_content_buffer = ( S, L, layout_name, selector ) ->
   unless ( target = L.selectors_and_content_events[ layout_name ] )?
-    throw new Error "#{badge}#µ4432 unknown layout #{rpr layout_name}"
+    throw new Error "#{badge} µ24692 unknown layout #{rpr layout_name}"
   R = [ selector, ]
   target.push R
   return R
@@ -162,7 +162,7 @@ new_local_state = ->
   unless ( R = L.selectors_and_content_events[ layout_name ] )?
     debug '88733', L.selectors_and_content_events
     debug '88733', Object.keys L.selectors_and_content_events
-    throw new Error "#{badge}#µ5745 unknown layout #{rpr layout_name}"
+    throw new Error "#{badge} µ95392 unknown layout #{rpr layout_name}"
   return R
 
 #===========================================================================================================
@@ -217,7 +217,7 @@ new_local_state = ->
       [ _, _, Q, _, ]       = event
       ### OBS attribute is named 'layout' but contains layout name ###
       unless Q.layout?
-        throw new Error "#{badge}#µ1180 missing required attribute `layout` for <mkts-table-content>"
+        throw new Error "#{badge} µ29245 missing required attribute `layout` for <mkts-table-content>: #{rpr event}"
       @push_layout_name S, L, Q.layout
       send stamp event
     #.......................................................................................................
@@ -263,11 +263,11 @@ new_local_state = ->
       layout_name = @get_current_layout_name  S, L
       ### TAINT should throw error when <field> nested within <field> *without* intervening <mkts-table-content> ###
       # if within_field
-      #   throw new Error "#{badge}#µ2131 detected nested <field> tag (#{jr event}) in table #{rpr layout_name}"
+      #   throw new Error "#{badge} µ39418 detected nested <field> tag (#{jr event}) in table #{rpr layout_name}"
       within_field              = true
       [ type, name, Q, meta, ]  = event
       unless Q? and Q.key?
-        throw new Error "#{badge}#µ2132 missing <field> tag attribute 'key' in table #{rpr layout_name} (#{jr event})"
+        throw new Error "#{badge} µ33810 missing <field> tag attribute 'key' in table #{rpr layout_name} (#{jr event})"
       ### TAINT this is exactly the kind of dangerous 'sound have happened anywhere, anytime' state mutation
       that advocates of immutable state are warning us about: ###
       @push_field_selector S, L, layout_name, Q.key
@@ -281,7 +281,7 @@ new_local_state = ->
       return send stamp event
     #.......................................................................................................
     if within_field
-      debug '37734', layout_name, jr event
+      # debug '37734', layout_name, jr event
       content_buffer.push event
       return null
     #.......................................................................................................
