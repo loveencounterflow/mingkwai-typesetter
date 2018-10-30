@@ -68,6 +68,8 @@ contains = ( text, pattern ) ->
     table_dimensions:     {} ### width and height of enclosing `\minipage`, in terms of (unitwidth,unitheight) ###
     cell_dimensions:      {}
     fieldborders:         {} ### field borders, as TikZ styles by edges ###
+    margins:              {} ### field margins, by field designations ###
+    paddings:             {} ### field paddings, by field designations ###
     field_dimensions:     {} ### field extents in terms of (unitwidth,unitheight), by field designations ###
     border_dimensions:    {} ### border extents in terms of (unitwidth,unitheight), by field designations ###
     pod_dimensions:       {} ### pod extents in terms of (unitwidth,unitheight), by field designations ###
@@ -93,10 +95,8 @@ contains = ( text, pattern ) ->
       unitheight:           '1mm'
       colwidth:             10
       rowheight:            10
-      marginwidth:          0
-      marginheight:         0
-      paddingwidth:         0
-      paddingheight:        0
+      margin:               1
+      padding:              1
   return R
 
 
@@ -119,6 +119,7 @@ contains = ( text, pattern ) ->
 @_set_lanesizes = ( me, direction, text ) ->
   unless direction in [ 'width', 'height', ]
     throw _stackerr me, 'µ2352', "expected 'width' or 'height', got #{rpr direction}"
+  #.........................................................................................................
   p   = if direction is 'width' then 'colwidth'   else 'rowheight'
   ps  = if direction is 'width' then 'colwidths'  else 'rowheights'
   #.........................................................................................................
@@ -136,7 +137,6 @@ contains = ( text, pattern ) ->
     me[ ps ][  0 ]  ?= me.default[ p ] ### set default ###
     me[ ps ][ nr ]  ?= me.default[ p ] for nr in [ 1 .. lane_count ] ### set defaults where missing ###
     for [ fail, lanenr, ] from @_walk_fails_and_lanenrs_from_direction_and_selector me, direction, selector
-      ### TAINT ad-hoc fail message production, use method ###
       if fail? then _record me, fail
       else          me[ ps ][ lanenr ] = length
   else
@@ -173,15 +173,15 @@ contains = ( text, pattern ) ->
   for fieldcell from IG.GRID.walk_cells_from_rangeref me.grid, d
     ( me.cellfields[ fieldcell.cellkey ]?= [] ).push designation
   #.........................................................................................................
+  @_set_default_gaps me, designation
   return null
 
 #-----------------------------------------------------------------------------------------------------------
-@fieldborder = ( me, text ) ->
-  d = @_parse_fieldborder me, text
-  for fieldname in d.fieldnames
-    for edge in d.edges
-      ( me.fieldborders[ fieldname ]?= {} )[ edge ] = d.style
-  #.........................................................................................................
+@_set_default_gaps = ( me, designation ) ->
+  for gap in [ 'margin', 'padding', ]
+    p = gap + 's'
+    for edge in [ 'left', 'right', 'top', 'bottom', ]
+      ( me[ p ][ designation ]?= {} )[ edge ] = me.default[ gap ]
   return null
 
 #-----------------------------------------------------------------------------------------------------------
@@ -235,34 +235,32 @@ contains = ( text, pattern ) ->
   return null
 
 #-----------------------------------------------------------------------------------------------------------
-@marginwidth = ( me, text ) ->
-  @_ensure_unitvector me
-  ### TAINT use parser, validate syntax ###
-  me.marginwidth = parseFloat text
+@fieldborder = ( me, text ) ->
+  ### TAINT code duplication ###
+  d = @_parse_fieldborder me, text
+  for fieldname in d.fieldnames
+    for edge in d.edges
+      ( me.fieldborders[ fieldname ]?= {} )[ edge ] = d.style
   #.........................................................................................................
   return null
 
 #-----------------------------------------------------------------------------------------------------------
-@marginheight = ( me, text ) ->
-  @_ensure_unitvector me
-  ### TAINT use parser, validate syntax ###
-  me.marginheight = parseFloat text
+@margin = ( me, text ) ->
+  ### TAINT code duplication ###
+  d = @_parse_fieldgap me, 'margin', text
+  for fieldname in d.fieldnames
+    for edge in d.edges
+      ( me.margins[ fieldname ]?= {} )[ edge ] = d.length
   #.........................................................................................................
   return null
 
 #-----------------------------------------------------------------------------------------------------------
-@paddingwidth = ( me, text ) ->
-  @_ensure_unitvector me
-  ### TAINT use parser, validate syntax ###
-  me.paddingwidth = parseFloat text
-  #.........................................................................................................
-  return null
-
-#-----------------------------------------------------------------------------------------------------------
-@paddingheight = ( me, text ) ->
-  @_ensure_unitvector me
-  ### TAINT use parser, validate syntax ###
-  me.paddingheight = parseFloat text
+@padding = ( me, text ) ->
+  ### TAINT code duplication ###
+  d = @_parse_fieldgap me, 'padding', text
+  for fieldname in d.fieldnames
+    for edge in d.edges
+      ( me.paddings[ fieldname ]?= {} )[ edge ] = d.length
   #.........................................................................................................
   return null
 
@@ -302,6 +300,31 @@ contains = ( text, pattern ) ->
   style = null if style in [ 'none', '', ]
   #.........................................................................................................
   return { fieldnames, edges, style, }
+
+#-----------------------------------------------------------------------------------------------------------
+### TAINT use proper parsing tool ###
+### TAINT unify parsing routines ###
+@_parse_fieldgap = ( me, gaptype, source ) ->
+  unless ( type = CND.type_of source ) is 'text'
+    throw new Error "(MKTS/TABLE µ1225) expected a text for source, got a #{rpr type}"
+  #.........................................................................................................
+  unless ( match = source.match /^(?<selector>[^:]+):(?<edges>[^:]+):(?<length>-?[+\d.]+)$/ )?
+    _record_fail me, 'µ6377', "need a text like 'A*,C3:top:2' or similar for mkts-table/#{gaptype}, got #{rpr source}"
+    return null
+  #.........................................................................................................
+  { selector, edges, length, }  = match.groups
+  length                        = parseFloat length
+  #.........................................................................................................
+  edges       = ( _.trim() for _ in edges.split ',' )
+  edges       = [ 'top', 'left', 'bottom', 'right', ] if '*' in edges
+  fieldnames  = []
+  #.........................................................................................................
+  for [ fail, fieldname, ] from @_walk_fails_and_field_designations_from_hints me, selector
+    ### TAINT ad-hoc fail message production, use method ###
+    if fail? then _record me, "#{fail} (#{jr {fieldname}})"
+    else          fieldnames.push fieldname
+  #.........................................................................................................
+  return { fieldnames, edges, length, }
 
 
 #===========================================================================================================
@@ -388,13 +411,13 @@ contains = ( text, pattern ) ->
   for designation, d of me.border_dimensions
     continue unless ( fieldborders = me.fieldborders[ designation ] )?
     if ( borderstyle = fieldborders[ 'left' ] )?
-      yield texr 'ð13', "\\draw[#{borderstyle}] (#{d.left},#{d.top}) -- (#{d.left},#{d.bottom});"
+      yield texr 'ð13', "\\draw[#{borderstyle}] (#{d.left},#{d.top}) -- (#{d.left},#{d.bottom});% #{designation} left "
     if ( borderstyle = fieldborders[ 'right' ] )?
-      yield texr 'ð14', "\\draw[#{borderstyle}] (#{d.right},#{d.top}) -- (#{d.right},#{d.bottom});"
+      yield texr 'ð14', "\\draw[#{borderstyle}] (#{d.right},#{d.top}) -- (#{d.right},#{d.bottom});% #{designation} right "
     if ( borderstyle = fieldborders[ 'top' ] )?
-      yield texr 'ð15', "\\draw[#{borderstyle}] (#{d.left},#{d.top}) -- (#{d.right},#{d.top});"
+      yield texr 'ð15', "\\draw[#{borderstyle}] (#{d.left},#{d.top}) -- (#{d.right},#{d.top});% #{designation} top "
     if ( borderstyle = fieldborders[ 'bottom' ] )?
-      yield texr 'ð16', "\\draw[#{borderstyle}] (#{d.left},#{d.bottom}) -- (#{d.right},#{d.bottom});"
+      yield texr 'ð16', "\\draw[#{borderstyle}] (#{d.left},#{d.bottom}) -- (#{d.right},#{d.bottom});% #{designation} bottom "
   #.........................................................................................................
   yield return
 
@@ -559,18 +582,6 @@ contains = ( text, pattern ) ->
   throw new Error "(MKTS/TABLE µ8054) rowheights must be all set; got #{rpr me.rowheights}"
 
 #-----------------------------------------------------------------------------------------------------------
-@_ensure_margin = ( me ) ->
-  @marginwidth   me, me.default.marginwidth   unless me.marginwidth?
-  @marginheight  me, me.default.marginheight  unless me.marginheight?
-  return null
-
-#-----------------------------------------------------------------------------------------------------------
-@_ensure_padding = ( me ) ->
-  @paddingwidth   me, me.default.paddingwidth   unless me.paddingwidth?
-  @paddingheight  me, me.default.paddingheight  unless me.paddingheight?
-  return null
-
-#-----------------------------------------------------------------------------------------------------------
 @_compute_cell_dimensions = ( me ) ->
   @_ensure_grid me
   for [ colletters, colnr, ] from IG.GRID.walk_colletters_and_colnrs me.grid
@@ -580,9 +591,6 @@ contains = ( text, pattern ) ->
       right  = @_right_from_colnr  me, colnr
       top    = @_top_from_rownr    me, rownr
       bottom = @_bottom_from_rownr me, rownr
-      # ### TAINT must not become negative ###
-      # cellwidth_u   = right  - left # - 2 * me.marginwidth
-      # cellheight_u  = bottom - top  # - 2 * me.marginheight
       me.cell_dimensions[ designation ] = {
         colnr,         rownr,
         left,    right,
@@ -606,12 +614,14 @@ contains = ( text, pattern ) ->
 
 #-----------------------------------------------------------------------------------------------------------
 @_compute_border_dimensions = ( me ) ->
-  @_ensure_margin me
+  ### TAINT code duplication ###
   for designation, d of me.field_dimensions
-    left   = d.left   + me.marginwidth
-    right  = d.right  - me.marginwidth
-    top    = d.top    + me.marginheight
-    bottom = d.bottom - me.marginheight
+    unless ( target = me.margins[ designation ] )?
+      throw new Error "(MKTS/TABLE µ8054) unknown field designation #{rpr designation}"
+    left   = d.left   + target.left
+    right  = d.right  - target.right
+    top    = d.top    + target.top
+    bottom = d.bottom - target.bottom
     ### TAINT must not become negative ###
     width       = right  - left
     height      = bottom - top
@@ -622,12 +632,14 @@ contains = ( text, pattern ) ->
 
 #-----------------------------------------------------------------------------------------------------------
 @_compute_pod_dimensions = ( me ) ->
-  @_ensure_padding me
+  ### TAINT code duplication ###
   for designation, d of me.field_dimensions
-    left   = d.left   + me.paddingwidth
-    right  = d.right  - me.paddingwidth
-    top    = d.top    + me.paddingheight
-    bottom = d.bottom - me.paddingheight
+    unless ( target = me.paddings[ designation ] )?
+      throw new Error "(MKTS/TABLE µ8054) unknown field designation #{rpr designation}"
+    left   = d.left   + target.left
+    right  = d.right  - target.right
+    top    = d.top    + target.top
+    bottom = d.bottom - target.bottom
     ### TAINT must not become negative ###
     width       = right  - left
     height      = bottom - top

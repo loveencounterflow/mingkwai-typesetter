@@ -51,7 +51,7 @@ MKTS.MACRO_ESCAPER.register_raw_tag 'mkts-table-description'
     @$handle_content_events           S, L
     # D.$observe ( event ) -> info '23993', ( CND.grey '--------->' ), jr event
     @$handle_fields                   S, L
-    @$dump_table_layout               S, L
+    # @$dump_table_layout               S, L
     ]
 
 
@@ -202,8 +202,6 @@ new_local_state = ->
     if select event, '.', 'MKTS/TABLE/layout'
       @store_layout_event S, L, event
       send stamp event
-      debug '37724', "table layout names: #{rpr Object.keys L.layout_events}"
-      return null
     else
       send event
     return null
@@ -313,10 +311,8 @@ new_local_state = ->
     @name                 = ( raw_parts ) -> MKTS_TABLE.name                  me, raw_parts.join ''
     @debug                = ( raw_parts ) -> MKTS_TABLE.debug                 me, raw_parts.join ''
     @grid                 = ( raw_parts ) -> MKTS_TABLE.grid                  me, raw_parts.join ''
-    @paddingwidth         = ( raw_parts ) -> MKTS_TABLE.paddingwidth          me, raw_parts.join ''
-    @paddingheight        = ( raw_parts ) -> MKTS_TABLE.paddingheight         me, raw_parts.join ''
-    @marginwidth          = ( raw_parts ) -> MKTS_TABLE.marginwidth           me, raw_parts.join ''
-    @marginheight         = ( raw_parts ) -> MKTS_TABLE.marginheight          me, raw_parts.join ''
+    @padding              = ( raw_parts ) -> MKTS_TABLE.padding               me, raw_parts.join ''
+    @margin               = ( raw_parts ) -> MKTS_TABLE.margin                me, raw_parts.join ''
     @unitwidth            = ( raw_parts ) -> MKTS_TABLE.unitwidth             me, raw_parts.join ''
     @unitheight           = ( raw_parts ) -> MKTS_TABLE.unitheight            me, raw_parts.join ''
     @columnwidth          = ( raw_parts ) -> MKTS_TABLE.columnwidth           me, raw_parts.join ''
