@@ -58,12 +58,12 @@ UNITS                     = require '../mkts-table-units'
       result = UNITS.parse_nonnegative_quantity probe
     catch error
       if ( matcher is null ) and ( error.message.match /unable to parse .* as nonnegative quantity/ )?
-        urge '36633', ( jr [ probe, matcher, ] )
+        # urge '36633', ( jr [ probe, matcher, ] )
         T.ok true
       else
         T.fail "unexpected error for probe #{rpr probe}: #{rpr error.message}"
       continue
-    urge '36633', ( jr [ probe, result, ] )
+    # urge '36633', ( jr [ probe, result, ] )
     T.eq result, matcher
   #.........................................................................................................
   done()
@@ -88,7 +88,59 @@ UNITS                     = require '../mkts-table-units'
     catch error
       T.fail "unexpected error for probe #{rpr probe_txt}: #{rpr error.message}"
       continue
-    urge '36633', ( jr [ probe_txt, result, ] )
+    # urge '36633', ( jr [ probe_txt, result, ] )
+    T.eq result, matcher
+  #.........................................................................................................
+  done()
+
+#-----------------------------------------------------------------------------------------------------------
+@[ "UNITS.as_text 2" ] = ( T, done ) ->
+  probes_and_matchers = [
+    [["1mm","*",2],"2mm"]
+    [["1.2mm","*",2],"2.4mm"]
+    [["0.3\\mktsLineheight","*",2],"0.6\\mktsLineheight"]
+    [["123456.2mm","*",2],"246912.4mm"]
+    [["300mm","*",2],"600mm"]
+    [[" 300mm","*",2],"600mm"]
+    [[" 300 mm","*",2],"600mm"]
+    [[" 300 mm   ","*",2],"600mm"]
+    ]
+  #.........................................................................................................
+  for [ probes, matcher, ] in probes_and_matchers
+    [ unit_probe_txt, operator_probe, factor_probe, ] = probes
+    unit_probe                                        = UNITS.parse_nonnegative_quantity unit_probe_txt
+    try
+      result  = UNITS.as_text unit_probe, operator_probe, factor_probe
+    catch error
+      T.fail "unexpected error for probe #{rpr probes}: #{rpr error.message}"
+      continue
+    urge '36633', ( jr [ probes, result, ] )
+    T.eq result, matcher
+  #.........................................................................................................
+  done()
+
+#-----------------------------------------------------------------------------------------------------------
+@[ "UNITS.as_text 3" ] = ( T, done ) ->
+  probes_and_matchers = [
+    [["1mm","*",2],"2mm"]
+    [["1.2mm","*",2],"2.4mm"]
+    [["0.3\\mktsLineheight","*",2],"0.6\\mktsLineheight"]
+    [["123456.2mm","*",2],"246912.4mm"]
+    [["300mm","*",2],"600mm"]
+    [[" 300mm","*",2],"600mm"]
+    [[" 300 mm","*",2],"600mm"]
+    [[" 300 mm   ","*",2],"600mm"]
+    ]
+  #.........................................................................................................
+  for [ probes, matcher, ] in probes_and_matchers
+    [ unit_probe_txt, operator_probe, factor_probe, ] = probes
+    unit_probe                                        = UNITS.parse_nonnegative_quantity unit_probe_txt
+    try
+      result  = UNITS.as_text factor_probe, operator_probe, unit_probe
+    catch error
+      T.fail "unexpected error for probe #{rpr probes}: #{rpr error.message}"
+      continue
+    urge '36633', ( jr [ probes, result, ] )
     T.eq result, matcher
   #.........................................................................................................
   done()
@@ -100,6 +152,8 @@ unless module.parent?
   include = [
     "UNITS.parse_nonnegative_quantity 1"
     "UNITS.as_text 1"
+    "UNITS.as_text 2"
+    "UNITS.as_text 3"
     ]
   @_prune()
   @_main()

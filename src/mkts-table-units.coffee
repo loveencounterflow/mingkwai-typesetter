@@ -38,10 +38,23 @@ jr                        = JSON.stringify
   return R
 
 #-----------------------------------------------------------------------------------------------------------
-@as_text = ( me ) ->
+@as_text = ( me, operator, operand ) ->
+  return @as_text operand, operator, me if CND.isa_number me
+  #.........................................................................................................
   unless ( type = CND.type_of me ) is 'MKTS/TABLE/quantity'
     throw new Error "(MKTS/TABLE µ5375) expected a 'MKTS/TABLE/quantity', got a #{rpr type}"
   #.........................................................................................................
-  return "#{me.value}#{me.unit}"
+  return "#{me.value}#{me.unit}" unless operator?
+  #.........................................................................................................
+  switch operator
+    when '*' then return @as_text @multiply ( copy me ), operand
+    else throw new Error "(MKTS/TABLE µ6920) unknown operand #{rpr operand}"
+
+#-----------------------------------------------------------------------------------------------------------
+@multiply = ( me, factor ) ->
+  me.value *= factor
+  return me
+
+
 
 
