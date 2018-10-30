@@ -95,7 +95,7 @@ contains = ( text, pattern ) ->
       unitheight:           '1mm'
       colwidth:             10
       rowheight:            10
-      margin:               1
+      margin:               0
       padding:              1
   return R
 
