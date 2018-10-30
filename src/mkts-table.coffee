@@ -424,11 +424,11 @@ contains = ( text, pattern ) ->
     d                 = me.pod_dimensions[ selector ]
     pod_height_txt    = UNITS.as_text me.unitheight,  '*', d.height
     pod_width_txt     = UNITS.as_text me.unitwidth,   '*', d.width
-    if me._tmp_is_outermost then  valign_tex  = @_get_valign_tex me, me.valigns[ selector ] ? me.valigns[ '*' ] ? 'center'
-    else                          valign_tex  = @_get_valign_tex me, 'top'
+    # ### TAINT faulty, should look at whether sub-table is only content, then set valign to top ###
+    # if me._tmp_is_outermost then  valign_tex  = @_get_valign_tex me, me.valigns[ selector ] ? me.valigns[ '*' ] ? 'center'
+    # else                          valign_tex  = @_get_valign_tex me, 'top'
+    valign_tex  = @_get_valign_tex me, me.valigns[ selector ] ? me.valigns[ '*' ] ? 'center'
     halign_tex  = @_get_halign_tex me, me.haligns[ selector ] ? me.haligns[ '*' ] ? 'left'
-    # debug '88984-1', 'me._tmp_is_outermost  ', me._tmp_is_outermost
-    # debug '88984-1', 'me._tmp_name          ', me._tmp_name
     _ref = " field #{me._tmp_name}:#{selector} "
     yield texr 'ð17', "\\node[anchor=north west,inner sep=0mm] at (#{d.left},#{d.top}) {%#{_ref}"
     yield texr 'ð18', "\\mktsColorframebox{orange}{%#{_ref} debugging sub-framebox " if me.debug
