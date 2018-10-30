@@ -60,17 +60,17 @@ MKTS.MACRO_ESCAPER.register_raw_tag 'mkts-table-description'
 #-----------------------------------------------------------------------------------------------------------
 new_local_state = ->
   R =
-    layout_name_stack:              []
     selectors_and_content_events:   {}
     layout_events:                  {}
     content_buffer:                 null
     within_field:                   false
+    layout_name_stack:              []
     ### TAINT we use this attribute to communicate the current selector from `$handle_fields()` back to
     `$handle_content_events()`; this works b/c we're assuming that all event handling is happening in
     lockstep. It might stop working as soon as the lockstepping is broken by an intervening asynchronous
     or buffering stream transform. ###
-    ### TAINT use `field_selector_stack` ###
-    current_field_selector:         null
+    ### TAINT used to store `layout_name` as well, already in `layout_name_stack` ###
+    field_selector_stack:           []
   return R
 
 
@@ -80,8 +80,14 @@ new_local_state = ->
 #-----------------------------------------------------------------------------------------------------------
 @get_current_layout_name = ( S, L ) ->
   unless ( R = L.layout_name_stack[ L.layout_name_stack.length - 1 ] )?
-    throw new Error "#{badge}#µ4451 layout stack empty"
+    throw new Error "#{badge} µ79868 layout stack empty"
   return R
+
+#-----------------------------------------------------------------------------------------------------------
+@get_current_field_selector = ( S, L ) ->
+  unless ( R = L.field_selector_stack[ L.field_selector_stack.length - 1 ] )?
+    throw new Error "#{badge} µ58212 field_selector_stack stack empty"
+  return R[ 1 ]
 
 #-----------------------------------------------------------------------------------------------------------
 @get_enclosing_layout_name = ( S, L ) ->
@@ -135,9 +141,20 @@ new_local_state = ->
   return R
 
 #-----------------------------------------------------------------------------------------------------------
+@push_field_selector = ( S, L, layout_name, selector ) ->
+  L.field_selector_stack.push [ layout_name, selector, ]
+  return null
+
+#-----------------------------------------------------------------------------------------------------------
+@pop_field_selector = ( S, L ) ->
+  if L.field_selector_stack.length < 1
+    throw new Error "#{badge} µ49782 field selector stack empty"
+  return L.field_selector_stack.pop()
+
+#-----------------------------------------------------------------------------------------------------------
 @content_buffers_from_layout_name = ( S, L, layout_name ) ->
   unless ( R = L.selectors_and_content_events[ layout_name ] )?
-    throw new Error "#{badge}#µ4433 unknown layout #{rpr layout_name}"
+    throw new Error "#{badge} µ65671 unknown layout #{rpr layout_name}"
   return R
 
 #-----------------------------------------------------------------------------------------------------------
@@ -213,18 +230,12 @@ new_local_state = ->
       selectors_and_content_events  = @get_selectors_and_content_events S, L, layout_name
       enclosing_layout_name         = @get_enclosing_layout_name        S, L
       content_events                = MKTS_TABLE._walk_events layout, selectors_and_content_events, L.layout_name_stack
-      urge '99983', enclosing_layout_name, L.current_field_selector
       #.....................................................................................................
       if enclosing_layout_name?
-        unless L.current_field_selector?
-          throw new Error "#{badge}#µ1181 (should never happen) missing `L.current_field_selector`"
+        current_field_selector    = @get_current_field_selector S, L
         enclosing_content_events  = @content_buffers_from_layout_name S, L, enclosing_layout_name
-        # enclosed_content_events   = [ L.current_field_selector, content_events..., ]
-        enclosed_content_events   = [ 'B1', content_events..., ]
-        debug '55563', CND.gold enclosing_content_events
-        debug '55563', CND.lime enclosed_content_events
+        enclosed_content_events   = [ current_field_selector, content_events..., ]
         enclosing_content_events.push enclosed_content_events
-        # send sub_event for sub_event from MKTS_TABLE._walk_events layout, selectors_and_content_events
       #.....................................................................................................
       else
         send sub_event for sub_event from content_events
@@ -259,14 +270,14 @@ new_local_state = ->
         throw new Error "#{badge}#µ2132 missing <field> tag attribute 'key' in table #{rpr layout_name} (#{jr event})"
       ### TAINT this is exactly the kind of dangerous 'sound have happened anywhere, anytime' state mutation
       that advocates of immutable state are warning us about: ###
-      L.current_field_selector  = Q.key
-      content_buffer            = @new_content_buffer S, L, layout_name,  L.current_field_selector
+      @push_field_selector S, L, layout_name, Q.key
+      content_buffer            = @new_content_buffer S, L, layout_name,  Q.key
       return send stamp event
     #.......................................................................................................
     if select event, ')', 'field'
       within_field              = false
       content_buffer            = null
-      # L.current_field_selector  = null
+      @pop_field_selector S, L
       return send stamp event
     #.......................................................................................................
     if within_field
