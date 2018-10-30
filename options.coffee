@@ -47,6 +47,8 @@ module.exports = options =
     'TeX':          { type: 'tex',  value: '\\TeX{}', }               ### TeX logo ###
     'nbsp':         { type: 'tex',  value: '~', }                     ### Non-Breaking Space ###
     '~':            { type: 'tex',  value: '~', }                     ### Non-Breaking Space ###
+    'lt':           { type: 'tex',  value: '<', }                     ### Left Pointy Bracket ###
+    'gt':           { type: 'tex',  value: '>', }                     ### Right Pointy Bracket ###
     'ulsymbolr':    { type: 'tex', value: "\\makebox[\\mktsLineheight][r]{\\prPushRaise{-0.2}{-0.1}{\\mktsFontfileHanamina{}◼}}", }
     'ulsymbol':     { type: 'tex', value: "\\makebox[\\mktsLineheight][l]{\\prPushRaise{-0.2}{-0.1}{\\mktsFontfileHanamina{}◼}}", }
   #.........................................................................................................
