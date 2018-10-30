@@ -51,7 +51,7 @@ MKTS.MACRO_ESCAPER.register_raw_tag 'mkts-table-description'
     @$handle_content_events           S, L
     # D.$observe ( event ) -> info '23993', ( CND.grey '--------->' ), jr event
     @$handle_fields                   S, L
-    # @$dump_table_layout          S, L
+    @$dump_table_layout               S, L
     ]
 
 
