@@ -314,7 +314,7 @@ contains = ( text, pattern ) ->
   @_compute_pod_dimensions      me
   @_compute_table_height        me
   #.........................................................................................................
-  me._tmp_is_outermost  = layout_name_stack.length > 1
+  me._tmp_is_outermost  = layout_name_stack.length < 2
   me._tmp_name          = layout_name_stack.join '/'
   ### Preparatory ###
   yield from @_walk_opening_events                      me
