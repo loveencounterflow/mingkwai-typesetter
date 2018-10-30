@@ -112,8 +112,7 @@ contains = ( text, pattern ) ->
   if me[ p ]?
     return _record_fail me, 'µ5661', "unable to re-define #{p}"
   #.........................................................................................................
-  debug '37736', UNITS.parse_nonnegative_quantity text
-  me[ p ] = text
+  me[ p ] = UNITS.parse_nonnegative_quantity text
   return null
 
 #-----------------------------------------------------------------------------------------------------------
@@ -350,7 +349,10 @@ contains = ( text, pattern ) ->
 #-----------------------------------------------------------------------------------------------------------
 @_walk_opening_events = ( me ) ->
   @_ensure_unitvector me
-  layout_name = me.name
+  layout_name       = me.name
+  unitwidth_txt     = UNITS.as_text me.unitwidth
+  unitheight_txt    = UNITS.as_text me.unitheight
+  table_height_txt  = UNITS.as_text me.unitheight, '*', me.table_dimensions.height
   yield tex "\n\n"
   yield tex "% ==========================================================================================================\n"
   yield tex "\\par% Beginning of MKTS Table (layout: #{rpr layout_name})\n"
@@ -358,11 +360,9 @@ contains = ( text, pattern ) ->
   yield texr 'ð2', "\\mktsColorframebox{green}{% debugging framebox" if me.debug
   ### NOTE only height of minipage is important; TikZ will happily draw outside of minipage when told ###
   ### TAINT calculate proper height so text will keep register ###
-  yield texr 'ð3', "\\newdimen\\mktsTableUnitwidth\\setlength{\\mktsTableUnitwidth}{#{me.unitwidth}}"
-  yield texr 'ð4', "\\newdimen\\mktsTableUnitheight\\setlength{\\mktsTableUnitheight}{#{me.unitheight}}"
-  yield texr 'ð5', "\\begin{minipage}[t][#{me.table_dimensions.height}\\mktsTableUnitheight][t]{\\linewidth}"
+  yield texr 'ð5', "\\begin{minipage}[t][#{table_height_txt}][t]{\\linewidth}"
   yield texr 'ð6', "\\begin{tikzpicture}[ overlay, yshift = 0mm, yscale = -1, line cap = rect ]"
-  yield texr 'ð7', "\\tikzset{x=#{me.unitwidth}};\\tikzset{y=#{me.unitheight}};"
+  yield texr 'ð7', "\\tikzset{x=#{unitwidth_txt}};\\tikzset{y=#{unitheight_txt}};"
   yield return
 
 #-----------------------------------------------------------------------------------------------------------
@@ -419,7 +419,11 @@ contains = ( text, pattern ) ->
 #-----------------------------------------------------------------------------------------------------------
 @_walk_pod_events = ( me, selectors_and_content_events ) ->
   for [ selector, content..., ] from @_walk_most_recent_field_designations me, selectors_and_content_events
-    d           = me.pod_dimensions[ selector ]
+    # debug '88733', selector, content if me.name is 'small-table'
+    continue if content.length is 0
+    d                 = me.pod_dimensions[ selector ]
+    pod_height_txt    = UNITS.as_text me.unitheight,  '*', d.height
+    pod_width_txt     = UNITS.as_text me.unitwidth,   '*', d.width
     if me._tmp_is_outermost then  valign_tex  = @_get_valign_tex me, me.valigns[ selector ] ? me.valigns[ '*' ] ? 'center'
     else                          valign_tex  = @_get_valign_tex me, 'top'
     halign_tex  = @_get_halign_tex me, me.haligns[ selector ] ? me.haligns[ '*' ] ? 'left'
@@ -428,7 +432,7 @@ contains = ( text, pattern ) ->
     _ref = " field #{me._tmp_name}:#{selector} "
     yield texr 'ð17', "\\node[anchor=north west,inner sep=0mm] at (#{d.left},#{d.top}) {%#{_ref}"
     yield texr 'ð18', "\\mktsColorframebox{orange}{%#{_ref} debugging sub-framebox " if me.debug
-    yield texr 'ð19', "\\begin{minipage}[t][#{d.height}\\mktsTableUnitheight][#{valign_tex}]{#{d.width}\\mktsTableUnitwidth}#{halign_tex}%#{_ref}"
+    yield texr 'ð19', "\\begin{minipage}[t][#{pod_height_txt}][#{valign_tex}]{#{pod_width_txt}}#{halign_tex}%#{_ref}"
     yield [ '.', 'noindent', null, {}, ]
     yield sub_event for sub_event in content
     if me.debug
