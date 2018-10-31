@@ -53,13 +53,22 @@ module.exports = options =
     'ulsymbol':     { type: 'tex', value: "\\makebox[\\mktsLineheight][l]{\\prPushRaise{-0.2}{-0.1}{\\mktsFontfileHanamina{}◼}}", }
 
     ### TAINT these are special-interest symbols that should be defined locally ###
-    'Quasi':        { type: 'text', value: '𝕼', }
-    'Clusters':     { type: 'text', value: '𝕮', }
-    'Factors':      { type: 'text', value: '𝕱', }
-    'Traits':       { type: 'text', value: '𝕿', }
-    'repetitive':   { type: 'text', value: '𝖗', }
-    'simplex':      { type: 'text', value: '𝖘', }
-    'complex':      { type: 'text', value: '𝖝', }
+    # 'Quasi':        { type: 'text', value: '𝕼', }
+    # 'Clusters':     { type: 'text', value: '𝕮', }
+    # 'Factors':      { type: 'text', value: '𝕱', }
+    # 'Traits':       { type: 'text', value: '𝕿', }
+    # 'repetitive':   { type: 'text', value: '𝖗', }
+    # 'simplex':      { type: 'text', value: '𝖘', }
+    # 'complex':      { type: 'text', value: '𝖝', }
+
+    'Quasi':        { type: 'text', value: 'ℚ', }
+    'Clusters':     { type: 'text', value: 'ℂ', }
+    'Factors':      { type: 'text', value: '𝔽', }
+    'Aggregates':   { type: 'text', value: '𝔸', }
+    'Traits':       { type: 'text', value: '𝕋', }
+    'repetitive':   { type: 'text', value: '𝕣', }
+    'simplex':      { type: 'text', value: '𝕤', }
+    'complex':      { type: 'text', value: '𝕩', }
 
   #.........................................................................................................
   newcommands:
