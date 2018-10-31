@@ -193,7 +193,7 @@ contains = ( text, pattern ) ->
   unless value in [ 'top', 'bottom', 'center', 'spread', ]
     throw new Error "(MKTS/TABLE µ1876) expected one of 'top', 'bottom', 'center', 'spread' for mkts-table/fieldalignvertical, got #{rpr value}"
   #.........................................................................................................
-  for [ fail, field_designation, ] from @_walk_fails_and_field_designations_from_hints me, fieldhints
+  for [ fail, field_designation, ] from @_walk_fails_and_field_designations_from_selector me, fieldhints
     ### TAINT ad-hoc fail message production, use method ###
     if fail? then _record me, "#{fail} (#{jr {field_designation}})"
     else          me.valigns[ field_designation ] = value
@@ -209,7 +209,7 @@ contains = ( text, pattern ) ->
   unless value in [ 'left', 'right', 'center', 'justified', ]
     throw new Error "(MKTS/TABLE µ1876) expected one of 'left', 'right', 'center', 'justified' for mkts-table/fieldalignhorizontal, got #{rpr value}"
   #.........................................................................................................
-  for [ fail, field_designation, ] from @_walk_fails_and_field_designations_from_hints me, fieldhints
+  for [ fail, field_designation, ] from @_walk_fails_and_field_designations_from_selector me, fieldhints
     ### TAINT ad-hoc fail message production, use method ###
     if fail? then _record me, "#{fail} (#{jr {field_designation}})"
     else          me.haligns[ field_designation ] = value
@@ -291,7 +291,7 @@ contains = ( text, pattern ) ->
   edges       = [ 'top', 'left', 'bottom', 'right', ] if '*' in edges
   fieldnames  = []
   #.........................................................................................................
-  for [ fail, field_designation, ] from @_walk_fails_and_field_designations_from_hints me, fieldhints
+  for [ fail, field_designation, ] from @_walk_fails_and_field_designations_from_selector me, fieldhints
     ### TAINT ad-hoc fail message production, use method ###
     if fail? then _record me, "#{fail} (#{jr {field_designation}})"
     else          fieldnames.push field_designation
@@ -319,7 +319,7 @@ contains = ( text, pattern ) ->
   edges       = [ 'top', 'left', 'bottom', 'right', ] if '*' in edges
   fieldnames  = []
   #.........................................................................................................
-  for [ fail, fieldname, ] from @_walk_fails_and_field_designations_from_hints me, selector
+  for [ fail, fieldname, ] from @_walk_fails_and_field_designations_from_selector me, selector
     ### TAINT ad-hoc fail message production, use method ###
     if fail? then _record me, "#{fail} (#{jr {fieldname}})"
     else          fieldnames.push fieldname
@@ -682,12 +682,12 @@ contains = ( text, pattern ) ->
 #===========================================================================================================
 # ITERATORS
 #-----------------------------------------------------------------------------------------------------------
-@_walk_fails_and_field_designations_from_hints = ( me, fieldhints ) ->
+@_walk_fails_and_field_designations_from_selector = ( me, selector ) ->
   ### TAINT this will have to be changed to allow for named fields ###
   count                   = 0
   seen_field_designations = new Set()
   #.........................................................................................................
-  for cell from IG.GRID.walk_cells_from_selector me.grid, fieldhints
+  for cell from IG.GRID.walk_cells_from_selector me.grid, selector
     continue unless ( field_designations = me.cellfields[ cell.cellkey ] )?
     for field_designation in field_designations
       continue if seen_field_designations.has field_designation
@@ -696,7 +696,7 @@ contains = ( text, pattern ) ->
       yield [ null, field_designation, ]
   #.........................................................................................................
   if count is 0
-    yield [ ( _fail me, 'µ5131', "field hint #{rpr fieldhints} do not match any field" ), null ]
+    yield [ ( _fail me, 'µ5131', "selector #{rpr selector} does not match any field" ), null ]
   #.........................................................................................................
   yield return
 
@@ -731,7 +731,7 @@ contains = ( text, pattern ) ->
   designations, and later occurrences of a given field will replace earlier appearances. ###
   R = {}
   for [ fieldhints, stuff..., ] in fieldhints_and_stuff
-    for [ fail, field_designation, ] from @_walk_fails_and_field_designations_from_hints me, fieldhints
+    for [ fail, field_designation, ] from @_walk_fails_and_field_designations_from_selector me, fieldhints
       if fail? then _record me, fail
       else          R[ field_designation ]  = stuff
   yield [ field_designation, stuff..., ] for field_designation, stuff of R
