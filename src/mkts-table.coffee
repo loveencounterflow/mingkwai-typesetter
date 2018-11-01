@@ -159,22 +159,29 @@ contains = ( text, pattern ) ->
 @rowheight    = ( me, text ) -> @_set_lanesizes me, 'height',   text
 
 #-----------------------------------------------------------------------------------------------------------
-@fieldcells = ( me, text ) ->
+@fieldcells = ( me, source ) ->
   @_ensure_grid       me
-  @_ensure_unitvector me
-  text        = text + '..' + text unless contains text, /\.\./
-  d           = IG.GRID.parse_rangekey me.grid, text
+  #.........................................................................................................
+  unless ( match = source.match @fieldcells.source_pattern )?
+    _record_fail me, 'µ6379', """need a text like 'A1:B2:"alias"' or similar for mkts-table/#{fieldcell}, got #{rpr source}"""
+    return null
+  #.........................................................................................................
+  { selector, alias, }  = match.groups
+  selector    = selector + '..' + selector unless contains selector, /\.\./
+  d           = IG.GRID.parse_rangekey me.grid, selector
   designation = IG.CELLS.get_cellkey { colnr: d.left_colnr, rownr: d.top_rownr, }
-  ### TAINT we should allow multiple fields with same designation ###
   if me.fieldcells[ designation ]?
-    throw new Error "(MKTS/TABLE µ5375) unable to redefine field #{designation}: #{rpr text}"
+    throw new Error "(MKTS/TABLE µ5375) unable to redefine field #{designation}: #{rpr source}"
   #.........................................................................................................
   me.fieldcells[ designation ] = d
   for fieldcell from IG.GRID.walk_cells_from_rangeref me.grid, d
     ( me.cellfields[ fieldcell.cellkey ]?= [] ).push designation
+    # if alias?
+    #   ( me.cellfields[ designation ]?= [] ).push fieldcell.cellkey
   #.........................................................................................................
   @_set_default_gaps me, designation
   return null
+@fieldcells.source_pattern = /^\s*(?<selector>[^:\s]+)\s*(?::\s*"(?<alias>[^"]+)")?\s*$/
 
 #-----------------------------------------------------------------------------------------------------------
 @_set_default_gaps = ( me, designation ) ->
