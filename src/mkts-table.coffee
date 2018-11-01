@@ -188,12 +188,12 @@ contains = ( text, pattern ) ->
 @fieldalignvertical = ( me, text ) ->
   unless ( match = text.match /^(.+?):([^:]+)$/ )?
     throw new Error "(MKTS/TABLE µ5229) expected something like 'C3:top' for mkts-table/fieldalignvertical, got #{rpr text}"
-  [ _, fieldhints, value, ] = match
+  [ _, selector, value, ] = match
   #.........................................................................................................
   unless value in [ 'top', 'bottom', 'center', 'spread', ]
     throw new Error "(MKTS/TABLE µ1876) expected one of 'top', 'bottom', 'center', 'spread' for mkts-table/fieldalignvertical, got #{rpr value}"
   #.........................................................................................................
-  for [ fail, field_designation, ] from @_walk_fails_and_field_designations_from_selector me, fieldhints
+  for [ fail, field_designation, ] from @_walk_fails_and_field_designations_from_selector me, selector
     ### TAINT ad-hoc fail message production, use method ###
     if fail? then _record me, "#{fail} (#{jr {field_designation}})"
     else          me.valigns[ field_designation ] = value
@@ -204,12 +204,12 @@ contains = ( text, pattern ) ->
 @fieldalignhorizontal = ( me, text ) ->
   unless ( match = text.match /^(.+?):([^:]+)$/ )?
     throw new Error "(MKTS/TABLE µ5229) expected something like 'C3:left' for mkts-table/fieldalignhorizontal, got #{rpr text}"
-  [ _, fieldhints, value, ] = match
+  [ _, selector, value, ] = match
   #.........................................................................................................
   unless value in [ 'left', 'right', 'center', 'justified', ]
     throw new Error "(MKTS/TABLE µ1876) expected one of 'left', 'right', 'center', 'justified' for mkts-table/fieldalignhorizontal, got #{rpr value}"
   #.........................................................................................................
-  for [ fail, field_designation, ] from @_walk_fails_and_field_designations_from_selector me, fieldhints
+  for [ fail, field_designation, ] from @_walk_fails_and_field_designations_from_selector me, selector
     ### TAINT ad-hoc fail message production, use method ###
     if fail? then _record me, "#{fail} (#{jr {field_designation}})"
     else          me.haligns[ field_designation ] = value
@@ -285,13 +285,13 @@ contains = ( text, pattern ) ->
     throw new Error "(MKTS/TABLE µ1225) expected a text for fieldborder, got a #{rpr type}"
   unless ( groups = fieldborder.match /^(.+):(.+):(.*)$/ )?
     throw new Error "(MKTS/TABLE µ2582) expected a fieldborder like 'a1:left:sDashed,sThick', got #{rpr fieldborder}"
-  [ _, fieldhints, edges, style, ] = groups
+  [ _, selector, edges, style, ] = groups
   #.........................................................................................................
   edges       = ( _.trim() for _ in edges.split ',' )
   edges       = [ 'top', 'left', 'bottom', 'right', ] if '*' in edges
   fieldnames  = []
   #.........................................................................................................
-  for [ fail, field_designation, ] from @_walk_fails_and_field_designations_from_selector me, fieldhints
+  for [ fail, field_designation, ] from @_walk_fails_and_field_designations_from_selector me, selector
     ### TAINT ad-hoc fail message production, use method ###
     if fail? then _record me, "#{fail} (#{jr {field_designation}})"
     else          fieldnames.push field_designation
