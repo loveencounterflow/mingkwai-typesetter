@@ -62,8 +62,10 @@ contains = ( text, pattern ) ->
     '~isa':               'MKTS/TABLE/description'
     name:                 null
     debug:                false
+    prv_fieldnr:          0
     fails:                [] ### recoverable errors / fails warnings ###
-    fieldcells:           {} ### field extents in terms of cells, by field designations ###
+    fieldcells:           {} ### field extents in terms of cells, by fieldnrs ###
+    fieldnrs_by_aliases:  {} ### lists of fieldnrs indexed by field aliases ###
     cellfields:           {} ### which cells belong to what fields, by cellkeys ###
     table_dimensions:     {} ### width and height of enclosing `\minipage`, in terms of (unitwidth,unitheight) ###
     cell_dimensions:      {}
@@ -166,22 +168,54 @@ contains = ( text, pattern ) ->
     _record_fail me, 'µ6379', """need a text like 'A1:B2:"alias"' or similar for mkts-table/#{fieldcell}, got #{rpr source}"""
     return null
   #.........................................................................................................
-  { selector, alias, }  = match.groups
+  { selector, aliases, }  = match.groups
   selector    = selector + '..' + selector unless contains selector, /\.\./
+  aliases     = @_parse_aliases me, aliases
+  fieldnr     = me.prv_fieldnr += +1
   d           = IG.GRID.parse_rangekey me.grid, selector
-  designation = IG.CELLS.get_cellkey { colnr: d.left_colnr, rownr: d.top_rownr, }
-  if me.fieldcells[ designation ]?
-    throw new Error "(MKTS/TABLE µ5375) unable to redefine field #{designation}: #{rpr source}"
+  if me.fieldcells[ fieldnr ]? ### should never happen ###
+    throw new Error "(MKTS/TABLE µ5375) unable to redefine field #{fieldnr}: #{rpr source}"
   #.........................................................................................................
-  me.fieldcells[ designation ] = d
+  me.fieldcells[ fieldnr ] = d
   for fieldcell from IG.GRID.walk_cells_from_rangeref me.grid, d
-    ( me.cellfields[ fieldcell.cellkey ]?= [] ).push designation
-    # if alias?
-    #   ( me.cellfields[ designation ]?= [] ).push fieldcell.cellkey
+    ( me.cellfields[ fieldcell.cellkey ]?= [] ).push fieldnr
   #.........................................................................................................
-  @_set_default_gaps me, designation
+  for alias in aliases
+    ( me.fieldnrs_by_aliases[ alias ]?= [] ).push fieldnr
+  #.........................................................................................................
+  @_set_default_gaps me, fieldnr
   return null
-@fieldcells.source_pattern = /^\s*(?<selector>[^:\s]+)\s*(?::\s*"(?<alias>[^"]+)")?\s*$/
+@fieldcells.source_pattern = /^\s*(?<selector>[^:\s]+)\s*(?::\s*(?<aliases>\S.+))?\s*$/
+
+#-----------------------------------------------------------------------------------------------------------
+@_parse_aliases = ( me, source ) ->
+  return [] if ( not source? ) or ( source.length is 0 )
+  R = ( part.trim() for part in source.split ',' )
+  R.pop() if R[ R.length - 1 ] is ''
+  for alias in R
+    unless alias[ 0 ] is '@'
+      throw new Error "(MKTS/TABLE µ5376) aliases must be prefixed with '@', got #{rpr alias}"
+  return [ ( new Set R )... ]
+
+#-----------------------------------------------------------------------------------------------------------
+@_resolve_aliases = ( me, selector ) ->
+  ### Given a comma-separated string or a list of cellkeys, cellrange literals, and / or aliases, return a
+  list of cellkeys and / or cellrange literals. ###
+  return @_resolve_aliases me, selector.split /\s*,\s*/ if CND.isa_text selector
+  R = new Set()
+  for alias in selector
+    continue unless alias.startsWith '@'
+    unless ( fieldnrs = me.fieldnrs_by_aliases[ alias ] )?
+      ### TAINT error or failure? ###
+      throw new Error "(MKTS/TABLE µ5446) unknown alias #{rpr alias}"
+    ### TAINT avoid to compute rangeref only to parse it afterwards ###
+    ### TAINT this should be an INTERGRID method ###
+    for fieldnr in fieldnrs
+      d           = me.fieldcells[ fieldnr ]
+      topleft     = IG.CELLS.get_cellkey me.grid, { colnr: d.left_colnr,  rownr: d.top_rownr,     }
+      bottomright = IG.CELLS.get_cellkey me.grid, { colnr: d.right_colnr, rownr: d.bottom_rownr,  }
+      R.add "#{topleft}..#{bottomright}"
+  return [ R... ]
 
 #-----------------------------------------------------------------------------------------------------------
 @_set_default_gaps = ( me, designation ) ->
@@ -693,6 +727,7 @@ contains = ( text, pattern ) ->
   ### TAINT this will have to be changed to allow for named fields ###
   count                   = 0
   seen_field_designations = new Set()
+  selector                = @_resolve_aliases me, selector
   #.........................................................................................................
   for cell from IG.GRID.walk_cells_from_selector me.grid, selector
     continue unless ( field_designations = me.cellfields[ cell.cellkey ] )?

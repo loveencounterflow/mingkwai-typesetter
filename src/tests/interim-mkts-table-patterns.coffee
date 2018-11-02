@@ -37,11 +37,12 @@ MKTS_TABLE                = require '../mkts-table'
   test @, 'timeout': 30000
 
 #-----------------------------------------------------------------------------------------------------------
-@[ "UNITS.parse_nonnegative_quantity 1" ] = ( T, done ) ->
+@[ "MKTS_TABLE.fieldcells.source_pattern" ] = ( T, done ) ->
   probes_and_matchers = [
-    ["A1..A4:\"japanese-text\"",{"selector":"A1..A4","alias":"japanese-text"}]
-    ["  A1..A4  :  \"japanese-text\"  ",{"selector":"A1..A4","alias":"japanese-text"}]
+    ["A1..A4:\"japanese-text\"",{"selector":"A1..A4","aliases":"\"japanese-text\""}]
+    ["  A1..A4  :  \"japanese-text\"  ",{"selector":"A1..A4","aliases":"\"japanese-text\"  "}]
     ["A1..A4",{"selector":"A1..A4"}]
+    ["A1..A4:\"japanese-text\",\"headings\",\"foo\"",{"selector":"A1..A4","aliases":"\"japanese-text\",\"headings\",\"foo\""}]
     ]
   #.........................................................................................................
   # debug '93033', rpr MKTS_TABLE.fieldcells.source_pattern
@@ -62,15 +63,102 @@ MKTS_TABLE                = require '../mkts-table'
   #.........................................................................................................
   done()
 
+#-----------------------------------------------------------------------------------------------------------
+@[ "MKTS_TABLE._parse_aliases" ] = ( T, done ) ->
+  probes_and_matchers = [
+    ["\"japanese-text\"",null]
+    ["@japanese-text,@headings,@foo",["@japanese-text","@headings","@foo"]]
+    [" @japanese-text,  @headings , @foo  ",["@japanese-text","@headings","@foo"]]
+    ["@some-name",["@some-name"]]
+    ["@some-name,",["@some-name"]]
+    ["@some-name,,@other-name",null]
+    ["@some-name,,",null]
+    ["@some-name,@other-name,",["@some-name","@other-name"]]
+    ["",[]]
+    [null,[]]
+    ]
+  #.........................................................................................................
+  # debug '93033', rpr MKTS_TABLE.fieldcells.source_pattern
+  for [ probe, matcher, ] in probes_and_matchers
+    try
+      result = MKTS_TABLE._parse_aliases null, probe
+    catch error
+      if ( matcher is null ) and ( error.message.match /aliases must be prefixed with '@'/ )?
+        urge '36633', ( jr [ probe, matcher, ] )
+        T.ok true
+      else
+        T.fail "unexpected error for probe #{rpr probe}: #{rpr error.message}"
+      continue
+    urge '36633', ( jr [ probe, result, ] )
+    T.eq result, matcher
+  #.........................................................................................................
+  done()
+
+#-----------------------------------------------------------------------------------------------------------
+@_get_sample_table_1 = ->
+  R = MKTS_TABLE._new_description null
+  MKTS_TABLE.name         R, 'moderately-freeform-table'
+  MKTS_TABLE.debug        R, 'false'
+  MKTS_TABLE.grid         R, 'D4'
+  MKTS_TABLE.unitwidth    R, '1mm'
+  MKTS_TABLE.unitheight   R, '1mm'
+  MKTS_TABLE.columnwidth  R, '20'
+  MKTS_TABLE.rowheight    R, '10'
+  MKTS_TABLE.fieldcells   R, 'A1..A4:@japanese-text'
+  MKTS_TABLE.fieldcells   R, 'A1..A4:@japanese-text'
+  MKTS_TABLE.fieldcells   R, 'B1..D1'
+  MKTS_TABLE.fieldcells   R, 'B2..D2'
+  MKTS_TABLE.fieldcells   R, 'B3..B4'
+  MKTS_TABLE.fieldcells   R, 'C3..D4:@overlap-topright'
+  MKTS_TABLE.fieldcells   R, 'C3..D4:@overlap-bottomright'
+  MKTS_TABLE.fieldcells   R, 'C3..D4:@overlap-topleft'
+  MKTS_TABLE.fieldcells   R, 'C3..D4:@overlap-bottomleft'
+  return R
+
+#-----------------------------------------------------------------------------------------------------------
+@[ "MKTS_TABLE._resolve_aliases" ] = ( T, done ) ->
+  probes_and_matchers = [
+    ["\"japanese-text\"",null]
+    ["@japanese-text,@headings,@foo",["@japanese-text","@headings","@foo"]]
+    [" @japanese-text,  @headings , @foo  ",["@japanese-text","@headings","@foo"]]
+    ["@some-name",["@some-name"]]
+    ["@some-name,",["@some-name"]]
+    ["@some-name,,@other-name",null]
+    ["@some-name,,",null]
+    ["@some-name,@other-name,",["@some-name","@other-name"]]
+    ["",[]]
+    [null,[]]
+    ]
+  #.........................................................................................................
+  debug '93033', me = @_get_sample_table_1()
+  urge MKTS_TABLE._resolve_aliases me, '@japanese-text'
+  urge MKTS_TABLE._resolve_aliases me, '@overlap-bottomleft,C3'
+  urge MKTS_TABLE._resolve_aliases me, 'A1..C3'
+  urge MKTS_TABLE._resolve_aliases me, 'A1..C3,@japanese-text'
+  done(); return
+  for [ probe, matcher, ] in probes_and_matchers
+    try
+      result = MKTS_TABLE._parse_aliases null, probe
+    catch error
+      if ( matcher is null ) and ( error.message.match /aliases must be prefixed with '@'/ )?
+        urge '36633', ( jr [ probe, matcher, ] )
+        T.ok true
+      else
+        T.fail "unexpected error for probe #{rpr probe}: #{rpr error.message}"
+      continue
+    urge '36633', ( jr [ probe, result, ] )
+    T.eq result, matcher
+  #.........................................................................................................
+  done()
+
 
 
 ############################################################################################################
 unless module.parent?
   include = [
-    "UNITS.parse_nonnegative_quantity 1"
-    "UNITS.as_text 1"
-    "UNITS.as_text 2"
-    "UNITS.as_text 3"
+    "MKTS_TABLE.fieldcells.source_pattern"
+    "MKTS_TABLE._parse_aliases"
+    "MKTS_TABLE._resolve_aliases"
     ]
   @_prune()
   @_main()
