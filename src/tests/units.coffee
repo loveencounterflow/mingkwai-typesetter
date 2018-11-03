@@ -145,6 +145,29 @@ UNITS                     = require '../mkts-table-units'
   #.........................................................................................................
   done()
 
+#-----------------------------------------------------------------------------------------------------------
+@[ "UNITS.as_text 3" ] = ( T, done ) ->
+  probes_and_matchers = [
+    [["1mm","*",],"2mm"]
+    [["1.2mm","*",null],"2.4mm"]
+    ]
+  #.........................................................................................................
+  for [ probes, matcher, ] in probes_and_matchers
+    [ unit_probe_txt, operator_probe, factor_probe, ] = probes
+    unit_probe                                        = UNITS.parse_nonnegative_quantity unit_probe_txt
+    try
+      result  = UNITS.as_text factor_probe, operator_probe, unit_probe
+    catch error
+      if ( error.message.match /expected a 'MKTS\/TABLE\/quantity', got a/ )?
+        T.ok true
+      else
+        T.fail "unexpected error for probe #{rpr probes}: #{rpr error.message}"
+      continue
+    urge '36633', ( jr [ probes, result, ] )
+    # T.eq result, matcher
+  #.........................................................................................................
+  done()
+
 
 
 ############################################################################################################
