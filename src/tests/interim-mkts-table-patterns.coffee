@@ -104,41 +104,31 @@ MKTS_TABLE                = require '../mkts-table'
   MKTS_TABLE.unitheight   R, '1mm'
   MKTS_TABLE.columnwidth  R, '20'
   MKTS_TABLE.rowheight    R, '10'
-  MKTS_TABLE.fieldcells   R, 'A1..A4:@japanese-text'
-  MKTS_TABLE.fieldcells   R, 'A1..A4:@japanese-text'
-  MKTS_TABLE.fieldcells   R, 'B1..D1'
-  MKTS_TABLE.fieldcells   R, 'B2..D2'
-  MKTS_TABLE.fieldcells   R, 'B3..B4'
-  MKTS_TABLE.fieldcells   R, 'C3..D4:@overlap-topright'
-  MKTS_TABLE.fieldcells   R, 'C3..D4:@overlap-bottomright'
-  MKTS_TABLE.fieldcells   R, 'C3..D4:@overlap-topleft'
-  MKTS_TABLE.fieldcells   R, 'C3..D4:@overlap-bottomleft'
+  MKTS_TABLE.fieldcells   R, 'A1..A4:@japanese-text'        # fieldnr 1
+  MKTS_TABLE.fieldcells   R, 'B1..D1'                       # fieldnr 2
+  MKTS_TABLE.fieldcells   R, 'B2..D2'                       # fieldnr 3
+  MKTS_TABLE.fieldcells   R, 'B3..B4'                       # fieldnr 4
+  MKTS_TABLE.fieldcells   R, 'C3..D4:@overlap-topright'     # fieldnr 5
+  MKTS_TABLE.fieldcells   R, 'C3..D4:@overlap-bottomright'  # fieldnr 6
+  MKTS_TABLE.fieldcells   R, 'C3..D4:@overlap-topleft'      # fieldnr 7
+  MKTS_TABLE.fieldcells   R, 'C3..D4:@overlap-bottomleft'   # fieldnr 8
   return R
 
 #-----------------------------------------------------------------------------------------------------------
 @[ "MKTS_TABLE._resolve_aliases" ] = ( T, done ) ->
+  table = @_get_sample_table_1()
+  #.........................................................................................................
   probes_and_matchers = [
-    ["\"japanese-text\"",null]
-    ["@japanese-text,@headings,@foo",["@japanese-text","@headings","@foo"]]
-    [" @japanese-text,  @headings , @foo  ",["@japanese-text","@headings","@foo"]]
-    ["@some-name",["@some-name"]]
-    ["@some-name,",["@some-name"]]
-    ["@some-name,,@other-name",null]
-    ["@some-name,,",null]
-    ["@some-name,@other-name,",["@some-name","@other-name"]]
-    ["",[]]
-    [null,[]]
+    ["@japanese-text",[1]]
+    ["@overlap-bottomleft,C3",[8,"C3"]]
+    ["@overlap-bottomleft,C3..D4",[8,'C3..D4']]
+    ["A1..C3",["A1..C3"]]
+    ["A1..C3,@japanese-text",["A1..C3",1]]
     ]
   #.........................................................................................................
-  debug '93033', me = @_get_sample_table_1()
-  urge MKTS_TABLE._resolve_aliases me, '@japanese-text'
-  urge MKTS_TABLE._resolve_aliases me, '@overlap-bottomleft,C3'
-  urge MKTS_TABLE._resolve_aliases me, 'A1..C3'
-  urge MKTS_TABLE._resolve_aliases me, 'A1..C3,@japanese-text'
-  done(); return
   for [ probe, matcher, ] in probes_and_matchers
     try
-      result = MKTS_TABLE._parse_aliases null, probe
+      result = MKTS_TABLE._resolve_aliases table, probe
     catch error
       if ( matcher is null ) and ( error.message.match /aliases must be prefixed with '@'/ )?
         urge '36633', ( jr [ probe, matcher, ] )
