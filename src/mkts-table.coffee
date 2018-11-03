@@ -203,18 +203,14 @@ contains = ( text, pattern ) ->
   list of cellkeys and / or cellrange literals. ###
   return @_resolve_aliases me, selector.split /\s*,\s*/ if CND.isa_text selector
   R = new Set()
-  for alias in selector
-    continue unless alias.startsWith '@'
-    unless ( fieldnrs = me.fieldnrs_by_aliases[ alias ] )?
-      ### TAINT error or failure? ###
-      throw new Error "(MKTS/TABLE µ5446) unknown alias #{rpr alias}"
-    ### TAINT avoid to compute rangeref only to parse it afterwards ###
-    ### TAINT this should be an INTERGRID method ###
-    for fieldnr in fieldnrs
-      d           = me.fieldcells[ fieldnr ]
-      topleft     = IG.CELLS.get_cellkey me.grid, { colnr: d.left_colnr,  rownr: d.top_rownr,     }
-      bottomright = IG.CELLS.get_cellkey me.grid, { colnr: d.right_colnr, rownr: d.bottom_rownr,  }
-      R.add "#{topleft}..#{bottomright}"
+  for term in selector
+    if ( CND.isa_text term ) and ( term.startsWith '@' )
+      unless ( fieldnrs = me.fieldnrs_by_aliases[ term ] )?
+        ### TAINT error or failure? ###
+        throw new Error "(MKTS/TABLE µ5446) unknown alias #{rpr term}"
+      R.add fieldnr for fieldnr in fieldnrs
+    else
+      R.add term
   return [ R... ]
 
 #-----------------------------------------------------------------------------------------------------------
@@ -726,16 +722,26 @@ contains = ( text, pattern ) ->
 @_walk_fails_and_fieldnrs_from_selector = ( me, selector ) ->
   ### TAINT this will have to be changed to allow for named fields ###
   count                   = 0
-  seen_field_designations = new Set()
+  seen_fieldnrs           = new Set()
   selector                = @_resolve_aliases me, selector
   #.........................................................................................................
-  for cell from IG.GRID.walk_cells_from_selector me.grid, selector
-    continue unless ( field_designations = me.cellfields[ cell.cellkey ] )?
-    for field_designation in field_designations
-      continue if seen_field_designations.has field_designation
-      seen_field_designations.add field_designation
+  for term in selector
+    if CND.isa_text term
+      for cell from IG.GRID.walk_cells_from_selector me.grid, selector
+        continue unless ( fieldnrs = me.cellfields[ cell.cellkey ] )?
+        for fieldnr in fieldnrs
+          ### TAINT code duplication ###
+          continue if seen_fieldnrs.has fieldnr
+          seen_fieldnrs.add fieldnr
+          count += +1
+          yield [ null, fieldnr, ]
+    else
+      fieldnr = term
+      ### TAINT code duplication ###
+      continue if seen_fieldnrs.has fieldnr
+      seen_fieldnrs.add fieldnr
       count += +1
-      yield [ null, field_designation, ]
+      yield [ null, fieldnr, ]
   #.........................................................................................................
   if count is 0
     yield [ ( _fail me, 'µ5131', "selector #{rpr selector} does not match any field" ), null ]
