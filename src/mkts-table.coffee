@@ -367,7 +367,7 @@ contains = ( text, pattern ) ->
 #===========================================================================================================
 # EVENT GENERATORS
 #-----------------------------------------------------------------------------------------------------------
-@_walk_events = ( me, selectors_and_content_events, layout_name_stack ) ->
+@_walk_events = ( me, selectors_and_content_events, layout_name_stack, field_selector_stack ) ->
   @_compute_cell_dimensions     me
   @_compute_field_dimensions    me
   @_compute_border_dimensions   me
@@ -377,7 +377,7 @@ contains = ( text, pattern ) ->
   me._tmp_is_outermost  = layout_name_stack.length < 2
   me._tmp_name          = layout_name_stack.join '/'
   ### Preparatory ###
-  yield from @_walk_opening_events                      me
+  yield from @_walk_opening_events                      me, layout_name_stack, field_selector_stack
   yield from @_walk_style_events                        me ### TAINT should write to document preamble ###
   #.........................................................................................................
   ### Borders, content ###
@@ -407,7 +407,7 @@ contains = ( text, pattern ) ->
   yield return
 
 #-----------------------------------------------------------------------------------------------------------
-@_walk_opening_events = ( me ) ->
+@_walk_opening_events = ( me, layout_name_stack, field_selector_stack ) ->
   @_ensure_unitvector me
   layout_name       = me.name
   unitwidth_txt     = UNITS.as_text me.unitwidth
@@ -727,6 +727,7 @@ contains = ( text, pattern ) ->
   seen_fieldnrs           = new Set()
   selector                = @_resolve_aliases me, selector
   #.........................................................................................................
+  ### TAINT must resolve aliases ###
   for term in selector
     if CND.isa_text term
       for cell from IG.GRID.walk_cells_from_selector me.grid, selector
