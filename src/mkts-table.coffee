@@ -413,14 +413,16 @@ contains = ( text, pattern ) ->
   unitwidth_txt     = UNITS.as_text me.unitwidth
   unitheight_txt    = UNITS.as_text me.unitheight
   table_height_txt  = UNITS.as_text me.unitheight, '*', me.table_dimensions.height
+  table_width_txt   = UNITS.as_text me.unitwidth,  '*', me.table_dimensions.width
+  # debug '39993', 'field_selector_stack  ', field_selector_stack
+  ### TAINT valign center, top, bottom do not work well for nested tables; need dimensions of enclosing
+  field to introduce explicit vertical spaces ###
   yield tex "\n\n"
   yield tex "% ==========================================================================================================\n"
   yield tex "\\par% Beginning of MKTS Table (layout: #{rpr layout_name})\n"
   yield texr 'ð1', "{\\setlength{\\fboxsep}{0mm}"
   yield texr 'ð2', "\\mktsColorframebox{green}{% debugging framebox" if me.debug
-  ### NOTE only height of minipage is important; TikZ will happily draw outside of minipage when told ###
-  ### TAINT calculate proper height so text will keep register ###
-  yield texr 'ð5', "\\begin{minipage}[t][#{table_height_txt}][t]{\\linewidth}"
+  yield texr 'ð5', "\\begin{minipage}[t][#{table_height_txt}][t]{#{table_width_txt}}"
   yield texr 'ð6', "\\begin{tikzpicture}[ overlay, yshift = 0mm, yscale = -1, line cap = rect ]"
   yield texr 'ð7', "\\tikzset{x=#{unitwidth_txt}};\\tikzset{y=#{unitheight_txt}};"
   yield return
@@ -688,7 +690,7 @@ contains = ( text, pattern ) ->
 #-----------------------------------------------------------------------------------------------------------
 @_compute_table_height = ( me ) ->
   me.table_dimensions.height  = @_bottom_from_rownr me, me.grid.height
-  me.table_dimensions.width   = null ### not used ATM, all tables are nominally as wide as column ###
+  me.table_dimensions.width   = @_right_from_colnr  me, me.grid.width
   return null
 
 #-----------------------------------------------------------------------------------------------------------

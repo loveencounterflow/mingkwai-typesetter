@@ -227,7 +227,12 @@ new_local_state = ->
       layout                        = @layout_from_name                 S, L, layout_name
       selectors_and_content_events  = @get_selectors_and_content_events S, L, layout_name
       enclosing_layout_name         = @get_enclosing_layout_name        S, L
-      content_events                = MKTS_TABLE._walk_events layout, selectors_and_content_events, L.layout_name_stack
+      enclosing_layout              = null
+      # if enclosing_layout_name?
+      #   enclosing_layout              = @layout_from_name                 S, L, enclosing_layout_name
+      #   debug '38883', enclosing_layout
+      content_events                = MKTS_TABLE._walk_events layout, selectors_and_content_events, \
+        L.layout_name_stack, L.field_selector_stack
       #.....................................................................................................
       if enclosing_layout_name?
         current_field_selector    = @get_current_field_selector S, L
