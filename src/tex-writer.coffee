@@ -739,6 +739,27 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       send event
 
 #-----------------------------------------------------------------------------------------------------------
+@MKTX.BLOCK.$text_alignment = ( S ) =>
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    if select event, [ '(', '.', ], [ 'left', 'right', 'center', 'justify', ]
+      [ type, name, Q, meta, ]  = event
+      p                         = name[ 0 ].toUpperCase() + name[ 1 .. ]
+      if type is '.'
+        send [ 'tex', "\n\n\\mkts#{p}{}", ]
+      else
+        send [ 'tex', "\n\n{\\mkts#{p}{}", ]
+      send stamp event
+    #.......................................................................................................
+    else if select event, ')', [ 'left', 'right', 'center', 'justify', ]
+      [ type, name, Q, meta, ]  = event
+      send [ 'tex', "}\n\n", ]
+      send stamp event
+    #.......................................................................................................
+    else
+      send event
+
+#-----------------------------------------------------------------------------------------------------------
 @MKTX.INLINE.$hfill = ( S ) =>
   #.........................................................................................................
   return $ ( event, send ) =>
@@ -2173,6 +2194,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @MKTX.INLINE.$tiny                                S
     .pipe @MKTX.INLINE.$fncr                                S
     .pipe @MKTX.INLINE.$xfsc                                S
+    .pipe @MKTX.BLOCK.$text_alignment                       S
     .pipe @MKTX.BLOCK.$fontlist                             S
     #.......................................................................................................
     .pipe @MKTX.BLOCK.$blockquote                           S
