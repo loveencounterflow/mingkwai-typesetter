@@ -234,7 +234,7 @@ contains = ( text, pattern ) ->
   unless value in [ 'top', 'bottom', 'center', 'spread', ]
     throw new Error "(MKTS/TABLE µ1876) expected one of 'top', 'bottom', 'center', 'spread' for mkts-table/fieldalignvertical, got #{rpr value}"
   #.........................................................................................................
-  for [ fail, field_designation, ] from @_walk_fails_and_field_designations_from_selector me, selector
+  for [ fail, field_designation, ] from @_walk_fails_and_fieldnrs_from_selector me, selector
     ### TAINT ad-hoc fail message production, use method ###
     if fail? then _record me, "#{fail} (#{jr {field_designation}})"
     else          me.valigns[ field_designation ] = value
@@ -250,7 +250,7 @@ contains = ( text, pattern ) ->
   unless value in [ 'left', 'right', 'center', 'justified', ]
     throw new Error "(MKTS/TABLE µ1876) expected one of 'left', 'right', 'center', 'justified' for mkts-table/fieldalignhorizontal, got #{rpr value}"
   #.........................................................................................................
-  for [ fail, field_designation, ] from @_walk_fails_and_field_designations_from_selector me, selector
+  for [ fail, field_designation, ] from @_walk_fails_and_fieldnrs_from_selector me, selector
     ### TAINT ad-hoc fail message production, use method ###
     if fail? then _record me, "#{fail} (#{jr {field_designation}})"
     else          me.haligns[ field_designation ] = value
@@ -332,7 +332,7 @@ contains = ( text, pattern ) ->
   edges       = [ 'top', 'left', 'bottom', 'right', ] if '*' in edges
   fieldnames  = []
   #.........................................................................................................
-  for [ fail, field_designation, ] from @_walk_fails_and_field_designations_from_selector me, selector
+  for [ fail, field_designation, ] from @_walk_fails_and_fieldnrs_from_selector me, selector
     ### TAINT ad-hoc fail message production, use method ###
     if fail? then _record me, "#{fail} (#{jr {field_designation}})"
     else          fieldnames.push field_designation
@@ -360,7 +360,7 @@ contains = ( text, pattern ) ->
   edges       = [ 'top', 'left', 'bottom', 'right', ] if '*' in edges
   fieldnames  = []
   #.........................................................................................................
-  for [ fail, fieldname, ] from @_walk_fails_and_field_designations_from_selector me, selector
+  for [ fail, fieldname, ] from @_walk_fails_and_fieldnrs_from_selector me, selector
     ### TAINT ad-hoc fail message production, use method ###
     if fail? then _record me, "#{fail} (#{jr {fieldname}})"
     else          fieldnames.push fieldname
@@ -723,7 +723,7 @@ contains = ( text, pattern ) ->
 #===========================================================================================================
 # ITERATORS
 #-----------------------------------------------------------------------------------------------------------
-@_walk_fails_and_field_designations_from_selector = ( me, selector ) ->
+@_walk_fails_and_fieldnrs_from_selector = ( me, selector ) ->
   ### TAINT this will have to be changed to allow for named fields ###
   count                   = 0
   seen_field_designations = new Set()
@@ -773,7 +773,7 @@ contains = ( text, pattern ) ->
   designations, and later occurrences of a given field will replace earlier appearances. ###
   R = {}
   for [ fieldhints, stuff..., ] in fieldhints_and_stuff
-    for [ fail, field_designation, ] from @_walk_fails_and_field_designations_from_selector me, fieldhints
+    for [ fail, field_designation, ] from @_walk_fails_and_fieldnrs_from_selector me, fieldhints
       if fail? then _record me, fail
       else          R[ field_designation ]  = stuff
   yield [ field_designation, stuff..., ] for field_designation, stuff of R
