@@ -518,15 +518,15 @@ contains = ( text, pattern ) ->
   yield texr 'ð22', "\\begin{scope}[on background layer]"
   #.........................................................................................................
   ### TAINT use fixed size like 1mm ###
-  top       = ( @_top_from_rownr     me, 1             ) - 3
-  bottom    = ( @_bottom_from_rownr  me, me.grid.height ) + 3
+  top       = ( @_top_from_rownr     me, 1              )
+  bottom    = ( @_bottom_from_rownr  me, me.grid.height )
   for colnr in [ 1 .. me.grid.width + 1 ]
     x = @_left_from_colnr me, colnr
     yield texr 'ð23', "\\draw[sDebugCellgrid] (#{x},#{top}) -- (#{x},#{bottom});"
   #.........................................................................................................
   ### TAINT use fixed size like 1mm ###
-  left      = ( @_left_from_colnr    me, 1             ) - 3
-  right     = ( @_right_from_colnr   me, me.grid.width  ) + 3
+  left      = ( @_left_from_colnr    me, 1              )
+  right     = ( @_right_from_colnr   me, me.grid.width  )
   for rownr in [ 1 .. me.grid.height + 1 ]
     y = @_top_from_rownr me, rownr
     yield texr 'ð24', "\\draw[sDebugCellgrid] (#{left},#{y}) -- (#{right},#{y});"
