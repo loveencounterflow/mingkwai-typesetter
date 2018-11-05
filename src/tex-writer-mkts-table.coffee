@@ -128,6 +128,14 @@ new_local_state = ->
   return null
 
 #-----------------------------------------------------------------------------------------------------------
+@copy_layout = ( S, L, old_layout_name, new_layout_name ) ->
+  if L.layout_events[ new_layout_name ]?
+    throw new Error "#{badge} µ36339 refusing to re-define layout #{rpr new_layout_name}"
+  L.layout_events[ new_layout_name ] = event
+  @_initialize_layout S, L, new_layout_name
+  return null
+
+#-----------------------------------------------------------------------------------------------------------
 @_initialize_layout = ( S, L, layout_name ) ->
   L.selectors_and_content_events[ layout_name ] = []
   return null
@@ -208,6 +216,7 @@ new_local_state = ->
   return $ ( event, send ) =>
     if select event, '.', 'MKTS/TABLE/layout'
       @store_layout_event S, L, event
+      # debug '66533', L; process.exit 1
       send stamp event
     else
       send event
@@ -223,9 +232,9 @@ new_local_state = ->
       ### OBS attribute is named 'layout' but contains layout name ###
       unless Q.layout?
         throw new Error "#{badge} µ29245 missing required attribute `layout` for <mkts-table-content>: #{rpr event}"
-      @push_layout_name S, L, Q.layout
       ### TAINT might want to add option to keep contents ###
-      @clear_contents S, L, Q.layout
+      @push_layout_name S, L, Q.layout
+      @clear_contents   S, L, Q.layout
       send stamp event
     #.......................................................................................................
     ### When table contents end, we send all the sub-events needed to draw the table, and then the
@@ -323,6 +332,7 @@ new_local_state = ->
   #.........................................................................................................
   f = ->
     @name                 = ( raw_parts ) -> MKTS_TABLE.name                  me, raw_parts.join ''
+    # @extends              = ( raw_parts ) -> MKTS_TABLE.extends               me, ( raw_parts.join '' )
     @debug                = ( raw_parts ) -> MKTS_TABLE.debug                 me, raw_parts.join ''
     @grid                 = ( raw_parts ) -> MKTS_TABLE.grid                  me, raw_parts.join ''
     @fill_gap             = ( raw_parts ) -> MKTS_TABLE.fill_gap              me, raw_parts.join ''
