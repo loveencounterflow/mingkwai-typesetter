@@ -158,6 +158,13 @@ new_local_state = ->
   return R
 
 #-----------------------------------------------------------------------------------------------------------
+@clear_contents = ( S, L, layout_name ) ->
+  unless ( target = L.selectors_and_content_events[ layout_name ] )?
+    throw new Error "#{badge} µ65671 unknown layout #{rpr layout_name}"
+  target.length = 0
+  return null
+
+#-----------------------------------------------------------------------------------------------------------
 @get_selectors_and_content_events = ( S, L, layout_name ) ->
   unless ( R = L.selectors_and_content_events[ layout_name ] )?
     debug '88733', L.selectors_and_content_events
@@ -217,6 +224,8 @@ new_local_state = ->
       unless Q.layout?
         throw new Error "#{badge} µ29245 missing required attribute `layout` for <mkts-table-content>: #{rpr event}"
       @push_layout_name S, L, Q.layout
+      ### TAINT might want to add option to keep contents ###
+      @clear_contents S, L, Q.layout
       send stamp event
     #.......................................................................................................
     ### When table contents end, we send all the sub-events needed to draw the table, and then the
