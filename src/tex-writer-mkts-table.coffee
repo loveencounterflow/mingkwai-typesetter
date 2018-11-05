@@ -47,9 +47,7 @@ MKTS.MACRO_ESCAPER.register_raw_tag 'mkts-table-description'
   L = new_local_state()
   return D.TEE.from_pipeline [
     @$parse_description               S, L
-    @$store_layout_event              S, L
     @$handle_content_events           S, L
-    # D.$observe ( event ) -> info '23993', ( CND.grey '--------->' ), jr event
     @$handle_fields                   S, L
     @$dump_table_layout               S, L
     ]
@@ -61,7 +59,7 @@ MKTS.MACRO_ESCAPER.register_raw_tag 'mkts-table-description'
 new_local_state = ->
   R =
     selectors_and_content_events:   {}
-    layout_events:                  {}
+    layouts:                        {}
     content_buffer:                 null
     within_field:                   false
     layout_name_stack:              []
@@ -107,31 +105,33 @@ new_local_state = ->
 
 #-----------------------------------------------------------------------------------------------------------
 @layout_from_name = ( S, L, layout_name ) ->
-  unless ( R = L.layout_events[ layout_name ] )?
+  unless ( R = L.layouts[ layout_name ] )?
     throw new Error "#{badge} µ47753 unknown layout #{rpr layout_name}"
-  return R[ 2 ]
+  return R
 
 #-----------------------------------------------------------------------------------------------------------
 @push_layout_name = ( S, L, layout_name ) ->
-  unless L.layout_events[ layout_name ]?
+  unless L.layouts[ layout_name ]?
     throw new Error "#{badge} µ42558 unknown layout #{rpr layout_name}"
   L.layout_name_stack.push layout_name
   return null
 
 #-----------------------------------------------------------------------------------------------------------
-@store_layout_event = ( S, L, event ) ->
-  [ _, _, layout, _, ] = event
-  if L.layout_events[ layout.name ]?
+@store_layout = ( S, L, layout ) ->
+  if L.layouts[ layout.name ]?
     throw new Error "#{badge} µ36339 refusing to re-define layout #{rpr layout.name}"
-  L.layout_events[ layout.name ] = event
+  L.layouts[ layout.name ] = layout
   @_initialize_layout S, L, layout.name
   return null
 
 #-----------------------------------------------------------------------------------------------------------
 @copy_layout = ( S, L, old_layout_name, new_layout_name ) ->
-  if L.layout_events[ new_layout_name ]?
+  if L.layouts[ new_layout_name ]?
     throw new Error "#{badge} µ36339 refusing to re-define layout #{rpr new_layout_name}"
-  L.layout_events[ new_layout_name ] = event
+  old_layout      = @layout_from_name S, L, old_layout_name
+  new_layout      = CND.deep_copy old_layout
+  new_layout.name = new_layout_name
+  @store_layout S, L, new_layout
   @_initialize_layout S, L, new_layout_name
   return null
 
@@ -203,23 +203,12 @@ new_local_state = ->
         warn "an error occurred"
         throw error
       send stamp event
-      send [ '.', 'MKTS/TABLE/layout', layout, ( copy meta ), ]
+      layout.meta = copy meta
+      @store_layout S, L, layout
     #.......................................................................................................
     else
       send event
     #.......................................................................................................
-    return null
-
-#-----------------------------------------------------------------------------------------------------------
-@$store_layout_event = ( S, L ) ->
-  #.........................................................................................................
-  return $ ( event, send ) =>
-    if select event, '.', 'MKTS/TABLE/layout'
-      @store_layout_event S, L, event
-      # debug '66533', L; process.exit 1
-      send stamp event
-    else
-      send event
     return null
 
 #-----------------------------------------------------------------------------------------------------------
