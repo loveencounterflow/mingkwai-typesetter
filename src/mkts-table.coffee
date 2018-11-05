@@ -70,13 +70,15 @@ contains = ( text, pattern ) ->
     table_dimensions:     {} ### width and height of enclosing `\minipage`, in terms of (unitwidth,unitheight) ###
     cell_dimensions:      {}
     fieldborders:         {} ### field borders, as TikZ styles by edges ###
-    margins:              {} ### field margins, by field designations ###
-    paddings:             {} ### field paddings, by field designations ###
-    field_dimensions:     {} ### field extents in terms of (unitwidth,unitheight), by field designations ###
-    border_dimensions:    {} ### border extents in terms of (unitwidth,unitheight), by field designations ###
-    pod_dimensions:       {} ### pod extents in terms of (unitwidth,unitheight), by field designations ###
-    valigns:              {} ### vertical pod alignments, by field designations ###
-    haligns:              {} ### horizontal pod alignments, by field designations ###
+    gaps:
+      fill:                 {} ### gaps between grid and background, by fieldnrs ###
+      margins:              {} ### field margins, by fieldnrs ###
+      paddings:             {} ### field paddings, by fieldnrs ###
+    field_dimensions:     {} ### field extents in terms of (unitwidth,unitheight), by fieldnrs ###
+    border_dimensions:    {} ### border extents in terms of (unitwidth,unitheight), by fieldnrs ###
+    pod_dimensions:       {} ### pod extents in terms of (unitwidth,unitheight), by fieldnrs ###
+    valigns:              {} ### vertical pod alignments, by fieldnrs ###
+    haligns:              {} ### horizontal pod alignments, by fieldnrs ###
     colwidths:            [ null, ] ### [ 0 ] is default, [ 1 .. grid.width ] explicit or implicit widths ###
     rowheights:           [ null, ] ### [ 0 ] is default, [ 1 .. grid.height ] explicit or implicit heights ###
     joint_coordinates:    null
@@ -97,8 +99,10 @@ contains = ( text, pattern ) ->
       unitheight:           '1mm'
       colwidth:             10
       rowheight:            10
-      margin:               0
-      padding:              1
+      gaps:
+        fill:                 0
+        margins:              0
+        paddings:             1
   return R
 
 
@@ -214,11 +218,10 @@ contains = ( text, pattern ) ->
   return [ R... ]
 
 #-----------------------------------------------------------------------------------------------------------
-@_set_default_gaps = ( me, designation ) ->
-  for gap in [ 'margin', 'padding', ]
-    p = gap + 's'
+@_set_default_gaps = ( me, fieldnr ) ->
+  for gap in [ 'fill', 'margins', 'paddings', ]
     for edge in [ 'left', 'right', 'top', 'bottom', ]
-      ( me[ p ][ designation ]?= {} )[ edge ] = me.default[ gap ]
+      ( me.gaps[ gap ][ fieldnr ]?= {} )[ edge ] = me.default.gaps[ gap ]
   return null
 
 #-----------------------------------------------------------------------------------------------------------
@@ -287,7 +290,7 @@ contains = ( text, pattern ) ->
   d = @_parse_fieldgap me, 'margin', text
   for fieldname in d.fieldnames
     for edge in d.edges
-      ( me.margins[ fieldname ]?= {} )[ edge ] = d.length
+      ( me.gaps.margins[ fieldname ]?= {} )[ edge ] = d.length
   #.........................................................................................................
   return null
 
@@ -297,7 +300,17 @@ contains = ( text, pattern ) ->
   d = @_parse_fieldgap me, 'padding', text
   for fieldname in d.fieldnames
     for edge in d.edges
-      ( me.paddings[ fieldname ]?= {} )[ edge ] = d.length
+      ( me.gaps.paddings[ fieldname ]?= {} )[ edge ] = d.length
+  #.........................................................................................................
+  return null
+
+#-----------------------------------------------------------------------------------------------------------
+@fill_gap = ( me, text ) ->
+  ### TAINT code duplication ###
+  d = @_parse_fieldgap me, 'fill', text
+  for fieldname in d.fieldnames
+    for edge in d.edges
+      ( me.gaps.fill[ fieldname ]?= {} )[ edge ] = d.length
   #.........................................................................................................
   return null
 
@@ -655,7 +668,7 @@ contains = ( text, pattern ) ->
 @_compute_border_dimensions = ( me ) ->
   ### TAINT code duplication ###
   for designation, d of me.field_dimensions
-    unless ( target = me.margins[ designation ] )?
+    unless ( target = me.gaps.margins[ designation ] )?
       throw new Error "(MKTS/TABLE µ8054) unknown field designation #{rpr designation}"
     left   = d.left   + target.left
     right  = d.right  - target.right
@@ -673,7 +686,7 @@ contains = ( text, pattern ) ->
 @_compute_pod_dimensions = ( me ) ->
   ### TAINT code duplication ###
   for designation, d of me.field_dimensions
-    unless ( target = me.paddings[ designation ] )?
+    unless ( target = me.gaps.paddings[ designation ] )?
       throw new Error "(MKTS/TABLE µ8054) unknown field designation #{rpr designation}"
     left   = d.left   + target.left
     right  = d.right  - target.right

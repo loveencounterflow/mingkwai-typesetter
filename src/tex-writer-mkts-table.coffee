@@ -316,6 +316,7 @@ new_local_state = ->
     @name                 = ( raw_parts ) -> MKTS_TABLE.name                  me, raw_parts.join ''
     @debug                = ( raw_parts ) -> MKTS_TABLE.debug                 me, raw_parts.join ''
     @grid                 = ( raw_parts ) -> MKTS_TABLE.grid                  me, raw_parts.join ''
+    @fill_gap             = ( raw_parts ) -> MKTS_TABLE.fill_gap              me, raw_parts.join ''
     @padding              = ( raw_parts ) -> MKTS_TABLE.padding               me, raw_parts.join ''
     @margin               = ( raw_parts ) -> MKTS_TABLE.margin                me, raw_parts.join ''
     @unitwidth            = ( raw_parts ) -> MKTS_TABLE.unitwidth             me, raw_parts.join ''
