@@ -61,6 +61,8 @@ module.exports = options =
     # 'simplex':      { type: 'text', value: '𝖘', }
     # 'complex':      { type: 'text', value: '𝖝', }
 
+    'Glyphs':       { type: 'text', value: '𝔾', }
+    'Characters':   { type: 'text', value: 'ℤ', }
     'Quasi':        { type: 'text', value: 'ℚ', }
     'Clusters':     { type: 'text', value: 'ℂ', }
     'Factors':      { type: 'text', value: '𝔽', }
