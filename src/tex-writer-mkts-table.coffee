@@ -125,14 +125,16 @@ new_local_state = ->
   return null
 
 #-----------------------------------------------------------------------------------------------------------
-@copy_layout = ( S, L, old_layout_name, new_layout_name ) ->
-  if L.layouts[ new_layout_name ]?
-    throw new Error "#{badge} µ36339 refusing to re-define layout #{rpr new_layout_name}"
-  old_layout      = @layout_from_name S, L, old_layout_name
-  new_layout      = CND.deep_copy old_layout
-  new_layout.name = new_layout_name
-  @store_layout S, L, new_layout
-  @_initialize_layout S, L, new_layout_name
+@_API_copy = ( S, L, me, template_layout_name ) ->
+  ### TAINT ad-hoc syntax ###
+  unless ( match = template_layout_name.match /^\s*(?<template_layout_name>[^\s]+)\s*$/ )?
+    throw new Error "#{badge} µ36377 illegal layout name #{rpr template_layout_name}"
+  { template_layout_name, } = match.groups
+  unless me.name != template_layout_name
+    throw new Error "#{badge} µ36378 unable to copy layout #{rpr template_layout_name} to itself"
+  template = CND.deep_copy @layout_from_name S, L, template_layout_name
+  delete template.name
+  Object.assign me, template
   return null
 
 #-----------------------------------------------------------------------------------------------------------
@@ -195,7 +197,7 @@ new_local_state = ->
     ### TAINT change tag to sth like `mkts-table-layout` ###
     if select event, '.', 'mkts-table-description'
       [ type, name, text, meta, ] = event
-      [ layout, sandbox, ]        = @get_mkts_table_description_and_sandbox S, event
+      [ layout, sandbox, ]        = @get_mkts_table_description_and_sandbox S, L, event
       try
         ECS.evaluate text, { language: 'coffee', sandbox, }
       catch error
@@ -309,7 +311,7 @@ new_local_state = ->
     return null
 
 #-----------------------------------------------------------------------------------------------------------
-@get_mkts_table_description_and_sandbox = ( S, event ) ->
+@get_mkts_table_description_and_sandbox = ( S, L, event ) ->
   ### This method makes the format-defining names of the MKTS Table Formatter available at the top level,
   curried so that the current context (`me`) that contains the processed details as defined so far as well
   as data on the general typesetting context. All names are templating functions, such that each may be
@@ -319,9 +321,10 @@ new_local_state = ->
   me.meta = event[ 3 ]
   ### ... more typesetting detail attached here ... ###
   #.........................................................................................................
-  f = ->
+  f = =>
+    @copy                 = ( raw_parts ) => @_API_copy S, L, me, raw_parts.join ''
+    #.........................................................................................................
     @name                 = ( raw_parts ) -> MKTS_TABLE.name                  me, raw_parts.join ''
-    # @extends              = ( raw_parts ) -> MKTS_TABLE.extends               me, ( raw_parts.join '' )
     @debug                = ( raw_parts ) -> MKTS_TABLE.debug                 me, raw_parts.join ''
     @grid                 = ( raw_parts ) -> MKTS_TABLE.grid                  me, raw_parts.join ''
     @fill_gap             = ( raw_parts ) -> MKTS_TABLE.fill_gap              me, raw_parts.join ''
