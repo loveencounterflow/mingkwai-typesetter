@@ -62,7 +62,8 @@ contains = ( text, pattern ) ->
     '~isa':               'MKTS/TABLE/description'
     name:                 null
     debug:                false
-    prv_fieldnr:          0
+    _tmp:
+      prv_fieldnr:          0
     fails:                [] ### recoverable errors / fails warnings ###
     fieldcells:           {} ### field extents in terms of cells, by fieldnrs ###
     fieldnrs_by_aliases:  {} ### lists of fieldnrs indexed by field aliases ###
@@ -175,7 +176,7 @@ contains = ( text, pattern ) ->
   { selector, aliases, }  = match.groups
   selector    = selector + '..' + selector unless contains selector, /\.\./
   aliases     = @_parse_aliases me, aliases
-  fieldnr     = me.prv_fieldnr += +1
+  fieldnr     = ( me._tmp.prv_fieldnr += +1 )
   d           = IG.GRID.parse_rangekey me.grid, selector
   if me.fieldcells[ fieldnr ]? ### should never happen ###
     throw new Error "(MKTS/TABLE µ5375) unable to redefine field #{fieldnr}: #{rpr source}"
