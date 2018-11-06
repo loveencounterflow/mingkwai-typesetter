@@ -450,6 +450,19 @@
     }}}%
 
 % ----------------------------------------------------------------------------------------------------------
+\newcommand{\mktsBlankPage}{%
+  % Add a white box that will cover up whatever background elements have been
+  % put there prior to this; additionaly, set this (fancyhdr-) page style to
+  % `empty` to suppress any line numbers, column titles etc.
+  \thispagestyle{empty}%
+  \AddToShipoutPictureBG*{%
+    \begin{tikzpicture}[ overlay, remember picture, line cap = round,
+      xshift = 0mm,  yshift = \mktsGeoHighestY - 0.5mm, yscale = -1 ]%
+        \draw[ line width = 0mm, fill = white ] ( 0mm, 0mm ) rectangle ( \paperwidth, \paperheight );
+    \end{tikzpicture}%
+  }}
+
+% ----------------------------------------------------------------------------------------------------------
 \makeatother%
 
 % ----------------------------------------------------------------------------------------------------------

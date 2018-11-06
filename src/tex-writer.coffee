@@ -262,7 +262,19 @@ after = ( names..., method ) ->
     return send event unless select event, [ '!', '.', ], 'new-page'
     send stamp event
     [ type, name, text, meta, ] = event
+    ### TAINT make insertion of `\null` (which causes invisible content to be placed onto the page to ensure
+    a page break will indeed happen) conditional, so we can insert page breaks that are suppressed when
+    the current page is still fresh ###
     send [ 'tex', "\\null\\newpage{}", ]
+
+#-----------------------------------------------------------------------------------------------------------
+@MKTX.COMMAND.$blank_page = ( S ) =>
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    return send event unless select event, [ '!', '.', ], 'blank-page'
+    send stamp event
+    [ type, name, text, meta, ] = event
+    send [ 'tex', "\\mktsBlankPage{}", ]
 
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.COMMAND.$comment = ( S ) =>
@@ -2202,6 +2214,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @MKTX.MIXED.$footnote                             S
     .pipe @MKTX.MIXED.$footnote.$remove_extra_paragraphs    S
     .pipe @MKTX.COMMAND.$new_page                           S
+    .pipe @MKTX.COMMAND.$blank_page                         S
     .pipe @MKTX.COMMAND.$comment                            S
     .pipe @MKTX.MIXED.$table                                S
     .pipe @MKTX.COMMAND.$echo                               S
