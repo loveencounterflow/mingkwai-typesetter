@@ -205,6 +205,7 @@ new_local_state = ->
         warn "an error occurred"
         throw error
       send stamp event
+      send stamp [ '.', 'MKTS/TABLE/layout', layout, ( copy meta ), ]
       layout.meta = copy meta
       @store_layout S, L, layout
     #.......................................................................................................
