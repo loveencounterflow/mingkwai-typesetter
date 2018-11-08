@@ -35,6 +35,7 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
 copy                      = ( x ) -> Object.assign {}, x
 jr                        = JSON.stringify
 IG                        = require 'intergrid'
+_TMP_BORDERSEGMENTS       = require 'intergrid/lib/experiments/border-segment-finder'
 UNITS                     = require './mkts-table-units'
 
 
@@ -461,18 +462,39 @@ contains = ( text, pattern ) ->
 #-----------------------------------------------------------------------------------------------------------
 @_walk_field_borders_events = ( me ) ->
   #.........................................................................................................
-  for designation, d of me.border_dimensions
-    continue unless ( fieldborders = me.fieldborders[ designation ] )?
-    if ( borderstyle = fieldborders[ 'left' ] )?
-      yield texr 'ð13', "\\draw[#{borderstyle}] (#{d.left},#{d.top}) -- (#{d.left},#{d.bottom});% #{designation} left "
-    if ( borderstyle = fieldborders[ 'right' ] )?
-      yield texr 'ð14', "\\draw[#{borderstyle}] (#{d.right},#{d.top}) -- (#{d.right},#{d.bottom});% #{designation} right "
-    if ( borderstyle = fieldborders[ 'top' ] )?
-      yield texr 'ð15', "\\draw[#{borderstyle}] (#{d.left},#{d.top}) -- (#{d.right},#{d.top});% #{designation} top "
-    if ( borderstyle = fieldborders[ 'bottom' ] )?
-      yield texr 'ð16', "\\draw[#{borderstyle}] (#{d.left},#{d.bottom}) -- (#{d.right},#{d.bottom});% #{designation} bottom "
+  for fieldnr, d of me.border_dimensions
+    continue unless ( borders = me.fieldborders[ fieldnr ] )?
+    for i from _TMP_BORDERSEGMENTS.walk_segments fieldnr, borders
+      urge '33455', "#{me.name}/#{fieldnr}", jr i
+      yield texr 'ð1010', "%>>> #{me.name}/#{fieldnr} #{jr i}% #{fieldnr} border "
+      switch i.mode
+        when 'rectangle'
+          yield texr 'ð1011', "\\draw[#{i.style}] (#{d.left},#{d.top}) rectangle (#{d.right},#{d.bottom});% #{fieldnr} border "
+        when 'single'
+          ### TAINT refactor to method ###
+          edge  = i.edges[ 0 ]
+          v     = @_line_xy_from_edge_and_dimensions edge, d
+          yield texr 'ð1012', "\\draw[#{i.style}] (#{v.from.x},#{v.from.y}) -- (#{v.to.x},#{v.to.y});% #{fieldnr} #{edge} "
+        when 'connect'
+          v     = @_line_xy_from_edge_and_dimensions i.edges[ 0 ], d
+          parts = [ "\\draw[#{i.style}] (#{v.from.x},#{v.from.y})", ]
+          for edge in i.edges
+            v = @_line_xy_from_edge_and_dimensions edge, d
+            parts.push "(#{v.to.x},#{v.to.y})"
+          yield texr 'ð1013', ( parts.join ' -- ' ) + ';'
+        else
+          throw new Error "(MKTS/TABLE µ4801) unknown border instruction mode #{rpr i.mode} in table #{me.name}/#{fieldnr} #{jr i}"
   #.........................................................................................................
   yield return
+
+#-----------------------------------------------------------------------------------------------------------
+@_line_xy_from_edge_and_dimensions = ( edge, d ) ->
+  return switch edge
+    when 'left'   then { from: { x: d.left,  y: d.bottom, },  to: { x: d.left,  y: d.top,     }, }
+    when 'top'    then { from: { x: d.left,  y: d.top,    },  to: { x: d.right, y: d.top,     }, }
+    when 'right'  then { from: { x: d.right, y: d.top,    },  to: { x: d.right, y: d.bottom,  }, }
+    when 'bottom' then { from: { x: d.right, y: d.bottom, },  to: { x: d.left,  y: d.bottom,  }, }
+    else throw new Error "(MKTS/TABLE µ4800) illegal value for edge #{rpr edge}"
 
 #-----------------------------------------------------------------------------------------------------------
 @_get_halign_tex = ( me, halign ) ->
