@@ -341,7 +341,7 @@
 % ### TAINT should only be loaded when needed ###
 % \usepackage{struktex}
 \usepackage{tikz}
-\usetikzlibrary{ shapes.geometric, arrows, calc, backgrounds }
+\usetikzlibrary{ shapes.geometric, arrows, calc, backgrounds, decorations }
 % \tikzstyle{startstop} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm,text centered, draw=black, fill=red!30]
 % \tikzstyle{io} = [trapezium, trapezium left angle=70, trapezium right angle=110, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=blue!30]
 % \tikzstyle{process} = [rectangle, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=orange!30]
@@ -602,5 +602,12 @@
 \newcommand{\mktsJustify}{%
   \justify}%
 
+
+% ----------------------------------------------------------------------------------------------------------
+% Type in a box with round corners, reverse
+\newcommand{\mktsPillbox}[1]{%
+  \tikz[baseline=(char.base),line width=0.1ex]{%
+    \node[shape=rectangle,rounded corners = 0.2ex,draw,red,fill=black] (char) {%
+      \color{white}#1}}}%
 
 
