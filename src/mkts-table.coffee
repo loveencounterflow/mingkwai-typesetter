@@ -434,20 +434,20 @@ contains = ( text, pattern ) ->
   yield tex "\n\n"
   yield tex "% ==========================================================================================================\n"
   yield tex "\\par% Beginning of MKTS Table (layout: #{rpr layout_name})\n"
-  yield texr 'ð1', "{\\setlength{\\fboxsep}{0mm}"
-  yield texr 'ð2', "\\mktsColorframebox{green}{% debugging framebox" if me.debug
-  yield texr 'ð5', "\\begin{minipage}[t][#{table_height_txt}][t]{#{table_width_txt}}"
-  yield texr 'ð6', "\\begin{tikzpicture}[ overlay, yshift = 0mm, yscale = -1, line cap = rect ]"
-  yield texr 'ð7', "\\tikzset{x=#{unitwidth_txt}};\\tikzset{y=#{unitheight_txt}};"
+  yield texr 'ð1000', "{\\setlength{\\fboxsep}{0mm}"
+  yield texr 'ð1001', "\\mktsColorframebox{green}{% debugging framebox" if me.debug
+  yield texr 'ð1002', "\\begin{minipage}[t][#{table_height_txt}][t]{#{table_width_txt}}"
+  yield texr 'ð1003', "\\begin{tikzpicture}[ overlay, yshift = 0mm, yscale = -1, line cap = rect ]"
+  yield texr 'ð1004', "\\tikzset{x=#{unitwidth_txt}};\\tikzset{y=#{unitheight_txt}};"
   yield return
 
 #-----------------------------------------------------------------------------------------------------------
 @_walk_closing_events = ( me ) ->
   layout_name = me.name
-  yield texr 'ð8', "\\end{tikzpicture}"
-  yield texr 'ð9', "\\end{minipage}}"
-  yield texr 'ð10', "}% debugging framebox" if me.debug
-  yield texr 'ð11', "\\mktsVspace{1}"
+  yield texr 'ð1005', "\\end{tikzpicture}"
+  yield texr 'ð1006', "\\end{minipage}}"
+  yield texr 'ð1007', "}% debugging framebox" if me.debug
+  yield texr 'ð1008', "\\mktsVspace{1}"
   yield tex "\\par% End of MKTS Table (layout: #{rpr layout_name})\n"
   yield tex "% ==========================================================================================================\n"
   yield return
@@ -455,7 +455,7 @@ contains = ( text, pattern ) ->
 #-----------------------------------------------------------------------------------------------------------
 @_walk_style_events = ( me ) ->
   for key, value of me.styles
-    yield texr 'ð12', "\\tikzset{#{key}/.style={#{value}}}"
+    yield texr 'ð1009', "\\tikzset{#{key}/.style={#{value}}}"
   yield return
 
 #-----------------------------------------------------------------------------------------------------------
@@ -506,15 +506,15 @@ contains = ( text, pattern ) ->
     valign_tex  = @_get_valign_tex me, me.valigns[ selector ] ? me.valigns[ '*' ] ? 'center'
     halign_tex  = @_get_halign_tex me, me.haligns[ selector ] ? me.haligns[ '*' ] ? 'left'
     _ref = " field #{me._tmp_name}:#{selector} "
-    yield texr 'ð17', "\\node[anchor=north west,inner sep=0mm] at (#{d.left},#{d.top}) {%#{_ref}"
-    yield texr 'ð18', "\\mktsColorframebox{orange}{%#{_ref} debugging sub-framebox " if me.debug
-    yield texr 'ð19', "\\begin{minipage}[t][#{pod_height_txt}][#{valign_tex}]{#{pod_width_txt}}#{halign_tex}%#{_ref}"
+    yield texr 'ð1014', "\\node[anchor=north west,inner sep=0mm] at (#{d.left},#{d.top}) {%#{_ref}"
+    yield texr 'ð1015', "\\mktsColorframebox{orange}{%#{_ref} debugging sub-framebox " if me.debug
+    yield texr 'ð1016', "\\begin{minipage}[t][#{pod_height_txt}][#{valign_tex}]{#{pod_width_txt}}#{halign_tex}%#{_ref}"
     yield [ '.', 'noindent', null, {}, ]
     yield sub_event for sub_event in content
     if me.debug
-      yield texr 'ð20', "\\end{minipage}}};%#{_ref} debugging sub-framebox"
+      yield texr 'ð1017', "\\end{minipage}}};%#{_ref} debugging sub-framebox"
     else
-      yield texr 'ð21', "\\end{minipage}};%#{_ref}"
+      yield texr 'ð1018', "\\end{minipage}};%#{_ref}"
   #.........................................................................................................
   yield return
 
@@ -529,23 +529,23 @@ contains = ( text, pattern ) ->
   unless @_should_debug me
     yield return
   #.........................................................................................................
-  yield texr 'ð22', "\\begin{scope}[on background layer]"
+  yield texr 'ð1019', "\\begin{scope}[on background layer]"
   #.........................................................................................................
   ### TAINT use fixed size like 1mm ###
   top       = ( @_top_from_rownr     me, 1              )
   bottom    = ( @_bottom_from_rownr  me, me.grid.height )
   for colnr in [ 1 .. me.grid.width + 1 ]
     x = @_left_from_colnr me, colnr
-    yield texr 'ð23', "\\draw[sDebugCellgrid] (#{x},#{top}) -- (#{x},#{bottom});"
+    yield texr 'ð1020', "\\draw[sDebugCellgrid] (#{x},#{top}) -- (#{x},#{bottom});"
   #.........................................................................................................
   ### TAINT use fixed size like 1mm ###
   left      = ( @_left_from_colnr    me, 1              )
   right     = ( @_right_from_colnr   me, me.grid.width  )
   for rownr in [ 1 .. me.grid.height + 1 ]
     y = @_top_from_rownr me, rownr
-    yield texr 'ð24', "\\draw[sDebugCellgrid] (#{left},#{y}) -- (#{right},#{y});"
+    yield texr 'ð1021', "\\draw[sDebugCellgrid] (#{left},#{y}) -- (#{right},#{y});"
   #.........................................................................................................
-  yield texr 'ð25', "\\end{scope}"
+  yield texr 'ð1022', "\\end{scope}"
   #.........................................................................................................
   yield return
 
@@ -554,7 +554,7 @@ contains = ( text, pattern ) ->
   unless @_should_debug me
     yield return
   #.........................................................................................................
-  yield texr 'ð26', "\\begin{scope}[on background layer]"
+  yield texr 'ð1023', "\\begin{scope}[on background layer]"
   #.........................................................................................................
   for designation, d of me.field_dimensions
     ### TAINT use fixed size like 1mm ###
@@ -571,7 +571,7 @@ contains = ( text, pattern ) ->
                  + " -- (#{right},#{bottom});", ]
     yield [ 'tex', "% MKTSTBL@26\n", ]
   #.........................................................................................................
-  yield texr 'ð27', "\\end{scope}"
+  yield texr 'ð1024', "\\end{scope}"
   #.........................................................................................................
   yield return
 
@@ -582,7 +582,7 @@ contains = ( text, pattern ) ->
   @_ensure_grid me
   @_ensure_joint_coordinates  me
   #.........................................................................................................
-  yield texr 'ð28', "\\begin{scope}[on background layer]"
+  yield texr 'ð1025', "\\begin{scope}[on background layer]"
   #.........................................................................................................
   ### TAINT use fixed size like 1mm ###
   for [ colletters, colnr, ] from IG.GRID.walk_colletters_and_colnrs me.grid
@@ -592,7 +592,7 @@ contains = ( text, pattern ) ->
       cellkey = "#{colletters}#{rownr}"
       yield tex "\\node[sDebugJoints] at (#{x},#{y}) {{\\mktsStyleCode{}#{cellkey}}}; "
   #.........................................................................................................
-  yield texr 'ð29', "\\end{scope}"
+  yield texr 'ð1026', "\\end{scope}"
   #.........................................................................................................
   yield return
 
