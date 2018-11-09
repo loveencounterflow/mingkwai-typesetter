@@ -604,10 +604,27 @@
 
 
 % ----------------------------------------------------------------------------------------------------------
-% Type in a box with round corners, reverse
-\newcommand{\mktsPillbox}[1]{%
+% Boxed type
+% 1—color of background
+% 2—color of border
+% 3—color of foreground
+% 4—text
+\newcommand{\mktsPillbox}[4]{%
   \tikz[baseline=(char.base),line width=0.1ex]{%
-    \node[shape=rectangle,rounded corners = 0.2ex,draw,red,fill=black] (char) {%
-      \color{white}#1}}}%
+    \node[shape=rectangle,inner xsep=0.5ex,inner ysep=0.5ex,rounded corners = 0.5ex,draw,#2,fill=#1]
+      (char) {%
+      \color{#3}%
+      \mktsScaleFontRelative{0.8}%
+      \mktsFontfileRobotocondensedbold{}%
+      \makebox[0ex]{\phantom{Wfg}}\thinspace{}{\tfRaise{-0.025}#4}\thinspace}}}%
+
+% ----------------------------------------------------------------------------------------------------------
+% White-on-black text in a box with round corners
+\newcommand{\mktsBPillbox}[1]{\mktsPillbox{black}{black}{white}{#1}}
+\newcommand{\mktsWPillbox}[1]{\mktsPillbox{white}{black}{black}{#1}}
+
+
+
+
 
 

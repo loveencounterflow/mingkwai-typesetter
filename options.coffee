@@ -61,16 +61,36 @@ module.exports = options =
     # 'simplex':      { type: 'text', value: '𝖘', }
     # 'complex':      { type: 'text', value: '𝖝', }
 
-    'Glyphs':       { type: 'text', value: '𝔾', }
-    'Characters':   { type: 'text', value: 'ℤ', }
-    'Quasi':        { type: 'text', value: 'ℚ', }
-    'Clusters':     { type: 'text', value: 'ℂ', }
-    'Factors':      { type: 'text', value: '𝔽', }
-    'Aggregates':   { type: 'text', value: '𝔸', }
-    'Traits':       { type: 'text', value: '𝕋', }
-    'repetitive':   { type: 'text', value: '𝕣', }
-    'simplex':      { type: 'text', value: '𝕤', }
-    'complex':      { type: 'text', value: '𝕩', }
+    # 'Glyphs':       { type: 'text', value: '𝔾', }
+    # 'Characters':   { type: 'text', value: 'ℤ', }
+    # 'Quasi':        { type: 'text', value: 'ℚ', }
+    # 'Clusters':     { type: 'text', value: 'ℂ', }
+    # 'Factors':      { type: 'text', value: '𝔽', }
+    # 'Aggregates':   { type: 'text', value: '𝔸', }
+    # 'Traits':       { type: 'text', value: '𝕋', }
+    # 'repetitive':   { type: 'text', value: '𝕣', }
+    # 'simplex':      { type: 'text', value: '𝕤', }
+    # 'complex':      { type: 'text', value: '𝕩', }
+
+    'Glyphs':       { type: 'tex', value: '\\mktsWPillbox{G}', }
+    'Characters':   { type: 'tex', value: '\\mktsWPillbox{Z}', }
+    'Quasi':        { type: 'tex', value: '\\mktsWPillbox{Q}', }
+    'Clusters':     { type: 'tex', value: '\\mktsWPillbox{C}', }
+    'Factors':      { type: 'tex', value: '\\mktsWPillbox{F}', }
+    'Aggregates':   { type: 'tex', value: '\\mktsWPillbox{A}', }
+    'Traits':       { type: 'tex', value: '\\mktsWPillbox{T}', }
+    'repetitive':   { type: 'tex', value: '\\mktsWPillbox{r}', }
+    'simplex':      { type: 'tex', value: '\\mktsWPillbox{s}', }
+    'complex':      { type: 'tex', value: '\\mktsWPillbox{x}', }
+    'sC':           { type: 'tex', value: '\\mktsWPillbox{sC}', }
+    'sA':           { type: 'tex', value: '\\mktsWPillbox{sA}', }
+    'sT':           { type: 'tex', value: '\\mktsWPillbox{sT}', }
+    'xC':           { type: 'tex', value: '\\mktsWPillbox{xC}', }
+    'xA':           { type: 'tex', value: '\\mktsWPillbox{xA}', }
+    'xT':           { type: 'tex', value: '\\mktsWPillbox{xT}', }
+    'rC':           { type: 'tex', value: '\\mktsWPillbox{rC}', }
+    'rA':           { type: 'tex', value: '\\mktsWPillbox{rA}', }
+    'rT':           { type: 'tex', value: '\\mktsWPillbox{rT}', }
 
   #.........................................................................................................
   newcommands:
