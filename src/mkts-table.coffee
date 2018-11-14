@@ -465,7 +465,7 @@ contains = ( text, pattern ) ->
   for fieldnr, d of me.border_dimensions
     continue unless ( borders = me.fieldborders[ fieldnr ] )?
     for i from _TMP_BORDERSEGMENTS.walk_segments fieldnr, borders
-      urge '33455', "#{me.name}/#{fieldnr}", jr i
+      # urge '33455', "#{me.name}/#{fieldnr}", jr i
       yield texr 'ð1010', "%>>> #{me.name}/#{fieldnr} #{jr i}% #{fieldnr} border "
       switch i.mode
         when 'rectangle'

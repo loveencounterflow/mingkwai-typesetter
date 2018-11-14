@@ -49,7 +49,7 @@ MKTS.MACRO_ESCAPER.register_raw_tag 'mkts-table-description'
     @$parse_description               S, L
     @$handle_content_events           S, L
     @$handle_fields                   S, L
-    @$dump_table_layout               S, L
+    # @$dump_table_layout               S, L
     ]
 
 
