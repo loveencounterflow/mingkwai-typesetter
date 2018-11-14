@@ -196,7 +196,10 @@ new_local_state = ->
     #.......................................................................................................
     ### TAINT change tag to sth like `mkts-table-layout` ###
     if select event, '.', 'mkts-table-description'
-      [ type, name, text, meta, ] = event
+      [ type, name, Q, meta, ]    = event
+      ### TAINT other tags have attributes === Q, here attributes a property of Q ###
+      { text, attributes, }       = Q
+      debug '39833', '$parse_description', attributes
       [ layout, sandbox, ]        = @get_mkts_table_description_and_sandbox S, L, event
       try
         ECS.evaluate text, { language: 'coffee', sandbox, }

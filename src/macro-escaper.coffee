@@ -336,9 +336,9 @@ after it, thereby inhibiting any processing of those portions. ###
 #-----------------------------------------------------------------------------------------------------------
 @register_raw_tag = ( tag_name ) =>
   ### TAINT extend to match tag with attributes ###
-  start_tag   = "<#{tag_name}>"
-  stop_tag    = "</#{tag_name}>"
-  @_raw_tags.push [ tag_name, start_tag, stop_tag, ]
+  start_pattern = ///<#{tag_name}>|<#{tag_name}\s+(?<attributes>[^>]*)(?<!\/)>///g
+  stop_pattern  = ///<\/#{tag_name}>///g
+  @_raw_tags.push [ tag_name, start_pattern, stop_pattern, ]
 #...........................................................................................................
 @register_raw_tag 'raw'
 
@@ -348,8 +348,8 @@ after it, thereby inhibiting any processing of those portions. ###
   markup  = null
   #.........................................................................................................
   settings  = { valueNames: [ 'between', 'left', 'match', 'right', ], }
-  for [ tag_name, start_tag, stop_tag, ] in @_raw_tags
-    matches   = XREGEXP.matchRecursive text, start_tag, stop_tag, 'g', settings
+  for [ tag_name, start_pattern, stop_pattern, ] in @_raw_tags
+    matches = XREGEXP.matchRecursive text, start_pattern.source, stop_pattern.source, 'g', settings
     #.......................................................................................................
     if matches?
       for match in matches
@@ -530,8 +530,11 @@ after it, thereby inhibiting any processing of those portions. ###
 #-----------------------------------------------------------------------------------------------------------
 @$expand.$raw_macros  = ( S ) =>
   return @_get_expander S, @raw_id_pattern, ( meta, entry ) =>
-    [ tag_name, content, ] = entry[ 'raw' ]
-    return [ '.', tag_name, content, ( MKTS.MD_READER.copy meta ), ]
+    [ _, _, attributes, ] = MKTS.MD_READER._parse_html_open_or_lone_tag entry.markup
+    debug '44493', attributes
+    [ tag_name, text, ]   = entry[ 'raw' ]
+    Q                     = { attributes, text, }
+    return [ '.', tag_name, Q, ( MKTS.MD_READER.copy meta ), ]
 
 #-----------------------------------------------------------------------------------------------------------
 @$expand.$action_macros  = ( S ) =>

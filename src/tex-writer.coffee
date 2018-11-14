@@ -1306,10 +1306,11 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
   return $ ( event, send ) =>
     #.......................................................................................................
     if select event, '.', 'raw'
-      [ type, name, text, meta, ] = event
+      [ type, name, Q, meta, ] = event
       send stamp hide copy event
       send remark 'convert', "raw to TeX", copy meta
-      text = MACRO_ESCAPER.escape.unescape_escape_chrs S, text
+      { text, attributes, } = Q
+      text                  = MACRO_ESCAPER.escape.unescape_escape_chrs S, text
       # debug '9382', [ 'tex', text, ]
       send [ 'tex', text, ]
       # send stamp event
