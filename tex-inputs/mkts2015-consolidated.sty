@@ -26,6 +26,7 @@
 \usepackage[user,savepos]{zref}
 % \usepackage{/Volumes/Storage/io/jizura-xelatex/tex-inputs/utils}
 % \usepackage{/Users/flow/JIZURA/flow/dictionary/tex-inputs/accentbx/accentbx}
+\usepackage{rotating}
 \usepackage{cxltx}
 \usepackage{cxltx-style-accentbox}
 \usepackage{cxltx-style-trm}
@@ -623,8 +624,9 @@
 \newcommand{\mktsBPillbox}[1]{\mktsPillbox{black}{black}{white}{#1}}
 \newcommand{\mktsWPillbox}[1]{\mktsPillbox{white}{black}{black}{#1}}
 
-
-
-
+% ----------------------------------------------------------------------------------------------------------
+% Rotated text
+\newcommand{\mktsTurn}[2]{%
+  \turnbox{#1}{#2}}
 
 

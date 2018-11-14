@@ -739,6 +739,47 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       send event
 
 #-----------------------------------------------------------------------------------------------------------
+@MKTX.INLINE.$nudge = ( S ) =>
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    if select event, '(', 'nudge'
+      [ type, name, Q, meta, ] = event
+      push  = Q.push ? '0'
+      push  = parseFloat push
+      throw new Error "expected a number for push, got #{rpr event}" unless CND.isa_number push
+      raise = Q.raise ? '0'
+      raise = parseFloat raise
+      throw new Error "expected a number for raise, got #{rpr event}" unless CND.isa_number raise
+      send stamp event
+      send [ 'tex', "{\\tfPushRaise{#{push}}{#{raise}}", ]
+    #.......................................................................................................
+    else if select event, ')', 'nudge'
+      send stamp event
+      send [ 'tex', "}", ]
+    #.......................................................................................................
+    else
+      send event
+
+#-----------------------------------------------------------------------------------------------------------
+@MKTX.INLINE.$turn = ( S ) =>
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    if select event, '(', 'turn'
+      [ type, name, Q, meta, ] = event
+      angle = Q.angle ? '90'
+      angle = parseFloat angle
+      throw new Error "expected a number for angle, got #{rpr event}" unless CND.isa_number angle
+      send stamp event
+      send [ 'tex', "\\mktsTurn{#{angle}}{", ]
+    #.......................................................................................................
+    else if select event, ')', 'turn'
+      send stamp event
+      send [ 'tex', "}", ]
+    #.......................................................................................................
+    else
+      send event
+
+#-----------------------------------------------------------------------------------------------------------
 @MKTX.INLINE.$xfsc = ( S ) =>
   #.........................................................................................................
   return $ ( event, send ) =>
@@ -2205,6 +2246,8 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @MKTX.INLINE.$box                                 S
     .pipe @MKTX.INLINE.$hfill                               S
     .pipe @MKTX.INLINE.$tiny                                S
+    .pipe @MKTX.INLINE.$nudge                               S
+    .pipe @MKTX.INLINE.$turn                                S
     .pipe @MKTX.INLINE.$fncr                                S
     .pipe @MKTX.INLINE.$xfsc                                S
     .pipe @MKTX.BLOCK.$text_alignment                       S
