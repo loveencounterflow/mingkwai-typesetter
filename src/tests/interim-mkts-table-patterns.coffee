@@ -112,6 +112,7 @@ MKTS_TABLE                = require '../mkts-table'
   MKTS_TABLE.fieldcells   R, 'C3..D4:@overlap-bottomright'  # fieldnr 6
   MKTS_TABLE.fieldcells   R, 'C3..D4:@overlap-topleft'      # fieldnr 7
   MKTS_TABLE.fieldcells   R, 'C3..D4:@overlap-bottomleft'   # fieldnr 8
+  MKTS_TABLE.fieldcells   R, 'A1..A4:#fancy-id'             # fieldnr 9
   return R
 
 #-----------------------------------------------------------------------------------------------------------
@@ -120,6 +121,7 @@ MKTS_TABLE                = require '../mkts-table'
   #.........................................................................................................
   probes_and_matchers = [
     ["@japanese-text",[1]]
+    ["#fancy-id",[9]]
     ["@overlap-bottomleft,C3",[8,"C3"]]
     ["@overlap-bottomleft,C3..D4",[8,'C3..D4']]
     ["A1..C3",["A1..C3"]]

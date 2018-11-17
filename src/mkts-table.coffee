@@ -16,12 +16,12 @@ warn                      = CND.get_logger 'warn',      badge
 help                      = CND.get_logger 'help',      badge
 urge                      = CND.get_logger 'urge',      badge
 echo                      = CND.echo.bind CND
-#...........................................................................................................
-D                         = require 'pipedreams'
-$                         = D.remit.bind D
-$async                    = D.remit_async.bind D
-#...........................................................................................................
-ECS                       = require './eval-cs'
+# #...........................................................................................................
+# D                         = require 'pipedreams'
+# $                         = D.remit.bind D
+# $async                    = D.remit_async.bind D
+# #...........................................................................................................
+# ECS                       = require './eval-cs'
 MKTS                      = require './main'
 MD_READER                 = require './md-reader'
 hide                      = MD_READER.hide.bind        MD_READER
@@ -58,10 +58,12 @@ contains = ( text, pattern ) ->
 #===========================================================================================================
 # INITIALIZATION
 #-----------------------------------------------------------------------------------------------------------
-@_new_description = ( S ) ->
+@_new_description = ( S, meta, id ) ->
   R =
     '~isa':               'MKTS/TABLE/description'
-    name:                 null
+    ### TAINT rename field ###
+    name:                 id    ? null
+    meta:                 meta  ? null
     debug:                false
     _tmp:
       prv_fieldnr:          0
@@ -199,18 +201,19 @@ contains = ( text, pattern ) ->
   R = ( part.trim() for part in source.split ',' )
   R.pop() if R[ R.length - 1 ] is ''
   for alias in R
-    unless alias[ 0 ] is '@'
-      throw new Error "(MKTS/TABLE µ5376) aliases must be prefixed with '@', got #{rpr alias}"
+    unless alias[ 0 ] in [ '@', '#', ]
+      throw new Error "(MKTS/TABLE µ5376) aliases must be prefixed with '@' or '#', got #{rpr alias}"
   return [ ( new Set R )... ]
 
 #-----------------------------------------------------------------------------------------------------------
 @_resolve_aliases = ( me, selector ) ->
+  ### TAINT now done in API walk_fieldnrs_from_selectors ###
   ### Given a comma-separated string or a list of cellkeys, cellrange literals, and / or aliases, return a
   list of cellkeys and / or cellrange literals. ###
   return @_resolve_aliases me, selector.split /\s*,\s*/ if CND.isa_text selector
   R = new Set()
   for term in selector
-    if ( CND.isa_text term ) and ( term.startsWith '@' )
+    if ( CND.isa_text term ) and ( ( term.startsWith '@' ) or ( term.startsWith '#' ) )
       unless ( fieldnrs = me.fieldnrs_by_aliases[ term ] )?
         ### TAINT error or failure? ###
         throw new Error "(MKTS/TABLE µ5446) unknown alias #{rpr term}"
@@ -850,8 +853,8 @@ _stackerr = ( me, ref, message, error = null ) ->
     throw _stackerr error, "(MKTS/TABLE µ4781) ... new message ..."
   ```
   ###
-  filename  = me.meta.filename ? '<NOFILENAME>'
-  line_nr   = me.meta.line_nr ? '(NOLINENR)'
+  filename  = me.meta?.filename ? '<NOFILENAME>'
+  line_nr   = me.meta?.line_nr ? '(NOLINENR)'
   message   = "[#{badge}##{ref}: #{filename}##{line_nr}]: #{message}"
   if error?
     error.message = "#{message}\n#{error.message}"
@@ -863,8 +866,8 @@ _stackerr = ( me, ref, message, error = null ) ->
 #-----------------------------------------------------------------------------------------------------------
 _fail = ( me, ref, message ) ->
   ### TAINT using strings as error values is generally being frowned upon ###
-  filename    = me.meta.filename  ? '<NOFILENAME>'
-  line_nr     = me.meta.line_nr   ? '(NOLINENR)'
+  filename    = me.meta?.filename  ? '<NOFILENAME>'
+  line_nr     = me.meta?.line_nr   ? '(NOLINENR)'
   return "[#{badge}##{ref}: #{filename}##{line_nr}]: #{message}"
 
 #-----------------------------------------------------------------------------------------------------------

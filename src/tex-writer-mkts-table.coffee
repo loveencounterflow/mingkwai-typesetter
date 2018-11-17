@@ -6,7 +6,7 @@
 ############################################################################################################
 CND                       = require 'cnd'
 rpr                       = CND.rpr
-badge                     = 'MKTS/TEX-WRITER/MKTSTABLE'
+badge                     = 'MKTS/TEX-WRITER/MKTS-TABLE'
 log                       = CND.get_logger 'plain',     badge
 info                      = CND.get_logger 'info',      badge
 whisper                   = CND.get_logger 'whisper',   badge
@@ -21,7 +21,6 @@ D                         = require 'pipedreams'
 $                         = D.remit.bind D
 $async                    = D.remit_async.bind D
 #...........................................................................................................
-ECS                       = require './eval-cs'
 MKTS                      = require './main'
 MD_READER                 = require './md-reader'
 hide                      = MD_READER.hide.bind        MD_READER
@@ -199,15 +198,17 @@ new_local_state = ->
       [ type, name, Q, meta, ]    = event
       ### TAINT other tags have attributes === Q, here attributes a property of Q ###
       { text, attributes, }       = Q
-      debug '39833', '$parse_description', attributes
-      [ layout, sandbox, ]        = @get_mkts_table_description_and_sandbox S, L, event
-      try
-        ECS.evaluate text, { language: 'coffee', sandbox, }
-      catch error
-        warn "when trying to evaluate CS source text for <mkts-table> (source line ##{meta.line_nr}),"
-        warn "an error occurred"
-        throw error
+      attributes.format          ?= 'coffee'
       send stamp event
+      switch attributes.format
+        when 'sqy'
+          READER  = require './mkts-table-layout-reader-sqy'
+          layout  = READER.read_layout S, L, event, text
+        when 'coffee'
+          READER  = require './mkts-table-layout-reader-coffee'
+          layout  = READER.read_layout S, L, event, text
+        else
+          throw new Error "#{badge} µ29246 unknown format for <mkts-table-description>: #{rpr attributes.format}"
       send stamp [ '.', 'MKTS/TABLE/layout', layout, ( copy meta ), ]
       layout.meta = copy meta
       @store_layout S, L, layout
@@ -313,38 +314,3 @@ new_local_state = ->
     #.......................................................................................................
     send event
     return null
-
-#-----------------------------------------------------------------------------------------------------------
-@get_mkts_table_description_and_sandbox = ( S, L, event ) ->
-  ### This method makes the format-defining names of the MKTS Table Formatter available at the top level,
-  curried so that the current context (`me`) that contains the processed details as defined so far as well
-  as data on the general typesetting context. All names are templating functions, such that each may be
-  called as `grid'4x4'`, `merge'[a1]..[a4]'` and so on from the source within the MKTS document where the
-  table is being defined. ###
-  me      = MKTS_TABLE._new_description S
-  me.meta = event[ 3 ]
-  ### ... more typesetting detail attached here ... ###
-  #.........................................................................................................
-  f = =>
-    @copy                 = ( raw_parts ) => @_API_copy S, L, me, raw_parts.join ''
-    #.........................................................................................................
-    @name                 = ( raw_parts ) -> MKTS_TABLE.name                  me, raw_parts.join ''
-    @debug                = ( raw_parts ) -> MKTS_TABLE.debug                 me, raw_parts.join ''
-    @grid                 = ( raw_parts ) -> MKTS_TABLE.grid                  me, raw_parts.join ''
-    @fill_gap             = ( raw_parts ) -> MKTS_TABLE.fill_gap              me, raw_parts.join ''
-    @padding              = ( raw_parts ) -> MKTS_TABLE.padding               me, raw_parts.join ''
-    @margin               = ( raw_parts ) -> MKTS_TABLE.margin                me, raw_parts.join ''
-    @unitwidth            = ( raw_parts ) -> MKTS_TABLE.unitwidth             me, raw_parts.join ''
-    @unitheight           = ( raw_parts ) -> MKTS_TABLE.unitheight            me, raw_parts.join ''
-    @columnwidth          = ( raw_parts ) -> MKTS_TABLE.columnwidth           me, raw_parts.join ''
-    @rowheight            = ( raw_parts ) -> MKTS_TABLE.rowheight             me, raw_parts.join ''
-    @fieldcells           = ( raw_parts ) -> MKTS_TABLE.fieldcells            me, raw_parts.join ''
-    @fieldborder          = ( raw_parts ) -> MKTS_TABLE.fieldborder           me, raw_parts.join ''
-    @fieldalignvertical   = ( raw_parts ) -> MKTS_TABLE.fieldalignvertical    me, raw_parts.join ''
-    @fieldalignhorizontal = ( raw_parts ) -> MKTS_TABLE.fieldalignhorizontal  me, raw_parts.join ''
-    return @
-  #.........................................................................................................
-  return [ me, ( f.apply {} ), ]
-
-
-

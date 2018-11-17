@@ -349,7 +349,13 @@ after it, thereby inhibiting any processing of those portions. ###
   #.........................................................................................................
   settings  = { valueNames: [ 'between', 'left', 'match', 'right', ], }
   for [ tag_name, start_pattern, stop_pattern, ] in @_raw_tags
-    matches = XREGEXP.matchRecursive text, start_pattern.source, stop_pattern.source, 'g', settings
+    try
+      matches = XREGEXP.matchRecursive text, start_pattern.source, stop_pattern.source, 'g', settings
+    catch error
+      warn "when trying to parse text:"
+      urge rpr text
+      warn "an error occurred: #{error.message}"
+      throw new Error "µ49022 #{error.message}"
     #.......................................................................................................
     if matches?
       for match in matches
@@ -531,7 +537,6 @@ after it, thereby inhibiting any processing of those portions. ###
 @$expand.$raw_macros  = ( S ) =>
   return @_get_expander S, @raw_id_pattern, ( meta, entry ) =>
     [ _, _, attributes, ] = MKTS.MD_READER._parse_html_open_or_lone_tag entry.markup
-    debug '44493', attributes
     [ tag_name, text, ]   = entry[ 'raw' ]
     Q                     = { attributes, text, }
     return [ '.', tag_name, Q, ( MKTS.MD_READER.copy meta ), ]
