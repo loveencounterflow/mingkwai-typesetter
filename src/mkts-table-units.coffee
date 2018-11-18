@@ -29,6 +29,9 @@ jr                        = JSON.stringify
 
 
 #-----------------------------------------------------------------------------------------------------------
+@new_quantity = ( value, unit ) -> { '~isa': 'MKTS/TABLE/quantity', value, unit, }
+
+#-----------------------------------------------------------------------------------------------------------
 @parse_nonnegative_quantity = ( text ) ->
   unless ( match = text.match @pattern )?
     throw new Error "(MKTS/TABLE µ5375) unable to parse #{rpr text} as nonnegative quantity"

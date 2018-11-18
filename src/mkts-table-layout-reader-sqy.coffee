@@ -59,6 +59,9 @@ SQY                       = require 'sqy'
       when 'set_debug'
         MKTS_TABLE_API.set_debug R, t.value
         continue
+      when 'set_unit_lengths'
+        MKTS_TABLE_API.set_unit_lengths R, t.value, t.unit
+        continue
       when 'assignment'
         warn '25521', "ignoring #{t.type}"
         continue

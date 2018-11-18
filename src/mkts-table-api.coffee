@@ -22,7 +22,7 @@ MKTS_TABLE                = require './mkts-table'
 #...........................................................................................................
 jr                        = JSON.stringify
 IG                        = require 'intergrid'
-# UNITS                     = require './mkts-table-units'
+UNITS                     = require './mkts-table-units'
 
 
 
@@ -95,14 +95,31 @@ IG                        = require 'intergrid'
 
 #-----------------------------------------------------------------------------------------------------------
 @set_borders = ( me, selectors, edges, style ) ->
-  debug '44433', selectors, edges, style
   for fieldnr from @walk_fieldnrs_from_selectors me, selectors
-    debug '44433', 'fieldnr', fieldnr
     ### TAINT must resolve symbolic edges like `all` ###
     for edge in edges
-      throw new Error "µ29282 must resolve symbolic edges like `all`, got #{rpr edge}" unless edge in [ 'left', 'right', 'top', 'bottom', ]
+      throw new Error "µ1240 must resolve symbolic edges like `all`, got #{rpr edge}" unless edge in [ 'left', 'right', 'top', 'bottom', ]
       ( me.fieldborders[ fieldnr ]?= {} )[ edge ] = style
   #.........................................................................................................
+  return null
+
+#-----------------------------------------------------------------------------------------------------------
+@set_unit_lengths = ( me, value, unit ) ->
+  @_set_unit_length me, 'width',   value, unit
+  @_set_unit_length me, 'height',  value, unit
+  return null
+
+#-----------------------------------------------------------------------------------------------------------
+@_set_unit_length = ( me, direction, value, unit ) ->
+  unless direction in [ 'width', 'height', ]
+    throw new Error "µ1247 expected 'width' or 'height', got #{rpr direction}"
+  p = "unit#{direction}"
+  #.........................................................................................................
+  ### Do nothing if dimension already defined: ###
+  if me[ p ]?
+    throw new Error "µ1247 unable to re-define unit for #{rpr direction}"
+  #.........................................................................................................
+  me[ p ] = UNITS.new_quantity value, unit
   return null
 
 #-----------------------------------------------------------------------------------------------------------
@@ -145,24 +162,10 @@ IG                        = require 'intergrid'
 
 
 
-
-#-----------------------------------------------------------------------------------------------------------
-@_set_unitsize = ( me, direction, text ) ->
-  unless direction in [ 'width', 'height', ]
-    throw _stackerr me, 'µ4613', "expected 'width' or 'height', got #{rpr direction}"
-  p = "unit#{direction}"
-  #.........................................................................................................
-  ### Do nothing if dimension already defined: ###
-  if me[ p ]?
-    return _record_fail me, 'µ5661', "unable to re-define #{p}"
-  #.........................................................................................................
-  me[ p ] = UNITS.parse_nonnegative_quantity text
-  return null
-
 #-----------------------------------------------------------------------------------------------------------
 @_set_lanesizes = ( me, direction, text ) ->
   unless direction in [ 'width', 'height', ]
-    throw _stackerr me, 'µ2352', "expected 'width' or 'height', got #{rpr direction}"
+    throw _stackerr me, 'µ1249', "expected 'width' or 'height', got #{rpr direction}"
   #.........................................................................................................
   p   = if direction is 'width' then 'colwidth'   else 'rowheight'
   ps  = if direction is 'width' then 'colwidths'  else 'rowheights'
