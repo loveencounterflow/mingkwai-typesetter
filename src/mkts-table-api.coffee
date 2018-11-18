@@ -123,33 +123,85 @@ UNITS                     = require './mkts-table-units'
   return null
 
 #-----------------------------------------------------------------------------------------------------------
+@set_alignment = ( me, selectors, direction, alignment ) ->
+  switch direction
+    #.......................................................................................................
+    when 'horizontal'
+      unless alignment in [ 'left', 'right', 'center', 'justified', ]
+        throw new Error "(MKTS/TABLE µ1241) unknown horizontal alignment #{rpr alignment}"
+      target = me.haligns
+    #.......................................................................................................
+    when 'vertical'
+      unless alignment in [ 'top', 'bottom', 'center', 'spread', ]
+        throw new Error "(MKTS/TABLE µ1242) unknown vertical alignment #{rpr alignment}"
+      target = me.valigns
+    else
+      throw new Error "µ1243 unknown direction #{rpr direction}"
+  #.........................................................................................................
+  for fieldnr from @walk_fieldnrs_from_selectors me, selectors
+    target[ fieldnr ] = alignment
+  #.........................................................................................................
+  return null
+
+#-----------------------------------------------------------------------------------------------------------
 @walk_fieldnrs_from_selectors = ( me, selectors ) ->
   seen_fieldnrs = new Set()
+  #.........................................................................................................
   for selector in selectors
-    for cellref from @walk_cellrefs_from_selectors me, selectors
-      for fieldnr in me.cellfields[ cellref.cellkey ] ? []
-        continue if seen_fieldnrs.has fieldnr
-        seen_fieldnrs.add fieldnr
-        yield fieldnr
+    switch selector.type
+      when 'cellkey'
+        for cellref from IG.GRID.walk_cells_from_key me.grid, selector.value
+          for fieldnr in me.cellfields[ cellref.cellkey ] ? []
+            continue if seen_fieldnrs.has fieldnr
+            seen_fieldnrs.add fieldnr
+            yield fieldnr
+      when 'id'
+        for fieldnr in me.fieldnrs_by_aliases[ selector.id ] ? []
+          continue if seen_fieldnrs.has fieldnr
+          seen_fieldnrs.add fieldnr
+          yield fieldnr
+      else
+        warn 'µ1245', "ignoring selector type #{selector.type}"
+  #.........................................................................................................
+  if seen_fieldnrs.size is 0
+    throw new Error "µ1244 selectors #{rpr selectors} do not match any field"
   #.........................................................................................................
   yield return
-      # unless ( fieldnrs = me.fieldnrs_by_aliases[ term ] )?
-      #   throw new Error "(MKTS/TABLE µ5446) unknown alias #{rpr term}"
-      # R.add fieldnr for fieldnr in fieldnrs
 
 #-----------------------------------------------------------------------------------------------------------
 @walk_cellrefs_from_selectors = ( me, selectors ) ->
+  count         = 0
   seen_cellkeys = new Set()
+  #.........................................................................................................
   for selector in selectors
-    # debug '38393', rpr selector
     switch selector.type
       when 'cellkey'
         for cellref from IG.GRID.walk_cells_from_key me.grid, selector.value
           continue if seen_cellkeys.has cellref.cellkey
           seen_cellkeys.add cellref.cellkey
+          count += +1
           yield cellref
+      when 'id'
+        for fieldnr in me.fieldnrs_by_aliases[ selector.id ] ? []
+          for cellref from @walk_cellrefs_from_fieldnr me, fieldnr
+            continue if seen_cellkeys.has cellref.cellkey
+            seen_cellkeys.add cellref.cellkey
+            count += +1
+            yield cellref
       else
-        warn '90901', "ignoring selector type #{selector.type}"
+        warn 'µ1245', "ignoring selector type #{selector.type}"
+  #.........................................................................................................
+  if count is 0
+    throw new Error "µ1246 selectors #{rpr selectors} do not match any cell"
+  #.........................................................................................................
+  yield return
+
+#-----------------------------------------------------------------------------------------------------------
+@walk_cellrefs_from_fieldnr = ( me, fieldnr ) ->
+  unless ( rangeref = me.fieldcells[ fieldnr ] )?
+    throw new Error "µ1246 unknown fieldnr #{rpr fieldnr}"
+  for cellref from IG.GRID.walk_cells_from_rangeref me.grid, rangeref
+    yield cellref
   #.........................................................................................................
   yield return
 
