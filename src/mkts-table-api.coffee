@@ -38,12 +38,12 @@ UNITS                     = require './mkts-table-units'
 #-----------------------------------------------------------------------------------------------------------
 @set_grid = ( me, size ) ->
   if me.grid?
-    return _record_fail me, 'µ5689', "unable to re-define grid"
+    throw new Error "µ1234 unable to re-define grid"
   switch size.type
     when 'cellkey'
       me.grid = IG.GRID.new_grid_from_cellkey size.value
     else
-      throw _stackerr me, 'µ4613', "unknown type for grid size #{rpr size}"
+      throw new Error "µ1235 unknown type for grid size #{rpr size}"
   return null
 
 #-----------------------------------------------------------------------------------------------------------
@@ -51,7 +51,7 @@ UNITS                     = require './mkts-table-units'
   switch toggle
     when true   then me.debug = true
     when false  then me.debug = false
-    else throw new Error "(MKTS/TABLE µ1343) expected `true` or `false` for mkts-table/debug, got #{rpr toggle}"
+    else throw new Error "µ1236 expected `true` or `false` for mkts-table/debug, got #{rpr toggle}"
   return null
 
 #-----------------------------------------------------------------------------------------------------------
@@ -62,8 +62,8 @@ UNITS                     = require './mkts-table-units'
     when 'rangekey'
       first       = selector.first
       second      = selector.second
-      throw new Error "(MKTS/TABLE µ1344) expected a cellkey, got a #{rpr first.type}"  unless first.type is 'cellkey'
-      throw new Error "(MKTS/TABLE µ1345) expected a cellkey, got a #{rpr second.type}" unless second.type is 'cellkey'
+      throw new Error "(MKTS/TABLE µ1237) expected a cellkey, got a #{rpr first.type}"  unless first.type is 'cellkey'
+      throw new Error "(MKTS/TABLE µ1238) expected a cellkey, got a #{rpr second.type}" unless second.type is 'cellkey'
       rangekey    = "#{first.value}..#{second.value}"
   #.........................................................................................................
   ### TAINT should support using variables etc. ###
@@ -71,7 +71,7 @@ UNITS                     = require './mkts-table-units'
   rangeref    = IG.GRID.parse_rangekey me.grid, rangekey
   fieldnr     = ( me._tmp.prv_fieldnr += +1 )
   if me.fieldcells[ fieldnr ]? ### should never happen ###
-    throw new Error "(MKTS/TABLE µ5375) unable to redefine field #{fieldnr}: #{rpr source}"
+    throw new Error "(MKTS/TABLE µ1239) unable to redefine field #{fieldnr}: #{rpr source}"
   #.........................................................................................................
   me.fieldcells[ fieldnr ] = rangeref
   for fieldcell from IG.GRID.walk_cells_from_rangeref me.grid, rangeref
@@ -226,7 +226,7 @@ UNITS                     = require './mkts-table-units'
   lane_count = me.grid[ direction ]
   #.........................................................................................................
   unless ( match = text.match /^(?:(?<selector>[^:]+):)?(?<length>[+\d.]+)$/ )?
-    _record_fail me, 'µ6377', "need a text like '2.7', 'A*,C3:20' or similar for mkts-table/#{p}, got #{rpr text}"
+    _record_fail me, 'µ1250', "need a text like '2.7', 'A*,C3:20' or similar for mkts-table/#{p}, got #{rpr text}"
     return null
   #.........................................................................................................
   { selector, length, } = match.groups
@@ -261,7 +261,7 @@ UNITS                     = require './mkts-table-units'
 #     if ( CND.isa_text term ) and ( term.startsWith '@' )
 #       unless ( fieldnrs = me.fieldnrs_by_aliases[ term ] )?
 #         ### TAINT error or failure? ###
-#         throw new Error "(MKTS/TABLE µ5446) unknown alias #{rpr term}"
+#         throw new Error "(MKTS/TABLE µ1251) unknown alias #{rpr term}"
 #       R.add fieldnr for fieldnr in fieldnrs
 #     else
 #       R.add term
@@ -270,11 +270,11 @@ UNITS                     = require './mkts-table-units'
 #-----------------------------------------------------------------------------------------------------------
 @fieldalignvertical = ( me, text ) ->
   unless ( match = text.match /^(.+?):([^:]+)$/ )?
-    throw new Error "(MKTS/TABLE µ5229) expected something like 'C3:top' for mkts-table/fieldalignvertical, got #{rpr text}"
+    throw new Error "(MKTS/TABLE µ1252) expected something like 'C3:top' for mkts-table/fieldalignvertical, got #{rpr text}"
   [ _, selector, value, ] = match
   #.........................................................................................................
   unless value in [ 'top', 'bottom', 'center', 'spread', ]
-    throw new Error "(MKTS/TABLE µ1876) expected one of 'top', 'bottom', 'center', 'spread' for mkts-table/fieldalignvertical, got #{rpr value}"
+    throw new Error "(MKTS/TABLE µ1253) expected one of 'top', 'bottom', 'center', 'spread' for mkts-table/fieldalignvertical, got #{rpr value}"
   #.........................................................................................................
   for [ fail, field_designation, ] from @_walk_fails_and_fieldnrs_from_selector me, selector
     ### TAINT ad-hoc fail message production, use method ###
@@ -286,11 +286,11 @@ UNITS                     = require './mkts-table-units'
 #-----------------------------------------------------------------------------------------------------------
 @fieldalignhorizontal = ( me, text ) ->
   unless ( match = text.match /^(.+?):([^:]+)$/ )?
-    throw new Error "(MKTS/TABLE µ5229) expected something like 'C3:left' for mkts-table/fieldalignhorizontal, got #{rpr text}"
+    throw new Error "(MKTS/TABLE µ1254) expected something like 'C3:left' for mkts-table/fieldalignhorizontal, got #{rpr text}"
   [ _, selector, value, ] = match
   #.........................................................................................................
   unless value in [ 'left', 'right', 'center', 'justified', ]
-    throw new Error "(MKTS/TABLE µ1876) expected one of 'left', 'right', 'center', 'justified' for mkts-table/fieldalignhorizontal, got #{rpr value}"
+    throw new Error "(MKTS/TABLE µ1255) expected one of 'left', 'right', 'center', 'justified' for mkts-table/fieldalignhorizontal, got #{rpr value}"
   #.........................................................................................................
   for [ fail, field_designation, ] from @_walk_fails_and_fieldnrs_from_selector me, selector
     ### TAINT ad-hoc fail message production, use method ###
@@ -298,16 +298,6 @@ UNITS                     = require './mkts-table-units'
     else          me.haligns[ field_designation ] = value
   #.........................................................................................................
   return null
-
-# #-----------------------------------------------------------------------------------------------------------
-# @name = ( me, text ) ->
-#   if me.name?
-#     throw new Error "(MKTS/TABLE µ1344) refused to rename table layout #{rpr me.name} to #{rpr text}"
-#   #.........................................................................................................
-#   ### TAINT should check syntax (no whitespace etc) ###
-#   me.name = text
-#   return null
-
 
 #-----------------------------------------------------------------------------------------------------------
 @margin = ( me, text ) ->
@@ -341,43 +331,5 @@ UNITS                     = require './mkts-table-units'
 
 
 
-#===========================================================================================================
-# HELPERS
-#-----------------------------------------------------------------------------------------------------------
-_stackerr = ( me, ref, message, error = null ) ->
-  ###
-  Prepends local error message to the original one so we get more informative traces. Usage:
-
-  ```
-  try
-    ...
-  catch error
-    throw _stackerr error, "(MKTS/TABLE µ4781) ... new message ..."
-  ```
-  ###
-  filename  = me.meta.filename ? '<NOFILENAME>'
-  line_nr   = me.meta.line_nr ? '(NOLINENR)'
-  message   = "[#{badge}##{ref}: #{filename}##{line_nr}]: #{message}"
-  if error?
-    error.message = "#{message}\n#{error.message}"
-  else
-    ### TAINT elide current line from stack trace ###
-    error = new Error message
-  return error
-
-#-----------------------------------------------------------------------------------------------------------
-_fail = ( me, ref, message ) ->
-  ### TAINT using strings as error values is generally being frowned upon ###
-  filename    = me.meta.filename  ? '<NOFILENAME>'
-  line_nr     = me.meta.line_nr   ? '(NOLINENR)'
-  return "[#{badge}##{ref}: #{filename}##{line_nr}]: #{message}"
-
-#-----------------------------------------------------------------------------------------------------------
-_record = ( me, message ) ->
-  me.fails.push message
-  return null
-
-#-----------------------------------------------------------------------------------------------------------
-_record_fail = ( me, ref, message ) -> _record me, _fail me, ref, message
 
 

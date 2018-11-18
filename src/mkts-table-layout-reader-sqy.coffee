@@ -86,10 +86,10 @@ SQY                       = require 'sqy'
         warn '25521', "ignoring #{t.type}"
         continue
       when 'set_sel_alignment'
-        warn '25521', "ignoring #{t.type}"
+        MKTS_TABLE_API.set_alignment R, t.selectors, t.direction, t.align
         continue
     #.......................................................................................................
-    warn "unhandled t type #{rpr t.type}"
+    warn "unhandled token type #{rpr t.type}"
   #.........................................................................................................
   if R.fails.length > 0
     alert '44093', fail for fail in R.fails
