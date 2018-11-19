@@ -75,7 +75,7 @@ contains = ( text, pattern ) ->
     cell_dimensions:      {}
     fieldborders:         {} ### field borders, as TikZ styles by edges ###
     gaps:
-      fill:                 {} ### gaps between grid and background, by fieldnrs ###
+      background:           {} ### gaps between grid and background, by fieldnrs ###
       margins:              {} ### field margins, by fieldnrs ###
       paddings:             {} ### field paddings, by fieldnrs ###
     field_dimensions:     {} ### field extents in terms of (unitwidth,unitheight), by fieldnrs ###
@@ -104,7 +104,7 @@ contains = ( text, pattern ) ->
       colwidth:             10
       rowheight:            10
       gaps:
-        fill:                 0
+        background:           0
         margins:              0
         paddings:             1
   return R
@@ -224,7 +224,7 @@ contains = ( text, pattern ) ->
 
 #-----------------------------------------------------------------------------------------------------------
 @_set_default_gaps = ( me, fieldnr ) ->
-  for gap in [ 'fill', 'margins', 'paddings', ]
+  for gap in [ 'background', 'margins', 'paddings', ]
     for edge in [ 'left', 'right', 'top', 'bottom', ]
       ( me.gaps[ gap ][ fieldnr ]?= {} )[ edge ] = me.default.gaps[ gap ]
   return null
@@ -310,12 +310,12 @@ contains = ( text, pattern ) ->
   return null
 
 #-----------------------------------------------------------------------------------------------------------
-@fill_gap = ( me, text ) ->
+@background_gap = ( me, text ) ->
   ### TAINT code duplication ###
-  d = @_parse_fieldgap me, 'fill', text
+  d = @_parse_fieldgap me, 'background', text
   for fieldname in d.fieldnames
     for edge in d.edges
-      ( me.gaps.fill[ fieldname ]?= {} )[ edge ] = d.length
+      ( me.gaps.background[ fieldname ]?= {} )[ edge ] = d.length
   #.........................................................................................................
   return null
 

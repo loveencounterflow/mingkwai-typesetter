@@ -87,21 +87,22 @@ UNITS                     = require './mkts-table-units'
   return null
 
 #-----------------------------------------------------------------------------------------------------------
-@_set_default_gaps = ( me, fieldnr ) ->
-  for gap in [ 'fill', 'margins', 'paddings', ]
-    for edge in [ 'left', 'right', 'top', 'bottom', ]
-      ( me.gaps[ gap ][ fieldnr ]?= {} )[ edge ] = me.default.gaps[ gap ]
+@set_borders = ( me, selectors, edges, style ) ->
+  for fieldnr from @walk_fieldnrs_from_selectors me, selectors
+    target = me.fieldborders[ fieldnr ]?= {}
+    for edge in @_expand_edges me, edges
+      if style is 'none' then delete  target[ edge ]
+      else                            target[ edge ] = style
+  #.........................................................................................................
   return null
 
 #-----------------------------------------------------------------------------------------------------------
-@set_borders = ( me, selectors, edges, style ) ->
-  for fieldnr from @walk_fieldnrs_from_selectors me, selectors
-    ### TAINT must resolve symbolic edges like `all` ###
-    for edge in edges
-      throw new Error "µ1240 must resolve symbolic edges like `all`, got #{rpr edge}" unless edge in [ 'left', 'right', 'top', 'bottom', ]
-      ( me.fieldborders[ fieldnr ]?= {} )[ edge ] = style
-  #.........................................................................................................
-  return null
+@_expand_edges = ( me, edges ) ->
+  for edge in edges
+    unless edge in [ 'left', 'right', 'top', 'bottom', 'all', ]
+      throw new Error "µ1240 unknown edge #{rpr edge}"
+  return [ edges..., ] unless 'all' in edges
+  return [ 'left', 'right', 'top', 'bottom', ]
 
 #-----------------------------------------------------------------------------------------------------------
 @set_unit_lengths = ( me, value, unit ) ->
@@ -144,11 +145,76 @@ UNITS                     = require './mkts-table-units'
   return null
 
 #-----------------------------------------------------------------------------------------------------------
+@set_lane_sizes = ( me, direction, value ) ->
+  unless direction in [ 'width', 'height', ]
+    throw new Error "µ1249 expected 'width' or 'height', got #{rpr direction}"
+  #.........................................................................................................
+  p   = if direction is 'width' then 'colwidth'   else 'rowheight'
+  ps  = if direction is 'width' then 'colwidths'  else 'rowheights'
+  #.........................................................................................................
+  @_ensure_grid me
+  lane_count = me.grid[ direction ]
+  # #.........................................................................................................
+  # if selector?
+  #   me[ ps ][  0 ]  ?= me.default[ p ] ### set default ###
+  #   me[ ps ][ nr ]  ?= me.default[ p ] for nr in [ 1 .. lane_count ] ### set defaults where missing ###
+  #   for [ fail, lanenr, ] from @_walk_fails_and_lanenrs_from_direction_and_selector me, direction, selector
+  #     if fail? then _record me, fail
+  #     else          me[ ps ][ lanenr ] = length
+  # else
+  me[ ps ][  0 ]  = value ### set default ###
+  me[ ps ][ nr ]  = value for nr in [ 1 .. lane_count ]
+  #.........................................................................................................
+  return null
+
+#-----------------------------------------------------------------------------------------------------------
+@_set_default_gaps = ( me, fieldnr ) ->
+  for gap in [ 'background', 'margins', 'paddings', ]
+    for edge in [ 'left', 'right', 'top', 'bottom', ]
+      ( me.gaps[ gap ][ fieldnr ]?= {} )[ edge ] = me.default.gaps[ gap ]
+  return null
+
+#-----------------------------------------------------------------------------------------------------------
+@set_default_gaps = ( me, feature, value ) ->
+  unless feature in [ 'border', 'text', 'background', ]
+    throw new Error "µ1290 expected one of 'border', 'text', 'background', got #{rpr feature}"
+  switch feature
+    when 'border'     then me.default.gaps.margins    = value
+    when 'text'       then me.default.gaps.paddings   = value
+    when 'background' then me.default.gaps.background = value
+  #.........................................................................................................
+  return null
+
+#-----------------------------------------------------------------------------------------------------------
+@set_field_gaps = ( me, selectors, edges, feature, value ) ->
+  switch feature
+    when 'border'     then target = me.gaps.margins
+    when 'text'       then target = me.gaps.paddings
+    when 'background' then target = me.gaps.background
+    else throw new Error "µ1290 expected one of 'border', 'text', 'background', got #{rpr feature}"
+  for fieldnr from @walk_fieldnrs_from_selectors me, selectors
+    sub_target = target[ fieldnr ]?= {}
+    for edge in @_expand_edges me, edges
+      sub_target[ edge ] = value
+  #.........................................................................................................
+  return null
+
+
+#===========================================================================================================
+#
+#-----------------------------------------------------------------------------------------------------------
 @walk_fieldnrs_from_selectors = ( me, selectors ) ->
   seen_fieldnrs = new Set()
   #.........................................................................................................
   for selector in selectors
     switch selector.type
+      when 'rangekey'
+        rangekey = selector.first.value + '..' + selector.second.value
+        for cellref from IG.GRID.walk_cells_from_rangekey me.grid, rangekey
+          for fieldnr in me.cellfields[ cellref.cellkey ] ? []
+            continue if seen_fieldnrs.has fieldnr
+            seen_fieldnrs.add fieldnr
+            yield fieldnr
       when 'cellkey'
         for cellref from IG.GRID.walk_cells_from_key me.grid, selector.value
           for fieldnr in me.cellfields[ cellref.cellkey ] ? []
@@ -161,7 +227,7 @@ UNITS                     = require './mkts-table-units'
           seen_fieldnrs.add fieldnr
           yield fieldnr
       else
-        warn 'µ1245', "ignoring selector type #{selector.type}"
+        throw new Error "µ1245 ignoring selector type #{selector.type}"
   #.........................................................................................................
   if seen_fieldnrs.size is 0
     throw new Error "µ1244 selectors #{rpr selectors} do not match any field"
@@ -205,129 +271,12 @@ UNITS                     = require './mkts-table-units'
   #.........................................................................................................
   yield return
 
-
-### ***************************************************** ###
-### ***************************************************** ###
-### ***************************************************** ###
-### ***************************************************** ###
-### ***************************************************** ###
-
-
-
 #-----------------------------------------------------------------------------------------------------------
-@_set_lanesizes = ( me, direction, text ) ->
-  unless direction in [ 'width', 'height', ]
-    throw _stackerr me, 'µ1249', "expected 'width' or 'height', got #{rpr direction}"
-  #.........................................................................................................
-  p   = if direction is 'width' then 'colwidth'   else 'rowheight'
-  ps  = if direction is 'width' then 'colwidths'  else 'rowheights'
-  #.........................................................................................................
-  @_ensure_grid me
-  lane_count = me.grid[ direction ]
-  #.........................................................................................................
-  unless ( match = text.match /^(?:(?<selector>[^:]+):)?(?<length>[+\d.]+)$/ )?
-    _record_fail me, 'µ1250', "need a text like '2.7', 'A*,C3:20' or similar for mkts-table/#{p}, got #{rpr text}"
-    return null
-  #.........................................................................................................
-  { selector, length, } = match.groups
-  length                = parseFloat length
-  #.........................................................................................................
-  if selector?
-    me[ ps ][  0 ]  ?= me.default[ p ] ### set default ###
-    me[ ps ][ nr ]  ?= me.default[ p ] for nr in [ 1 .. lane_count ] ### set defaults where missing ###
-    for [ fail, lanenr, ] from @_walk_fails_and_lanenrs_from_direction_and_selector me, direction, selector
-      if fail? then _record me, fail
-      else          me[ ps ][ lanenr ] = length
-  else
-    me[ ps ][  0 ]  = length ### set default ###
-    me[ ps ][ nr ]  = length for nr in [ 1 .. lane_count ]
-  #.........................................................................................................
-  return null
-
-#-----------------------------------------------------------------------------------------------------------
-@unitwidth    = ( me, text ) -> @_set_unitsize  me, 'width',    text
-@unitheight   = ( me, text ) -> @_set_unitsize  me, 'height',   text
-@columnwidth  = ( me, text ) -> @_set_lanesizes me, 'width',    text
-@rowheight    = ( me, text ) -> @_set_lanesizes me, 'height',   text
+@_ensure_grid = ( me ) ->
+  return null if me.grid?
+  throw new Error "(MKTS/TABLE µ5307) grid must be set"
 
 
-# #-----------------------------------------------------------------------------------------------------------
-# @_resolve_aliases = ( me, selector ) ->
-#   ### Given a comma-separated string or a list of cellkeys, cellrange literals, and / or aliases, return a
-#   list of cellkeys and / or cellrange literals. ###
-#   return @_resolve_aliases me, selector.split /\s*,\s*/ if CND.isa_text selector
-#   R = new Set()
-#   for term in selector
-#     if ( CND.isa_text term ) and ( term.startsWith '@' )
-#       unless ( fieldnrs = me.fieldnrs_by_aliases[ term ] )?
-#         ### TAINT error or failure? ###
-#         throw new Error "(MKTS/TABLE µ1251) unknown alias #{rpr term}"
-#       R.add fieldnr for fieldnr in fieldnrs
-#     else
-#       R.add term
-#   return [ R... ]
-
-#-----------------------------------------------------------------------------------------------------------
-@fieldalignvertical = ( me, text ) ->
-  unless ( match = text.match /^(.+?):([^:]+)$/ )?
-    throw new Error "(MKTS/TABLE µ1252) expected something like 'C3:top' for mkts-table/fieldalignvertical, got #{rpr text}"
-  [ _, selector, value, ] = match
-  #.........................................................................................................
-  unless value in [ 'top', 'bottom', 'center', 'spread', ]
-    throw new Error "(MKTS/TABLE µ1253) expected one of 'top', 'bottom', 'center', 'spread' for mkts-table/fieldalignvertical, got #{rpr value}"
-  #.........................................................................................................
-  for [ fail, field_designation, ] from @_walk_fails_and_fieldnrs_from_selector me, selector
-    ### TAINT ad-hoc fail message production, use method ###
-    if fail? then _record me, "#{fail} (#{jr {field_designation}})"
-    else          me.valigns[ field_designation ] = value
-  #.........................................................................................................
-  return null
-
-#-----------------------------------------------------------------------------------------------------------
-@fieldalignhorizontal = ( me, text ) ->
-  unless ( match = text.match /^(.+?):([^:]+)$/ )?
-    throw new Error "(MKTS/TABLE µ1254) expected something like 'C3:left' for mkts-table/fieldalignhorizontal, got #{rpr text}"
-  [ _, selector, value, ] = match
-  #.........................................................................................................
-  unless value in [ 'left', 'right', 'center', 'justified', ]
-    throw new Error "(MKTS/TABLE µ1255) expected one of 'left', 'right', 'center', 'justified' for mkts-table/fieldalignhorizontal, got #{rpr value}"
-  #.........................................................................................................
-  for [ fail, field_designation, ] from @_walk_fails_and_fieldnrs_from_selector me, selector
-    ### TAINT ad-hoc fail message production, use method ###
-    if fail? then _record me, "#{fail} (#{jr {field_designation}})"
-    else          me.haligns[ field_designation ] = value
-  #.........................................................................................................
-  return null
-
-#-----------------------------------------------------------------------------------------------------------
-@margin = ( me, text ) ->
-  ### TAINT code duplication ###
-  d = @_parse_fieldgap me, 'margin', text
-  for fieldname in d.fieldnames
-    for edge in d.edges
-      ( me.gaps.margins[ fieldname ]?= {} )[ edge ] = d.length
-  #.........................................................................................................
-  return null
-
-#-----------------------------------------------------------------------------------------------------------
-@padding = ( me, text ) ->
-  ### TAINT code duplication ###
-  d = @_parse_fieldgap me, 'padding', text
-  for fieldname in d.fieldnames
-    for edge in d.edges
-      ( me.gaps.paddings[ fieldname ]?= {} )[ edge ] = d.length
-  #.........................................................................................................
-  return null
-
-#-----------------------------------------------------------------------------------------------------------
-@fill_gap = ( me, text ) ->
-  ### TAINT code duplication ###
-  d = @_parse_fieldgap me, 'fill', text
-  for fieldname in d.fieldnames
-    for edge in d.edges
-      ( me.gaps.fill[ fieldname ]?= {} )[ edge ] = d.length
-  #.........................................................................................................
-  return null
 
 
 

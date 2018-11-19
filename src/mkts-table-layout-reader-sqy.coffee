@@ -25,6 +25,7 @@ jr                        = JSON.stringify
 # MKTS_TABLE                = require './mkts-table'
 MKTS_TABLE_API            = require './mkts-table-api'
 SQY                       = require 'sqy'
+misfit                    = Symbol 'misfit'
 
 
 
@@ -37,6 +38,7 @@ SQY                       = require 'sqy'
   #.........................................................................................................
   for t in SQY.parse source
     whisper '88373', jr t
+    _ = misfit
     #.......................................................................................................
     switch t.type
       when 'cheat'
@@ -53,44 +55,26 @@ SQY                       = require 'sqy'
       throw new Error "µ9893 must create layout before #{t.type}"
     #.......................................................................................................
     switch t.type
-      when 'set_grid'
-        MKTS_TABLE_API.set_grid R, t.size
-        continue
-      when 'set_debug'
-        MKTS_TABLE_API.set_debug R, t.value
-        continue
-      when 'set_unit_lengths'
-        MKTS_TABLE_API.set_unit_lengths R, t.value, t.unit
-        continue
-      when 'assignment'
-        warn '25521', "ignoring #{t.type}"
-        continue
+      when 'set_grid'           then _ = MKTS_TABLE_API.set_grid          R, t.size
+      when 'set_debug'          then _ = MKTS_TABLE_API.set_debug         R, t.value
+      when 'set_unit_lengths'   then _ = MKTS_TABLE_API.set_unit_lengths  R, t.value, t.unit
+      when 'set_lane_sizes'     then _ = MKTS_TABLE_API.set_lane_sizes    R, t.direction, t.value
+      when 'set_default_gaps'   then _ = MKTS_TABLE_API.set_default_gaps  R, t.feature, t.value
     #.......................................................................................................
+    continue unless _ is misfit
     unless R.grid?
       throw new Error "µ9894 must set grid before #{t.type}"
     #.......................................................................................................
-    switch t.type
-      when 'create_field'
-        MKTS_TABLE_API.create_field R, t.id, t.selector
-        continue
-      when 'select_fields'
-        warn '25521', "ignoring #{t.type}"
-        continue
-      when 'set_ctx_border'
-        warn '25521', "ignoring #{t.type}"
-        continue
-      when 'set_sel_border'
-        MKTS_TABLE_API.set_borders R, t.selectors, t.edges, t.style
-        continue
-      when 'set_ctx_alignment'
-        warn '25521', "ignoring #{t.type}"
-        continue
-      when 'set_sel_alignment'
-        MKTS_TABLE_API.set_alignment R, t.selectors, t.direction, t.align
-        continue
+    switch t. type
+      when 'create_field'       then _ = MKTS_TABLE_API.create_field      R, t.id, t.selector
+      when 'set_sel_border'     then _ = MKTS_TABLE_API.set_borders       R, t.selectors, t.edges, t.style
+      when 'set_sel_alignment'  then _ = MKTS_TABLE_API.set_alignment     R, t.selectors, t.direction, t.align
+      when 'set_field_gaps'     then _ = MKTS_TABLE_API.set_field_gaps    R, t.selectors, t.edges, t.feature, t.value
     #.......................................................................................................
+    continue unless _ is misfit
     warn "unhandled token type #{rpr t.type}"
   #.........................................................................................................
+  ### TAINT will abandon this kind of fails handling ###
   if R.fails.length > 0
     alert '44093', fail for fail in R.fails
     throw new Error "µ9894 detected fails"
