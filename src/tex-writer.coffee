@@ -53,6 +53,7 @@ LINEBREAKER               = require './linebreaker'
 @MKTS_TABLE               = require './tex-writer-mkts-table'
 AUX                       = require './tex-writer-aux'
 YADDA                     = require './yadda'
+OVAL                      = require './object-validator'
 #...........................................................................................................
 Σ_formatted_warning       = Symbol 'formatted-warning'
 jr                        = JSON.stringify
