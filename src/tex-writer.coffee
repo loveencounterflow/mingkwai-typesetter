@@ -740,6 +740,120 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       send event
 
 #-----------------------------------------------------------------------------------------------------------
+@MKTX.INLINE.$scale = ( S ) =>
+  schema =
+    postprocess: ( Q ) ->
+      if Q.lines?
+        Q.lines = true if Q.lines is ''
+      else
+        Q.lines = false
+      return Q
+    #.......................................................................................................
+    properties:
+      abs:    { type: 'number', }
+      rel:    { type: 'number', }
+      lines:  { type: [ 'boolean', 'string', ], }
+    #.......................................................................................................
+    additionalProperties: false
+    oneOf: [ { required: [ 'abs', ], }, { required: [ 'rel', ], }, ]
+  #.........................................................................................................
+  validate_and_cast = OVAL.new_validator schema
+  block_stack       = []
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    if select event, [ '(', '.', ], 'scale'
+      [ type, name, Q, meta, ] = event
+      Q = validate_and_cast Q
+      send stamp event
+      #.....................................................................................................
+      if Q.abs?
+        factor      = Q.abs
+        command     = 'mktsScaleText'
+      else
+        factor      = Q.rel
+        command     = 'mktsScaleTextRelative'
+      #.....................................................................................................
+      block_stack.push Q.lines
+      brace     = if type is '(' then '{' else ''
+      send [ 'tex', "#{brace}\\#{command}{#{factor}}", ]
+    #.......................................................................................................
+    else if select event, ')', 'scale'
+      send stamp event
+      is_block  = block_stack.pop() ? false
+      par       = if is_block then '\\par' else ''
+      send [ 'tex', "#{par}}", ]
+    #.......................................................................................................
+    else
+      send event
+
+#-----------------------------------------------------------------------------------------------------------
+@MKTX.BLOCK.$loosen_and_tighten = ( S ) =>
+  schema =
+    properties:
+      abs:    { type: 'number', }
+      rel:    { type: 'number', }
+    #.......................................................................................................
+    additionalProperties: false
+    oneOf: [ { required: [ 'abs', ], }, { required: [ 'rel', ], }, ]
+  #.........................................................................................................
+  validate_and_cast = OVAL.new_validator schema
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    if select event, [ '(', '.', ], [ 'loosen', 'tighten', ]
+      [ type, name, Q, meta, ] = event
+      Q = validate_and_cast Q
+      send stamp event
+      #.....................................................................................................
+      if Q.abs?
+        factor  = Q.abs
+        command = 'mktsLoosenLinesAbsolute'
+      else
+        factor  = Q.rel
+        command = 'mktsLoosenLinesRelative'
+      #.....................................................................................................
+      factor      = 1 / factor if name is 'tighten'
+      factor_txt  = ( factor.toFixed 6 ).replace /\.?0+$/, ''
+      brace       = if type is '(' then '{' else ''
+      send [ 'tex', "#{brace}\\#{command}{#{factor}}", ]
+    #.......................................................................................................
+    else if select event, ')', [ 'loosen', 'tighten', ]
+      send stamp event
+      send [ 'tex', "\\par}", ]
+    #.......................................................................................................
+    else
+      send event
+
+#-----------------------------------------------------------------------------------------------------------
+@MKTX.BLOCK.$vspace = ( S ) =>
+  schema =
+    properties:
+      abs:    { type: 'number', }
+      rel:    { type: 'number', }
+    #.......................................................................................................
+    additionalProperties: false
+    oneOf: [ { required: [ 'abs', ], }, { required: [ 'rel', ], }, ]
+  #.........................................................................................................
+  validate_and_cast = OVAL.new_validator schema
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    if select event, '.', 'vspace'
+      [ type, name, Q, meta, ] = event
+      Q = validate_and_cast Q
+      send stamp event
+      #.....................................................................................................
+      if Q.abs?
+        factor  = Q.abs
+        command = 'mktsVspace'
+      else
+        factor  = Q.rel
+        command = 'mktsVspaceRelative'
+      #.....................................................................................................
+      send [ 'tex', "\\par\\#{command}{#{factor}}", ]
+    #.......................................................................................................
+    else
+      send event
+
+#-----------------------------------------------------------------------------------------------------------
 @MKTX.INLINE.$nudge = ( S ) =>
   #.........................................................................................................
   return $ ( event, send ) =>
@@ -2247,6 +2361,9 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @MKTX.INLINE.$box                                 S
     .pipe @MKTX.INLINE.$hfill                               S
     .pipe @MKTX.INLINE.$tiny                                S
+    .pipe @MKTX.INLINE.$scale                               S
+    .pipe @MKTX.BLOCK.$loosen_and_tighten                   S
+    .pipe @MKTX.BLOCK.$vspace                               S
     .pipe @MKTX.INLINE.$nudge                               S
     .pipe @MKTX.INLINE.$turn                                S
     .pipe @MKTX.INLINE.$fncr                                S

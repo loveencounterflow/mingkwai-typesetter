@@ -44,7 +44,7 @@
     \renewcommand{\hg}{%
       % \special{pdf:literal 1 0 0 1 0 0.5 cm}%
       \mktsStyleFontHangeulBold%
-      \mktsScaleFont{1.1965}%
+      \mktsScaleFontRelative{1.1965}%
       % \AfterGroup{\special{pdf:literal 1 0 0 1 0 -0.5 cm}}%
       }%
     % `\ka` will become `\kana` or similar and take care of hiragana and katakana:
@@ -60,7 +60,7 @@
 
   % ........................................................................................................
   \renewcommand{\mktsStyleMidashi}{%
-    \mktsScaleFont{2.25}%
+    \mktsScaleFontRelative{2.25}%
     \tfRaise{-1.2}%
     }%
 
@@ -72,17 +72,17 @@
   \renewcommand{\mktsStyleNormal}{%
     % \frenchspacing%
     \mktsStyleFontDefault%
-    % \fontsize{\mktsFontsize}{\mktsLineheight}\selectfont%
     \mktsScaleFont{1.0}%
     }%
 
   % ........................................................................................................
   \renewcommand{\mktsStyleItalic}{%
     \mktsStyleFontItalic%
-    % ### TAINT instad of redefining entire commands (\cn, \hg and so on), we should be
+    % ### TAINT instead of redefining entire commands (\cn, \hg and so on), we should be
     % redefining key parameters such as CJK scale, Katakana scale, Hangeul scale, PushRaise &c.
     \renewcommand{\cn}{\mktsStyleFontCjkKaishu}%
     \renewcommand{\cn}{\mktsStyleFontCjkKaishu}%
+    % \renewcommand{\mktsStyleFontCode}{\mktsStyleFontCodeItalic}
     }%
 
   % ........................................................................................................
@@ -145,10 +145,21 @@
     \renewcommand{\cjk}{%
       % \mktsStyleFontCjkKaishu%
       \mktsCjkBase%
-      \fontsize{1.1\mktsFontsize}{1.1\mktsFontsize}%
+      \mktsScaleFontRelative{1.1}%
       }%
-    \fontsize{0.8\mktsFontsize}{0.8\mktsFontsize}%
+    \mktsScaleFontRelative{0.8}%
     \mktsStyleFontCode%
+    }%
+
+  % ........................................................................................................
+  \renewcommand{\mktsStyleCodeItalic}{%
+    \renewcommand{\cjk}{%
+      % \mktsStyleFontCjkKaishu%
+      \mktsCjkBase%
+      \mktsScaleFontRelative{1.1}%
+      }%
+    \mktsScaleFontRelative{0.8}%
+    \mktsStyleFontCodeItalic%
     }%
 
   % ........................................................................................................

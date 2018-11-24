@@ -107,7 +107,7 @@
 \newcommand{\mktsStyleBoxDrawing}{%
   \mktsFontfileDejavusansmono%
   % \color{red}%
-  \mktsScaleFont{1.0}% looks strange, but is needed
+  \mktsScaleFontRelative{1.0}% looks strange, but is needed
   }
 
 \newcommand{\mktsJzrVerticalbarInfix}{}%
@@ -145,7 +145,7 @@
     \mktsFontfileHanamina%
     % \color{red}%
     % {\makebox(0,0){\rule[0em]{0.1mm}{1em}}}%
-    \mktsScaleFont{0.2}%
+    \mktsScaleFontRelative{0.2}%
     {\tfRaise{+0.85}\makebox(0,0){▼}}%
     {\tfRaise{-0.35}\makebox(0,0){▲}}%
     }%
@@ -156,7 +156,7 @@
   % \mktsStyleItalic%
   \setlength{\leftskip}{\mktsLineheight}%
   \setlength{\rightskip}{\mktsLineheight}%
-  \mktsScaleFont{0.95}%
+  \mktsScaleFontRelative{0.95}%
   % \setlength{\rightskip}{1em}%
   \ignorespaces}{%
   \par%
@@ -203,15 +203,15 @@
 % ==========================================================================================================
 % 2) Display Styles
 % ----------------------------------------------------------------------------------------------------------
-\newcommand{\adjustCjkIdeograph}[1]{\prRaise{-0.125}{#1}} % !!!
+% \newcommand{\adjustCjkIdeograph}[1]{\prRaise{-0.125}{#1}} % !!!
 % \newcommand{\adjustJzrCjkIdeograph}[1]{\prRaise{-0.125}{#1}} % !!!
-\newcommand{\adjustJzrCjkIdeograph}[1]{\prRaise{-0.125}{\makebox[1.1053\mktsFontsize]{#1}}} % !!!
+% \newcommand{\adjustJzrCjkIdeograph}[1]{\prRaise{-0.125}{\makebox[1.1053\mktsFontsize]{#1}}} % !!!
 
 % ..........................................................................................................
 \newcommand{\latin}[1]{{\mktsFontfileEbgaramondtwelveregular#1}}
 % \newcommand{\setPlainLatin}{\renewcommand{\latin}[1]{{\mktsFontfileEbgaramondtwelveregular#1}}}
 % \newcommand{\setCodeLatin}{\renewcommand{\latin}[1]{{\mktsFontfileSunexta#1}}}
-\newcommand{\py}{\mktsScaleFont{0.8}\mktsFontfileUbuntur{}}
+\newcommand{\py}{\mktsScaleFontRelative{0.8}\mktsFontfileUbuntur{}}
 \newcommand{\ncr}[1]{{\mktsFontfileUbuntur#1}}
 \newcommand{\gloss}[1]{{\mktsFontfileEbgaramondtwelveregular#1}}
 % ..........................................................................................................
@@ -258,7 +258,7 @@
   \cjkgGlue%
   \mktsFontfileJizurathreeb%
   \AfterGroup{\cjkgGlue}%
-  % \mktsScaleFont{1.1}
+  % \mktsScaleFontRelative{1.1}
   }%
 \newcommand{\cnxJzr}{\cnjzr}
 % \newcommand{\missing}[1]{{\missingFont#1}}
@@ -283,7 +283,7 @@
 % \newcommand{\ka}{%
 %   % \special{pdf:literal 1 0 0 1 0 0.5 cm}%
 %   % \mktsStyleFontKanaCurrent%
-%   % \mktsScaleFont{1.2523}%
+%   % \mktsScaleFontRelative{1.2523}%
 %   % \AfterGroup{\special{pdf:literal 1 0 0 1 0 -0.5 cm}}%
 %   }
 \newcommand{\hi}{\ka}
@@ -291,19 +291,19 @@
 % \newcommand{\hi}{%
 %   \special{pdf:literal 1 0 0 1 0 0.5 cm}%
 %   \mktsFontfileFandolfangregular%
-%   % \mktsScaleFont{1.2523}%
+%   % \mktsScaleFontRelative{1.2523}%
 %   \AfterGroup{\special{pdf:literal 1 0 0 1 0 -0.5 cm}}%
 %   }
 
 % \newcommand{\xxxFoo}{0.75}
 % \pgfmathsetmacro{\xxxBar}{0.9 * \xxxFoo}
 % \pgfmathsetmacro{\xxxBaz}{0.5 * 3}
-  % \mktsScaleFont{\xxxBar}%
+  % \mktsScaleFontRelative{\xxxBar}%
 
 \newcommand{\hg}{%
   % \special{pdf:literal 1 0 0 1 0 0.5 cm}%
   \mktsStyleFontHangeulDefault%
-  \mktsScaleFont{1.15625}%
+  \mktsScaleFontRelative{1.15625}%
   % \AfterGroup{\special{pdf:literal 1 0 0 1 0 -0.5 cm}}%
   }
 % ..........................................................................................................
@@ -432,10 +432,10 @@
 
 % ----------------------------------------------------------------------------------------------------------
 \newcommand{\mktsFncr}[3]{{%
-  \mktsScaleFont{0.8}%
+  \mktsScaleFontRelative{0.8}%
   {\mktsFontfileIosevkatermslabbold#1+#3}%
   \thinspace%
-  {\prRaise{-0.2}{\mktsScaleFont{0.5}\mktsFontfileIosevkatermslabmediumitalic#2}}%
+  {\prRaise{-0.2}{\mktsScaleFontRelative{0.5}\mktsFontfileIosevkatermslabmediumitalic#2}}%
   \thinspace%
   }}%
 
@@ -460,10 +460,10 @@
 \newcommand{\jzrStrokeclassCircled}[1]{%
   \makebox[4mm]{%
     \makebox[0mm]{{%
-      \mktsScaleFont{0.8}%
+      \mktsScaleFontRelative{0.8}%
       \prPushRaise{-0.1}{+0.05}{\mktsFontfileJizurathreeb{}#1}}}%
     \makebox[0mm]{{%
-      \mktsScaleFont{1.25}%
+      \mktsScaleFontRelative{1.25}%
       \prPushRaise{-0.1}{-0.1}{\mktsFontfileJizurathreeb{}}}}%
       }}%
 
@@ -472,7 +472,7 @@
 \newcommand{\jzrStrokeclassCircledSingle}{%
   \makebox[4mm]{%
     \makebox[0mm]{{%
-      \mktsScaleFont{1.25}%
+      \mktsScaleFontRelative{1.25}%
       \prPushRaise{-0.1}{-0.1}{\mktsFontfileJizurathreeb{}}}}%
       }}%
 
@@ -481,7 +481,7 @@
 \newcommand{\jzrStrokeclassCircledZero}[1]{%
   \makebox[4mm]{%
     \makebox[0mm]{{%
-      \mktsScaleFont{1.25}%
+      \mktsScaleFontRelative{1.25}%
       \prPushRaise{-0.1}{-0.1}{\mktsFontfileJizurathreeb{}}}}%
       }}%
 
@@ -490,10 +490,10 @@
 \newcommand{\mktsCircledLetter}[1]{%
   \makebox[4mm]{%
     \makebox[0mm]{{%
-      \mktsScaleFont{0.8}%
+      \mktsScaleFontRelative{0.8}%
       \prPushRaise{-0.1}{-0.05}{\mktsStyleFontCode{}#1}}}%
     \makebox[0mm]{{%
-      \mktsScaleFont{1.25}%
+      \mktsScaleFontRelative{1.25}%
       \prPushRaise{-0.1}{-0.15}{\mktsFontfileJizurathreeb{}}}}%
       }}%
 
@@ -502,10 +502,10 @@
 \newcommand{\mktsBoxedLetter}[1]{%
   \makebox[4mm]{%
     \makebox[0mm]{{%
-      \mktsScaleFont{0.8}%
+      \mktsScaleFontRelative{0.8}%
       \prPushRaise{-0.1}{-0.05}{\mktsStyleFontCode{}#1}}}%
     \makebox[0mm]{{%
-      \mktsScaleFont{1.25}%
+      \mktsScaleFontRelative{1.25}%
       \prPushRaise{-0.1}{-0.18}{\mktsFontfileSourcehansansbold{}□}}}%
       }}%
 
@@ -544,8 +544,7 @@
     \prPushRaise{-0.11}{0.3}{⥒}%
     }\zsavepos{#1}%
   \makebox[0mm][l]{%
-    {\tfPushRaise{1.1}{0.75}\mktsStyleFontCode\mktsScaleFont{0.35}\showx{#1}}}%
-    % \prPushRaise{1}{0.75}{\mktsStyleFontCode\mktsScaleFont{0.35}\auxc{herex 2}\showx{#1}}}%
+    {\prPushRaise{1.1}{0.75}{\mktsStyleFontCode\mktsScaleFontRelative{0.5}\showx{#1}\thinspace{}mm}}}%
     }}%
 
 % ----------------------------------------------------------------------------------------------------------
@@ -561,12 +560,8 @@
 \newcommand{\mktsXfsc}[2]{{%
   \makebox[0.5\mktsFontsize]{%
     \mktsStyleFontCode%
-    {\tfPushRaise{0}{-0.25}\mktsScaleFont{0.8}#2}%
-    \makebox[0mm]{\tfPushRaise{-0.4}{0.4}\mktsScaleFont{0.5}#1}}}}
-
-% ----------------------------------------------------------------------------------------------------------
-% ad hoc tiny typeface
-\newcommand{\mktsTiny}{\mktsScaleFont{0.5}}
+    {\tfPushRaise{0}{-0.25}\mktsScaleFontRelative{0.8}#2}%
+    \makebox[0mm]{\tfPushRaise{-0.4}{0.4}\mktsScaleFontRelative{0.5}#1}}}}
 
 % ----------------------------------------------------------------------------------------------------------
 % Underlines with gaps for descenders
@@ -587,7 +582,7 @@
 
 % ----------------------------------------------------------------------------------------------------------
 \newcommand{\mktsStyleCjkRoundSymbol}[1]{%
-  \phantom{{\cn{}國}}\makebox[0mm]{\tfPushRaise{-1.25}{-0.15}\mktsFontfileThtshynpone\mktsScaleFont{1.7}#1}}%
+  \phantom{{\cn{}國}}\makebox[0mm]{\tfPushRaise{-1.25}{-0.15}\mktsFontfileThtshynpone\mktsScaleFontRelative{1.7}#1}}%
 
 % ----------------------------------------------------------------------------------------------------------
 % ### TAINT untested ###
@@ -629,4 +624,39 @@
 \newcommand{\mktsTurn}[2]{%
   \turnbox{#1}{#2}}
 
+
+% ----------------------------------------------------------------------------------------------------------
+% Scaled text
+\newcommand{\mktsZoom}[2]{%
+  % currently, does nothing; will implement \scalebox / \resizebox from graphics package
+  }%
+
+
+% Do not use setspace, as per https://tex.stackexchange.com/q/410250/128255
+% \usepackage{setspace}%
+% ..........................................................................................................
+\newcommand{\mktsScaleText}[1]{%
+  \setlength{\mktsCurrentFontsize}{#1\mktsFontsize}%
+  \setlength{\mktsCurrentLineheight}{#1\mktsLineheight}%
+  \fontsize{\mktsCurrentFontsize}{\mktsCurrentLineheight}\selectfont}%
+
+% ..........................................................................................................
+\newcommand{\mktsScaleTextRelative}[1]{%
+  \setlength{\mktsCurrentFontsize}{#1\mktsCurrentFontsize}%
+  \setlength{\mktsCurrentLineheight}{#1\mktsCurrentLineheight}%
+  \fontsize{\mktsCurrentFontsize}{\mktsCurrentLineheight}\selectfont}%
+
+% ..........................................................................................................
+\newcommand{\mktsLoosenLinesAbsolute}[1]{%
+  \setlength{\mktsCurrentLineheight}{#1\mktsLineheight}%
+  \fontsize{\mktsCurrentFontsize}{\mktsCurrentLineheight}\selectfont}%
+
+% ..........................................................................................................
+\newcommand{\mktsLoosenLinesRelative}[1]{%
+  \setlength{\mktsCurrentLineheight}{#1\mktsCurrentLineheight}%
+  \fontsize{\mktsCurrentFontsize}{\mktsCurrentLineheight}\selectfont}%
+
+% ----------------------------------------------------------------------------------------------------------
+% ad hoc tiny typeface
+\newcommand{\mktsTiny}{\mktsScaleTextRelative{0.5}}
 
