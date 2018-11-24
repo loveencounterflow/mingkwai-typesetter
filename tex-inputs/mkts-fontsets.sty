@@ -27,6 +27,7 @@
 \newcommand{\mktsStyleFontBolditalic}{\mktsStyleFontThrowUndefined{BoldItalic}}%
 \newcommand{\mktsStyleFontSymbol}{\mktsStyleFontThrowUndefined{Symbol}}%
 \newcommand{\mktsStyleFontCode}{\mktsStyleFontThrowUndefined{Code}}%
+\newcommand{\mktsStyleFontCodeItalic}{\mktsStyleFontThrowUndefined{CodeItalic}}%
 \newcommand{\mktsStyleFontFncr}{\mktsStyleFontThrowUndefined{Fncr}}%
 \newcommand{\mktsStyleFontPagenr}{\mktsStyleFontThrowUndefined{Pagenr}}%
 \newcommand{\mktsStyleFontGloss}{\mktsStyleFontThrowUndefined{Gloss}}%
@@ -60,6 +61,7 @@
   \renewcommand{\mktsStyleFontBolditalic}{\mktsStyleFontThrowUndefined{BoldItalic}}%
   \renewcommand{\mktsStyleFontSymbol}{\mktsStyleFontThrowUndefined{Symbol}}%
   \renewcommand{\mktsStyleFontCode}{\mktsStyleFontThrowUndefined{Code}}%
+  \renewcommand{\mktsStyleFontCodeItalic}{\mktsStyleFontThrowUndefined{CodeItalic}}%
   \renewcommand{\mktsStyleFontFncr}{\mktsStyleFontThrowUndefined{Fncr}}%
   \renewcommand{\mktsStyleFontPagenr}{\mktsStyleFontThrowUndefined{Pagenr}}%
   \renewcommand{\mktsStyleFontGloss}{\mktsStyleFontThrowUndefined{Gloss}}%
@@ -94,6 +96,7 @@
   \renewcommand{\mktsStyleFontBolditalic}{}%
   \renewcommand{\mktsStyleFontSymbol}{}%
   \renewcommand{\mktsStyleFontCode}{}%
+  \renewcommand{\mktsStyleFontCodeItalic}{}%
   \renewcommand{\mktsStyleFontFncr}{}%
   \renewcommand{\mktsStyleFontPagenr}{}%
   \renewcommand{\mktsStyleFontGloss}{}%
@@ -124,28 +127,29 @@
   \renewcommand{\mktsStyleFontItalicsmallcapsupper}{\mktsFontfileEbgaramondtwelveitalicscupper}%
   \renewcommand{\mktsStyleFontItalicsmallcapsall}{\mktsFontfileEbgaramondtwelveitalicscall}%
   \renewcommand{\mktsStyleFontSuperscript}{%
-    \mktsScaleFont{0.85}%
+    \mktsScaleFontRelative{0.85}%
     \tfRaise{0.25}%
     }%
   \renewcommand{\mktsStyleFontSubscript}{%
-    \mktsScaleFont{0.85}%
+    \mktsScaleFontRelative{0.85}%
     \tfRaise{-0.25}%
     }%
   \renewcommand{\mktsStyleFontBold}{%
     % \mktsFontfileRobotoslabbold%
-    % \mktsFontfilePermianslabseriftypeface\mktsScaleFont{0.85}%
-    % \mktsFontfileAleobold\mktsScaleFont{0.8}%
-    \mktsFontfileBitterbold\mktsScaleFont{0.85}%
+    % \mktsFontfilePermianslabseriftypeface\mktsScaleFontRelative{0.85}%
+    % \mktsFontfileAleobold\mktsScaleFontRelative{0.8}%
+    \mktsFontfileBitterbold\mktsScaleFontRelative{0.85}%
     }%
   \renewcommand{\mktsStyleFontBolditalic}{%
-    % \mktsFontfilePermianslabseriftypefaceitalic\mktsScaleFont{0.85}%
-    % \mktsFontfileAleobolditalic\mktsScaleFont{0.8}%
-    \mktsFontfileBitterbolditalic\mktsScaleFont{0.85}%
+    % \mktsFontfilePermianslabseriftypefaceitalic\mktsScaleFontRelative{0.85}%
+    % \mktsFontfileAleobolditalic\mktsScaleFontRelative{0.8}%
+    \mktsFontfileBitterbolditalic\mktsScaleFontRelative{0.85}%
     }%
   \renewcommand{\mktsStyleFontSymbol}{\mktsFontfileSunexta}%
-  \renewcommand{\mktsStyleFontCode}{\mktsScaleFont{0.8}\mktsFontfileIosevkatermslabmedium}%
-  \renewcommand{\mktsStyleFontPagenr}{\mktsScaleFont{0.8}\mktsFontfileIosevkatermslabmedium}%
-  \renewcommand{\mktsStyleFontFncr}{\mktsScaleFont{0.8}\mktsFontfileIosevkatermslabmedium}%
+  \renewcommand{\mktsStyleFontCode}{\mktsScaleFontRelative{0.8}\mktsFontfileIosevkatermslabmedium}%
+  \renewcommand{\mktsStyleFontCodeItalic}{\mktsScaleFontRelative{0.8}\mktsFontfileIosevkatermslabmediumitalic}%
+  \renewcommand{\mktsStyleFontPagenr}{\mktsScaleFontRelative{0.8}\mktsFontfileIosevkatermslabmedium}%
+  \renewcommand{\mktsStyleFontFncr}{\mktsScaleFontRelative{0.8}\mktsFontfileIosevkatermslabmedium}%
   \renewcommand{\mktsStyleFontGloss}{\mktsFontfileEbgaramondtwelveitalic}%
   \renewcommand{\mktsStyleFontUrl}{\mktsStyleFontCode}%
   \renewcommand{\mktsStyleFontCjkDefault}{\mktsFontfileSunexta}%
@@ -159,7 +163,7 @@
   \renewcommand{\mktsStyleFontKanaKaishu}{\mktsFontfileThkhaaitpzero}%
   \renewcommand{\mktsStyleFontKanaCurrent}{\mktsStyleFontKanaRegular}%
   \renewcommand{\mktsStyleFontItalic}{%
-    \mktsFontfileEbgaramondtwelveitalic\mktsScaleFont{1.0}%
+    \mktsFontfileEbgaramondtwelveitalic\mktsScaleFontRelative{1.0}%
     \renewcommand{\mktsStyleFontKanaCurrent}{\mktsStyleFontKanaKaishu}%
     }%
   }

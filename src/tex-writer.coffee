@@ -1366,6 +1366,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.INLINE.$code_span = ( S ) =>
   within_smallcaps  = false
+  within_em         = false
   within_code_span  = false
   #.........................................................................................................
   return $ ( event, send ) =>
@@ -1378,10 +1379,22 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       send event
       within_smallcaps = false
     #.......................................................................................................
+    if select event, '(', [ 'em', ], true
+      send event
+      within_em = true
+    #.......................................................................................................
+    else if select event, ')', [ 'em', ], true
+      send event
+      within_em = false
+    #.......................................................................................................
     else if select event, '(', [ 'code-span', 'tt', ]
       send stamp event
-      if within_smallcaps then  send [ 'tex', '{\\mktsStyleCode{}\\mktsUnderline{', ]
-      else                      send [ 'tex', '{\\mktsStyleCode{}', ]
+      if within_em
+        send [ 'tex', '{\\mktsStyleCodeItalic{}', ]
+      else if within_smallcaps
+        send [ 'tex', '{\\mktsStyleCode{}\\mktsUnderline{', ]
+      else
+        send [ 'tex', '{\\mktsStyleCode{}', ]
       within_code_span = true
     #.......................................................................................................
     else if select event, ')', [ 'code-span', 'tt', ]
@@ -2346,7 +2359,6 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @MKTX.CALL.$call_stream                           S
     .pipe @MKTX.$consolidate_mktscript_events               S
     .pipe @MKTX.$mktscript                                  S
-    # .pipe D.$observe ( event ) -> info '23993', ( CND.grey '--------->' ), jr event
     .pipe @MKTX.INLINE.$custom_entities                     S
     .pipe plugins_tee
     # .pipe D.$observe ( event ) -> info ( CND.grey '--------->' ), ( CND.blue event[ 0 ] + event[ 1 ] )
@@ -2397,7 +2409,9 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @MKTX.INLINE.$translate_i_and_b                   S
     # .pipe @MKTX.INLINE.$smallcaps                           S
     # .pipe @MKTX.INLINE.$em_and_strong                       S
+    # .pipe D.$observe ( event ) -> info '23993', ( CND.grey '--------->' ), CND.grey jr event
     .pipe @MKTX.INLINE.$em_strong_and_smallcaps             S
+    # .pipe D.$observe ( event ) -> ( info '23993', ( CND.grey '--------->' ), jr event ) unless event[ 3 ]?.stamped
     .pipe @MKTX.INLINE.$image                               S
     .pipe @MKTX.BLOCK.$yadda                                S
     .pipe @MKTX.BLOCK.$paragraph_1                          S
