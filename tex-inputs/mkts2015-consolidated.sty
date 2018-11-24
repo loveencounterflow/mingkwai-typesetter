@@ -224,8 +224,10 @@
   \cjkgUseCjkGlue%
   \cjkgGlue%
   \mktsScaleFontRelative{1.1}%
-  \special{pdf:literal 1 0 0 1 0 -1.5 cm}%
-  \AfterGroup{\special{pdf:literal 1 0 0 1 0 1.5 cm}\cjkgGlue}%
+  \tfRaise{-0.1}%
+  % \special{pdf:literal 1 0 0 1 0 -1.5 cm}%
+  \AfterGroup{%\special{pdf:literal 1 0 0 1 0 1.5 cm}
+    \cjkgGlue}%
   }
 \newcommand{\cjk}{\mktsCjkBase}%
 % \newcommand{\cn}{\mktsStartCjk\mktsFontfileSunexta}
@@ -659,4 +661,30 @@
 % ----------------------------------------------------------------------------------------------------------
 % ad hoc tiny typeface
 \newcommand{\mktsTiny}{\mktsScaleTextRelative{0.5}}
+
+% ----------------------------------------------------------------------------------------------------------
+% Convert lengths to pure numbers
+% thx to https://tex.stackexchange.com/a/15002/128255
+\makeatletter%
+\newcommand*{\mktsLengthAsNumber}[1]{\strip@pt#1}%
+\makeatother%
+
+% ----------------------------------------------------------------------------------------------------------
+% Return a multiple of the current font size. This is needed to use commands like `\prPushraise`,
+% `tfPushRaise` inside an environment sclaed with `\mktsScaleText`.
+\usepackage{calculator}
+\newcommand*{\mktsScaledMultiple}[1]{%
+  \DIVIDE{\mktsLengthAsNumber{\mktsCurrentFontsize}}{\mktsLengthAsNumber{\mktsFontsize}}\Rratio%
+  \MULTIPLY{#1}{\Rratio}\R%
+  \R}
+
+
+
+
+
+
+
+
+
+
 
