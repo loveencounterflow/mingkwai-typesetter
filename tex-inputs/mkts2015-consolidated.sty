@@ -670,14 +670,17 @@
 \makeatother%
 
 % ----------------------------------------------------------------------------------------------------------
-% Return a multiple of the current font size. This is needed to use commands like `\prPushraise`,
-% `tfPushRaise` inside an environment sclaed with `\mktsScaleText`.
-\usepackage{calculator}
-\newcommand*{\mktsScaledMultiple}[1]{%
-  \DIVIDE{\mktsLengthAsNumber{\mktsCurrentFontsize}}{\mktsLengthAsNumber{\mktsFontsize}}\Rratio%
-  \MULTIPLY{#1}{\Rratio}\R%
-  \R}
+\newcommand*{\mktsCurrentFontsizeScale}{%
+  \FPdiv\R{\mktsLengthAsNumber{\mktsCurrentFontsize}}{\mktsLengthAsNumber{\mktsFontsize}}%
+  \R}%
 
+% ----------------------------------------------------------------------------------------------------------
+\newcommand*{\tfRaiseRelative}[1]{%
+  % it is not clear to me how to use the result of `\mktsCurrentFontsizeScale` here without causing
+  % errors, therefore we perform the division here instead of using the macro:
+  \FPdiv\mktsCurrentFontsizeScale{\mktsLengthAsNumber{\mktsCurrentFontsize}}{\mktsLengthAsNumber{\mktsFontsize}}%
+  \FPmul\effectiveFactor{#1}{\mktsCurrentFontsizeScale}%
+  \tfRaise{\effectiveFactor}}%
 
 
 
