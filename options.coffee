@@ -478,10 +478,21 @@ module.exports = options =
       '·':                                cmd: 'mktsFontfileEbgaramondtwelveregular' # U+00B7 MIDDLE DOT
       # '↕':      raise: -0.2,   cmd: 'cnxJzr',      glyph: ''
       ### ASCII Art / Box Drawing: ###
-      '─':      cmd: 'mktsStyleBoxDrawing' # size: 1.2,
-      '│':      cmd: 'mktsStyleBoxDrawing' # size: 1.2,
-      '└':      cmd: 'mktsStyleBoxDrawing' # size: 1.2,
-      '├':      cmd: 'mktsStyleBoxDrawing' # size: 1.2,
+      '─':      cmd: 'mktsStyleBoxDrawing'
+      '│':      cmd: 'mktsStyleBoxDrawing'
+      '└':      cmd: 'mktsStyleBoxDrawing'
+      '├':      cmd: 'mktsStyleBoxDrawing'
+      '═':      cmd: 'mktsStyleBoxDrawing'
+      '║':      cmd: 'mktsStyleBoxDrawing'
+      '╔':      cmd: 'mktsStyleBoxDrawing'
+      '╗':      cmd: 'mktsStyleBoxDrawing'
+      '╚':      cmd: 'mktsStyleBoxDrawing'
+      '╝':      cmd: 'mktsStyleBoxDrawing'
+      '╠':      cmd: 'mktsStyleBoxDrawing'
+      '╣':      cmd: 'mktsStyleBoxDrawing'
+      '╤':      cmd: 'mktsStyleBoxDrawing'
+      '╧':      cmd: 'mktsStyleBoxDrawing'
+      '╪':      cmd: 'mktsStyleBoxDrawing'
       ### Arrows ###
       '⤾':      cmd: 'mktsFontfileDejavuserif'
 

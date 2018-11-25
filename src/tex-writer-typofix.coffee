@@ -54,6 +54,7 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
 #...........................................................................................................
 MKNCR                     = require '../../mingkwai-ncr'
 Σ_glyph_description       = Symbol 'glyph-description'
+jr                        = JSON.stringify
 
 #===========================================================================================================
 #
@@ -137,13 +138,15 @@ MKNCR                     = require '../../mingkwai-ncr'
 @$format_non_cjk = ( S ) ->
   ### TAINT code duplication ###
   ### TAINT unify with `$format_cjk` ###
-  ignore_texcmd_blocks  = [ '\\latin{}', ]
+  ignore_texcmd_blocks  = [ '\\latin{}', '\\mktsRsgFb{}', ]
+  # ignore_texcmd_blocks  = [ '\\latin{}', ]
   #.........................................................................................................
   return $ ( _event, _send ) =>
     send  = _send
     event = _event
     #.......................................................................................................
     return send event unless select event, '.', Σ_glyph_description
+    debug '34744', jr event
     #.......................................................................................................
     [ type, name, description, meta, ]              = event
     { uchr, rsg, tag, tex: texcmd, }                = description
@@ -152,7 +155,9 @@ MKNCR                     = require '../../mingkwai-ncr'
     #.......................................................................................................
     { block: texcmd_block, codepoint: texcmd_cp, }  = texcmd
     # debug '79876', texcmd, texcmd in ignore_texcmd_blocks
-    return send event if texcmd_block in ignore_texcmd_blocks
+    # return send event if texcmd_block in ignore_texcmd_blocks
+    texcmd_block = null if texcmd_block in ignore_texcmd_blocks
+    return send event if ( not texcmd_block? ) and ( not texcmd_cp? )
     #.......................................................................................................
     collector = []
     collector.push "{#{texcmd_block}" if texcmd_block?

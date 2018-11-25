@@ -2454,9 +2454,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @MKTX.INLINE.$translate_i_and_b                   S
     # .pipe @MKTX.INLINE.$smallcaps                           S
     # .pipe @MKTX.INLINE.$em_and_strong                       S
-    # .pipe D.$observe ( event ) -> info '23993', ( CND.grey '--------->' ), CND.grey jr event
     .pipe @MKTX.INLINE.$em_strong_and_smallcaps             S
-    # .pipe D.$observe ( event ) -> ( info '23993', ( CND.grey '--------->' ), jr event ) unless event[ 3 ]?.stamped
     .pipe @MKTX.INLINE.$image                               S
     .pipe @MKTX.BLOCK.$yadda                                S
     .pipe @MKTX.BLOCK.$paragraph_1                          S
@@ -2472,7 +2470,9 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @$show_start_and_end_2                            S
     .pipe @MKTX.BLOCK.$paragraph_2                          S
     .pipe @MKTX.COMMAND.$crossrefs                          S
+    .pipe D.$observe ( event ) -> info '23993', ( CND.grey '--------->' ), CND.grey jr event
     .pipe @MKTX.TYPOFIX.$fix_typography_for_tex             S
+    .pipe D.$observe ( event ) -> ( info '23993', ( CND.grey '--------->' ), jr event ) unless event[ 3 ]?.stamped
     #.......................................................................................................
     .pipe do =>
       S.event_count = 0
