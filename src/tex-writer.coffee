@@ -787,6 +787,50 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       send event
 
 #-----------------------------------------------------------------------------------------------------------
+@MKTX.INLINE.$pushraise = ( S ) =>
+  schemas =
+    #.......................................................................................................
+    pushraise:
+      properties:
+        x:      { type: 'number', }
+        y:      { type: 'number', }
+      additionalProperties: false
+    #.......................................................................................................
+    push:
+      properties:
+        x:      { type: 'number', }
+      additionalProperties: false
+    #.......................................................................................................
+    raise:
+      properties:
+        y:      { type: 'number', }
+      additionalProperties: false
+  #.........................................................................................................
+  validate_and_cast =
+    pushraise:  OVAL.new_validator schemas.pushraise
+    push:       OVAL.new_validator schemas.push
+    raise:      OVAL.new_validator schemas.raise
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    if select event, [ '(', '.', ], [ 'pushraise', 'push', 'raise', ]
+      [ type, name, Q, meta, ] = event
+      Q = validate_and_cast[ name ] Q
+      send stamp event
+      #.....................................................................................................
+      brace     = if type is '(' then '{' else ''
+      switch name
+        when 'pushraise'  then send [ 'tex', "#{brace}\\mktsPushRaise{#{Q.x}}{#{Q.y}}", ]
+        when 'push'       then send [ 'tex', "#{brace}\\mktsPush{#{Q.x}}", ]
+        when 'raise'      then send [ 'tex', "#{brace}\\mktsRaise{#{Q.y}}", ]
+    #.......................................................................................................
+    else if select event, ')', [ 'pushraise', 'push', 'raise', ]
+      send stamp event
+      send [ 'tex', "}", ]
+    #.......................................................................................................
+    else
+      send event
+
+#-----------------------------------------------------------------------------------------------------------
 @MKTX.BLOCK.$loosen_and_tighten = ( S ) =>
   schema =
     properties:
@@ -2374,6 +2418,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @MKTX.INLINE.$hfill                               S
     .pipe @MKTX.INLINE.$tiny                                S
     .pipe @MKTX.INLINE.$scale                               S
+    .pipe @MKTX.INLINE.$pushraise                           S
     .pipe @MKTX.BLOCK.$loosen_and_tighten                   S
     .pipe @MKTX.BLOCK.$vspace                               S
     .pipe @MKTX.INLINE.$nudge                               S

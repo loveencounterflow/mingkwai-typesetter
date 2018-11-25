@@ -675,12 +675,17 @@
   \R}%
 
 % ----------------------------------------------------------------------------------------------------------
-\newcommand*{\tfRaiseRelative}[1]{%
+\newcommand*{\mktsPushRaise}[2]{%
   % it is not clear to me how to use the result of `\mktsCurrentFontsizeScale` here without causing
   % errors, therefore we perform the division here instead of using the macro:
   \FPdiv\mktsCurrentFontsizeScale{\mktsLengthAsNumber{\mktsCurrentFontsize}}{\mktsLengthAsNumber{\mktsFontsize}}%
-  \FPmul\effectiveFactor{#1}{\mktsCurrentFontsizeScale}%
-  \tfRaise{\effectiveFactor}}%
+  \FPmul\effectiveFactorX{#1}{\mktsCurrentFontsizeScale}%
+  \FPmul\effectiveFactorY{#2}{\mktsCurrentFontsizeScale}%
+  \tfPushRaise{\effectiveFactorX}{\effectiveFactorY}}%
+
+% ----------------------------------------------------------------------------------------------------------
+\newcommand*{\mktsPush}[1]{\mktsPushRaise{#1}{0}}%
+\newcommand*{\mktsRaise}[1]{\mktsPushRaise{0}{#1}}%
 
 
 
