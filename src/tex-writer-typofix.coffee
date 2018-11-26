@@ -146,7 +146,6 @@ jr                        = JSON.stringify
     event = _event
     #.......................................................................................................
     return send event unless select event, '.', Σ_glyph_description
-    debug '34744', jr event
     #.......................................................................................................
     [ type, name, description, meta, ]              = event
     { uchr, rsg, tag, tex: texcmd, }                = description
