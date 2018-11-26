@@ -789,53 +789,11 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     #.......................................................................................................
     else
       send event
+    #.......................................................................................................
+    return null
 
 #-----------------------------------------------------------------------------------------------------------
-@MKTX.INLINE.$pushraise = ( S ) =>
-  schemas =
-    #.......................................................................................................
-    pushraise:
-      properties:
-        x:      { type: 'number', }
-        y:      { type: 'number', }
-      additionalProperties: false
-    #.......................................................................................................
-    push:
-      properties:
-        x:      { type: 'number', }
-      additionalProperties: false
-    #.......................................................................................................
-    raise:
-      properties:
-        y:      { type: 'number', }
-      additionalProperties: false
-  #.........................................................................................................
-  validate_and_cast =
-    pushraise:  OVAL.new_validator schemas.pushraise
-    push:       OVAL.new_validator schemas.push
-    raise:      OVAL.new_validator schemas.raise
-  #.........................................................................................................
-  return $ ( event, send ) =>
-    if select event, [ '(', '.', ], [ 'pushraise', 'push', 'raise', ]
-      [ type, name, Q, meta, ] = event
-      Q = validate_and_cast[ name ] Q
-      send stamp event
-      #.....................................................................................................
-      brace     = if type is '(' then '{' else ''
-      switch name
-        when 'pushraise'  then send [ 'tex', "#{brace}\\mktsPushRaise{#{Q.x}}{#{Q.y}}", ]
-        when 'push'       then send [ 'tex', "#{brace}\\mktsPush{#{Q.x}}", ]
-        when 'raise'      then send [ 'tex', "#{brace}\\mktsRaise{#{Q.y}}", ]
-    #.......................................................................................................
-    else if select event, ')', [ 'pushraise', 'push', 'raise', ]
-      send stamp event
-      send [ 'tex', "}", ]
-    #.......................................................................................................
-    else
-      send event
-
-#-----------------------------------------------------------------------------------------------------------
-@MKTX.BLOCK.$loosen_and_tighten = ( S ) =>
+@MKTX.BLOCK.$stretch = ( S ) =>
   schema =
     properties:
       abs:    { type: 'number', }
@@ -847,29 +805,30 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
   validate_and_cast = OVAL.new_validator schema
   #.........................................................................................................
   return $ ( event, send ) =>
-    if select event, [ '(', '.', ], [ 'loosen', 'tighten', ]
+    if select event, [ '(', '.', ], 'stretch'
       [ type, name, Q, meta, ] = event
       Q = validate_and_cast Q
       send stamp event
       #.....................................................................................................
       if Q.abs?
         factor  = Q.abs
-        command = 'mktsLoosenLinesAbsolute'
+        command = 'mktsStretchLinesAbsolute'
       else
         factor  = Q.rel
-        command = 'mktsLoosenLinesRelative'
+        command = 'mktsStretchLinesRelative'
       #.....................................................................................................
-      factor      = 1 / factor if name is 'tighten'
       factor_txt  = ( factor.toFixed 6 ).replace /\.?0+$/, ''
       brace       = if type is '(' then '{' else ''
       send [ 'tex', "#{brace}\\#{command}{#{factor}}", ]
     #.......................................................................................................
-    else if select event, ')', [ 'loosen', 'tighten', ]
+    else if select event, ')', 'stretch'
       send stamp event
       send [ 'tex', "\\par}", ]
     #.......................................................................................................
     else
       send event
+    #.......................................................................................................
+    return null
 
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.BLOCK.$vspace = ( S ) =>
@@ -900,21 +859,56 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     #.......................................................................................................
     else
       send event
+    #.......................................................................................................
+    return null
+
+#-----------------------------------------------------------------------------------------------------------
+@MKTX.BLOCK.$landscape = ( S ) =>
+  open_tag_count    = 0
+  schema            = { additionalProperties: false, }
+  validate_and_cast = OVAL.new_validator schema
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    if select event, [ '(', '.', ], 'landscape'
+      [ type, name, Q, meta, ] = event
+      Q = validate_and_cast Q
+      send stamp event
+      open_tag_count += +1
+      send [ 'tex', "\\begin{landscape}", ]
+    #.......................................................................................................
+    else if select event, ')', 'landscape'
+      send [ 'tex', "\\end{landscape}", ]
+    else if select event, ')', 'document'
+      while open_tag_count > 0
+        open_tag_count += -1
+        send [ 'tex', "\\end{landscape}", ]
+      send event
+    #.......................................................................................................
+    else
+      send event
+    #.......................................................................................................
+    return null
 
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.INLINE.$nudge = ( S ) =>
+  schema =
+    properties:
+      push:    { type: 'number', }
+      raise:   { type: 'number', }
+    #.......................................................................................................
+    additionalProperties: false
+    oneOf: [ { required: [ 'push', ], }, { required: [ 'raise', ], }, ]
   #.........................................................................................................
   return $ ( event, send ) =>
     if select event, '(', 'nudge'
       [ type, name, Q, meta, ] = event
-      push  = Q.push ? '0'
-      push  = parseFloat push
+      Q = validate_and_cast Q
+      push  = Q.push ? 0
       throw new Error "expected a number for push, got #{rpr event}" unless CND.isa_number push
-      raise = Q.raise ? '0'
-      raise = parseFloat raise
+      raise = Q.raise ? 0
       throw new Error "expected a number for raise, got #{rpr event}" unless CND.isa_number raise
       send stamp event
-      send [ 'tex', "{\\tfPushRaise{#{push}}{#{raise}}", ]
+      send [ 'tex', "{\\mktsPushRaise{#{push}}{#{raise}}", ]
     #.......................................................................................................
     else if select event, ')', 'nudge'
       send stamp event
@@ -2422,9 +2416,9 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @MKTX.INLINE.$hfill                               S
     .pipe @MKTX.INLINE.$tiny                                S
     .pipe @MKTX.INLINE.$scale                               S
-    .pipe @MKTX.INLINE.$pushraise                           S
-    .pipe @MKTX.BLOCK.$loosen_and_tighten                   S
+    .pipe @MKTX.BLOCK.$stretch                              S
     .pipe @MKTX.BLOCK.$vspace                               S
+    .pipe @MKTX.BLOCK.$landscape                            S
     .pipe @MKTX.INLINE.$nudge                               S
     .pipe @MKTX.INLINE.$turn                                S
     .pipe @MKTX.INLINE.$fncr                                S
@@ -2474,9 +2468,9 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @$show_start_and_end_2                            S
     .pipe @MKTX.BLOCK.$paragraph_2                          S
     .pipe @MKTX.COMMAND.$crossrefs                          S
-    .pipe D.$observe ( event ) -> info '23993', ( CND.grey '--------->' ), CND.grey jr event
+    # .pipe D.$observe ( event ) -> info '23993', ( CND.grey '--------->' ), CND.grey jr event
     .pipe @MKTX.TYPOFIX.$fix_typography_for_tex             S
-    .pipe D.$observe ( event ) -> ( info '23993', ( CND.grey '--------->' ), jr event ) unless event[ 3 ]?.stamped
+    # .pipe D.$observe ( event ) -> ( info '23993', ( CND.grey '--------->' ), jr event ) unless event[ 3 ]?.stamped
     #.......................................................................................................
     .pipe do =>
       S.event_count = 0

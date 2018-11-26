@@ -27,6 +27,7 @@
 % \usepackage{/Volumes/Storage/io/jizura-xelatex/tex-inputs/utils}
 % \usepackage{/Users/flow/JIZURA/flow/dictionary/tex-inputs/accentbx/accentbx}
 \usepackage{rotating}
+\usepackage{pdflscape}
 \usepackage{cxltx}
 \usepackage{cxltx-style-accentbox}
 \usepackage{cxltx-style-trm}
@@ -103,13 +104,9 @@
 \usepackage[default]{mkts-headings-and-toc}%    default
 
 % ----------------------------------------------------------------------------------------------------------
-% consider this experimental; it doesn't do correct spacing, but lines look swell:
-\newcommand{\mktsStyleBoxDrawing}{%
-  \mktsFontfileDejavusansmono%
-  % \color{red}%
-  \mktsScaleFontRelative{1.0}% looks strange, but is needed
-  }
+\newcommand{\mktsStyleBoxDrawing}{\mktsStyleFontCode}
 
+% ----------------------------------------------------------------------------------------------------------
 \newcommand{\mktsJzrVerticalbarInfix}{}%
 \newcommand{\mktsJzrVerticalbarGlyph}{}%
 
@@ -649,12 +646,12 @@
   \fontsize{\mktsCurrentFontsize}{\mktsCurrentLineheight}\selectfont}%
 
 % ..........................................................................................................
-\newcommand{\mktsLoosenLinesAbsolute}[1]{%
+\newcommand{\mktsStretchLinesAbsolute}[1]{%
   \setlength{\mktsCurrentLineheight}{#1\mktsLineheight}%
   \fontsize{\mktsCurrentFontsize}{\mktsCurrentLineheight}\selectfont}%
 
 % ..........................................................................................................
-\newcommand{\mktsLoosenLinesRelative}[1]{%
+\newcommand{\mktsStretchLinesRelative}[1]{%
   \setlength{\mktsCurrentLineheight}{#1\mktsCurrentLineheight}%
   \fontsize{\mktsCurrentFontsize}{\mktsCurrentLineheight}\selectfont}%
 
