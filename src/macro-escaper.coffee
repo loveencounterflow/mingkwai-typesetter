@@ -354,6 +354,9 @@ after it, thereby inhibiting any processing of those portions. ###
     catch error
       warn "when trying to parse text:"
       urge rpr text
+      warn "using start pattern: #{rpr start_pattern}"
+      warn "using stop  pattern: #{rpr stop_pattern}"
+      warn "for tag: #{rpr tag_name}"
       warn "an error occurred: #{error.message}"
       throw new Error "µ49022 #{error.message}"
     #.......................................................................................................
