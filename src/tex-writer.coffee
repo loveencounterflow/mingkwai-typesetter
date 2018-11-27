@@ -191,12 +191,21 @@ after = ( names..., method ) ->
   write "\\usepackage{fontspec}"
   #.......................................................................................................
   for { texname, otf, home, subfolder, filename, } in S.options.fonts.files
-    home              ?= S.options.fonts.home
-    home              = njs_path.join home, subfolder if subfolder?
-    home              = "#{home}/" unless home.endsWith '/'
-    font_settings     = [ "Path=#{home}", ]
+    font_settings = []
+    #.......................................................................................................
+    if home is ''
+      ### use standard settings ###
+      null
+    #.......................................................................................................
+    else
+      home              ?= S.options.fonts.home
+      home              = njs_path.join home, subfolder if subfolder?
+      home              = "#{home}/" unless home.endsWith '/'
+      font_settings.push [ "Path=#{home}", ]
+    #.......................................................................................................
     font_settings.push otf if otf?
     font_settings_txt = font_settings.join ','
+    # debug '66733', ( jr { texname, otf, home, subfolder, filename, } ), rpr font_settings_txt
     ### TAINT should properly escape values ###
     # write "\\newfontface{\\#{texname}}{#{filename}}[#{font_settings_txt}]"
     ### TAINT this is an experiment to confine font loading to what is needed in the document

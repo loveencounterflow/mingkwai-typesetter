@@ -388,6 +388,81 @@ module.exports = options =
 
       { texname: 'mktsFontfileAsanamath',                                                       filename: 'Asana-Math.otf',         }
 
+      # { texname: 'mktsFontfileLmmonotenitalic',               home: '', filename: 'lmmono10-italic.otf',            }
+      # { texname: 'mktsFontfileLmmonotenregular',              home: '', filename: 'lmmono10-regular.otf',           }
+      # { texname: 'mktsFontfileLmmonotwelveregular',           home: '', filename: 'lmmono12-regular.otf',           }
+      # { texname: 'mktsFontfileLmmonoeightregular',            home: '', filename: 'lmmono8-regular.otf',            }
+      # { texname: 'mktsFontfileLmmononineregular',             home: '', filename: 'lmmono9-regular.otf',            }
+      # { texname: 'mktsFontfileLmmonocapstenoblique',          home: '', filename: 'lmmonocaps10-oblique.otf',       }
+      # { texname: 'mktsFontfileLmmonocapstenregular',          home: '', filename: 'lmmonocaps10-regular.otf',       }
+      # { texname: 'mktsFontfileLmmonolttenboldoblique',        home: '', filename: 'lmmonolt10-boldoblique.otf',     }
+      # { texname: 'mktsFontfileLmmonolttenbold',               home: '', filename: 'lmmonolt10-bold.otf',            }
+      # { texname: 'mktsFontfileLmmonolttenoblique',            home: '', filename: 'lmmonolt10-oblique.otf',         }
+      # { texname: 'mktsFontfileLmmonolttenregular',            home: '', filename: 'lmmonolt10-regular.otf',         }
+      # { texname: 'mktsFontfileLmmonoltcondtenoblique',        home: '', filename: 'lmmonoltcond10-oblique.otf',     }
+      # { texname: 'mktsFontfileLmmonoltcondtenregular',        home: '', filename: 'lmmonoltcond10-regular.otf',     }
+      # { texname: 'mktsFontfileLmmonoproptenoblique',          home: '', filename: 'lmmonoprop10-oblique.otf',       }
+      # { texname: 'mktsFontfileLmmonoproptenregular',          home: '', filename: 'lmmonoprop10-regular.otf',       }
+      # { texname: 'mktsFontfileLmmonoproplttenboldoblique',    home: '', filename: 'lmmonoproplt10-boldoblique.otf', }
+      # { texname: 'mktsFontfileLmmonoproplttenbold',           home: '', filename: 'lmmonoproplt10-bold.otf',        }
+      # { texname: 'mktsFontfileLmmonoproplttenoblique',        home: '', filename: 'lmmonoproplt10-oblique.otf',     }
+      # { texname: 'mktsFontfileLmmonoproplttenregular',        home: '', filename: 'lmmonoproplt10-regular.otf',     }
+      # { texname: 'mktsFontfileLmmonoslanttenregular',         home: '', filename: 'lmmonoslant10-regular.otf',      }
+      # { texname: 'mktsFontfileLmromantenbolditalic',          home: '', filename: 'lmroman10-bolditalic.otf',       }
+      # { texname: 'mktsFontfileLmromantenbold',                home: '', filename: 'lmroman10-bold.otf',             }
+      { texname: 'mktsFontfileLmromantenitalic',              home: '', filename: 'lmroman10-italic.otf',           }
+      # { texname: 'mktsFontfileLmromantenregular',             home: '', filename: 'lmroman10-regular.otf',          }
+      # { texname: 'mktsFontfileLmromantwelvebold',             home: '', filename: 'lmroman12-bold.otf',             }
+      # { texname: 'mktsFontfileLmromantwelveitalic',           home: '', filename: 'lmroman12-italic.otf',           }
+      # { texname: 'mktsFontfileLmromantwelveregular',          home: '', filename: 'lmroman12-regular.otf',          }
+      # { texname: 'mktsFontfileLmromanseventeenregular',       home: '', filename: 'lmroman17-regular.otf',          }
+      # { texname: 'mktsFontfileLmromanfivebold',               home: '', filename: 'lmroman5-bold.otf',              }
+      # { texname: 'mktsFontfileLmromanfiveregular',            home: '', filename: 'lmroman5-regular.otf',           }
+      # { texname: 'mktsFontfileLmromansixbold',                home: '', filename: 'lmroman6-bold.otf',              }
+      # { texname: 'mktsFontfileLmromansixregular',             home: '', filename: 'lmroman6-regular.otf',           }
+      # { texname: 'mktsFontfileLmromansevenbold',              home: '', filename: 'lmroman7-bold.otf',              }
+      # { texname: 'mktsFontfileLmromansevenitalic',            home: '', filename: 'lmroman7-italic.otf',            }
+      # { texname: 'mktsFontfileLmromansevenregular',           home: '', filename: 'lmroman7-regular.otf',           }
+      # { texname: 'mktsFontfileLmromaneightbold',              home: '', filename: 'lmroman8-bold.otf',              }
+      # { texname: 'mktsFontfileLmromaneightitalic',            home: '', filename: 'lmroman8-italic.otf',            }
+      # { texname: 'mktsFontfileLmromaneightregular',           home: '', filename: 'lmroman8-regular.otf',           }
+      # { texname: 'mktsFontfileLmromanninebold',               home: '', filename: 'lmroman9-bold.otf',              }
+      # { texname: 'mktsFontfileLmromannineitalic',             home: '', filename: 'lmroman9-italic.otf',            }
+      # { texname: 'mktsFontfileLmromannineregular',            home: '', filename: 'lmroman9-regular.otf',           }
+      # { texname: 'mktsFontfileLmromancapstenoblique',         home: '', filename: 'lmromancaps10-oblique.otf',      }
+      # { texname: 'mktsFontfileLmromancapstenregular',         home: '', filename: 'lmromancaps10-regular.otf',      }
+      # { texname: 'mktsFontfileLmromandemitenoblique',         home: '', filename: 'lmromandemi10-oblique.otf',      }
+      # { texname: 'mktsFontfileLmromandemitenregular',         home: '', filename: 'lmromandemi10-regular.otf',      }
+      # { texname: 'mktsFontfileLmromandunhtenoblique',         home: '', filename: 'lmromandunh10-oblique.otf',      }
+      # { texname: 'mktsFontfileLmromandunhtenregular',         home: '', filename: 'lmromandunh10-regular.otf',      }
+      # { texname: 'mktsFontfileLmromanslanttenbold',           home: '', filename: 'lmromanslant10-bold.otf',        }
+      # { texname: 'mktsFontfileLmromanslanttenregular',        home: '', filename: 'lmromanslant10-regular.otf',     }
+      # { texname: 'mktsFontfileLmromanslanttwelveregular',     home: '', filename: 'lmromanslant12-regular.otf',     }
+      # { texname: 'mktsFontfileLmromanslantseventeenregular',  home: '', filename: 'lmromanslant17-regular.otf',     }
+      # { texname: 'mktsFontfileLmromanslanteightregular',      home: '', filename: 'lmromanslant8-regular.otf',      }
+      # { texname: 'mktsFontfileLmromanslantnineregular',       home: '', filename: 'lmromanslant9-regular.otf',      }
+      # { texname: 'mktsFontfileLmromanunsltenregular',         home: '', filename: 'lmromanunsl10-regular.otf',      }
+      # { texname: 'mktsFontfileLmsanstenboldoblique',          home: '', filename: 'lmsans10-boldoblique.otf',       }
+      # { texname: 'mktsFontfileLmsanstenbold',                 home: '', filename: 'lmsans10-bold.otf',              }
+      # { texname: 'mktsFontfileLmsanstenoblique',              home: '', filename: 'lmsans10-oblique.otf',           }
+      # { texname: 'mktsFontfileLmsanstenregular',              home: '', filename: 'lmsans10-regular.otf',           }
+      # { texname: 'mktsFontfileLmsanstwelveoblique',           home: '', filename: 'lmsans12-oblique.otf',           }
+      # { texname: 'mktsFontfileLmsanstwelveregular',           home: '', filename: 'lmsans12-regular.otf',           }
+      # { texname: 'mktsFontfileLmsansseventeenoblique',        home: '', filename: 'lmsans17-oblique.otf',           }
+      # { texname: 'mktsFontfileLmsansseventeenregular',        home: '', filename: 'lmsans17-regular.otf',           }
+      # { texname: 'mktsFontfileLmsanseightoblique',            home: '', filename: 'lmsans8-oblique.otf',            }
+      # { texname: 'mktsFontfileLmsanseightregular',            home: '', filename: 'lmsans8-regular.otf',            }
+      # { texname: 'mktsFontfileLmsansnineoblique',             home: '', filename: 'lmsans9-oblique.otf',            }
+      # { texname: 'mktsFontfileLmsansnineregular',             home: '', filename: 'lmsans9-regular.otf',            }
+      # { texname: 'mktsFontfileLmsansdemicondtenoblique',      home: '', filename: 'lmsansdemicond10-oblique.otf',   }
+      # { texname: 'mktsFontfileLmsansdemicondtenregular',      home: '', filename: 'lmsansdemicond10-regular.otf',   }
+      # { texname: 'mktsFontfileLmsansquoteightboldoblique',    home: '', filename: 'lmsansquot8-boldoblique.otf',    }
+      # { texname: 'mktsFontfileLmsansquoteightbold',           home: '', filename: 'lmsansquot8-bold.otf',           }
+      # { texname: 'mktsFontfileLmsansquoteightoblique',        home: '', filename: 'lmsansquot8-oblique.otf',        }
+      # { texname: 'mktsFontfileLmsansquoteightregular',        home: '', filename: 'lmsansquot8-regular.otf',        }
+
+
+
       ]
 
 
