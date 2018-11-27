@@ -878,6 +878,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     #.......................................................................................................
     else if select event, ')', 'landscape'
       send [ 'tex', "\\end{landscape}", ]
+    #.......................................................................................................
     else if select event, ')', 'document'
       while open_tag_count > 0
         open_tag_count += -1
@@ -888,6 +889,36 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       send event
     #.......................................................................................................
     return null
+
+# #-----------------------------------------------------------------------------------------------------------
+# @MKTX.BLOCK.$pre = ( S ) =>
+#   MACRO_ESCAPER.register_raw_tag 'pre'
+#   schema            =
+#     properties:           {}
+#     additionalProperties: false
+#   validate_and_cast = OVAL.new_validator schema
+#   within_pre        = false
+#   #.........................................................................................................
+#   return $ ( event, send ) =>
+#     if select event, [ '(', '.', ], 'pre'
+#       send stamp event
+#       if within_pre
+#         return send [ '.', 'warning', "can't nest <pre> within <pre>: #{rpr event}", ( copy meta ), ]
+#       [ type, name, Q, meta, ]  = event
+#       { text, attributes, }     = Q
+#       attributes                = validate_and_cast attributes
+#       within_pre                = true
+#     #.......................................................................................................
+#     else if select event, ')', 'pre'
+#       within_pre = false
+#     #.......................................................................................................
+#     else
+#       if within_pre
+#         debug '44932', 'pre', event
+#       else
+#         send event
+#     #.......................................................................................................
+#     return null
 
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.INLINE.$nudge = ( S ) =>
@@ -2409,6 +2440,8 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe MKTSCRIPT_WRITER.$produce_mktscript               S
     .pipe @$document                                        S
     #.......................................................................................................
+    ### tags that produce tags ###
+    #.......................................................................................................
     ### stuff using new HTML-ish syntax ###
     .pipe @MKTS_TABLE.$main                                 S
     .pipe @MKTX.INLINE.$here_x                              S
@@ -2419,6 +2452,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @MKTX.BLOCK.$stretch                              S
     .pipe @MKTX.BLOCK.$vspace                               S
     .pipe @MKTX.BLOCK.$landscape                            S
+    # .pipe @MKTX.BLOCK.$pre                                  S
     .pipe @MKTX.INLINE.$nudge                               S
     .pipe @MKTX.INLINE.$turn                                S
     .pipe @MKTX.INLINE.$fncr                                S
