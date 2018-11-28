@@ -78,9 +78,7 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
       [ ..., meta, ]  = event
       sandbox_backup  = MK.TS.DIFFPATCH.snapshot sandbox
       throw new Error "namespace collision: `S.sandbox.COLUMNS` already defined" if sandbox.COLUMNS?
-      sandbox.COLUMNS =
-        count: 2 # default number of columns in document **when using multiple columns**
-        stack: [ @_new_setting(), ]
+      @_set_sandbox_COLUMNS sandbox
       changeset = MKTS.DIFFPATCH.diff sandbox_backup, sandbox
       send [ '~', 'change', changeset, ( copy meta ), ] if changeset.length > 0
       send event
@@ -89,6 +87,13 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
       send event
     #.......................................................................................................
     return null
+
+#-----------------------------------------------------------------------------------------------------------
+@_set_sandbox_COLUMNS = ( sandbox ) ->
+  sandbox.COLUMNS =
+    count: 2 # default number of columns in document **when using multiple columns**
+    stack: [ @_new_setting(), ]
+  return null
 
 #-----------------------------------------------------------------------------------------------------------
 @$end_columns_with_document = ( S ) ->
@@ -242,11 +247,15 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
 
 #-----------------------------------------------------------------------------------------------------------
 @_change_column_count = ( sandbox, event, send, column_count ) ->
+  ### TAINT hotfix ###
+  @_set_sandbox_COLUMNS sandbox unless sandbox.COLUMNS?
   @_stop_column_region  sandbox, event, send
   @_start_column_region sandbox, event, send, column_count
 
 #-----------------------------------------------------------------------------------------------------------
 @_restore_column_count = ( sandbox, event, send ) ->
+  ### TAINT hotfix ###
+  @_set_sandbox_COLUMNS sandbox unless sandbox.COLUMNS?
   @_stop_column_region  sandbox, event, send
   @_pop sandbox
   column_count = @_get_column_count sandbox
