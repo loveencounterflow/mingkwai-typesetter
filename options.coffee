@@ -36,7 +36,8 @@ module.exports = options =
   #.........................................................................................................
   ### type may be `tex` or `text` ###
   entities:
-    'nl':           { type: 'tex',  value: '\\\\', }                  ### newline ###
+    'nl':           { type: 'tex',  value: '\\\\', }                  ### new line ###
+    'np':           { type: 'tex',  value: '\\null\\newpage{}', }     ### new page ###
     # 'par':          { type: 'text',  value: '\n\n', }                  ### paragraph break ###
     'thinspace':    { type: 'tex',  value: '\\thinspace{}', }         ### thin space ###
     'cspc':         { type: 'tex',  value: '\\cspc{}', }              ### thin constant space ###
