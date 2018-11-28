@@ -995,15 +995,13 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     if select event, [ '(', '.', ], [ 'left', 'right', 'center', 'justify', ]
       [ type, name, Q, meta, ]  = event
       p                         = name[ 0 ].toUpperCase() + name[ 1 .. ]
-      if type is '.'
-        send [ 'tex', "\n\n\\mkts#{p}{}", ]
-      else
-        send [ 'tex', "\n\n{\\mkts#{p}{}", ]
+      if type is '.' then  send [ 'tex',  "\\mkts#{p}{}", ]
+      else                 send [ 'tex', "{\\mkts#{p}{}", ]
       send stamp event
     #.......................................................................................................
     else if select event, ')', [ 'left', 'right', 'center', 'justify', ]
       [ type, name, Q, meta, ]  = event
-      send [ 'tex', "}\n\n", ]
+      send [ 'tex', "\\par}\n", ]
       send stamp event
     #.......................................................................................................
     else
