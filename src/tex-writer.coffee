@@ -937,7 +937,8 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       raise:   { type: 'number', }
     #.......................................................................................................
     additionalProperties: false
-    oneOf: [ { required: [ 'push', ], }, { required: [ 'raise', ], }, ]
+    # oneOf: [ { required: [ 'push', ], }, { required: [ 'raise', ], }, ]
+  validate_and_cast = OVAL.new_validator schema
   #.........................................................................................................
   return $ ( event, send ) =>
     if select event, '(', 'nudge'
