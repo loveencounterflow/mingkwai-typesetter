@@ -34,7 +34,8 @@ jr                        = JSON.stringify
 #...........................................................................................................
 MKTS_TABLE                = require './mkts-table'
 MKTS.MACRO_ESCAPER.register_raw_tag 'mkts-table-description'
-
+layouts_sym               = Symbol 'mkts-table-layouts'
+selectors_and_content_events_sym = Symbol 'mkts-table-selectors_and_content_events'
 
 #===========================================================================================================
 #
@@ -43,7 +44,7 @@ MKTS.MACRO_ESCAPER.register_raw_tag 'mkts-table-description'
   #.........................................................................................................
   ### TAINT tie local state to events to avoid difficulties with non-synchronous / non-lockstepping
   transforms ###
-  L = new_local_state()
+  L = new_local_state S
   return D.TEE.from_pipeline [
     @$parse_description               S, L
     @$handle_content_events           S, L
@@ -55,10 +56,17 @@ MKTS.MACRO_ESCAPER.register_raw_tag 'mkts-table-description'
 #===========================================================================================================
 #
 #-----------------------------------------------------------------------------------------------------------
-new_local_state = ->
+new_local_state = ( S ) ->
+  ### TAINT using global variable FTTB ###
+  unless ( layouts = global[ layouts_sym ] )?
+    layouts               = {}
+    global[ layouts_sym ] = layouts
+  unless ( selectors_and_content_events = global[ selectors_and_content_events_sym ] )?
+    selectors_and_content_events               = {}
+    global[ selectors_and_content_events_sym ] = selectors_and_content_events
   R =
-    selectors_and_content_events:   {}
-    layouts:                        {}
+    selectors_and_content_events:   selectors_and_content_events
+    layouts:                        layouts
     content_buffer:                 null
     within_field:                   false
     layout_name_stack:              []
