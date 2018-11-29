@@ -168,6 +168,46 @@ UNITS                     = require '../mkts-table-units'
   #.........................................................................................................
   done()
 
+#-----------------------------------------------------------------------------------------------------------
+@[ "integer multiples" ] = ( T, done ) ->
+  probes_and_matchers = [
+    [["15mm","5mm"],{"~isa":"MKTS/TABLE/quantity","value":15,"unit":"mm"}]
+    [["14.5mm","5mm"],{"~isa":"MKTS/TABLE/quantity","value":15,"unit":"mm"}]
+    [["15.5mm","5mm"],{"~isa":"MKTS/TABLE/quantity","value":20,"unit":"mm"}]
+    [["15mm","0.5cm"],{"~isa":"MKTS/TABLE/quantity","value":1.5,"unit":"cm"}]
+    [["14.5mm","0.5cm"],{"~isa":"MKTS/TABLE/quantity","value":1.5,"unit":"cm"}]
+    [["15.5mm","0.5cm"],{"~isa":"MKTS/TABLE/quantity","value":2,"unit":"cm"}]
+    [["5.25mm","lineheight"],{"~isa":"MKTS/TABLE/quantity","value":1,"unit":"lineheight"}]
+    [["5.26mm","lineheight"],{"~isa":"MKTS/TABLE/quantity","value":1,"unit":"lineheight"}]
+    [["5.27mm","lineheight"],{"~isa":"MKTS/TABLE/quantity","value":2,"unit":"lineheight"}]
+    [["0.525cm","lineheight"],{"~isa":"MKTS/TABLE/quantity","value":1,"unit":"lineheight"}]
+    [["0.526cm","lineheight"],{"~isa":"MKTS/TABLE/quantity","value":1,"unit":"lineheight"}]
+    [["0.527cm","lineheight"],{"~isa":"MKTS/TABLE/quantity","value":2,"unit":"lineheight"}]
+    [["15mm","lineheight"],{"~isa":"MKTS/TABLE/quantity","value":3,"unit":"lineheight"}]
+    [["14.5mm","lineheight"],{"~isa":"MKTS/TABLE/quantity","value":3,"unit":"lineheight"}]
+    [["15.5mm","lineheight"],{"~isa":"MKTS/TABLE/quantity","value":3,"unit":"lineheight"}]
+    [["15mm","2lineheight"],{"~isa":"MKTS/TABLE/quantity","value":4,"unit":"lineheight"}]
+    [["14.5mm","2lineheight"],{"~isa":"MKTS/TABLE/quantity","value":4,"unit":"lineheight"}]
+    [["15.5mm","2lineheight"],{"~isa":"MKTS/TABLE/quantity","value":4,"unit":"lineheight"}]
+    ]
+  #.........................................................................................................
+  for [ probes, matcher, ] in probes_and_matchers
+    [ cmp_probe_txt, ref_probe_txt, ] = probes
+    cmp_probe = UNITS.parse_nonnegative_quantity cmp_probe_txt
+    ref_probe = UNITS.parse_nonnegative_quantity ref_probe_txt
+    try
+      result  = UNITS.integer_multiple cmp_probe, ref_probe
+    catch error
+      if ( matcher is null ) and ( error.message.match /expected a 'MKTS\/TABLE\/quantity', got a/ )?
+        T.ok true
+      else
+        T.fail "unexpected error for probe #{rpr probes}: #{rpr error.message}"
+      continue
+    urge '36633', ( jr [ probes, result, ] )
+    T.eq result, matcher
+  #.........................................................................................................
+  done()
+
 
 
 ############################################################################################################
@@ -177,6 +217,7 @@ unless module.parent?
     "UNITS.as_text 1"
     "UNITS.as_text 2"
     "UNITS.as_text 3"
+    "integer multiples"
     ]
   @_prune()
   @_main()
