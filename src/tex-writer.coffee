@@ -54,6 +54,7 @@ LINEBREAKER               = require './linebreaker'
 AUX                       = require './tex-writer-aux'
 YADDA                     = require './yadda'
 OVAL                      = require './object-validator'
+UNITS                     = require './mkts-table-units'
 #...........................................................................................................
 Σ_formatted_warning       = Symbol 'formatted-warning'
 jr                        = JSON.stringify
@@ -110,7 +111,10 @@ after = ( names..., method ) ->
   # for key, route of @options[ 'routes' ]
   #   @options[ 'locators' ][ key ] = njs_path.resolve options_home, route
   #.........................................................................................................
-  # debug '©ed8gv', JSON.stringify @options, null, '  '
+  @options.layout ?= {}
+  if @options.layout.lineheight?
+    @options.layout.lineheight = UNITS.parse_nonnegative_quantity @options.layout.lineheight
+  #.........................................................................................................
   CACHE.update @options
 #...........................................................................................................
 @compile_options()
@@ -231,11 +235,15 @@ after = ( names..., method ) ->
   if ( styles = S.options[ 'styles' ] )?
     write "\\newcommand{\\#{name}}{%\n#{value}%\n}" for name, value of styles
   #-------------------------------------------------------------------------------------------------------
-  main_font_name = S.options.fonts[ 'main' ]
-  throw new Error "need entry options/fonts/name" unless main_font_name?
+  if ( mktsLineheight = S.options.layout?.lineheight ? null )?
+    mktsLineheight_txt = UNITS.as_text mktsLineheight
+    write ""
+    write "% LENGTHS"
+    write "\\setlength{\\mktsLineheight}{#{mktsLineheight_txt}}%"
+    write "\\setlength{\\mktsCurrentLineheight}{\\mktsLineheight}%"
+  #-------------------------------------------------------------------------------------------------------
   write ""
   write "% CONTENT"
-  # write "\\begin{document}\\mktsStyleNormal"
   #-------------------------------------------------------------------------------------------------------
   # INCLUDES
   #.......................................................................................................
@@ -246,7 +254,6 @@ after = ( names..., method ) ->
   write "\\end{document}"
   #-------------------------------------------------------------------------------------------------------
   text = lines.join '\n'
-  # whisper text
   njs_fs.writeFile S.layout_info[ 'master-locator'  ], text, handler
 
 
@@ -548,7 +555,7 @@ before '@MKTX.BLOCK.$heading', '@MKTX.COMMAND.$toc', \
     [ type, name, text, meta, ] = event
     #.......................................................................................................
     if select event, '!', [ 'crossref-anchor', ]
-      debug '33393', event
+      # debug '33393', event
       ### count   = crossrefs[ text ] = ( crossrefs[ text ] ? 0 ) + 1 ###
       ### key     = "#{text}-#{count}" ###
       key     = text
@@ -556,7 +563,7 @@ before '@MKTX.BLOCK.$heading', '@MKTX.COMMAND.$toc', \
       send stamp event
     #.......................................................................................................
     else if select event, '!', [ 'crossref-link', ]
-      debug '33394', event
+      # debug '33394', event
       ### count   = crossrefs[ text ] = ( crossrefs[ text ] ? 0 ) + 1 ###
       ### key     = "#{text}-#{count}" ###
       key     = text

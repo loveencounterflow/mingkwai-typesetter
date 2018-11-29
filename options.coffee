@@ -31,7 +31,11 @@ module.exports = options =
 
   #.........................................................................................................
   defs:
-    foobar:   "this variable has been set in `options`"
+    foobar:     "this variable has been set in `options`"
+
+  #.........................................................................................................
+  layout:
+    lineheight: '5.26mm'
 
   #.........................................................................................................
   ### type may be `tex` or `text` ###
@@ -913,3 +917,6 @@ module.exports = options =
       '𝖝':                                cmd: 'mktsFontfileAsanamath'
       '𝖞':                                cmd: 'mktsFontfileAsanamath'
       '𝖟':                                cmd: 'mktsFontfileAsanamath'
+
+
+
