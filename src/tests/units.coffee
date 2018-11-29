@@ -193,8 +193,10 @@ UNITS                     = require '../mkts-table-units'
   #.........................................................................................................
   for [ probes, matcher, ] in probes_and_matchers
     [ cmp_probe_txt, ref_probe_txt, ] = probes
-    cmp_probe = UNITS.parse_nonnegative_quantity cmp_probe_txt
-    ref_probe = UNITS.parse_nonnegative_quantity ref_probe_txt
+    cmp_probe       = UNITS.parse_nonnegative_quantity cmp_probe_txt
+    ref_probe       = UNITS.parse_nonnegative_quantity ref_probe_txt
+    cmp_probe_copy  = Object.assign {}, cmp_probe
+    ref_probe_copy  = Object.assign {}, ref_probe
     try
       result  = UNITS.integer_multiple cmp_probe, ref_probe
     catch error
@@ -204,6 +206,8 @@ UNITS                     = require '../mkts-table-units'
         T.fail "unexpected error for probe #{rpr probes}: #{rpr error.message}"
       continue
     urge '36633', ( jr [ probes, result, ] )
+    T.eq cmp_probe, cmp_probe_copy
+    T.eq ref_probe, ref_probe_copy
     T.eq result, matcher
   #.........................................................................................................
   done()

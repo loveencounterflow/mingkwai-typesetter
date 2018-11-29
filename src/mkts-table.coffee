@@ -65,6 +65,8 @@ contains = ( text, pattern ) ->
     name:                 id    ? null
     meta:                 meta  ? null
     debug:                false
+    ### FTTB, we make a subset of stream state available here: ###
+    options:              { layout: S.options.layout, defs: S.options.defs, }
     _tmp:
       prv_fieldnr:          0
     fails:                [] ### recoverable errors / fails warnings ###
@@ -427,12 +429,15 @@ contains = ( text, pattern ) ->
 #-----------------------------------------------------------------------------------------------------------
 @_walk_opening_events = ( me, layout_name_stack, field_selector_stack ) ->
   @_ensure_unitvector me
-  layout_name       = me.name
-  unitwidth_txt     = UNITS.as_text me.unitwidth
-  unitheight_txt    = UNITS.as_text me.unitheight
-  table_height_txt  = UNITS.as_text me.unitheight, '*', me.table_dimensions.height
-  table_width_txt   = UNITS.as_text me.unitwidth,  '*', me.table_dimensions.width
-  # debug '39993', 'field_selector_stack  ', field_selector_stack
+  layout_name                 = me.name
+  me._tmp.unitwidth_txt       = UNITS.as_text me.unitwidth
+  me._tmp.unitheight_txt      = UNITS.as_text me.unitheight
+  me._tmp.table_height_txt    = UNITS.as_text me.unitheight, '*', me.table_dimensions.height
+  me._tmp.table_width_txt     = UNITS.as_text me.unitwidth,  '*', me.table_dimensions.width
+  ### TAINT in order to be used in \vspace, must subtract equivalent of one \mktsLineheight; in order te
+  used in \mktsVspace, must subtract one. ###
+  me._tmp.table_height_lh     = UNITS.integer_multiple me._tmp.table_height_txt, me.options.layout.lineheight
+  me._tmp.table_height_lh_txt = UNITS.as_text me._tmp.table_height_lh
   ### TAINT valign center, top, bottom do not work well for nested tables; need dimensions of enclosing
   field to introduce explicit vertical spaces ###
   yield tex "\n\n"
@@ -440,11 +445,10 @@ contains = ( text, pattern ) ->
   yield tex "% Beginning of MKTS Table (layout: #{rpr layout_name})\n"
   # yield tex "\\par% Beginning of MKTS Table (layout: #{rpr layout_name})\n"
   yield texr 'ð1000', "{\\setlength{\\fboxsep}{0mm}"
-  # yield texr 'ð1000', "4347198{\\setlength\\lineskiplimit{-2.5mm}\\relax\\setlength{\\fboxsep}{0mm}"
   yield texr 'ð1001', "\\mktsColorframebox{green}{% debugging framebox" if me.debug
-  yield texr 'ð1002', "\\begin{minipage}[t][#{table_height_txt}][t]{#{table_width_txt}}"
+  yield texr 'ð1002', "\\begin{minipage}[t][#{me._tmp.table_height_txt}][t]{#{me._tmp.table_width_txt}}"
   yield texr 'ð1003', "\\begin{tikzpicture}[ overlay, yshift = 0mm, yscale = -1, line cap = rect ]"
-  yield texr 'ð1004', "\\tikzset{x=#{unitwidth_txt}};\\tikzset{y=#{unitheight_txt}};"
+  yield texr 'ð1004', "\\tikzset{x=#{me._tmp.unitwidth_txt}};\\tikzset{y=#{me._tmp.unitheight_txt}};"
   yield return
 
 #-----------------------------------------------------------------------------------------------------------
@@ -453,7 +457,8 @@ contains = ( text, pattern ) ->
   yield texr 'ð1005', "\\end{tikzpicture}"
   yield texr 'ð1006', "\\end{minipage}}"
   yield texr 'ð1007', "}% debugging framebox" if me.debug
-  yield texr 'ð1008', "\\mktsVspace{1}"
+  # yield texr 'ð1008', "\\mktsVspace{1}"
+  yield texr 'ð1000', "\\vspace{#{me._tmp.table_height_lh_txt}}" ### TAINT should use `\mktsVspace` ###
   yield tex "\\par% End of MKTS Table (layout: #{rpr layout_name})\n"
   yield tex "% ==========================================================================================================\n"
   yield return
