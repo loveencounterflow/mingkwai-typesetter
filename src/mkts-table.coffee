@@ -437,8 +437,10 @@ contains = ( text, pattern ) ->
   field to introduce explicit vertical spaces ###
   yield tex "\n\n"
   yield tex "% ==========================================================================================================\n"
-  yield tex "\\par% Beginning of MKTS Table (layout: #{rpr layout_name})\n"
+  yield tex "% Beginning of MKTS Table (layout: #{rpr layout_name})\n"
+  # yield tex "\\par% Beginning of MKTS Table (layout: #{rpr layout_name})\n"
   yield texr 'ð1000', "{\\setlength{\\fboxsep}{0mm}"
+  # yield texr 'ð1000', "4347198{\\setlength\\lineskiplimit{-2.5mm}\\relax\\setlength{\\fboxsep}{0mm}"
   yield texr 'ð1001', "\\mktsColorframebox{green}{% debugging framebox" if me.debug
   yield texr 'ð1002', "\\begin{minipage}[t][#{table_height_txt}][t]{#{table_width_txt}}"
   yield texr 'ð1003', "\\begin{tikzpicture}[ overlay, yshift = 0mm, yscale = -1, line cap = rect ]"

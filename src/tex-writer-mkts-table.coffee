@@ -85,13 +85,13 @@ new_local_state = ( S ) ->
 #-----------------------------------------------------------------------------------------------------------
 @get_current_layout_name = ( S, L ) ->
   unless ( R = L.layout_name_stack[ L.layout_name_stack.length - 1 ] )?
-    throw new Error "#{badge} µ79868 layout stack empty"
+    throw new Error "#{badge} µ1234 layout stack empty"
   return R
 
 #-----------------------------------------------------------------------------------------------------------
 @get_current_field_selector = ( S, L ) ->
   unless ( R = L.field_selector_stack[ L.field_selector_stack.length - 1 ] )?
-    throw new Error "#{badge} µ58212 field_selector_stack stack empty"
+    throw new Error "#{badge} µ1567 field_selector_stack stack empty"
   return R[ 1 ]
 
 #-----------------------------------------------------------------------------------------------------------
@@ -112,22 +112,25 @@ new_local_state = ( S ) ->
 
 #-----------------------------------------------------------------------------------------------------------
 @layout_from_name = ( S, L, layout_name ) ->
+  # debug '37733-1', ( Object.keys L.layouts ), ( L.layouts is global[ layouts_sym ] )
   unless ( R = L.layouts[ layout_name ] )?
-    throw new Error "#{badge} µ47753 unknown layout #{rpr layout_name}"
+    throw new Error "#{badge} µ1900 unknown layout #{rpr layout_name}"
   return R
 
 #-----------------------------------------------------------------------------------------------------------
 @push_layout_name = ( S, L, layout_name ) ->
+  # debug '37733-2', ( Object.keys L.layouts ), ( L.layouts is global[ layouts_sym ] )
   unless L.layouts[ layout_name ]?
-    throw new Error "#{badge} µ42558 unknown layout #{rpr layout_name}"
+    throw new Error "#{badge} µ2233 unknown layout #{rpr layout_name}"
   L.layout_name_stack.push layout_name
   return null
 
 #-----------------------------------------------------------------------------------------------------------
 @store_layout = ( S, L, layout ) ->
   if L.layouts[ layout.name ]?
-    throw new Error "#{badge} µ36339 refusing to re-define layout #{rpr layout.name}"
+    throw new Error "#{badge} µ2566 refusing to re-define layout #{rpr layout.name}"
   L.layouts[ layout.name ] = layout
+  # debug '37733-3', ( Object.keys L.layouts ), ( L.layouts is global[ layouts_sym ] )
   @_initialize_layout S, L, layout.name
   return null
 
@@ -135,10 +138,10 @@ new_local_state = ( S ) ->
 @_API_copy = ( S, L, me, template_layout_name ) ->
   ### TAINT ad-hoc syntax ###
   unless ( match = template_layout_name.match /^\s*(?<template_layout_name>[^\s]+)\s*$/ )?
-    throw new Error "#{badge} µ36377 illegal layout name #{rpr template_layout_name}"
+    throw new Error "#{badge} µ2899 illegal layout name #{rpr template_layout_name}"
   { template_layout_name, } = match.groups
   unless me.name != template_layout_name
-    throw new Error "#{badge} µ36378 unable to copy layout #{rpr template_layout_name} to itself"
+    throw new Error "#{badge} µ3232 unable to copy layout #{rpr template_layout_name} to itself"
   template = CND.deep_copy @layout_from_name S, L, template_layout_name
   delete template.name
   Object.assign me, template
@@ -152,7 +155,7 @@ new_local_state = ( S ) ->
 #-----------------------------------------------------------------------------------------------------------
 @new_content_buffer = ( S, L, layout_name, selector ) ->
   unless ( target = L.selectors_and_content_events[ layout_name ] )?
-    throw new Error "#{badge} µ24692 unknown layout #{rpr layout_name}"
+    throw new Error "#{badge} µ3565 unknown layout #{rpr layout_name}"
   R = [ selector, ]
   target.push R
   return R
@@ -165,28 +168,30 @@ new_local_state = ( S ) ->
 #-----------------------------------------------------------------------------------------------------------
 @pop_field_selector = ( S, L ) ->
   if L.field_selector_stack.length < 1
-    throw new Error "#{badge} µ49782 field selector stack empty"
+    throw new Error "#{badge} µ3898 field selector stack empty"
   return L.field_selector_stack.pop()
 
 #-----------------------------------------------------------------------------------------------------------
 @content_buffers_from_layout_name = ( S, L, layout_name ) ->
   unless ( R = L.selectors_and_content_events[ layout_name ] )?
-    throw new Error "#{badge} µ65671 unknown layout #{rpr layout_name}"
+    throw new Error "#{badge} µ4231 unknown layout #{rpr layout_name}"
   return R
 
 #-----------------------------------------------------------------------------------------------------------
 @clear_contents = ( S, L, layout_name ) ->
+  # debug '37733-4', ( Object.keys L.layouts ), ( L.layouts is global[ layouts_sym ] )
   unless ( target = L.selectors_and_content_events[ layout_name ] )?
-    throw new Error "#{badge} µ65671 unknown layout #{rpr layout_name}"
+    throw new Error "#{badge} µ4564 unknown layout #{rpr layout_name}"
   target.length = 0
   return null
 
 #-----------------------------------------------------------------------------------------------------------
 @get_selectors_and_content_events = ( S, L, layout_name ) ->
+  # debug '37733-5', ( Object.keys L.layouts ), ( L.layouts is global[ layouts_sym ] )
   unless ( R = L.selectors_and_content_events[ layout_name ] )?
-    debug '88733', L.selectors_and_content_events
-    debug '88733', Object.keys L.selectors_and_content_events
-    throw new Error "#{badge} µ95392 unknown layout #{rpr layout_name}"
+    # debug '88733', L.selectors_and_content_events
+    # debug '88733', Object.keys L.selectors_and_content_events
+    throw new Error "#{badge} µ4897 unknown layout #{rpr layout_name}"
   return R
 
 #===========================================================================================================
@@ -216,7 +221,7 @@ new_local_state = ( S ) ->
           READER  = require './mkts-table-layout-reader-coffee'
           layout  = READER.read_layout S, L, event, text
         else
-          throw new Error "#{badge} µ29246 unknown format for <mkts-table-description>: #{rpr attributes.format}"
+          throw new Error "#{badge} µ5230 unknown format for <mkts-table-description>: #{rpr attributes.format}"
       send stamp [ '.', 'MKTS/TABLE/layout', layout, ( copy meta ), ]
       layout.meta = copy meta
       @store_layout S, L, layout
@@ -235,7 +240,7 @@ new_local_state = ( S ) ->
       [ _, _, Q, _, ]       = event
       ### OBS attribute is named 'layout' but contains layout name ###
       unless Q.layout?
-        throw new Error "#{badge} µ29245 missing required attribute `layout` for <mkts-table-content>: #{rpr event}"
+        throw new Error "#{badge} µ5563 missing required attribute `layout` for <mkts-table-content>: #{rpr event}"
       ### TAINT might want to add option to keep contents ###
       @push_layout_name S, L, Q.layout
       @clear_contents   S, L, Q.layout
@@ -288,11 +293,11 @@ new_local_state = ( S ) ->
       layout_name = @get_current_layout_name  S, L
       ### TAINT should throw error when <field> nested within <field> *without* intervening <mkts-table-content> ###
       # if within_field
-      #   throw new Error "#{badge} µ39418 detected nested <field> tag (#{jr event}) in table #{rpr layout_name}"
+      #   throw new Error "#{badge} µ5896 detected nested <field> tag (#{jr event}) in table #{rpr layout_name}"
       within_field              = true
       [ type, name, Q, meta, ]  = event
       unless Q? and Q.key?
-        throw new Error "#{badge} µ33810 missing <field> tag attribute 'key' in table #{rpr layout_name} (#{jr event})"
+        throw new Error "#{badge} µ6229 missing <field> tag attribute 'key' in table #{rpr layout_name} (#{jr event})"
       ### TAINT this is exactly the kind of dangerous 'could have happened anywhere, anytime' state mutation
       that advocates of immutable state are warning us about: ###
       @push_field_selector S, L, layout_name, Q.key

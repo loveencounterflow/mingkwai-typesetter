@@ -62,7 +62,7 @@ UNITS                     = require './mkts-table-units'
     when 'rangekey'
       first       = selector.first
       second      = selector.second
-      throw new Error "(MKTS/TABLE µ1237) expected a cellkey, got a #{rpr first.type}"  unless first.type is 'cellkey'
+      throw new Error "(MKTS/TABLE µ1237) expected a cellkey, got a #{rpr first.type}"  unless first.type  is 'cellkey'
       throw new Error "(MKTS/TABLE µ1238) expected a cellkey, got a #{rpr second.type}" unless second.type is 'cellkey'
       rangekey    = "#{first.value}..#{second.value}"
   #.........................................................................................................
