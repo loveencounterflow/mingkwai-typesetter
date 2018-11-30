@@ -219,6 +219,93 @@ UNITS                     = require '../mkts-table-units'
   #.........................................................................................................
   done()
 
+#-----------------------------------------------------------------------------------------------------------
+@[ "conform" ] = ( T, done ) ->
+  probes_and_matchers = [
+    [["15mm","mm"],{"~isa":"MKTS/TABLE/quantity","value":15,"unit":"mm"}]
+    [["15mm","1mm"],{"~isa":"MKTS/TABLE/quantity","value":15,"unit":"mm"}]
+    [["15mm","2mm"],null]
+    [["15cm","mm"],{"~isa":"MKTS/TABLE/quantity","value":150,"unit":"mm"}]
+    [["15mm","pt"],{"~isa":"MKTS/TABLE/quantity","value":42.67913385826772,"unit":"pt"}]
+    [["15mm","cm"],{"~isa":"MKTS/TABLE/quantity","value":1.5,"unit":"cm"}]
+    [["15mm","km"],null]
+    [["1cm","lineheight"],{"~isa":"MKTS/TABLE/quantity","value":1.9011406844106464,"unit":"lineheight"}]
+    ]
+  #.........................................................................................................
+  for [ probe, matcher, ] in probes_and_matchers
+    [ probe_a, probe_b, ] = probe
+    probe_a_copy          = if ( CND.isa_text probe_a ) then probe_a else Object.assign {}, probe_a
+    probe_b_copy          = if ( CND.isa_text probe_b ) then probe_b else Object.assign {}, probe_b
+    try
+      result  = UNITS.conform probe_a, probe_b
+    catch error
+      if ( matcher is null ) # and ( error.message.match /expected a 'MKTS\/TABLE\/quantity', got a/ )?
+        T.ok true
+        help '36633', ( jr [ probe, matcher, ] )
+      else
+        T.fail "unexpected error for probe #{rpr probe}: #{rpr error.message}"
+        warn '36633', ( jr [ probe, matcher, ] )
+      continue
+    urge '36633', ( jr [ probe, result, ] )
+    T.eq probe_a, probe_a_copy
+    T.eq probe_b, probe_b_copy
+    T.eq result, matcher
+  #.........................................................................................................
+  done()
+
+#-----------------------------------------------------------------------------------------------------------
+@[ "add" ] = ( T, done ) ->
+  probes_and_matchers = [
+    [["15mm","5mm"],{"~isa":"MKTS/TABLE/quantity","value":20,"unit":"mm"}]
+    [["15cm","5mm"],{"~isa":"MKTS/TABLE/quantity","value":15.5,"unit":"cm"}]
+    [["15cm","-5mm"],{"~isa":"MKTS/TABLE/quantity","value":14.5,"unit":"cm"}]
+    ]
+  #.........................................................................................................
+  for [ probe, matcher, ] in probes_and_matchers
+    [ probe_a, probe_b, ] = probe
+    probe_a_copy          = if ( CND.isa_text probe_a ) then probe_a else Object.assign {}, probe_a
+    probe_b_copy          = if ( CND.isa_text probe_b ) then probe_b else Object.assign {}, probe_b
+    try
+      result  = UNITS.add probe_a, probe_b
+    catch error
+      if ( matcher is null ) # and ( error.message.match /expected a 'MKTS\/TABLE\/quantity', got a/ )?
+        T.ok true
+        help '36633', ( jr [ probe, matcher, ] )
+      else
+        T.fail "unexpected error for probe #{rpr probe}: #{rpr error.message}"
+        warn '36633', ( jr [ probe, matcher, ] )
+      continue
+    urge '36633', ( jr [ probe, result, ] )
+    T.eq probe_a, probe_a_copy
+    T.eq probe_b, probe_b_copy
+    T.eq result, matcher
+  #.........................................................................................................
+  done()
+
+#-----------------------------------------------------------------------------------------------------------
+@[ "negate" ] = ( T, done ) ->
+  probes_and_matchers = [
+    ["32pt",{"~isa":"MKTS/TABLE/quantity","value":-32,"unit":"pt"}]
+    ["150cm",{"~isa":"MKTS/TABLE/quantity","value":-150,"unit":"cm"}]
+    ["-1mm",{"~isa":"MKTS/TABLE/quantity","value":1,"unit":"mm"}]
+    ]
+  #.........................................................................................................
+  for [ probe, matcher, ] in probes_and_matchers
+    try
+      result  = UNITS.negate probe
+    catch error
+      if ( matcher is null ) # and ( error.message.match /expected a 'MKTS\/TABLE\/quantity', got a/ )?
+        T.ok true
+        help '36633', ( jr [ probe, matcher, ] )
+      else
+        T.fail "unexpected error for probe #{rpr probe}: #{rpr error.message}"
+        warn '36633', ( jr [ probe, matcher, ] )
+      continue
+    urge '36633', ( jr [ probe, result, ] )
+    T.eq result, matcher
+  #.........................................................................................................
+  done()
+
 
 
 ############################################################################################################
@@ -229,6 +316,9 @@ unless module.parent?
     "UNITS.as_text 2"
     "UNITS.as_text 3"
     "integer multiples"
+    "conform"
+    "add"
+    "negate"
     ]
   @_prune()
   @_main()

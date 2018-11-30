@@ -124,7 +124,7 @@ contains = ( text, pattern ) ->
   if me[ p ]?
     return _record_fail me, 'µ5661', "unable to re-define #{p}"
   #.........................................................................................................
-  me[ p ] = UNITS.parse_nonnegative_quantity text
+  me[ p ] = UNITS.new_quantity text
   return null
 
 #-----------------------------------------------------------------------------------------------------------
@@ -436,8 +436,8 @@ contains = ( text, pattern ) ->
   me._tmp.table_width_txt     = UNITS.as_text me.unitwidth,  '*', me.table_dimensions.width
   ### TAINT in order to be used in \vspace, must subtract equivalent of one \mktsLineheight; in order te
   used in \mktsVspace, must subtract one. ###
-  me._tmp.table_height_lh     = UNITS.integer_multiple me._tmp.table_height_txt, me.options.layout.lineheight
-  me._tmp.table_height_lh_txt = UNITS.as_text me._tmp.table_height_lh
+  UNITS.set_factor 'mktsLineheight', me.options.layout.lineheight.value, me.options.layout.lineheight.unit
+  me._tmp.table_height_lh     = ( UNITS.integer_multiple me._tmp.table_height_txt, 'mktsLineheight' ).value
   ### TAINT valign center, top, bottom do not work well for nested tables; need dimensions of enclosing
   field to introduce explicit vertical spaces ###
   yield tex "\n\n"

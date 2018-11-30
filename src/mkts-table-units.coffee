@@ -35,19 +35,27 @@ jr                        = JSON.stringify
   lineheight:   5.26 ### preset, may change ###
 
 #-----------------------------------------------------------------------------------------------------------
+@_get_factor = ( unit ) ->
+  throw new Error "(MKTS/TABLE µ88309) unknown unit #{rpr unit}" unless ( R = @factors[ unit ] )?
+  return R
+
+#-----------------------------------------------------------------------------------------------------------
 @set_factor = ( source_unit, target_value, target_unit ) ->
+  ### TAINT validate numbers ###
   unless target_unit is 'mm'
     throw new Error "(MKTS/TABLE µ43272) expected 'mm' as target unit, got #{rpr target_unit}"
-  ### TAINT validate numbers ###
   #.........................................................................................................
   @factors[ source_unit ] = target_value
   return null
 
 #-----------------------------------------------------------------------------------------------------------
-@new_quantity = ( value_or_literal, unit = null ) ->
-  return @parse value_or_literal unless unit?
-  value = value_or_literal
-  return { '~isa': 'MKTS/TABLE/quantity', value, unit, }
+@new_quantity = ( x, unit = null ) ->
+  unless unit?
+    switch ( type = CND.type_of x )
+      when 'text'                 then return @parse x
+      when 'MKTS/TABLE/quantity'  then return Object.assign {}, x
+      else throw new Error "(MKTS/TABLE µ88404) expected a text or a 'MKTS/TABLE/quantity', got a #{rpr type}"
+  return { '~isa': 'MKTS/TABLE/quantity', value: x, unit, }
 
 #-----------------------------------------------------------------------------------------------------------
 @parse = ( text ) ->
@@ -76,76 +84,53 @@ jr                        = JSON.stringify
 
 #-----------------------------------------------------------------------------------------------------------
 @multiply = ( me, factor ) ->
-  switch ( type = CND.type_of me )
-    when 'text'                 then me = @new_quantity me
-    when 'MKTS/TABLE/quantity'  then me = Object.assign {}, me
-    else throw new Error "(MKTS/TABLE µ88404) expected a text or a 'MKTS/TABLE/quantity', got a #{rpr type}"
+  me        = @new_quantity me
   me.value *= factor
   return me
 
-# #-----------------------------------------------------------------------------------------------------------
-# @add = ( me, length ) ->
-#   switch ( type = CND.type_of me )
-#     when 'text'                 then me = @new_quantity me
-#     when 'MKTS/TABLE/quantity'  then me = Object.assign {}, me
-#     else throw new Error "(MKTS/TABLE µ88404) expected a text or a 'MKTS/TABLE/quantity', got a #{rpr type}"
-#   switch ( type = CND.type_of length )
-#     when 'text'                 then length = @new_quantity length
-#     when 'MKTS/TABLE/quantity'  then length = Object.assign {}, length
-#     else throw new Error "(MKTS/TABLE µ88404) expected a text or a 'MKTS/TABLE/quantity', got a #{rpr type}"
-#   #.........................................................................................................
-#   unless me.unit is length.unit
-#     ### When both units are identical, we accept them trivially both without checking whether we know them.
-#     If units differ, we convert both lengths to millimeters before doing the conversion; this will cause
-#     unknown units to throw errors. ###
-#     unless ( me_factor = @factors[ me.unit ] )?
-#       throw new Error "(MKTS/TABLE µ88309) unknown unit #{rpr me.unit}"
-#     unless ( ref_factor = @factors[ length.unit ] )?
-#       throw new Error "(MKTS/TABLE µ88309) unknown unit #{rpr length.unit}"
-#     me_value   *= me_factor
-#     ref_value  *= ref_factor
-#   #.........................................................................................................
-#   ratio = Math.ceil me_value / ref_value
-#   return @multiply ref, ratio
-#   me.value *= length
-#   return me
+#-----------------------------------------------------------------------------------------------------------
+@negate = ( me ) -> @multiply me, -1
 
 #-----------------------------------------------------------------------------------------------------------
-@integer_multiple = ( me, ref ) ->
-  ### TAINT should accept textual arguments ###
+@conform = ( me, you ) ->
+  ### Express one quantity in terms of the other. ###
+  me        = @new_quantity me
+  you       = @new_quantity you
+  unless you.value is 1
+    throw new Error "(MKTS/TABLE µ88309) unable to conform to a quantity with value other than 1, got #{rpr you}"
+  me_value  = me.value  * @_get_factor me.unit
+  you_value = you.value * @_get_factor you.unit
+  you.value   = me_value / you_value
+  return you
+
+#-----------------------------------------------------------------------------------------------------------
+@add = ( me, you ) ->
+  me        = @new_quantity me
+  you       = @new_quantity you
+  me_value  = me.value  * @_get_factor me.unit
+  you_value = you.value * @_get_factor you.unit
+  return @conform ( @new_quantity me_value + you_value, 'mm' ), me.unit
+
+#-----------------------------------------------------------------------------------------------------------
+@integer_multiple = ( me, you ) ->
   ### Given a comparison quantity and a reference quantity, return a quantity
   whose unit is the unit of the reference quantity, and whose value is a whole
   number such that the length expressed by the comparison quantity will fit into
   resulting length by the smallest integer multiple of the reference length.
-
   For example, `integer_multiple '15.5mm', '5mm'` will result in `20mm`, because
   `20mm` is the smallest integer multiple of `5mm` that is longer than `15.5mm`. ###
   #.........................................................................................................
-  switch ( type = CND.type_of me )
-    when 'text'                 then me = @new_quantity me
-    when 'MKTS/TABLE/quantity'  then me = Object.assign {}, me
-    else throw new Error "(MKTS/TABLE µ88404) expected a text or a 'MKTS/TABLE/quantity', got a #{rpr type}"
-  switch ( type = CND.type_of ref )
-    when 'text'                 then ref = @new_quantity ref
-    when 'MKTS/TABLE/quantity'  then ref = Object.assign {}, ref
-    else throw new Error "(MKTS/TABLE µ88448) expected a text or a 'MKTS/TABLE/quantity', got a #{rpr type}"
-  #.........................................................................................................
-  me_value  = me.value
-  ref_value = ref.value
-  #.........................................................................................................
-  unless me.unit is ref.unit
-    ### When both units are identical, we accept them trivially both without checking whether we know them.
-    If units differ, we convert both lengths to millimeters before doing the conversion; this will cause
-    unknown units to throw errors. ###
-    unless ( me_factor = @factors[ me.unit ] )?
-      throw new Error "(MKTS/TABLE µ88309) unknown unit #{rpr me.unit}"
-    unless ( ref_factor = @factors[ ref.unit ] )?
-      throw new Error "(MKTS/TABLE µ88309) unknown unit #{rpr ref.unit}"
-    me_value   *= me_factor
-    ref_value  *= ref_factor
-  #.........................................................................................................
-  ratio = Math.ceil me_value / ref_value
-  return @multiply ref, ratio
+  me        = @new_quantity me
+  you       = @new_quantity you
+  me_value  = me.value  * @_get_factor me.unit
+  you_value = you.value * @_get_factor you.unit
+  ratio     = Math.ceil me_value / you_value
+  return @multiply you, ratio
+
+# #-----------------------------------------------------------------------------------------------------------
+# @integer_multiple_minus_one = ( me, you ) ->
+#   R =
+#   return ( @integer_multiple me, you )
 
 
 
