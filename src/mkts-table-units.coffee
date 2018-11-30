@@ -24,7 +24,7 @@ $async                    = D.remit_async.bind D
 assign                    = Object.assign
 copy                      = ( x ) -> Object.assign {}, x
 jr                        = JSON.stringify
-@pattern                  = /^\s*(?<value>[0-9]+\.?[0-9]*)\s*(?<unit>[^\s0-9]+)\s*$/
+@pattern                  = /^\s*(?<value>(?:\+|-)?[0-9]*\.?[0-9]*)\s*(?<unit>[^\s0-9]+)\s*$/
 
 #-----------------------------------------------------------------------------------------------------------
 @factors =
@@ -45,17 +45,21 @@ jr                        = JSON.stringify
 
 #-----------------------------------------------------------------------------------------------------------
 @new_quantity = ( value_or_literal, unit = null ) ->
-  return @parse_nonnegative_quantity value_or_literal unless unit?
+  return @parse value_or_literal unless unit?
   value = value_or_literal
   return { '~isa': 'MKTS/TABLE/quantity', value, unit, }
 
 #-----------------------------------------------------------------------------------------------------------
-@parse_nonnegative_quantity = ( text ) ->
-  text = '1' + text unless ( text.match /^\s*[0-9]/ )?
+@parse = ( text ) ->
+  # text = '1' + text unless ( text.match /^\s*[0-9]/ )?
   unless ( match = text.match @pattern )?
-    throw new Error "(MKTS/TABLE µ88272) unable to parse #{rpr text} as nonnegative quantity"
+    throw new Error "(MKTS/TABLE µ88272) unable to parse #{rpr text}"
   #.........................................................................................................
-  return @new_quantity ( parseFloat match.groups.value ), match.groups.unit
+  { value, unit, } = match.groups
+  throw new Error "(MKTS/TABLE µ88272) unable to parse #{rpr text}" if value in [ '+', '-', ]
+  value = '1' if value is ''
+  #.........................................................................................................
+  return @new_quantity ( parseFloat value ), unit
 
 #-----------------------------------------------------------------------------------------------------------
 @as_text = ( me, operator, operand ) ->

@@ -38,7 +38,7 @@ UNITS                     = require '../mkts-table-units'
   test @, 'timeout': 30000
 
 #-----------------------------------------------------------------------------------------------------------
-@[ "UNITS.parse_nonnegative_quantity 1" ] = ( T, done ) ->
+@[ "UNITS.parse 1" ] = ( T, done ) ->
   probes_and_matchers = [
     ["1mm",{"value":1,"unit":"mm","~isa":"MKTS/TABLE/quantity"}]
     ["1.2mm",{"value":1.2,"unit":"mm","~isa":"MKTS/TABLE/quantity"}]
@@ -48,16 +48,23 @@ UNITS                     = require '../mkts-table-units'
     [" 300mm",{"value":300,"unit":"mm","~isa":"MKTS/TABLE/quantity"}]
     [" 300 mm",{"value":300,"unit":"mm","~isa":"MKTS/TABLE/quantity"}]
     [" 300 mm   ",{"value":300,"unit":"mm","~isa":"MKTS/TABLE/quantity"}]
+    ["-1mm",{"value":-1,"unit":"mm","~isa":"MKTS/TABLE/quantity"}]
+    ["-1.2mm",{"value":-1.2,"unit":"mm","~isa":"MKTS/TABLE/quantity"}]
+    ["-0.3\\mktsLineheight",{"value":-0.3,"unit":"\\mktsLineheight","~isa":"MKTS/TABLE/quantity"}]
+    ["-123456.2mm",{"value":-123456.2,"unit":"mm","~isa":"MKTS/TABLE/quantity"}]
+    ["-300mm",{"value":-300,"unit":"mm","~isa":"MKTS/TABLE/quantity"}]
+    [" -300mm",{"value":-300,"unit":"mm","~isa":"MKTS/TABLE/quantity"}]
+    [" -300 mm",{"value":-300,"unit":"mm","~isa":"MKTS/TABLE/quantity"}]
+    [" -300 mm   ",{"value":-300,"unit":"mm","~isa":"MKTS/TABLE/quantity"}]
     ["0.3",null]
-    ["-300mm",null]
-    ["+300mm",null]
+    ["-0.3",null]
     ]
   #.........................................................................................................
   for [ probe, matcher, ] in probes_and_matchers
     try
-      result = UNITS.parse_nonnegative_quantity probe
+      result = UNITS.parse probe
     catch error
-      if ( matcher is null ) and ( error.message.match /unable to parse .* as nonnegative quantity/ )?
+      if ( matcher is null ) and ( error.message.match /unable to parse/ )?
         # urge '36633', ( jr [ probe, matcher, ] )
         T.ok true
       else
@@ -83,7 +90,7 @@ UNITS                     = require '../mkts-table-units'
   #.........................................................................................................
   for [ probe_txt, matcher, ] in probes_and_matchers
     try
-      probe   = UNITS.parse_nonnegative_quantity probe_txt
+      probe   = UNITS.parse probe_txt
       result  = UNITS.as_text probe
     catch error
       T.fail "unexpected error for probe #{rpr probe_txt}: #{rpr error.message}"
@@ -108,7 +115,7 @@ UNITS                     = require '../mkts-table-units'
   #.........................................................................................................
   for [ probes, matcher, ] in probes_and_matchers
     [ unit_probe_txt, operator_probe, factor_probe, ] = probes
-    unit_probe                                        = UNITS.parse_nonnegative_quantity unit_probe_txt
+    unit_probe                                        = UNITS.parse unit_probe_txt
     try
       result  = UNITS.as_text unit_probe, operator_probe, factor_probe
     catch error
@@ -134,7 +141,7 @@ UNITS                     = require '../mkts-table-units'
   #.........................................................................................................
   for [ probes, matcher, ] in probes_and_matchers
     [ unit_probe_txt, operator_probe, factor_probe, ] = probes
-    unit_probe                                        = UNITS.parse_nonnegative_quantity unit_probe_txt
+    unit_probe                                        = UNITS.parse unit_probe_txt
     try
       result  = UNITS.as_text factor_probe, operator_probe, unit_probe
     catch error
@@ -154,7 +161,7 @@ UNITS                     = require '../mkts-table-units'
   #.........................................................................................................
   for [ probes, matcher, ] in probes_and_matchers
     [ unit_probe_txt, operator_probe, factor_probe, ] = probes
-    unit_probe                                        = UNITS.parse_nonnegative_quantity unit_probe_txt
+    unit_probe                                        = UNITS.parse unit_probe_txt
     try
       result  = UNITS.as_text factor_probe, operator_probe, unit_probe
     catch error
@@ -193,8 +200,8 @@ UNITS                     = require '../mkts-table-units'
   #.........................................................................................................
   for [ probes, matcher, ] in probes_and_matchers
     [ cmp_probe_txt, ref_probe_txt, ] = probes
-    cmp_probe       = UNITS.parse_nonnegative_quantity cmp_probe_txt
-    ref_probe       = UNITS.parse_nonnegative_quantity ref_probe_txt
+    cmp_probe       = UNITS.parse cmp_probe_txt
+    ref_probe       = UNITS.parse ref_probe_txt
     cmp_probe_copy  = Object.assign {}, cmp_probe
     ref_probe_copy  = Object.assign {}, ref_probe
     try
@@ -217,7 +224,7 @@ UNITS                     = require '../mkts-table-units'
 ############################################################################################################
 unless module.parent?
   include = [
-    "UNITS.parse_nonnegative_quantity 1"
+    "UNITS.parse 1"
     "UNITS.as_text 1"
     "UNITS.as_text 2"
     "UNITS.as_text 3"
