@@ -458,7 +458,7 @@ contains = ( text, pattern ) ->
   yield texr 'ð1006', "\\end{minipage}}"
   yield texr 'ð1007', "}% debugging framebox" if me.debug
   # yield texr 'ð1008', "\\mktsVspace{1}"
-  yield texr 'ð1000', "\\vspace{#{me._tmp.table_height_lh_txt}}" ### TAINT should use `\mktsVspace` ###
+  yield texr 'ð1000', "\\mktsVspaceAbsolute{#{me._tmp.table_height_lh}}"
   yield tex "\\par% End of MKTS Table (layout: #{rpr layout_name})\n"
   yield tex "% ==========================================================================================================\n"
   yield return

@@ -17,6 +17,7 @@
 \setlength{\mktsCurrentLineheight}{\mktsLineheight}%
 \newcommand{\mktsTightParagraphs}{}%
 \newcommand{\mktsVspace}[1]{}%
+\newcommand{\mktsVspaceAbsolute}[1]{}%
 \newcommand{\mktsVspaceRelative}[1]{}%
 % \gdef\mktsNextVspaceCount{1}%
 
@@ -58,17 +59,14 @@
     \setlength\parindent{0mm}%
     }%
 
+  % legacy, use \mktsVspaceAbsolute instead
   \renewcommand{\mktsVspace}[1]{%
     \vspace{#1\mktsLineheight}%
-    % \vspace{#1\parskip}%
-    % \gdef\mktsNextVspaceCount{1}%
     }
 
-  \renewcommand{\mktsVspaceRelative}[1]{%
-    \vspace{#1\mktsCurrentLineheight}%
-    % \vspace{#1\parskip}%
-    % \gdef\mktsNextVspaceCount{1}%
-    }
+  % --------------------------------------------------------------------------------------------------------
+  \renewcommand{\mktsVspaceAbsolute}[1]{\vspace{#1\mktsLineheight}\vspace{-\mktsLineheight}}
+  \renewcommand{\mktsVspaceRelative}[1]{\vspace{#1\mktsCurrentLineheight}\vspace{-\mktsCurrentLineheight}}
 
   }
 

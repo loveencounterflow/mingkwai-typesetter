@@ -866,7 +866,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       #.....................................................................................................
       if Q.abs?
         factor  = Q.abs
-        command = 'mktsVspace'
+        command = 'mktsVspaceAbsolute'
       else
         factor  = Q.rel
         command = 'mktsVspaceRelative'
