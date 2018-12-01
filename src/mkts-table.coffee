@@ -443,23 +443,22 @@ contains = ( text, pattern ) ->
   yield tex "\n\n"
   yield tex "% ==========================================================================================================\n"
   yield tex "% Beginning of MKTS Table (layout: #{rpr layout_name})\n"
-  # yield tex "\\par% Beginning of MKTS Table (layout: #{rpr layout_name})\n"
-  yield texr 'ð1000', "{\\setlength{\\fboxsep}{0mm}"
-  yield texr 'ð1001', "\\mktsColorframebox{green}{% debugging framebox" if me.debug
-  yield texr 'ð1002', "\\begin{minipage}[t][#{me._tmp.table_height_txt}][t]{#{me._tmp.table_width_txt}}"
-  yield texr 'ð1003', "\\begin{tikzpicture}[ overlay, yshift = 0mm, yscale = -1, line cap = rect ]"
+  yield texr 'ð1003', "\\begin{mktsSamepage}\\setlength{\\fboxsep}{0mm}"
+  yield texr 'ð1003', "{\\tfRaise{1.35}\\begin{tikzpicture}[ overlay, yshift = 0mm, yscale = -1, line cap = rect ]"
   yield texr 'ð1004', "\\tikzset{x=#{me._tmp.unitwidth_txt}};\\tikzset{y=#{me._tmp.unitheight_txt}};"
   yield return
 
 #-----------------------------------------------------------------------------------------------------------
 @_walk_closing_events = ( me ) ->
   layout_name = me.name
-  yield texr 'ð1005', "\\end{tikzpicture}"
-  yield texr 'ð1006', "\\end{minipage}}"
-  yield texr 'ð1007', "}% debugging framebox" if me.debug
-  # yield texr 'ð1008', "\\mktsVspace{1}"
-  yield texr 'ð1000', "\\mktsVspaceAbsolute{#{me._tmp.table_height_lh}}"
-  yield tex "\\par% End of MKTS Table (layout: #{rpr layout_name})\n"
+  yield texr 'ð1005', "\\end{tikzpicture}}\\makebox[#{me._tmp.table_width_txt}][t]{~~}\\mktsVspaceAbsolute{#{me._tmp.table_height_lh}}"
+  #.........................................................................................................
+  # ### alternative solution with individual newlines: ###
+  # yield texr 'ð1005', "~\\\\" for _ in [ 1 .. me._tmp.table_height_lh ]
+  # yield texr 'ð1005', "\\end{tikzpicture}"
+  #.........................................................................................................
+  yield tex "~\\par% End of MKTS Table (layout: #{rpr layout_name})\n"
+  yield texr 'ð1005', "\\end{mktsSamepage}"
   yield tex "% ==========================================================================================================\n"
   yield return
 
@@ -476,7 +475,7 @@ contains = ( text, pattern ) ->
     continue unless ( borders = me.fieldborders[ fieldnr ] )?
     for i from _TMP_BORDERSEGMENTS.walk_segments fieldnr, borders
       # urge '33455', "#{me.name}/#{fieldnr}", jr i
-      yield texr 'ð1010', "%>>> #{me.name}/#{fieldnr} #{jr i}% #{fieldnr} border "
+      # yield texr 'ð1010', "%>>> #{me.name}/#{fieldnr} #{jr i}% #{fieldnr} border "
       switch i.mode
         when 'rectangle'
           yield texr 'ð1011', "\\draw[#{i.style}] (#{d.left},#{d.top}) rectangle (#{d.right},#{d.bottom});% #{fieldnr} border "
