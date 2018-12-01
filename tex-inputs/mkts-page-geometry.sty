@@ -450,6 +450,30 @@
     }}}%
 
 % ----------------------------------------------------------------------------------------------------------
+\DeclareOption{linenumbers}{%
+  % ### TAINT makeshift hotfix implementation. I don't have the patience right now to figure out all of
+  % the right ways so I just used absolute numbers to get this thing working FTTB.
+  \typeout{mkts-page-geometry: \trmIndigo{linenumbers}}%
+  \mkts@GridCalculateLengths%
+  % ........................................................................................................
+  \AddToShipoutPicture{%
+    \oeIfEvenPage{%
+      % OBS: ordering of yshift, yscale does matter
+      \begin{tikzpicture}[ overlay, remember picture, red, line width = 0.2mm, yshift = \paperheight, yscale = -1 ]%
+      \foreach \y in { 1, ..., 48 }{
+        \node[font=\small] at ( 15mm + 10mm, \mktsLineheight * \y + 26mm ) { \y };
+        \node[font=\small] at ( 15mm + \mktsGeoRightmostTextXOdd + 5mm, \mktsLineheight * \y + 26mm ) { \y };}
+      \end{tikzpicture}%
+    }{%
+      % OBS: ordering of yshift, yscale does matter
+      \begin{tikzpicture}[ overlay, remember picture, red, line width = 0.2mm, yshift = \paperheight, yscale = -1 ]%
+      \foreach \y in { 1, ..., 48 }{
+        \node[font=\small] at ( 10mm, \mktsLineheight * \y + 26mm ) { \y };
+        \node[font=\small] at ( \mktsGeoRightmostTextXOdd + 5mm, \mktsLineheight * \y + 26mm ) { \y };}
+      \end{tikzpicture}%
+    }}}%
+
+% ----------------------------------------------------------------------------------------------------------
 \newcommand{\mktsBlankPage}{%
   % Add a white box that will cover up whatever background elements have been
   % put there prior to this; additionaly, set this (fancyhdr-) page style to

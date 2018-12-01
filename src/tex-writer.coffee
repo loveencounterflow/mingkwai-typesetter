@@ -169,6 +169,7 @@ after = ( names..., method ) ->
   S.configuration[ 'document/geometry/show/debug'       ]?= false
   S.configuration[ 'document/geometry/show/debugorigin' ]?= false
   S.configuration[ 'document/geometry/show/gutter'      ]?= false
+  S.configuration[ 'document/geometry/show/linenumbers' ]?= false
   for key, value of S.configuration
     unless ( key.match /^document\/geometry\/show\// )?
       warn "ignoring configuration key #{rpr key}"
