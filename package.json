@@ -70,7 +70,7 @@
     "remark-parse": "^5.0.0",
     "remark-rehype": "^3.0.1",
     "semver": "^5.6.0",
-    "sqy": "^0.1.2",
+    "sqy": "^0.2.0",
     "unified": "^7.0.2",
     "xregexp": "^4.2.0"
   },
