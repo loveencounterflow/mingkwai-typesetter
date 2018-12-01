@@ -36,7 +36,7 @@ misfit                    = Symbol 'misfit'
   try
     tokens = SQY.parse source
   catch error
-    CND.warn """
+    warn """
       when trying to parse source
 
       #{source}
