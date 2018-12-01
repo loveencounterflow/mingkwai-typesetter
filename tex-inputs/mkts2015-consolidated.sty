@@ -686,6 +686,8 @@
 
 % ----------------------------------------------------------------------------------------------------------
 % thx to https://tex.stackexchange.com/a/94702
+% ### TAINT tests indicate that `mktsSamepage` does not work correctly other than in the last column
+% of a page; otherwise, it will cause all columns to the right to remain blank.
 \newenvironment{mktsSamepage}
   {\par\nobreak\vfil\penalty0\vfilneg
    \vtop\bgroup}
