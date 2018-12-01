@@ -49,6 +49,7 @@ module.exports = options =
     'hfill':        { type: 'tex',  value: '\\hfill{}', }             ### medium hfill ###
     '%':            { type: 'tex',  value: '%', }                     ### TeX comment ###
     'geta':         { type: 'text', value: '〓', }                    ### Geta mark ###
+    'MKTS':         { type: 'tex',  value: 'MKTS', }                  ### MKTS logo ###
     'TeX':          { type: 'tex',  value: '\\TeX{}', }               ### TeX logo ###
     'nbsp':         { type: 'tex',  value: '~', }                     ### Non-Breaking Space ###
     '~':            { type: 'tex',  value: '~', }                     ### Non-Breaking Space ###
