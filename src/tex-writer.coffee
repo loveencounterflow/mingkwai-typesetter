@@ -907,6 +907,35 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     #.......................................................................................................
     return null
 
+#-----------------------------------------------------------------------------------------------------------
+@MKTX.BLOCK.$samepage = ( S ) =>
+  ### TAINT code duplication from `$landscape` ###
+  open_tag_count    = 0
+  schema            = { additionalProperties: false, }
+  validate_and_cast = OVAL.new_validator schema
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    if select event, [ '(', '.', ], 'samepage'
+      [ type, name, Q, meta, ] = event
+      Q = validate_and_cast Q
+      send stamp event
+      open_tag_count += +1
+      send [ 'tex', "\\begin{mktsSamepage}", ]
+    #.......................................................................................................
+    else if select event, ')', 'samepage'
+      send [ 'tex', "\\end{mktsSamepage}", ]
+    #.......................................................................................................
+    else if select event, ')', 'document'
+      while open_tag_count > 0
+        open_tag_count += -1
+        send [ 'tex', "\\end{mktsSamepage}", ]
+      send event
+    #.......................................................................................................
+    else
+      send event
+    #.......................................................................................................
+    return null
+
 # #-----------------------------------------------------------------------------------------------------------
 # @MKTX.BLOCK.$pre = ( S ) =>
 #   MACRO_ESCAPER.register_raw_tag 'pre'
@@ -2468,6 +2497,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @MKTX.BLOCK.$stretch                              S
     .pipe @MKTX.BLOCK.$vspace                               S
     .pipe @MKTX.BLOCK.$landscape                            S
+    .pipe @MKTX.BLOCK.$samepage                             S
     # .pipe @MKTX.BLOCK.$pre                                  S
     .pipe @MKTX.INLINE.$nudge                               S
     .pipe @MKTX.INLINE.$turn                                S
