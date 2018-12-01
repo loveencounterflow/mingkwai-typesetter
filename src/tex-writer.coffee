@@ -936,6 +936,24 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     #.......................................................................................................
     return null
 
+#-----------------------------------------------------------------------------------------------------------
+@MKTX.BLOCK.$clearpage = ( S ) =>
+  ### TAINT code duplication from `$landscape` ###
+  schema            = { additionalProperties: false, }
+  validate_and_cast = OVAL.new_validator schema
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    if select event, '.', 'clearpage'
+      [ type, name, Q, meta, ] = event
+      Q = validate_and_cast Q
+      send stamp event
+      send [ 'tex', "\\clearpage{}", ]
+    #.......................................................................................................
+    else
+      send event
+    #.......................................................................................................
+    return null
+
 # #-----------------------------------------------------------------------------------------------------------
 # @MKTX.BLOCK.$pre = ( S ) =>
 #   MACRO_ESCAPER.register_raw_tag 'pre'
@@ -2498,6 +2516,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @MKTX.BLOCK.$vspace                               S
     .pipe @MKTX.BLOCK.$landscape                            S
     .pipe @MKTX.BLOCK.$samepage                             S
+    .pipe @MKTX.BLOCK.$clearpage                            S
     # .pipe @MKTX.BLOCK.$pre                                  S
     .pipe @MKTX.INLINE.$nudge                               S
     .pipe @MKTX.INLINE.$turn                                S
