@@ -211,6 +211,7 @@ new_local_state = ( S ) ->
       [ type, name, Q, meta, ]    = event
       ### TAINT other tags have attributes === Q, here attributes a property of Q ###
       { text, attributes, }       = Q
+      ### TAINT use OVAL ###
       attributes.format          ?= 'coffee'
       send stamp event
       switch attributes.format
@@ -223,7 +224,9 @@ new_local_state = ( S ) ->
         else
           throw new Error "#{badge} µ5230 unknown format for <mkts-table-description>: #{rpr attributes.format}"
       send stamp [ '.', 'MKTS/TABLE/layout', layout, ( copy meta ), ]
-      layout.meta = copy meta
+      ### TAINT use OVAL ###
+      layout.nosamepage = attributes.nosamepage?
+      layout.meta       = copy meta
       @store_layout S, L, layout
     #.......................................................................................................
     else
