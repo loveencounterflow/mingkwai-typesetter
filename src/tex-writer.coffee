@@ -272,6 +272,7 @@ after = ( names..., method ) ->
   INLINE:       {}
   MIXED:        {}
   CLEANUP:      {}
+  API:          {}
 
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.COMMAND.$new_page = ( S ) =>
@@ -707,15 +708,18 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
 #===========================================================================================================
 #
 #-----------------------------------------------------------------------------------------------------------
+### experimental ###
+@MKTX.API.fncr = ( csg, srsg, cid ) -> [ [ 'tex', "\\mktsFncr{#{csg}}{#{srsg}}{#{cid}}" ], ]
+
+#-----------------------------------------------------------------------------------------------------------
 @MKTX.INLINE.$fncr = ( S ) =>
   #.........................................................................................................
   return $ ( event, send ) =>
     #.......................................................................................................
     if select event, '.', 'fncr'
-      [ type, name, parameters, meta, ] = event
-      { csg, srsg, cid, }               = parameters
+      [ type, name, Q, meta, ] = event
       send stamp event
-      send [ 'tex', "\\mktsFncr{#{csg}}{#{srsg}}{#{cid}}" ]
+      send sub_event for sub_event in @MKTX.API.fncr Q.csg, Q.srsg, Q.cid
     #.......................................................................................................
     else
       send event
@@ -2336,13 +2340,14 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
 
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.$mktscript = ( S ) =>
+  tex_from_md = promisify @tex_from_md.bind @
   return PIPEDREAMS.$async ( event, send, end ) =>
     #.......................................................................................................
     if event?
       if select event, '.', 'mktscript'
         [ type, name, mktscript, meta, ]   = event
         send stamp event
-        tex_source  = await ( promisify @tex_from_md.bind @ ) mktscript, { bare: yes, }
+        tex_source  = await tex_from_md mktscript, { bare: yes, }
         send [ 'tex', tex_source, ]
         send.done()
       else
@@ -2564,7 +2569,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @MKTX.CLEANUP.$consolidate_texts                  S
     # .pipe @$show_events                                     S
     # .pipe @$show_text_locators                              S
-    .pipe @$show_start_and_end_2                            S
+    # .pipe @$show_start_and_end_2                            S
     .pipe @MKTX.BLOCK.$paragraph_2                          S
     .pipe @MKTX.COMMAND.$crossrefs                          S
     # .pipe D.$observe ( event ) -> info '23993', ( CND.grey '--------->' ), CND.grey jr event
@@ -2690,7 +2695,9 @@ XXX_tex_from_md_nr = 0
     return $ ( event, send, end ) =>
       Z.push event if event?
       if end?
-        handler null, Z.join ''
+        ### TAINT kludge to remove extraneous newlines ###
+        Z = ( Z.join '' ).replace /\n\n$/, ''
+        handler null, Z
         end()
   #.........................................................................................................
   source_route        = settings[ 'source-route' ] ? '<STRING>'

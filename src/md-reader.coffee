@@ -660,7 +660,7 @@ tracker_pattern = /// ^
         send event
     #.......................................................................................................
     if end?
-      warn '34744', 'end'
+      # warn '34744', 'end'
       unless sent_end_document
         sent_end_document = true
         send [ ')', 'document', null, {}, ]
