@@ -213,12 +213,23 @@
   \cjkgUseCjkGlue%
   \cjkgGlue%
   \mktsScaleFontRelative{1.1}%
-  \mktsRaise{-0.15}%
-  % \special{pdf:literal 1 0 0 1 0 -1.5 cm}%
-  \AfterGroup{%\special{pdf:literal 1 0 0 1 0 1.5 cm}
+  % \mktsRaise{-0.15}%
+  % ### TAINT using PDF special for better performance; won't scale to current font size
+  \special{pdf:literal 1 0 0 1 0 -1.5 cm}%
+  \AfterGroup{\special{pdf:literal 1 0 0 1 0 1.5 cm}
     \cjkgGlue}%
   }
+% !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 \newcommand{\cjk}{\mktsCjkBase}%
+% !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+% \renewcommand{\cjk}{}%
+% \renewcommand{\cjk}{\mktsScaleFontRelative{1.1}\mktsRaise{-0.15}}%
+% ### TAINT using PDF special for better performance; won't scale to current font size
+% \renewcommand{\cjk}{\mktsScaleFontRelative{1.1}\special{pdf:literal 1 0 0 1 0 -1.5 cm}%
+%   \AfterGroup{\special{pdf:literal 1 0 0 1 0 1.5 cm}}}%
+% \renewcommand{\cjk}{\mktsScaleFontRelative{1.1}}%
+% !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 % \newcommand{\cn}{\mktsStartCjk\mktsFontfileSunexta}
 \newcommand{\cn}{\cjkgGlue\mktsStyleFontCjkDefault\AfterGroup{\cjkgGlue}}
 \newcommand{\mktsRsgFb}{\cjkgGlue\mktsFontfileSunexta\AfterGroup{\cjkgGlue}}
