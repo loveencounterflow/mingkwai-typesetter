@@ -67,6 +67,7 @@
 \usepackage[plain]{mkts-base}%                  plain
 \usepackage[plain]{mkts-para-font-size}%        plain
 \usepackage[default]{mkts-endnotes}%            default
+\usepackage[default]{mkts-transform}%           default
 % \usepackage[a4,cmgrid]{mkts-page-geometry}
 % \usepackage[a4,baselines,ascenders,descenders]{mkts-page-geometry}
 % \usepackage[a4,interbands,ascenders,baselines,descenders]{mkts-page-geometry}
@@ -309,27 +310,27 @@
   % \AfterGroup{\special{pdf:literal 1 0 0 1 0 -0.5 cm}}%
   }
 % ..........................................................................................................
-\newcommand{\jzrStrokeclassZZWBF}{\prPushRaise{-0.1}{-0.1}{{\mktsFontfileJizurathreeb{}}}}
-\newcommand{\jzrStrokeclassVoid}{\prPushRaise{-0.1}{-0.1}{{\mktsFontfileSunexta{}　}}}
-\newcommand{\jzrStrokeclassZero}{\prPushRaise{-0.1}{-0.1}{{\mktsFontfileJizurathreeb{}}}}
-\newcommand{\jzrStrokeclassOne}{\prPushRaise{-0.1}{-0.1}{{\mktsFontfileJizurathreeb{}}}}
-\newcommand{\jzrStrokeclassTwo}{\prPushRaise{-0.1}{-0.1}{{\mktsFontfileJizurathreeb{}}}}
-\newcommand{\jzrStrokeclassThree}{\prPushRaise{-0.1}{-0.1}{{\mktsFontfileJizurathreeb{}}}}
-\newcommand{\jzrStrokeclassFour}{\prPushRaise{-0.1}{-0.15}{{\mktsFontfileJizurathreeb{}}}}
-\newcommand{\jzrStrokeclassFive}{\prPushRaise{-0.1}{-0.1}{{\mktsFontfileJizurathreeb{}}}}
-\newcommand{\jzrStrokeclassLeftHook}{\prPushRaise{-0.1}{-0.1}{{\mktsFontfileJizurathreeb{}}}}
-\newcommand{\jzrStrokeclassRightHook}{\prPushRaise{-0.1}{-0.1}{{\mktsFontfileJizurathreeb{}}}}
+\newcommand{\jzrStrokeclassZZWBF}{{\mktstfPushRaise{-0.1}{-0.1}\mktsFontfileJizurathreeb{}}}
+\newcommand{\jzrStrokeclassVoid}{{\mktstfPushRaise{-0.1}{-0.1}\mktsFontfileSunexta{}　}}
+\newcommand{\jzrStrokeclassZero}{{\mktstfPushRaise{-0.1}{-0.1}\mktsFontfileJizurathreeb{}}}
+\newcommand{\jzrStrokeclassOne}{{\mktstfPushRaise{-0.1}{-0.1}\mktsFontfileJizurathreeb{}}}
+\newcommand{\jzrStrokeclassTwo}{{\mktstfPushRaise{-0.1}{-0.1}\mktsFontfileJizurathreeb{}}}
+\newcommand{\jzrStrokeclassThree}{{\mktstfPushRaise{-0.1}{-0.1}\mktsFontfileJizurathreeb{}}}
+\newcommand{\jzrStrokeclassFour}{{\mktstfPushRaise{-0.1}{-0.15}\mktsFontfileJizurathreeb{}}}
+\newcommand{\jzrStrokeclassFive}{{\mktstfPushRaise{-0.1}{-0.1}\mktsFontfileJizurathreeb{}}}
+\newcommand{\jzrStrokeclassLeftHook}{{\mktstfPushRaise{-0.1}{-0.1}\mktsFontfileJizurathreeb{}}}
+\newcommand{\jzrStrokeclassRightHook}{{\mktstfPushRaise{-0.1}{-0.1}\mktsFontfileJizurathreeb{}}}
 % ..........................................................................................................
-\newcommand{\jzrStrokeclassTextZZWBF}{\prPushRaise{0}{-0.15}{{\mktsFontfileJizurathreeb{}}}}
-\newcommand{\jzrStrokeclassTextOne}{\prPushRaise{0}{-0.15}{{\mktsFontfileJizurathreeb{}}}}
-\newcommand{\jzrStrokeclassTextTwo}{\prPushRaise{0}{-0.15}{{\mktsFontfileJizurathreeb{}}}}
-\newcommand{\jzrStrokeclassTextTwoHook}{\prPushRaise{0}{-0.15}{{\mktsFontfileJizurathreeb{}}}}
-\newcommand{\jzrStrokeclassTextThree}{\prPushRaise{0}{-0.15}{{\mktsFontfileJizurathreeb{}}}}
-\newcommand{\jzrStrokeclassTextFour}{\prPushRaise{0}{-0.15}{{\mktsFontfileJizurathreeb{}}}}
-\newcommand{\jzrStrokeclassTextFourSlant}{\prPushRaise{0}{-0.15}{{\mktsFontfileJizurathreeb{}}}}
-\newcommand{\jzrStrokeclassTextFive}{\prPushRaise{0}{-0.15}{{\mktsFontfileJizurathreeb{}}}}
-\newcommand{\jzrStrokeclassTextLeftHook}{\prPushRaise{0}{-0.15}{{\mktsFontfileJizurathreeb{}}}}
-\newcommand{\jzrStrokeclassTextRightHook}{\prPushRaise{0}{-0.15}{{\mktsFontfileJizurathreeb{}}}}
+\newcommand{\jzrStrokeclassTextZZWBF}{{\mktstfPushRaise{0}{-0.15}\mktsFontfileJizurathreeb{}}}
+\newcommand{\jzrStrokeclassTextOne}{{\mktstfPushRaise{0}{-0.15}\mktsFontfileJizurathreeb{}}}
+\newcommand{\jzrStrokeclassTextTwo}{{\mktstfPushRaise{0}{-0.15}\mktsFontfileJizurathreeb{}}}
+\newcommand{\jzrStrokeclassTextTwoHook}{{\mktstfPushRaise{0}{-0.15}\mktsFontfileJizurathreeb{}}}
+\newcommand{\jzrStrokeclassTextThree}{{\mktstfPushRaise{0}{-0.15}\mktsFontfileJizurathreeb{}}}
+\newcommand{\jzrStrokeclassTextFour}{{\mktstfPushRaise{0}{-0.15}\mktsFontfileJizurathreeb{}}}
+\newcommand{\jzrStrokeclassTextFourSlant}{{\mktstfPushRaise{0}{-0.15}\mktsFontfileJizurathreeb{}}}
+\newcommand{\jzrStrokeclassTextFive}{{\mktstfPushRaise{0}{-0.15}\mktsFontfileJizurathreeb{}}}
+\newcommand{\jzrStrokeclassTextLeftHook}{{\mktstfPushRaise{0}{-0.15}\mktsFontfileJizurathreeb{}}}
+\newcommand{\jzrStrokeclassTextRightHook}{{\mktstfPushRaise{0}{-0.15}\mktsFontfileJizurathreeb{}}}
 % ..........................................................................................................
 \newcommand{\kai}{\renewcommand{\mktsStyleFontCjkDefault}{\mktsFontfileBiaukai}}
 \newcommand{\jzrkai}[1]{{\mktsFontfileJizurathreeb{}#1}}
@@ -401,7 +402,7 @@
       \node[shape=circle,draw,inner sep=0.55mm,jzrDarkBlue,fill=jzrBlue] (char) {%
       \makebox[\kwicwrapStrutCircleLength]{\kwicwrapStrutCircle\smash{{%
         \color{white}%
-        \prPushRaise{0.03}{-0.3}{#1}}%
+        \mktstfPushRaise{0.03}{-0.3}#1}%
         }}}%
   ;}%
   \end{adjustbox}%
