@@ -1008,7 +1008,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       raise = Q.raise ? 0
       throw new Error "expected a number for raise, got #{rpr event}" unless CND.isa_number raise
       send stamp event
-      send [ 'tex', "{\\mktsPushRaise{#{push}}{#{raise}}", ]
+      send [ 'tex', "{\\mktstfPushRaise{#{push}}{#{raise}}", ]
     #.......................................................................................................
     else if select event, ')', 'nudge'
       send stamp event

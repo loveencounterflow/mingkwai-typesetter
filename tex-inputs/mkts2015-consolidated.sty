@@ -136,8 +136,8 @@
     % \color{red}%
     % {\makebox(0,0){\rule[0em]{0.1mm}{1em}}}%
     \mktsScaleFontRelative{0.2}%
-    {\tfRaise{+0.85}\makebox(0,0){▼}}%
-    {\tfRaise{-0.35}\makebox(0,0){▲}}%
+    {\mktstfRaise{+0.85}\makebox(0,0){▼}}%
+    {\mktstfRaise{-0.35}\makebox(0,0){▲}}%
     }%
   }
 
@@ -193,11 +193,6 @@
 % ==========================================================================================================
 % 2) Display Styles
 % ----------------------------------------------------------------------------------------------------------
-% \newcommand{\adjustCjkIdeograph}[1]{\prRaise{-0.125}{#1}} % !!!
-% \newcommand{\adjustJzrCjkIdeograph}[1]{\prRaise{-0.125}{#1}} % !!!
-% \newcommand{\adjustJzrCjkIdeograph}[1]{\prRaise{-0.125}{\makebox[1.1053\mktsFontsize]{#1}}} % !!!
-
-% ..........................................................................................................
 \newcommand{\latin}[1]{{\mktsFontfileEbgaramondtwelveregular#1}}
 % \newcommand{\setPlainLatin}{\renewcommand{\latin}[1]{{\mktsFontfileEbgaramondtwelveregular#1}}}
 % \newcommand{\setCodeLatin}{\renewcommand{\latin}[1]{{\mktsFontfileSunexta#1}}}
@@ -426,7 +421,7 @@
   \smash{%
     \thinspace%
     \mbox{%
-      \prRaise{-0.25}{%
+      {\mktstfRaise{-0.25}%
         \mktsStyleFncr%
         \mktsScaleFontRelative{0.7}%
         \setstackgap{L}{\mktsCurrentFontsize}%
@@ -438,7 +433,7 @@
   \mktsScaleFontRelative{0.8}%
   {\mktsFontfileIosevkatermslabbold#1+#3}%
   \thinspace%
-  {\prRaise{-0.2}{\mktsScaleFontRelative{0.5}\mktsFontfileIosevkatermslabmediumitalic#2}}%
+  {\mktstfRaise{-0.2}\mktsScaleFontRelative{0.5}\mktsFontfileIosevkatermslabmediumitalic#2}%
   \thinspace%
   }}%
 
@@ -464,10 +459,10 @@
   \makebox[4mm]{%
     \makebox[0mm]{{%
       \mktsScaleFontRelative{0.8}%
-      \prPushRaise{-0.1}{+0.05}{\mktsFontfileJizurathreeb{}#1}}}%
+      {\mktstfPushRaise{-0.1}{+0.05}\mktsFontfileJizurathreeb{}#1}}}%
     \makebox[0mm]{{%
       \mktsScaleFontRelative{1.25}%
-      \prPushRaise{-0.1}{-0.1}{\mktsFontfileJizurathreeb{}}}}%
+      {\mktstfPushRaise{-0.1}{-0.1}\mktsFontfileJizurathreeb{}}}}%
       }}%
 
 % ----------------------------------------------------------------------------------------------------------
@@ -476,7 +471,7 @@
   \makebox[4mm]{%
     \makebox[0mm]{{%
       \mktsScaleFontRelative{1.25}%
-      \prPushRaise{-0.1}{-0.1}{\mktsFontfileJizurathreeb{}}}}%
+      {\mktstfPushRaise{-0.1}{-0.1}\mktsFontfileJizurathreeb{}}}}%
       }}%
 
 % ----------------------------------------------------------------------------------------------------------
@@ -485,7 +480,7 @@
   \makebox[4mm]{%
     \makebox[0mm]{{%
       \mktsScaleFontRelative{1.25}%
-      \prPushRaise{-0.1}{-0.1}{\mktsFontfileJizurathreeb{}}}}%
+      {\mktstfPushRaise{-0.1}{-0.1}\mktsFontfileJizurathreeb{}}}}%
       }}%
 
 % ----------------------------------------------------------------------------------------------------------
@@ -494,10 +489,10 @@
   \makebox[4mm]{%
     \makebox[0mm]{{%
       \mktsScaleFontRelative{0.8}%
-      \prPushRaise{-0.1}{-0.05}{\mktsStyleFontCode{}#1}}}%
+      {\mktstfPushRaise{-0.1}{-0.05}\mktsStyleFontCode{}#1}}}%
     \makebox[0mm]{{%
       \mktsScaleFontRelative{1.25}%
-      \prPushRaise{-0.1}{-0.15}{\mktsFontfileJizurathreeb{}}}}%
+      {\mktstfPushRaise{-0.1}{-0.15}\mktsFontfileJizurathreeb{}}}}%
       }}%
 
 % ----------------------------------------------------------------------------------------------------------
@@ -506,10 +501,10 @@
   \makebox[4mm]{%
     \makebox[0mm]{{%
       \mktsScaleFontRelative{0.8}%
-      \prPushRaise{-0.1}{-0.05}{\mktsStyleFontCode{}#1}}}%
+      {\mktstfPushRaise{-0.1}{-0.05}\mktsStyleFontCode{}#1}}}%
     \makebox[0mm]{{%
       \mktsScaleFontRelative{1.25}%
-      \prPushRaise{-0.1}{-0.18}{\mktsFontfileSourcehansansbold{}□}}}%
+      {\mktstfPushRaise{-0.1}{-0.18}\mktsFontfileSourcehansansbold{}□}}}%
       }}%
 
 % ### TAINT using absolute, direct dimensions instead of relative, symbolic ones
@@ -524,9 +519,7 @@
 % ----------------------------------------------------------------------------------------------------------
 \newcommand{\mktsBoxedGlyph}[1]{%
   \thinspace\setlength{\fboxsep}{0.1mm}%
-  \prRaise{-0.3}{%
-    \fbox{\prRaise{0.35}{%
-      #1}}}}%
+  {\mktstfRaise{-0.3}\fbox{{\mktstfRaise{0.35}#1}}}}%
 
 % ----------------------------------------------------------------------------------------------------------
 \newcommand{\mktsIndent}{{\mktsStyleFontCjkDefault{}^^^^3000}}%
@@ -544,10 +537,10 @@
   \color{red}%
   \makebox[0mm][l]{%
     \mktsFontfileSunexta{}%
-    \prPushRaise{-0.11}{0.3}{⥒}%
+    {\mktstfPushRaise{-0.11}{0.3}⥒}%
     }\zsavepos{#1}%
   \makebox[0mm][l]{%
-    {\prPushRaise{1.1}{0.75}{\mktsStyleFontCode\mktsScaleFontRelative{0.5}\showx{#1}\thinspace{}mm}}}%
+    {\mktstfPushRaise{1.1}{0.75}\mktsStyleFontCode\mktsScaleFontRelative{0.5}\showx{#1}\thinspace{}mm}}%
     }}%
 
 % ----------------------------------------------------------------------------------------------------------
@@ -563,8 +556,8 @@
 \newcommand{\mktsXfsc}[2]{{%
   \makebox[0.5\mktsFontsize]{%
     \mktsStyleFontCode%
-    {\tfPushRaise{0}{-0.25}\mktsScaleFontRelative{0.8}#2}%
-    \makebox[0mm]{\tfPushRaise{-0.4}{0.4}\mktsScaleFontRelative{0.5}#1}}}}
+    {\mktstfPushRaise{0}{-0.25}\mktsScaleFontRelative{0.8}#2}%
+    \makebox[0mm]{\mktstfPushRaise{-0.4}{0.4}\mktsScaleFontRelative{0.5}#1}}}}
 
 % ----------------------------------------------------------------------------------------------------------
 % Underlines with gaps for descenders
@@ -585,7 +578,7 @@
 
 % ----------------------------------------------------------------------------------------------------------
 \newcommand{\mktsStyleCjkRoundSymbol}[1]{%
-  \phantom{{\cn{}國}}\makebox[0mm]{\tfPushRaise{-1.25}{-0.15}\mktsFontfileThtshynpone\mktsScaleFontRelative{1.7}#1}}%
+  \phantom{{\cn{}國}}\makebox[0mm]{\mktstfPushRaise{-1.25}{-0.15}\mktsFontfileThtshynpone\mktsScaleFontRelative{1.7}#1}}%
 
 % ----------------------------------------------------------------------------------------------------------
 % ### TAINT untested ###
@@ -615,7 +608,7 @@
       \color{#3}%
       \mktsScaleFontRelative{0.8}%
       \mktsFontfileRobotocondensedbold{}%
-      \makebox[0ex]{\phantom{Wfg}}\thinspace{}{\tfRaise{-0.025}#4}\thinspace}}}%
+      \makebox[0ex]{\phantom{Wfg}}\thinspace{}{\mktstfRaise{-0.025}#4}\thinspace}}}%
 
 % ----------------------------------------------------------------------------------------------------------
 % White-on-black text in a box with round corners
@@ -675,18 +668,21 @@
   \FPdiv\R{\mktsLengthAsNumber{\mktsCurrentFontsize}}{\mktsLengthAsNumber{\mktsFontsize}}%
   \R}%
 
-% ----------------------------------------------------------------------------------------------------------
-\newcommand*{\mktsPushRaise}[2]{%
-  % it is not clear to me how to use the result of `\mktsCurrentFontsizeScale` here without causing
-  % errors, therefore we perform the division here instead of using the macro:
-  \FPdiv\mktsCurrentFontsizeScale{\mktsLengthAsNumber{\mktsCurrentFontsize}}{\mktsLengthAsNumber{\mktsFontsize}}%
-  \FPmul\effectiveFactorX{#1}{\mktsCurrentFontsizeScale}%
-  \FPmul\effectiveFactorY{#2}{\mktsCurrentFontsizeScale}%
-  \tfPushRaise{\effectiveFactorX}{\effectiveFactorY}}%
+% % ----------------------------------------------------------------------------------------------------------
+% % DEPRECATED to be replaced with mktstfPushRaise
+% \newcommand*{\mktsPushRaise}[2]{%
+%   % it is not clear to me how to use the result of `\mktsCurrentFontsizeScale` here without causing
+%   % errors, therefore we perform the division here instead of using the macro:
+%   \FPdiv\mktsCurrentFontsizeScale{\mktsLengthAsNumber{\mktsCurrentFontsize}}{\mktsLengthAsNumber{\mktsFontsize}}%
+%   \FPmul\effectiveFactorX{#1}{\mktsCurrentFontsizeScale}%
+%   \FPmul\effectiveFactorY{#2}{\mktsCurrentFontsizeScale}%
+%   \mktstfPushRaise{\effectiveFactorX}{\effectiveFactorY}}%
 
-% ----------------------------------------------------------------------------------------------------------
-\newcommand*{\mktsPush}[1]{\mktsPushRaise{#1}{0}}%
-\newcommand*{\mktsRaise}[1]{\mktsPushRaise{0}{#1}}%
+% % ----------------------------------------------------------------------------------------------------------
+% % DEPRECATED to be replaced with mktstfPushRaise
+% \newcommand*{\mktsPush}[1]{\mktsPushRaise{#1}{0}}%
+% % DEPRECATED to be replaced with mktstfPushRaise
+% \newcommand*{\mktsRaise}[1]{\mktsPushRaise{0}{#1}}%
 
 % ----------------------------------------------------------------------------------------------------------
 % thx to https://tex.stackexchange.com/a/94702

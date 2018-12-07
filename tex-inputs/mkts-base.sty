@@ -7,6 +7,7 @@
 % ----------------------------------------------------------------------------------------------------------
 \usepackage{swrule}
 \usepackage{makecell}% contains `\Xhline`
+\usepackage{pgfmath}%
 
 % ----------------------------------------------------------------------------------------------------------
 \newcommand{\mktsThrow}[2]{%
@@ -143,13 +144,21 @@
       % \let^^M=\mktsAdjustedPar%
       \leavevmode\hbox{}}%
       }
+
+
+  % DEPRECATED to be replaced with mktsScaleText
+  \pgfmathsetmacro{\mktsTextscale}{+1}%
   % ........................................................................................................
   \renewcommand{\mktsScaleFont}[1]{%
+    % DEPRECATED to be replaced with mktsScaleText
+    \pgfmathsetmacro{\mktsTextscale}{ #1 }%
     \setlength{\mktsCurrentFontsize}{#1\mktsFontsize}%
     \fontsize{\mktsCurrentFontsize}{\mktsCurrentLineheight}\selectfont%
     }%
   % ........................................................................................................
   \renewcommand{\mktsScaleFontRelative}[1]{%
+    % DEPRECATED to be replaced with mktsScaleText
+    \pgfmathsetmacro{\mktsTextscale}{ \mktsTextscale * ( #1 ) }%
     \setlength{\mktsCurrentFontsize}{#1\mktsCurrentFontsize}%
     \fontsize{\mktsCurrentFontsize}{\mktsCurrentLineheight}\selectfont%
     }%
