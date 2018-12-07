@@ -1,0 +1,72 @@
+
+% MKTS Transform (`mktstf`)
+
+% ----------------------------------------------------------------------------------------------------------
+\usepackage{pgfmath}
+
+% ----------------------------------------------------------------------------------------------------------
+\newcommand{\mktstfPushRaiseConstant}[2]{}%
+\newcommand{\mktstfTransform}[6]{}%
+\newcommand{\mktstfPushRaise}[2]{}%
+\newcommand{\mktstfPush}[1]{}%
+\newcommand{\mktstfRaise}[1]{}%
+
+% ----------------------------------------------------------------------------------------------------------
+\pgfmathsetmacro{\mktstfPushRaiseFactorX}{+5}%
+\pgfmathsetmacro{\mktstfPushRaiseFactorY}{+10}%
+
+
+% ==========================================================================================================
+% DEFAULT
+% ----------------------------------------------------------------------------------------------------------
+\DeclareOption{default}{%
+
+  % ----------------------------------------------------------------------------------------------------------
+  \renewcommand{\mktstfPushRaiseConstant}[2]{%
+    \special{pdf:literal 1 0 0 1 +5.5 +5.0 cm}%
+    \xdef\mktstfAftergroup{\special{pdf:literal 1 0 0 1 -5.5 -5.0 cm}}\aftergroup\mktstfAftergroup}%
+
+  % ----------------------------------------------------------------------------------------------------------
+  \renewcommand{\mktstfTransform}[6]{%
+    % NB `\\mktstfTransform` is a thin wrapper over a `\\special{pdf:literal n1 n2 n3
+    % n4 n5 n6 cm}` invocation; its main purposes are (1) to serve as a
+    % compatibility hook (when code is intended to work with TeX engines other
+    % than XeLaTeX) and (2) to come to grips with the difficulty to use results of
+    % `pgfmath` calculations in a `pdf:literal` command; basically, it 'seems to
+    % work' to use arithmetic results as macro call arguments (i.e. `#1`, `#2` and
+    % so on), while using them directly (i.e. ) `pdf:literal \result` does not (?
+    % never? sometimes?) work.
+    \special{pdf:literal #1 #2 #3 #4 #5 #6 cm}}
+
+  % ----------------------------------------------------------------------------------------------------------
+  \renewcommand{\mktstfPushRaise}[2]{%
+    \pgfmathsetmacro{\mktstfDeltaXfore}{  \mktsTextscale * \mktstfPushRaiseFactorX * ( #1 ) }%
+    \pgfmathsetmacro{\mktstfDeltaXback}{ -\mktstfDeltaXfore                                 }%
+    \pgfmathsetmacro{\mktstfDeltaYfore}{  \mktsTextscale * \mktstfPushRaiseFactorY * ( #2 ) }%
+    \pgfmathsetmacro{\mktstfDeltaYback}{ -\mktstfDeltaYfore                                 }%
+    \mktstfTransform{1}{0}{0}{1}{\mktstfDeltaXfore}{\mktstfDeltaYfore}%
+    \xdef\mktstfAftergroup{\mktstfTransform{1}{0}{0}{1}{\mktstfDeltaXback}{\mktstfDeltaYback}}\aftergroup\mktstfAftergroup}%
+
+  % ----------------------------------------------------------------------------------------------------------
+  \renewcommand{\mktstfPush}[1]{\mktstfPushRaise{#1}{0}}%
+  \renewcommand{\mktstfRaise}[1]{\mktstfPushRaise{0}{#1}}%
+
+% ----------------------------------------------------------------------------------------------------------
+}
+
+% ==========================================================================================================
+%
+% ----------------------------------------------------------------------------------------------------------
+\DeclareOption{null}{%
+  \renewcommand{\mktstfPushRaiseConstant}[2]{}%
+  \renewcommand{\mktstfTransform}[6]{}%
+  \renewcommand{\mktstfPushRaise}[2]{}%
+  \renewcommand{\mktstfPush}[1]{}%
+  \renewcommand{\mktstfRaise}[1]{}%
+  }
+
+
+% ----------------------------------------------------------------------------------------------------------
+\ExecuteOptions{default}
+\ProcessOptions\relax
+
