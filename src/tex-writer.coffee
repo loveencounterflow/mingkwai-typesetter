@@ -1346,10 +1346,10 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       # send [ 'tex', "\\item[#{item_markup_tex}] " ]
       # send [ 'tex', "{\\mktsFontfileHanamina{}.⚫.▪.⏹.◼.⬛.}\\hspace{3mm}y" ]
       ### TAINT Horizontal space should depend on other metrics ###
-      # send [ 'tex', "{\\mktsFontfileHanamina{}\\prPushRaise{-0.4}{-0.1}{⚫}\\hspace{-0.75mm}}" ]
-      # send [ 'tex', "{\\mktsFontfileCwtexqheibold{}\\prPushRaise{-0.4}{-0.1}{▷}\\hspace{-1.75mm}}" ]
+      # send [ 'tex', "{\\mktsFontfileHanamina{}\\mktstfPushRaise{-0.4}{-0.1}{⚫}\\hspace{-0.75mm}}" ]
+      # send [ 'tex', "{\\mktsFontfileCwtexqheibold{}\\mktstfPushRaise{-0.4}{-0.1}{▷}\\hspace{-1.75mm}}" ]
       # send [ 'tex', "{\\mktsFontfileHanamina{}◼}\\hspace{3mm}L" ]
-      # send [ 'tex', "{\\mktsFontfileCwtexqheibold{}\\prPushRaise{-0.4}{-0.1}{▷}}" ]
+      # send [ 'tex', "{\\mktsFontfileCwtexqheibold{}\\mktstfPushRaise{-0.4}{-0.1}{▷}}" ]
       send [ 'tex', S.options.entities[ 'ulsymbol' ][ 'value' ] ]
     #.......................................................................................................
     else if select event, ')', 'li'
@@ -2507,6 +2507,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     # .pipe MKTSCRIPT_WRITER.$show_mktsmd_events              S
     .pipe MKTSCRIPT_WRITER.$produce_mktscript               S
     .pipe @$document                                        S
+    .pipe D.$observe ( event ) -> info '23994', ( CND.grey '--> ' + ( jr event )[ .. 100 ] )
     #.......................................................................................................
     ### tags that produce tags ###
     #.......................................................................................................
