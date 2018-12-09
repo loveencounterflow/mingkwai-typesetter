@@ -444,11 +444,9 @@ contains = ( text, pattern ) ->
   yield tex "% ==========================================================================================================\n"
   yield tex "% Beginning of MKTS Table (layout: #{rpr layout_name})\n"
   ### TAINT undocumented kludge ###
-  if me.nosamepage
-    yield texr 'ð1003', "\\setlength{\\fboxsep}{0mm}"
-  else
-    yield texr 'ð1003', "\\begin{mktsSamepage}\\setlength{\\fboxsep}{0mm}"
-  yield texr 'ð1003', "{\\tfRaise{1.35}\\begin{tikzpicture}[ overlay, yshift = 0mm, yscale = -1, line cap = rect ]"
+  yield texr 'ð1003', "\\begin{mktsSamepage}" unless me.nosamepage
+  yield texr 'ð1003', "{\\setlength{\\fboxsep}{0mm}\\begin{tikzpicture}[ overlay, yshift = 5mm, yscale = -1, line cap = rect ]"
+  # yield texr 'ð1003', "{\\setlength{\\fboxsep}{0mm}\\mktstfRaise{1.35}\\begin{tikzpicture}[ overlay, yshift = 0mm, yscale = -1, line cap = rect ]"
   yield texr 'ð1004', "\\tikzset{x=#{me._tmp.unitwidth_txt}};\\tikzset{y=#{me._tmp.unitheight_txt}};"
   yield return
 
@@ -463,10 +461,7 @@ contains = ( text, pattern ) ->
   #.........................................................................................................
   yield tex "~\\par% End of MKTS Table (layout: #{rpr layout_name})\n"
   ### TAINT undocumented kludge ###
-  if me.nosamepage
-    null
-  else
-    yield texr 'ð1005', "\\end{mktsSamepage}"
+  yield texr 'ð1005', "\\end{mktsSamepage}" unless me.nosamepage
   yield tex "% ==========================================================================================================\n"
   yield return
 
