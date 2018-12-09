@@ -55,8 +55,8 @@ module.exports = options =
     '~':            { type: 'tex',  value: '~', }                     ### Non-Breaking Space ###
     'lt':           { type: 'tex',  value: '<', }                     ### Left Pointy Bracket ###
     'gt':           { type: 'tex',  value: '>', }                     ### Right Pointy Bracket ###
-    'ulsymbolr':    { type: 'tex', value: "\\makebox[\\mktsLineheight][r]{\\prPushRaise{-0.2}{-0.1}{\\mktsFontfileHanamina{}◼}}", }
-    'ulsymbol':     { type: 'tex', value: "\\makebox[\\mktsLineheight][l]{\\prPushRaise{-0.2}{-0.1}{\\mktsFontfileHanamina{}◼}}", }
+    'ulsymbolr':    { type: 'tex', value: "\\makebox[\\mktsLineheight][r]{{\\mktstfPushRaise{-0.2}{-0.1}\\mktsFontfileHanamina{}◼}}", }
+    'ulsymbol':     { type: 'tex', value: "\\makebox[\\mktsLineheight][l]{{\\mktstfPushRaise{-0.2}{-0.1}\\mktsFontfileHanamina{}◼}}", }
 
     ### TAINT these are special-interest symbols that should be defined locally ###
     # 'Quasi':        { type: 'text', value: '𝕼', }
