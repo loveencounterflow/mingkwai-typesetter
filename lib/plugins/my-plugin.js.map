@@ -1,0 +1,13 @@
+{
+  "version": 3,
+  "file": "my-plugin.js",
+  "sourceRoot": "../..",
+  "sources": [
+    "src/plugins/my-plugin.coffee"
+  ],
+  "names": [],
+  "mappings": ";AAAA;EAAA;AAAA,MAAA,CAAA,EAAA,MAAA,EAAA,GAAA,EAAA,CAAA,EAAA,EAAA,EAAA,IAAA,EAAA,KAAA,EAAA,KAAA,EAAA,KAAA,EAAA,IAAA,EAAA,IAAA,EAAA,IAAA,EAAA,GAAA,EAAA,GAAA,EAAA,IAAA,EAAA,IAAA,EAAA;;EAIA,IAAA,GAA4B,OAAA,CAAQ,MAAR;;EAC5B,EAAA,GAA4B,OAAA,CAAQ,IAAR,EAL5B;;;EAOA,GAAA,GAA4B,OAAA,CAAQ,KAAR;;EAC5B,GAAA,GAA4B,GAAG,CAAC;;EAChC,KAAA,GAA4B;;EAC5B,GAAA,GAA4B,GAAG,CAAC,UAAJ,CAAe,OAAf,EAA4B,KAA5B;;EAC5B,IAAA,GAA4B,GAAG,CAAC,UAAJ,CAAe,MAAf,EAA4B,KAA5B;;EAC5B,OAAA,GAA4B,GAAG,CAAC,UAAJ,CAAe,SAAf,EAA4B,KAA5B;;EAC5B,KAAA,GAA4B,GAAG,CAAC,UAAJ,CAAe,OAAf,EAA4B,KAA5B;;EAC5B,KAAA,GAA4B,GAAG,CAAC,UAAJ,CAAe,OAAf,EAA4B,KAA5B;;EAC5B,IAAA,GAA4B,GAAG,CAAC,UAAJ,CAAe,MAAf,EAA4B,KAA5B;;EAC5B,IAAA,GAA4B,GAAG,CAAC,UAAJ,CAAe,MAAf,EAA4B,KAA5B;;EAC5B,IAAA,GAA4B,GAAG,CAAC,UAAJ,CAAe,MAAf,EAA4B,KAA5B;;EAC5B,IAAA,GAA4B,GAAG,CAAC,IAAI,CAAC,IAAT,CAAc,GAAd,EAlB5B;;;;;;EAuBA,CAAA,GAA4B,OAAA,CAAQ,YAAR;;EAC5B,CAAA,GAA4B,CAAC,CAAC,KAAK,CAAC,IAAR,CAAa,CAAb;;EAC5B,MAAA,GAA4B,CAAC,CAAC,WAAW,CAAC,IAAd,CAAmB,CAAnB;;EAE5B,IAAC,CAAA,IAAD,GAAQ,QAAA,CAAA,CAAA,EAAA;AA3BR",
+  "sourcesContent": [
+    "\n\n\n############################################################################################################\nPATH                      = require 'path'\nFS                        = require 'fs'\n#...........................................................................................................\nCND                       = require 'cnd'\nrpr                       = CND.rpr\nbadge                     = 'MK/TS/TEX-WRITER/PLUGIN'\nlog                       = CND.get_logger 'plain',     badge\ninfo                      = CND.get_logger 'info',      badge\nwhisper                   = CND.get_logger 'whisper',   badge\nalert                     = CND.get_logger 'alert',     badge\ndebug                     = CND.get_logger 'debug',     badge\nwarn                      = CND.get_logger 'warn',      badge\nhelp                      = CND.get_logger 'help',      badge\nurge                      = CND.get_logger 'urge',      badge\necho                      = CND.echo.bind CND\n# #...........................................................................................................\n# suspend                   = require 'coffeenode-suspend'\n# step                      = suspend.step\n#...........................................................................................................\nD                         = require 'pipedreams'\n$                         = D.remit.bind D\n$async                    = D.remit_async.bind D\n\n@main = ->\n\n\n\n\n\n"
+  ]
+}
