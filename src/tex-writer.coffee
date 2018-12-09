@@ -265,6 +265,7 @@ after = ( names..., method ) ->
   TYPOFIX:      require './tex-writer-typofix'
   SH:           require './tex-writer-sh'
   CALL:         require './tex-writer-call'
+  PLUGIN:       require './plugins/tex-writer-plugin'
   DOCUMENT:     {}
   COMMAND:      {}
   REGION:       {}
@@ -2494,6 +2495,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
   plugins_tee = D.combine pipeline
   #.......................................................................................................
   readstream
+    .pipe @MKTX.PLUGIN.$plugin                              S
     .pipe @MKTX.$insert                                     S
     .pipe @MKTX.SH.$spawn                                   S
     .pipe @MKTX.CALL.$call_await                            S
