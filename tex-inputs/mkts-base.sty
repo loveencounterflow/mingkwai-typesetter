@@ -84,16 +84,6 @@
 
   % ========================================================================================================
   % RULES (SHOULD GO TO OWN MODULE)
-  % % ........................................................................................................
-  % \renewcommand{\mktsRulePlain}{%
-  %   \par{\tfRaise{0.5}\hfil\swrulex{0.8\linewidth}{0.1mm}{0.1mm}}\hfill\par%
-  %   }
-
-  % % ........................................................................................................
-  % \renewcommand{\mktsRulePlainTight}{%
-  %   {\setlength{\parskip}{0mm}\tfRaise{0.3}\hfil\swrulex{\linewidth}{0.1mm}{0.1mm}\hfill}%
-  %   }
-
   % ........................................................................................................
   % thx to http://tex.stackexchange.com/a/65734/28067
   \renewcommand{\mktsHrulefill}[1]{\leavevmode\leaders\hrule height #1\columnseprule\hfill\kern\z@}
@@ -105,22 +95,22 @@
 
   % ........................................................................................................
   \renewcommand{\mktsRulePlainTight}{%
-    {\setlength{\parskip}{0mm}\tfRaise{0.3}\mktsHrulefill{1}}%
+    {\setlength{\parskip}{0mm}\mktstfRaise{0.3}\mktsHrulefill{1}}%
     }
 
   % ........................................................................................................
   \renewcommand{\mktsRuleBoldTight}{%
-    {\setlength{\parskip}{0mm}\tfRaise{0.3}\mktsHrulefill{2}}%
+    {\setlength{\parskip}{0mm}\mktstfRaise{0.3}\mktsHrulefill{2}}%
     }
 
   % ........................................................................................................
   \renewcommand{\mktsRuleBlackTight}{%
-    {\setlength{\parskip}{0mm}\tfRaise{0.3}\mktsHrulefill{3}}%
+    {\setlength{\parskip}{0mm}\mktstfRaise{0.3}\mktsHrulefill{3}}%
     }
 
   % ........................................................................................................
   \renewcommand{\mktsRuleEnglish}{%
-    {\setlength{\parskip}{0mm}\tfRaise{0.3}\swrulex{\linewidth}{0.1mm}{2\columnseprule}}%
+    {\setlength{\parskip}{0mm}\mktstfRaise{0.3}\swrulex{\linewidth}{0.1mm}{2\columnseprule}}%
     }
 
   % ........................................................................................................

@@ -47,8 +47,6 @@
 \usepackage{cxltx-style-base}
 \usepackage{cxltx-style-oddeven}
 \usepackage{cxltx-style-position-absolute}
-\usepackage{cxltx-style-pushraise}
-\usepackage{cxltx-style-transform}
 \usepackage{cxltx-style-smashbox}
 
 % ### TAINT to be replaced with something else ###
@@ -209,22 +207,12 @@
   \cjkgUseCjkGlue%
   \cjkgGlue%
   \mktsScaleFontRelative{1.1}%
-  % \mktsRaise{-0.15}%
   % ### TAINT using PDF special for better performance; won't scale to current font size
   \special{pdf:literal 1 0 0 1 0 -1.5 cm}%
   \AfterGroup{\special{pdf:literal 1 0 0 1 0 1.5 cm}%
     \cjkgGlue}%
   }
-% !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 \newcommand{\cjk}{\mktsCjkBase}%
-% !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-% \renewcommand{\cjk}{}%
-% \renewcommand{\cjk}{\mktsScaleFontRelative{1.1}\mktsRaise{-0.15}}%
-% ### TAINT using PDF special for better performance; won't scale to current font size
-% \renewcommand{\cjk}{\mktsScaleFontRelative{1.1}\special{pdf:literal 1 0 0 1 0 -1.5 cm}%
-%   \AfterGroup{\special{pdf:literal 1 0 0 1 0 1.5 cm}}}%
-% \renewcommand{\cjk}{\mktsScaleFontRelative{1.1}}%
-% !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 % \newcommand{\cn}{\mktsStartCjk\mktsFontfileSunexta}
 \newcommand{\cn}{\cjkgGlue\mktsStyleFontCjkDefault\AfterGroup{\cjkgGlue}}
@@ -667,22 +655,6 @@
 \newcommand*{\mktsCurrentFontsizeScale}{%
   \FPdiv\R{\mktsLengthAsNumber{\mktsCurrentFontsize}}{\mktsLengthAsNumber{\mktsFontsize}}%
   \R}%
-
-% % ----------------------------------------------------------------------------------------------------------
-% % DEPRECATED to be replaced with mktstfPushRaise
-% \newcommand*{\mktsPushRaise}[2]{%
-%   % it is not clear to me how to use the result of `\mktsCurrentFontsizeScale` here without causing
-%   % errors, therefore we perform the division here instead of using the macro:
-%   \FPdiv\mktsCurrentFontsizeScale{\mktsLengthAsNumber{\mktsCurrentFontsize}}{\mktsLengthAsNumber{\mktsFontsize}}%
-%   \FPmul\effectiveFactorX{#1}{\mktsCurrentFontsizeScale}%
-%   \FPmul\effectiveFactorY{#2}{\mktsCurrentFontsizeScale}%
-%   \mktstfPushRaise{\effectiveFactorX}{\effectiveFactorY}}%
-
-% % ----------------------------------------------------------------------------------------------------------
-% % DEPRECATED to be replaced with mktstfPushRaise
-% \newcommand*{\mktsPush}[1]{\mktsPushRaise{#1}{0}}%
-% % DEPRECATED to be replaced with mktstfPushRaise
-% \newcommand*{\mktsRaise}[1]{\mktsPushRaise{0}{#1}}%
 
 % ----------------------------------------------------------------------------------------------------------
 % thx to https://tex.stackexchange.com/a/94702
