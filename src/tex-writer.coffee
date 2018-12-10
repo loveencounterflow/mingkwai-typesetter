@@ -2348,7 +2348,9 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       if select event, '.', 'mktscript'
         [ type, name, mktscript, meta, ]   = event
         send stamp event
+        debug '38873-2', jr event
         tex_source  = await tex_from_md mktscript, { bare: yes, }
+        debug '38873-3', jr tex_source
         send [ 'tex', tex_source, ]
         send.done()
       else
@@ -2574,7 +2576,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @MKTX.CLEANUP.$consolidate_texts                  S
     # .pipe @$show_events                                     S
     # .pipe @$show_text_locators                              S
-    # .pipe @$show_start_and_end_2                            S
+    .pipe @$show_start_and_end_2                            S
     .pipe @MKTX.BLOCK.$paragraph_2                          S
     .pipe @MKTX.COMMAND.$crossrefs                          S
     # .pipe D.$observe ( event ) -> info '23993', ( CND.grey '--------->' ), CND.grey jr event
