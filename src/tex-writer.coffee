@@ -2490,12 +2490,14 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
   #   .pipe mktscript_out
   # mktscript_tee = D.TEE.from_readwritestreams mktscript_in, mktscript_out
   #.......................................................................................................
+  ### old plugins: ###
   pipeline    = ( ( plugin.$main S ) for plugin in MK.TS.plugins )
   # plugins_tee = D.TEE.from_pipeline pipeline
   plugins_tee = D.combine pipeline
   #.......................................................................................................
   readstream
-    .pipe @MKTX.PLUGIN.$plugin                              S
+    ### new plugins: ###
+    .pipe @MKTX.PLUGIN.$plugins                             S
     .pipe @MKTX.$insert                                     S
     .pipe @MKTX.SH.$spawn                                   S
     .pipe @MKTX.CALL.$call_await                            S

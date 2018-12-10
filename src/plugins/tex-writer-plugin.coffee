@@ -58,7 +58,9 @@ OVAL                      = require '../object-validator'
 # Σ_formatted_warning       = Symbol 'formatted-warning'
 promisify                 = ( require 'util' ).promisify
 jr                        = JSON.stringify
-plugins_sym               = Symbol 'plugins'
+new_pushable              = require 'pull-pushable'
+PS                        = require 'pipestreams'
+# { $, $async, }            = PS
 
 
 #-----------------------------------------------------------------------------------------------------------
@@ -78,11 +80,14 @@ plugins_sym               = Symbol 'plugins'
   #.....................................................................................................
   try
     module    = require locator
+    reference = module
     callable  = module
     if crumbs?
       for crumb in crumbs
-        callable = callable[ crumb ]
-        throw new Error "not callable: #{rpr crumb} in #{rpr method_path}" unless CND.isa_function callable
+        reference = callable
+        callable  = callable[ crumb ]
+    throw new Error "not callable: #{rpr method_path}" unless CND.isa_function callable
+    callable = callable.bind reference
   catch error
     alert '98987-1', "when trying to resolve #{rpr Q.src}"
     alert '98987-2', "starting with module #{rpr locator}"
@@ -92,18 +97,28 @@ plugins_sym               = Symbol 'plugins'
   return Object.assign {}, Q, { locator, module_path, method_path, callable, }
 
 #-----------------------------------------------------------------------------------------------------------
-@_prefix_from_event = ( S, event ) =>
-  registry                    = S[ plugins_sym ]
-  [ type, name, text, meta, ] = event
-  debug '88595', 'prefix', name
-  return true
+new_sync_sub_sender = ( transforms, send ) ->
+  ### Given a transform, construct a pipeline with a pushable as its source, and
+  return a function that accepts a send method and a data event. ###
+  # The sub-sender works by temporarily attaching a hidden ###
+  pushable  = new_pushable()
+  pipeline  = []
+  pipeline.push pushable
+  pipeline.push transform for transform in transforms
+  pipeline.push PS.$watch ( d ) -> send d
+  pipeline.push PS.$drain()
+  PS.pull pipeline...
+  return ( d ) -> pushable.push d
 
 #-----------------------------------------------------------------------------------------------------------
-@$plugin = ( S ) =>
-  schema =
+@$plugins = ( S ) =>
+  self    = @$plugins
+  schema  =
     postprocess: ( Q ) =>
       throw new Error "µ38893 expected non-empty text, got #{jr Q}" unless Q.src.length     > 0
       throw new Error "µ38894 expected non-empty text, got #{jr Q}" unless Q.prefix.length  > 0
+      throw new Error "µ38895 unable to redefine prefix #{rpr Q.prefix}" if self.known_prefixes.has Q.prefix
+      self.known_prefixes.add Q.prefix
       return @_resolve_arguments S, Q
     #.......................................................................................................
     properties:
@@ -114,23 +129,27 @@ plugins_sym               = Symbol 'plugins'
     required:             [ 'src', 'prefix', ]
   #.........................................................................................................
   validate_and_cast = OVAL.new_validator schema
-  registry          = S[ plugins_sym ] = {}
   #.........................................................................................................
   return $ ( event, send ) =>
     if select event, '.', 'plugin'
-      [ type, name, Q, meta, ] = event
-      Q = validate_and_cast Q
-      debug '33933', Q
+      ### Build a new pipeline whenever a new plugin declaration is found. In principle, we could scope
+      plugin validity using regional tags `<plugin>...</plugin>`, but that is left for later. ###
+      [ type, name, Q, meta, ]  = event
+      Q                         = validate_and_cast Q
+      plugin                    = Q.callable S, { prefix: Q.prefix, }
+      self.plugins.push plugin
+      self.sub_sender           = new_sync_sub_sender self.plugins, send
       send stamp event
     #.......................................................................................................
-    else if ( prefix = @_prefix_from_event S, event )?
-      debug '10095', 'plugin', jr event
-      send stamp event
+    else if self.sub_sender?
+      self.sub_sender event
     #.......................................................................................................
     else
       send event
     #.......................................................................................................
     return null
-
+@$plugins.plugins             = []
+@$plugins.sub_sender          = null
+@$plugins.known_prefixes      = new Set()
 
 
