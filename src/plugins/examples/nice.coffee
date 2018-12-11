@@ -28,6 +28,7 @@ unstamp                   = MD_READER.unstamp.bind     MD_READER
 select                    = MD_READER.select.bind      MD_READER
 is_hidden                 = MD_READER.is_hidden.bind   MD_READER
 is_stamped                = MD_READER.is_stamped.bind  MD_READER
+jr                        = JSON.stringify
 #...........................................................................................................
 ### plugins must use pipestreams ###
 PS                        = require 'pipestreams'
@@ -74,33 +75,10 @@ PS                        = require 'pipestreams'
 
 #-----------------------------------------------------------------------------------------------------------
 @main = ( S, settings ) ->
-  # pipeline = []
-  # pipeline.push @$nice    S, settings
-  # pipeline.push @$binomen S, settings
-  # return PS.pull pipeline...
-  # return @$nice  S, settings
-  return @$binomen  S, settings
-
-@kw_call = ( ctx, settings ) ->
-  { S, event, }     = ctx
-  [ ..., meta, ]    = event
-  R                 = []
-  R.push [ '.', 'text', "helo from #{__filename}\n\n", ( copy meta ), ]
-  R.push [ '.', 'mktscript', "an MKTScript sample: (<tt>!!!MKTScript!!!</tt>)", ( copy meta ), ]
-  #.........................................................................................................
-  return R
-
-
-
-
-
-
-
-
-
-
-
-
+  pipeline = []
+  pipeline.push @$nice    S, settings
+  pipeline.push @$binomen S, settings
+  return PS.pull pipeline...
 
 
 

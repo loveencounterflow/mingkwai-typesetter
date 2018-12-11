@@ -99,14 +99,16 @@ finished_sym              = Symbol.for 'finished'
   return Object.assign {}, Q, { locator, module_path, method_path, callable, }
 
 #-----------------------------------------------------------------------------------------------------------
-new_sync_sub_sender = ( transforms, callback ) ->
+new_sync_sub_sender = ( transforms ) ->
   ### Given a transform, construct a pipeline with a pushable as its source, and
   return a function that accepts a data event to be processed by the pipeline. ###
   # The sub-sender works by temporarily attaching a hidden ###
   pushable  = new_pushable()
   collector = []
   pipeline  = []
+  callback  = null
   pipeline.push pushable
+  pipeline.push PS.$ ( d, send ) -> send d; send [ '~', finished_sym, ]
   pipeline.push transform for transform in transforms
   pipeline.push PS.$ ( d, send ) ->
     if select d, '~', finished_sym
@@ -117,7 +119,7 @@ new_sync_sub_sender = ( transforms, callback ) ->
   pipeline.push PS.$watch ( d ) -> callback d
   pipeline.push PS.$drain()
   PS.pull pipeline...
-  return ( d ) -> pushable.push d
+  return ( d, send ) -> callback = send; pushable.push d
 
 #-----------------------------------------------------------------------------------------------------------
 @$plugins = ( S ) =>
@@ -144,31 +146,25 @@ new_sync_sub_sender = ( transforms, callback ) ->
     if select event, '.', 'plugin'
       [ type, name, Q, meta, ]  = event
       Q                         = validate_and_cast Q
-      plugin                    = Q.callable S, { prefix: Q.prefix, }
-      self.plugins.push plugin
+      self.callables.push [ Q.callable, { prefix: Q.prefix, }, ]
       send stamp event
       send.done()
-    #.......................................................................................................
-    else if self.plugins.length > 0
-      has_finished    = false
-      #.....................................................................................................
-      callback        = ( events ) ->
-        throw new Error "called with #{rpr events} arrived when callback had finished" if has_finished
-        send event for event in events
-        send.done()
-        has_finished = true
       #.....................................................................................................
       ### TAINT shouldn't build a new pipeline for each event ###
-      send_to_plugins = new_sync_sub_sender self.plugins, callback
-      send_to_plugins event
-      send_to_plugins [ '~', finished_sym, ]
+      plugins               = ( ( callable S, settings ) for [ callable, settings, ] in self.callables )
+      self.send_to_plugins  = new_sync_sub_sender plugins
+    #.......................................................................................................
+    else if self.callables.length > 0
+      debug '29001', rpr self.send_to_plugins
+      self.send_to_plugins event, ( events ) -> send event for event in events; send.done()
     #.......................................................................................................
     else
       send event
       send.done()
     #.......................................................................................................
     return null
-@$plugins.plugins             = []
+@$plugins.callables           = []
 @$plugins.known_prefixes      = new Set()
+@$plugins.send_to_plugins     = null
 
 
