@@ -50,29 +50,54 @@ PS                        = require 'pipestreams'
     return null
 
 #-----------------------------------------------------------------------------------------------------------
-@$spec = ( S, settings ) ->
+@$binomen = ( S, settings ) ->
   ### kludge to generate prefixed name; this will be changed in next version ###
-  spec = "#{settings.prefix}-spec"
+  binomen     = "#{settings.prefix}-binomen"
+  collector   = []
+  within_tag  = false
   return $ ( event, send ) =>
     [ ..., meta, ] = event
-    if select event, '(', spec
-      # send [ '.', 'mktscript', "<em>", ( copy meta ), ]
-      send [ '.', 'mktscript', "(<em>!!!MKTScript</em>", ( copy meta ), ]
+    if select event, '(', binomen
+      within_tag = true
       send stamp event
-    else if select event, ')', spec
-      # send [ '.', 'mktscript', "</em>", ( copy meta ), ]
-      send [ '.', 'mktscript', "<em>!!!MKTScript</em>)", ( copy meta ), ]
+    else if select event, ')', binomen
+      within_tag = false
+      text = collector.join ''
+      send [ '.', 'mktscript', "<em>#{text}</em>", ( copy meta ), ]
+      collector.length = 0
       send stamp event
+    else if within_tag and select event, '.', 'text'
+      collector.push event[ 2 ]
     else
       send event
     return null
 
 #-----------------------------------------------------------------------------------------------------------
 @main = ( S, settings ) ->
-  pipieline = []
-  pipieline.push @$nice  S, settings
-  pipieline.push @$spec  S, settings
-  return PS.pull pipieline...
+  # pipeline = []
+  # pipeline.push @$nice    S, settings
+  # pipeline.push @$binomen S, settings
+  # return PS.pull pipeline...
+  # return @$nice  S, settings
+  return @$binomen  S, settings
+
+@kw_call = ( ctx, settings ) ->
+  { S, event, }     = ctx
+  [ ..., meta, ]    = event
+  R                 = []
+  R.push [ '.', 'text', "helo from #{__filename}\n\n", ( copy meta ), ]
+  R.push [ '.', 'mktscript', "an MKTScript sample: (<tt>!!!MKTScript!!!</tt>)", ( copy meta ), ]
+  #.........................................................................................................
+  return R
+
+
+
+
+
+
+
+
+
 
 
 

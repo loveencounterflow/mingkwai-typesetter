@@ -7,7 +7,7 @@ FS                        = require 'fs'
 #...........................................................................................................
 CND                       = require 'cnd'
 rpr                       = CND.rpr
-badge                     = 'MK/TS/TEX-WRITER/PLUGIN'
+badge                     = 'MK/TS/TEX-WRITER/PLUGINS'
 log                       = CND.get_logger 'plain',     badge
 info                      = CND.get_logger 'info',      badge
 whisper                   = CND.get_logger 'whisper',   badge
@@ -21,9 +21,10 @@ echo                      = CND.echo.bind CND
 # suspend                   = require 'coffeenode-suspend'
 # step                      = suspend.step
 #...........................................................................................................
-D                         = require 'pipedreams'
-$                         = D.remit.bind D
-$async                    = D.remit_async.bind D
+PIPEDREAMS                = require '../../../../pipedreams'
+# PIPEDREAMS                = require 'pipedreams'
+PIPEDREAMS.$              = PIPEDREAMS.remit.bind PIPEDREAMS
+PIPEDREAMS.$async         = PIPEDREAMS.remit_async.bind PIPEDREAMS
 # #...........................................................................................................
 # ASYNC                     = require 'async'
 # #...........................................................................................................
@@ -61,7 +62,8 @@ jr                        = JSON.stringify
 new_pushable              = require 'pull-pushable'
 PS                        = require 'pipestreams'
 # { $, $async, }            = PS
-
+### TAINT temporary kludge ###
+finished_sym              = Symbol.for 'finished'
 
 #-----------------------------------------------------------------------------------------------------------
 @_resolve_arguments = ( S, Q ) =>
@@ -97,15 +99,22 @@ PS                        = require 'pipestreams'
   return Object.assign {}, Q, { locator, module_path, method_path, callable, }
 
 #-----------------------------------------------------------------------------------------------------------
-new_sync_sub_sender = ( transforms, send ) ->
+new_sync_sub_sender = ( transforms, callback ) ->
   ### Given a transform, construct a pipeline with a pushable as its source, and
-  return a function that accepts a send method and a data event. ###
+  return a function that accepts a data event to be processed by the pipeline. ###
   # The sub-sender works by temporarily attaching a hidden ###
   pushable  = new_pushable()
+  collector = []
   pipeline  = []
   pipeline.push pushable
   pipeline.push transform for transform in transforms
-  pipeline.push PS.$watch ( d ) -> send d
+  pipeline.push PS.$ ( d, send ) ->
+    if select d, '~', finished_sym
+      send collector
+      collector = []
+    else
+      collector.push d
+  pipeline.push PS.$watch ( d ) -> callback d
   pipeline.push PS.$drain()
   PS.pull pipeline...
   return ( d ) -> pushable.push d
@@ -130,26 +139,36 @@ new_sync_sub_sender = ( transforms, send ) ->
   #.........................................................................................................
   validate_and_cast = OVAL.new_validator schema
   #.........................................................................................................
-  return $ ( event, send ) =>
+  return PIPEDREAMS.$async ( event, send, end ) =>
+    return end() if end?
     if select event, '.', 'plugin'
-      ### Build a new pipeline whenever a new plugin declaration is found. In principle, we could scope
-      plugin validity using regional tags `<plugin>...</plugin>`, but that is left for later. ###
       [ type, name, Q, meta, ]  = event
       Q                         = validate_and_cast Q
       plugin                    = Q.callable S, { prefix: Q.prefix, }
       self.plugins.push plugin
-      self.sub_sender           = new_sync_sub_sender self.plugins, send
       send stamp event
+      send.done()
     #.......................................................................................................
-    else if self.sub_sender?
-      self.sub_sender event
+    else if self.plugins.length > 0
+      has_finished    = false
+      #.....................................................................................................
+      callback        = ( events ) ->
+        throw new Error "called with #{rpr events} arrived when callback had finished" if has_finished
+        send event for event in events
+        send.done()
+        has_finished = true
+      #.....................................................................................................
+      ### TAINT shouldn't build a new pipeline for each event ###
+      send_to_plugins = new_sync_sub_sender self.plugins, callback
+      send_to_plugins event
+      send_to_plugins [ '~', finished_sym, ]
     #.......................................................................................................
     else
       send event
+      send.done()
     #.......................................................................................................
     return null
 @$plugins.plugins             = []
-@$plugins.sub_sender          = null
 @$plugins.known_prefixes      = new Set()
 
 

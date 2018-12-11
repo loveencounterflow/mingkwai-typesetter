@@ -265,7 +265,7 @@ after = ( names..., method ) ->
   TYPOFIX:      require './tex-writer-typofix'
   SH:           require './tex-writer-sh'
   CALL:         require './tex-writer-call'
-  PLUGIN:       require './plugins/tex-writer-plugin'
+  PLUGINS:      require './plugins/tex-writer-plugins'
   DOCUMENT:     {}
   COMMAND:      {}
   REGION:       {}
@@ -1592,7 +1592,8 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       alt = alt_cache.join ''
       send [ 'tex', '\\begin{figure}%\n', ]
       ### TAINT escape `src`? ###
-      send [ 'tex', "\\includegraphics[width=\\textwidth]{#{src}}%\n", ]
+      # send [ 'tex', "\\includegraphics[width=\\textwidth]{#{src}}%\n", ]
+      send [ 'tex', "\\includegraphics[width=0.8\\linewidth]{#{src}}%\n", ]
       # send [ 'tex', "\\includegraphics[width=0.5\\textwidth]{#{src}}%\n", ]
       send [ 'tex', "\\caption[#{alt}]{%\n", ]
       send cached_event for cached_event in event_cache
@@ -2348,9 +2349,9 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       if select event, '.', 'mktscript'
         [ type, name, mktscript, meta, ]   = event
         send stamp event
-        debug '38873-2', jr event
+        # help '38873-2', '@MKTX.$mktscript START >>>>>>>>>>>>>>>>>>>>>>>>>>', jr event
         tex_source  = await tex_from_md mktscript, { bare: yes, }
-        debug '38873-3', jr tex_source
+        # warn '38873-3', '@MKTX.$mktscript STOP <<<<<<<<<<<<<<<<<<<<<<<<<<', jr tex_source[ .. 100 ]
         send [ 'tex', tex_source, ]
         send.done()
       else
@@ -2499,7 +2500,8 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
   #.......................................................................................................
   readstream
     ### new plugins: ###
-    .pipe @MKTX.PLUGIN.$plugins                             S
+    # .pipe D.$observe ( event ) -> info '23994-1', ( CND.grey '--> ' + ( jr event )[ .. 100 ] )
+    .pipe @MKTX.PLUGINS.$plugins                            S
     .pipe @MKTX.$insert                                     S
     .pipe @MKTX.SH.$spawn                                   S
     .pipe @MKTX.CALL.$call_await                            S
@@ -2513,7 +2515,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     # .pipe MKTSCRIPT_WRITER.$show_mktsmd_events              S
     .pipe MKTSCRIPT_WRITER.$produce_mktscript               S
     .pipe @$document                                        S
-    .pipe D.$observe ( event ) -> info '23994', ( CND.grey '--> ' + ( jr event )[ .. 100 ] )
+    .pipe D.$observe ( event ) -> info '23994-2', ( CND.grey '--> ' + ( jr event )[ .. 100 ] )
     #.......................................................................................................
     ### tags that produce tags ###
     #.......................................................................................................
@@ -2576,7 +2578,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @MKTX.CLEANUP.$consolidate_texts                  S
     # .pipe @$show_events                                     S
     # .pipe @$show_text_locators                              S
-    .pipe @$show_start_and_end_2                            S
+    # .pipe @$show_start_and_end_2                            S
     .pipe @MKTX.BLOCK.$paragraph_2                          S
     .pipe @MKTX.COMMAND.$crossrefs                          S
     # .pipe D.$observe ( event ) -> info '23993', ( CND.grey '--------->' ), CND.grey jr event
