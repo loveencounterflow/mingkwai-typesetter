@@ -155,7 +155,6 @@ new_sync_sub_sender = ( transforms ) ->
       self.send_to_plugins  = new_sync_sub_sender plugins
     #.......................................................................................................
     else if self.callables.length > 0
-      debug '29001', rpr self.send_to_plugins
       self.send_to_plugins event, ( events ) -> send event for event in events; send.done()
     #.......................................................................................................
     else
