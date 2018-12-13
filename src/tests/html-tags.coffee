@@ -143,6 +143,43 @@ get_patterns = ( tag_name ) -> {
   #.........................................................................................................
   done()
 
+#-----------------------------------------------------------------------------------------------------------
+@[ "htmlish-tag-parser" ] = ( T, done ) ->
+  probes_and_matchers = [
+    # ["<embedded-file>",]
+    # ["<embedded-file name=foobar>",]
+    # ["<embedded-file name='foobar'>",]
+    # ["<embedded-file name=\"foobar\">",]
+    # ["<xy:embedded-file>",]
+    # ["<xy:embedded-file name=foobar>",]
+    # ["<xy:embedded-file name='foobar'>",]
+    # ["<xy:embedded-file name=\"foobar\">",]
+    # ["<xy:embedded-file>",]
+    # ["<xy:embedded-file name=foobar/>",]
+    # ["<xy:embedded-file name='foobar'/>",]
+    # ["<xy:embedded-file name=\"foobar\"/>",]
+    ["<tag/> x"]
+    ["<tag> x"]
+    ["<br/> x"]
+    ["<br> x"]
+    # ["some text with a <tag/> in it"]
+    # ["some text with a <br/> in it"]
+    ]
+  #.........................................................................................................
+  PARSE5 = require 'parse5'
+  for [ probe, matcher, ] in probes_and_matchers
+    for node in ( PARSE5.parseFragment probe ).childNodes
+      delete node.namespaceURI
+      delete node.parentNode
+      debug '98932', node
+      name        = node.tagName
+      attributes  = node.attrs
+      tree        = node.childNodes
+      urge '36633', ( jr { name, attributes, } )
+    # T.eq result, matcher
+  #.........................................................................................................
+  done()
+
   # for [ probe, matcher, ] in probes_and_matchers
   #   result = probe.match start_tag_pattern
   #   try
@@ -153,10 +190,11 @@ get_patterns = ( tag_name ) -> {
 ############################################################################################################
 unless module.parent?
   include = [
-    "basic"
-    "start pattern"
-    "recursive"
-    "parse attributes"
+    # "basic"
+    # "start pattern"
+    # "recursive"
+    # "parse attributes"
+    "htmlish-tag-parser"
     ]
   @_prune()
   @_main()

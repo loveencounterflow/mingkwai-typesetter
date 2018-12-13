@@ -123,79 +123,21 @@ new_number_event = ( value, other... ) ->
   return new_event '.', 'number', value, other...
 
 
-provide_collatz = ->
-
-  #-----------------------------------------------------------------------------------------------------------
-  @is_one  = ( n ) -> n is 1
-  @is_odd  = ( n ) -> n %% 2 isnt 0
-  @is_even = ( n ) -> n %% 2 is 0
-
-  #-----------------------------------------------------------------------------------------------------------
-  @$even_numbers = ( S ) ->
-    return $ ( d, send ) =>
-      if ( select d, '.', 'number' ) and ( @is_even d.value )
-        send stamp d
-        send recycle new_number_event ( d.value / 2 )
-      else
-        send d
-      return null
-
-  #-----------------------------------------------------------------------------------------------------------
-  @$odd_numbers = ( S ) ->
-    return $ ( d, send ) =>
-      if ( select d, '.', 'number' ) and ( not @is_one d.value ) and ( @is_odd d.value )
-        send stamp d
-        send recycle new_number_event ( d.value * 3 + 1 )
-      else
-        send d
-      return null
-
-  #-----------------------------------------------------------------------------------------------------------
-  @$skip_known = ( S ) ->
-    known = new Set()
-    return $ ( d, send ) =>
-      if select d, '.', 'number'
-        unless known.has d.value
-          send d
-          known.add d.value
-        else
-          urge '->', d.value
-      else
-        send d
-      return null
-
-  #-----------------------------------------------------------------------------------------------------------
-  @$terminate = ( S ) ->
-    return $ ( d, send ) =>
-      if ( select_all d, '.', 'number' ) and ( is_one d.value )
-        send stamp d
-        send new_event '~', 'end'
-      else
-        send d
-      return null
-
-  #-----------------------------------------------------------------------------------------------------------
-  @$main = ( S ) ->
-    pipeline = []
-    pipeline.push COLLATZ.$skip_known           S
-    pipeline.push COLLATZ.$even_numbers         S
-    pipeline.push COLLATZ.$odd_numbers          S
-    # pipeline.push COLLATZ.$terminate            S
-    return PS.pull pipeline...
-
+provide_xxx = ->
   #-----------------------------------------------------------------------------------------------------------
   return @
-COLLATZ = provide_collatz.apply {}
+# COLLATZ = provide_collatz.apply {}
 
 #-----------------------------------------------------------------------------------------------------------
 @new_sender = ( S ) ->
   S.source    = new_pushable()
+  #.........................................................................................................
   on_stop     = PS.new_event_collector 'stop', -> help 'ok'
   pipeline    = []
   #.........................................................................................................
   pipeline.push S.source
   pipeline.push $uncycle()
-  pipeline.push COLLATZ.$main S
+  # pipeline.push COLLATZ.$main S
   pipeline.push PS.$watch ( d ) -> help '> sink  ', rprx d unless is_meta d
   #.........................................................................................................
   pipeline.push PS.$watch ( d ) -> if ( select d, '~', 'end' ) then S.source.end()
@@ -211,12 +153,25 @@ COLLATZ = provide_collatz.apply {}
 
 ############################################################################################################
 unless module.parent?
-  S = {}
-  send = @new_sender S
-  urge '-----------'
-  send 42
-  urge '-----------'
-  for n in [ 1 .. 5 ]
-    send -n
-    urge '-----------'
-  # # send.end()
+  # S = {}
+  # send = @new_sender S
+  # urge '-----------'
+  # send 42
+  # urge '-----------'
+  # for n in [ 1 .. 5 ]
+  #   send -n
+  #   urge '-----------'
+  # # # send.end()
+  EFILE = require './embedded-file'
+  EFILE.read_embedded_file __filename
+
+
+###<embedded-file>
+
+
+
+
+
+</embedded-file>###
+
+
