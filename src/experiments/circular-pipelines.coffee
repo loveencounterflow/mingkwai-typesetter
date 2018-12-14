@@ -31,99 +31,33 @@ new_pushable              = require 'pull-pushable'
 assign                    = Object.assign
 jr                        = JSON.stringify
 copy                      = ( P... ) -> assign {}, P...
-rprx                      = ( d ) -> "#{d.mark} #{d.type}:: #{jr d.value} #{jr d.stamped ? false}"
+rprx                      = ( d ) -> "#{d.sigil} #{d.key}:: #{jr d.value ? null} #{jr d.stamped ? false}"
+echo '{ ' + ( ( name for name of require './recycle' ).sort().join '\n  ' ) + " } = require './recycle'"
+{ $recycle
+  $unwrap_recycled
+  is_recycling
+  is_stamped
+  is_system
+  new_end_event
+  new_event
+  new_single_event
+  new_start_event
+  new_stop_event
+  new_system_event
+  recycling
+  select
+  select_all
+  stamp
+  unwrap_recycled } = require './recycle'
 
-###
-
-
-Pipestream Events v2
-====================
-
-d         := { mark,          type, value, ... }    # implicit global namespace
-          := { mark, prefix,  type, value, ... }    # explicit namespace
-
-# `d.mark` indicates 'regionality':
-
-mark      := '.' # proper singleton
-mark      := '~' # meta singleton
-          := '(' # start-of-region (SOR)    # '<'
-          := ')' # end-of-region   (EOR)    # '>'
-
-# `prefix` indicates the namespace; where missing on an event or is `null`, `undefined` or `'global'`,
-# it indicates the global namespace:
-
-prefix    := null | undefined | 'global' | non-empty text
-
-type      := non-empty text         # typename
-
-value     := any                    # payload
-
-###
 
 #-----------------------------------------------------------------------------------------------------------
-stamp = ( d ) ->
-  d.stamped = true
-  return d
-
-#-----------------------------------------------------------------------------------------------------------
-recycle         = ( d       ) -> new_event '~', 'recycle', d
-uncycle         = ( d       ) -> if ( select_all d, '~', 'recycle' ) then d.value else d
-$uncycle        =             -> $ ( d, send ) -> send uncycle d
-try_to_recycle  = ( d       ) -> if ( select d, '~', 'recycle' ) then d.value else null
-$try_to_recycle = ( resend  ) -> PS.$watch ( d ) -> if ( e = try_to_recycle d )? then resend d
-is_meta         = ( d       ) -> select_all d, '~', null
-
-#-----------------------------------------------------------------------------------------------------------
-select = ( d, prefix, marks, types ) ->
-  ### Reject all stamped events: ###
-  return if ( d.stamped is true ) then false
-  return if ( d.recycle is true ) then false
-  ### TAINT avoid to test twice for arity ###
-  switch arity = arguments.length
-    when 3 then return select_all d, prefix, marks ### d, marks, types ###
-    when 4 then return select_all d, prefix, marks, types
-    else throw new Error "expected 3 to 4 arguments, got arity"
-
-#-----------------------------------------------------------------------------------------------------------
-select_all = ( d, prefix, marks, types ) ->
-  ### accepts 3 or 4 arguments; when 4, then second must be prefix (only one prefix allowed);
-  `marks` and `types` may be text or list of texts. ###
-  switch arity = arguments.length
-    # when 2 then [ prefix, marks, types, ] = [ null, prefix, marks, ]
-    when 3 then [ prefix, marks, types, ] = [ null, prefix, marks, ]
-    when 4 then null
-    else throw new Error "expected 3 to 4 arguments, got arity"
-  #.........................................................................................................
-  prefix  = null if ( not prefix? ) or ( prefix is 'global' )
-  marks  ?= null
-  types  ?= null
-  switch _type = CND.type_of prefix
-    when 'null' then null
-    when 'text' then return false unless d.prefix is prefix
-    else throw new Error "expected a text or a list, got a #{_type}"
-  switch _type = CND.type_of marks
-    when 'null' then null
-    when 'text' then return false unless d.mark is marks
-    when 'list' then return false unless d.mark in marks
-    else throw new Error "expected a text or a list, got a #{_type}"
-  switch _type = CND.type_of types
-    when 'null' then null
-    when 'text' then return false unless d.type is types
-    when 'list' then return false unless d.type in types
-    else throw new Error "expected a text or a list, got a #{_type}"
-  return true
-
-#-----------------------------------------------------------------------------------------------------------
-new_event = ( mark, type, value, other... ) ->
-  value ?= null
-  return assign { mark, type, value, }, other...
-
-#-----------------------------------------------------------------------------------------------------------
-new_number_event = ( value, other... ) ->
-  return new_event '.', 'number', value, other...
-
-
 provide_collatz = ->
+
+
+  #-----------------------------------------------------------------------------------------------------------
+  @new_number_event = ( value, other... ) ->
+    return new_single_event 'number', value, other...
 
   #-----------------------------------------------------------------------------------------------------------
   @is_one  = ( n ) -> n is 1
@@ -135,7 +69,7 @@ provide_collatz = ->
     return $ ( d, send ) =>
       if ( select d, '.', 'number' ) and ( @is_even d.value )
         send stamp d
-        send recycle new_number_event ( d.value / 2 )
+        send recycling @new_number_event ( d.value / 2 )
       else
         send d
       return null
@@ -144,8 +78,11 @@ provide_collatz = ->
   @$odd_numbers = ( S ) ->
     return $ ( d, send ) =>
       if ( select d, '.', 'number' ) and ( not @is_one d.value ) and ( @is_odd d.value )
+      # if ( select d, sigil: '.', key: 'number' ) and ( not @is_one d.value ) and ( @is_odd d.value )
+      # if ( select_single d, null, 'number' ) and ( not @is_one d.value ) and ( @is_odd d.value )
+      # if ( select_single d, 'kwic:number' ) and ( not @is_one d.value ) and ( @is_odd d.value )
         send stamp d
-        send recycle new_number_event ( d.value * 3 + 1 )
+        send recycling @new_number_event ( d.value * 3 + 1 )
       else
         send d
       return null
@@ -169,7 +106,7 @@ provide_collatz = ->
     return $ ( d, send ) =>
       if ( select_all d, '.', 'number' ) and ( is_one d.value )
         send stamp d
-        send new_event '~', 'end'
+        send new_end_event()
       else
         send d
       return null
@@ -190,16 +127,17 @@ COLLATZ = provide_collatz.apply {}
 #-----------------------------------------------------------------------------------------------------------
 @new_sender = ( S ) ->
   S.source    = new_pushable()
+  resend      = S.source.push.bind S.source
   on_stop     = PS.new_event_collector 'stop', -> help 'ok'
   pipeline    = []
   #.........................................................................................................
   pipeline.push S.source
-  pipeline.push $uncycle()
+  pipeline.push $unwrap_recycled()
   pipeline.push COLLATZ.$main S
-  pipeline.push PS.$watch ( d ) -> help '> sink  ', rprx d unless is_meta d
-  #.........................................................................................................
+  pipeline.push PS.$watch ( d ) -> help jr d
+  # pipeline.push PS.$watch ( d ) -> help '> sink  ', rprx d unless is_meta d
   pipeline.push PS.$watch ( d ) -> if ( select d, '~', 'end' ) then S.source.end()
-  pipeline.push $try_to_recycle S.source.push.bind S.source
+  pipeline.push $recycle resend
   #.........................................................................................................
   pipeline.push on_stop.add PS.$drain()
   PS.pull pipeline...
