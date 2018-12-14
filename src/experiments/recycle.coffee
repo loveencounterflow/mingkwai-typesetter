@@ -172,8 +172,16 @@ value     := any                    # payload
 #
 #-----------------------------------------------------------------------------------------------------------
 @new_event = ( sigil, key, value, other... ) ->
-  return assign { sigil, key, value, }, other... if value?
-  return assign { sigil, key, }, other...
+  ### When `other` contains a key `$`, it is treated as a hint to copy
+  system-level attributes; if the value of key `$` is a POD that has itself a
+  key `$`, then a copy of that value is used. This allows to write `new_event
+  ..., $: d` to copy system-level attributes such as source locations to a new
+  event. ###
+  if value? then  R = assign { sigil, key, value, }, other...
+  else            R = assign { sigil, key,        }, other...
+  ### TAINT consider to resolve recursively ###
+  if ( CND.isa_pod R.$ ) and ( CND.isa_pod R.$.$ ) then R.$ = copy R.$.$
+  return R
 
 #-----------------------------------------------------------------------------------------------------------
 @new_single_event   = ( key, value, other...  ) -> @new_event '.', key, value, other...
