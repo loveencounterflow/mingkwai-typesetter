@@ -27,7 +27,7 @@ echo                      = CND.echo.bind CND
 # $async                    = D.remit_async.bind D
 PS                        = require 'pipestreams'
 { $, $async, }            = PS
-new_pushable              = require 'pull-pushable'
+_new_push_source          = require 'pull-pushable'
 assign                    = Object.assign
 jr                        = JSON.stringify
 copy                      = ( P... ) -> assign {}, P...
@@ -74,18 +74,29 @@ value     := any                    # payload
 #===========================================================================================================
 # RECYCLING
 #-----------------------------------------------------------------------------------------------------------
+@$unwrap_recycled = -> return $ ( d, send ) => send @unwrap_recycled d
 @unwrap_recycled = ( d ) ->
   ### Given an event, return its value if its a `~recycle` event; otherwise, return the event itself. ###
   return if ( @is_recycling d ) then d.value else d
 
 #-----------------------------------------------------------------------------------------------------------
-@$unwrap_recycled = ->
-  return $ ( d, send ) => send @unwrap_recycled d
+@$recycle = ( push ) ->
+  ### Stream transform to send events either down the pipeline (using `send`) or
+  to an alternate destination, using the `push` method ( the only argument to
+  this function). Normally, this will be the `push` method of a push source, but
+  it could be any function that accepts a single event as argument. ###
+  return $ ( d, send ) =>
+    if ( @is_recycling d ) then push d else send d
+    return null
 
 #-----------------------------------------------------------------------------------------------------------
-@$recycle = ( sender ) ->
-  return PS.$watch ( d ) =>
-    if ( @is_recycling d ) then sender d
+@new_push_source = ->
+  ### Return a `pull-streams` `pushable`. Methods `push` and `end` will be bound to the instance
+  so they can be freely passed around. ###
+  R       = _new_push_source()
+  R.push  = R.push.bind R
+  R.end   = R.end.bind R
+  return R
 
 
 #===========================================================================================================
@@ -170,7 +181,12 @@ value     := any                    # payload
 @new_stop_event     = ( key, value, other...  ) -> @new_event ')', key, value, other...
 @new_system_event   = ( key, value, other...  ) -> @new_event '~', key, value, other...
 @new_end_event      =                           -> @new_system_event 'end'
+@new_text_event     = (      value, other...  ) -> @new_single_event 'text',    value, other...
 @recycling          = ( d )                     -> @new_system_event 'recycle', d
+
+#-----------------------------------------------------------------------------------------------------------
+@new_warning = ( ref, message, d, other...  ) ->
+  @new_system_event 'warning', d, { ref, message, }, other...
 
 
 ############################################################################################################
