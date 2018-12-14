@@ -27,12 +27,11 @@ echo                      = CND.echo.bind CND
 # $async                    = D.remit_async.bind D
 PS                        = require 'pipestreams'
 { $, $async, }            = PS
-new_pushable              = require 'pull-pushable'
 assign                    = Object.assign
 jr                        = JSON.stringify
 copy                      = ( P... ) -> assign {}, P...
 rprx                      = ( d ) -> "#{d.sigil} #{d.key}:: #{jr d.value ? null} #{jr d.stamped ? false}"
-echo '{ ' + ( ( name for name of require './recycle' ).sort().join '\n  ' ) + " } = require './recycle'"
+# echo '{ ' + ( ( name for name of require './recycle' ).sort().join '\n  ' ) + " } = require './recycle'"
 { $recycle
   $unwrap_recycled
   is_recycling
@@ -44,6 +43,7 @@ echo '{ ' + ( ( name for name of require './recycle' ).sort().join '\n  ' ) + " 
   new_start_event
   new_stop_event
   new_system_event
+  new_push_source
   recycling
   select
   select_all
@@ -126,8 +126,7 @@ COLLATZ = provide_collatz.apply {}
 
 #-----------------------------------------------------------------------------------------------------------
 @new_sender = ( S ) ->
-  S.source    = new_pushable()
-  resend      = S.source.push.bind S.source
+  S.source    = new_push_source()
   on_stop     = PS.new_event_collector 'stop', -> help 'ok'
   pipeline    = []
   #.........................................................................................................
@@ -137,7 +136,7 @@ COLLATZ = provide_collatz.apply {}
   pipeline.push PS.$watch ( d ) -> help jr d
   # pipeline.push PS.$watch ( d ) -> help '> sink  ', rprx d unless is_meta d
   pipeline.push PS.$watch ( d ) -> if ( select d, '~', 'end' ) then S.source.end()
-  pipeline.push $recycle resend
+  pipeline.push $recycle S.source.push
   #.........................................................................................................
   pipeline.push on_stop.add PS.$drain()
   PS.pull pipeline...
