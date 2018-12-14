@@ -83,6 +83,8 @@ rprx                      = ( d ) -> "#{d.mark} #{d.type}:: #{jr d.value} #{jr d
 # @add_active_chr '^'; help @active_chr_pattern
 
 
+#===========================================================================================================
+#
 #-----------------------------------------------------------------------------------------------------------
 @split_on_first_active_chr = ( text ) ->
   ### If `text` contains an active character, return a POD with the keys `left`, `achr`, and `right`, where
@@ -219,6 +221,7 @@ ACHRS_TRANSFORMS = provide_achrs_transforms.apply {}
   pipeline.push @$recycle_untouched_texts           S
   pipeline.push @$warn_on_unhandled_achrs           S
   #.........................................................................................................
+  # pipeline.push PS.$watch ( d ) => whisper jr d
   # pipeline.push PS.$watch ( d ) => help CND.blue jr d
   # pipeline.push PS.$watch ( d ) => help '> sink  ', rprx d unless is_meta d
   pipeline.push PS.$watch ( d ) => if ( select d, '~', 'end' ) then S.source.end()
