@@ -48,7 +48,7 @@ provide_handlers = ( handler ) ->
   @ontext = ( text ) ->
     start = @parser.startIndex
     end   = @parser.endIndex
-    handler null, { mark: '.', value: text, start, end, }
+    handler null, { mark: '.', name: 'text', value: text, start, end, }
 
   #---------------------------------------------------------------------------------------------------------
   @onclosetag = ( name ) ->
@@ -90,6 +90,9 @@ unless module.parent?
     "helo <いきましょうか/>world"
     "<div>just a </div> that is closed"
     "just a </div> that is closed"
+    "some < lonely > brackets"
+    "some < lonely brackets"
+    "some lonely > brackets"
     # """<?xml-stylesheet type="text/xsl" href="style.xsl"?>foobar"""
     # "helo <x:b>world</x:b>"
     # "helo <b><i>world"
