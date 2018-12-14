@@ -115,8 +115,13 @@ rprx                      = ( d ) -> "#{d.mark} #{d.type}:: #{jr d.value} #{jr d
 
 #-----------------------------------------------------------------------------------------------------------
 @$warn_on_unhandled_achrs = ( S ) -> $ ( d, send ) =>
-    if ( select d, '.', 'achr-split' ) then send new_warning 'µ99823', "unhandled active characters", d, $: d
-    else send d
+    if ( select d, '.', 'achr-split' )
+      lnr     = d.$?.lnr  ? '?'
+      text    = if d.$?.text? then ( rpr d.$.text ) else '?'
+      message = "unhandled active characters #{rpr d.value} on line #{lnr} in #{text}"
+      send new_warning 'µ99823', message, d, $: d
+    else
+      send d
     return null
 
 
@@ -232,7 +237,7 @@ ACHRS_TRANSFORMS = provide_achrs_transforms.apply {}
   PS.pull pipeline...
   #.........................................................................................................
   lnr     = 0
-  R       = ( value ) -> lnr += +1; S.source.push new_text_event value, $: { lnr, }
+  R       = ( value ) -> lnr += +1; S.source.push new_text_event value, $: { lnr, text: value, }
   R.end   = -> S.source.end()
   return R
 
@@ -242,10 +247,12 @@ ACHRS_TRANSFORMS = provide_achrs_transforms.apply {}
 unless module.parent?
   S = {}
   texts = [
-    'a **strong** and a *less strong* emphasis.'
+    'a line of text.'
     'a line of *text*.'
     'a line of 𣥒text*.'
-    'a line of text.'
+    'a **strong** and a *less strong* emphasis.'
+    'a *normal and a **strong** emphasis*.'
+    'another *such and **such*** emphasis.'
     ]
   push = @new_parser S
   for text in texts
