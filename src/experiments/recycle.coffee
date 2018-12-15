@@ -39,8 +39,8 @@ rprx                      = ( d ) -> "#{d.sigil} #{d.key}:: #{jr d.value ? null}
 Pipestream Events v2
 ====================
 
-d         := { sigil,          key, value, ... }    # implicit global namespace
-          := { sigil, prefix,  key, value, ... }    # explicit namespace
+d         := { sigil,          key, value, ..., $, }    # implicit global namespace
+          := { sigil, prefix,  key, value, ..., $, }    # explicit namespace
 
 # `d.sigil` indicates 'regionality':
 
@@ -57,6 +57,8 @@ prefix    := null | undefined | 'global' | non-empty text
 key       := non-empty text         # typename
 
 value     := any                    # payload
+
+$         := pod                    # system-level attributes, to be copied from old to new events
 
 ###
 
