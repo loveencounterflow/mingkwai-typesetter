@@ -190,11 +190,11 @@ get_patterns = ( tag_name ) -> {
 ############################################################################################################
 unless module.parent?
   include = [
-    # "basic"
-    # "start pattern"
-    # "recursive"
-    # "parse attributes"
-    "htmlish-tag-parser"
+    "basic"
+    "start pattern"
+    "recursive"
+    "parse attributes"
+    # "htmlish-tag-parser"
     ]
   @_prune()
   @_main()
