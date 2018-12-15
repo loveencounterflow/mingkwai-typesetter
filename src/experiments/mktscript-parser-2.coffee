@@ -130,6 +130,25 @@ rprx                      = ( d ) -> "#{d.mark} #{d.type}:: #{jr d.value} #{jr d
 #-----------------------------------------------------------------------------------------------------------
 provide_achrs_transforms = ->
 
+  # #-----------------------------------------------------------------------------------------------------------
+  # ### TAINT add `li` ###
+  # @$em_and_strong = ( S ) ->
+  #   stack   = []
+  #   get_top = -> stack[ stack.length - 1 ] ? null
+  #   within  = ( key ) -> key in stack
+  #   return $ ( d, send ) =>
+  #     if ( select d, '.', 'achr-split' ) and ( d.value is '***' )
+  #       # if within 'em'
+  #       ### using ad-hoc `clean` attribute to indicate that text does not contain active characters ###
+  #       send new_text_event d.left, { clean: true, $: d }
+  #       if not within then  send new_start_event 'sf', 'em', $: d
+  #       else                send new_stop_event  'sf', 'em', $: d
+  #       send new_text_event d.right, $: d
+  #       within = not within
+  #     else
+  #       send d
+  #     return null
+
   #-----------------------------------------------------------------------------------------------------------
   @$em = ( S ) ->
     within = false
@@ -210,37 +229,65 @@ ACHRS_TRANSFORMS = provide_achrs_transforms.apply {}
 #===========================================================================================================
 #
 #-----------------------------------------------------------------------------------------------------------
-@new_parser = ( S ) ->
-  S.source    = new_push_source()
-  on_stop     = PS.new_event_collector 'stop', -> help 'ok'
-  pipeline    = []
-  #.........................................................................................................
-  pipeline.push S.source
-  # pipeline.push PS.$watch ( d ) => whisper jr d
-  pipeline.push $unwrap_recycled()
-  # pipeline.push COLLATZ.$main S
-  #.........................................................................................................
-  pipeline.push @$split_on_first_active_chr         S
-  pipeline.push ACHRS_TRANSFORMS.$em                S
-  pipeline.push ACHRS_TRANSFORMS.$strong            S
-  pipeline.push @$recycle_untouched_texts           S
-  pipeline.push @$warn_on_unhandled_achrs           S
-  #.........................................................................................................
-  # pipeline.push PS.$watch ( d ) => whisper jr d
-  # pipeline.push PS.$watch ( d ) => help CND.blue jr d
-  # pipeline.push PS.$watch ( d ) => help '> sink  ', rprx d unless is_meta d
-  pipeline.push PS.$watch ( d ) => if ( select d, '~', 'end' ) then S.source.end()
-  pipeline.push $recycle S.source.push
-  #.........................................................................................................
-  pipeline.push @$show_events                       S
-  pipeline.push on_stop.add PS.$drain()
-  PS.pull pipeline...
-  #.........................................................................................................
-  lnr     = 0
-  R       = ( value ) -> lnr += +1; S.source.push new_text_event value, $: { lnr, text: value, }
-  R.end   = -> S.source.end()
-  return R
+@$parse_special_forms = ( S ) ->
 
+  #---------------------------------------------------------------------------------------------------------
+  lnr                 = 0
+  mktsp2_push_source  = null
+  gsend               = null
+
+  #---------------------------------------------------------------------------------------------------------
+  @$_as_text_event = ( d ) -> $ ( d, send ) =>
+    ### Convert texts in to text events, adjust line nrs ###
+    ### TAINT should split texts into lines ###
+    if CND.isa_text d
+      lnr  += +1
+      d     = new_text_event d, $: { lnr, text: d, }
+    else if ( select '.', 'text' ) and d.$?.lnr?
+      lnr   = d.$.lnr
+    #.......................................................................................................
+    send d
+
+  #---------------------------------------------------------------------------------------------------------
+  @get_transformer = =>
+    pipeline    = []
+    pipeline.push PS.$watch ( d ) => whisper '12091', jr d
+    pipeline.push @$_as_text_event()
+    #.......................................................................................................
+    pipeline.push $ ( d, send ) =>
+      gsend               = send
+      mktsp2_push_source ?= @get_mktsp2_push_source()
+      mktsp2_push_source.push d
+      return null
+    #.......................................................................................................
+    return PS.pull pipeline...
+
+  #---------------------------------------------------------------------------------------------------------
+  @get_mktsp2_push_source = =>
+    source      = new_push_source()
+    pipeline    = []
+    #.......................................................................................................
+    pipeline.push source
+    # pipeline.push PS.$watch ( d ) => whisper jr d
+    pipeline.push $unwrap_recycled()
+    #.......................................................................................................
+    pipeline.push @$split_on_first_active_chr         S
+    pipeline.push ACHRS_TRANSFORMS.$em                S
+    pipeline.push ACHRS_TRANSFORMS.$strong            S
+    pipeline.push @$recycle_untouched_texts           S
+    pipeline.push @$warn_on_unhandled_achrs           S
+    #.......................................................................................................
+    pipeline.push PS.$watch ( d ) => if ( select d, '~', 'end' ) then source.end()
+    pipeline.push $recycle source.push
+    #.......................................................................................................
+    pipeline.push PS.$watch ( d ) -> gsend d
+    pipeline.push PS.$drain()
+    PS.pull pipeline...
+    #.......................................................................................................
+    return source
+
+  #---------------------------------------------------------------------------------------------------------
+  return @get_transformer()
 
 
 ############################################################################################################
@@ -252,12 +299,26 @@ unless module.parent?
     'a line of 𣥒text*.'
     'a **strong** and a *less strong* emphasis.'
     'a *normal and a **strong** emphasis*.'
-    'another *such and **such*** emphasis.'
+    # 'another *such and **such*** emphasis.'
+    # '***em* strong**.'
+    # '***strong** em*.'
+    # '***strong-em***.'
+    'lone *star'
     ]
-  push = @new_parser S
+  MKTSP2    = @
+  source    = new_push_source()
+  pipeline  = []
+  pipeline.push source
+  pipeline.push PS.$watch ( d ) => whisper '33301', jr d
+  pipeline.push MKTSP2.$parse_special_forms S
+  # pipeline.push PS.$watch ( d ) => urge jr d
+  pipeline.push MKTSP2.$show_events         S
+  pipeline.push PS.$drain()
+  PS.pull pipeline...
+
   for text in texts
     whisper '#'.repeat 50
-    push text
+    source.push text
 
   # pattern = /// (?<!\\) (?<achr> (?<chr> [ \* ` + p ] ) \k<chr>* ) ///
   # # pattern = /// (?<!\\) (?<achr> ( [ \* ` + p ] ) \2* ) ///
