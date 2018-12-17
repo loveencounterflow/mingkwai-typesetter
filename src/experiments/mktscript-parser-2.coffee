@@ -5,7 +5,7 @@
 ############################################################################################################
 CND                       = require 'cnd'
 rpr                       = CND.rpr
-badge                     = 'HTML-TAGS/TESTS'
+badge                     = 'MKTSCRIPT-PARSER-2'
 log                       = CND.get_logger 'plain',     badge
 info                      = CND.get_logger 'info',      badge
 whisper                   = CND.get_logger 'whisper',   badge
@@ -43,12 +43,19 @@ rprx                      = ( d ) -> "#{d.mark} #{d.type}:: #{jr d.value} #{jr d
   new_system_event
   new_text_event
   new_push_source
+  new_flush_event
   new_warning
   recycling
   select
   select_all
   stamp
   unwrap_recycled } = require './recycle'
+
+#-----------------------------------------------------------------------------------------------------------
+is_empty                  = ( x ) ->
+  return ( x.length is 0 ) if x.length?
+  return ( x.size   is 0 ) if x.size?
+  throw new Error "unable to determine length of a #{CND.type_of x}"
 
 #-----------------------------------------------------------------------------------------------------------
 @active_chr_pattern   = /// ///u
@@ -109,8 +116,10 @@ rprx                      = ( d ) -> "#{d.mark} #{d.type}:: #{jr d.value} #{jr d
 
 #-----------------------------------------------------------------------------------------------------------
 @$recycle_untouched_texts = ( S ) -> $ ( d, send ) =>
-    if ( select d, '.', 'text' ) and ( not d.clean ) then send recycling d
-    else send d
+    if ( select d, '.', 'text' ) and ( not d.clean )
+      send recycling d
+    else
+      send d
     return null
 
 #-----------------------------------------------------------------------------------------------------------
@@ -119,6 +128,7 @@ rprx                      = ( d ) -> "#{d.mark} #{d.type}:: #{jr d.value} #{jr d
       lnr     = d.$?.lnr  ? '?'
       text    = if d.$?.text? then ( rpr d.$.text ) else '?'
       message = "unhandled active characters #{rpr d.value} on line #{lnr} in #{text}"
+      send new_text_event d.left, { clean: true, $: d } unless is_empty d.left
       send new_warning 'µ99823', message, d, $: d
     else
       send d
@@ -130,15 +140,126 @@ rprx                      = ( d ) -> "#{d.mark} #{d.type}:: #{jr d.value} #{jr d
 #-----------------------------------------------------------------------------------------------------------
 provide_achrs_transforms = ->
 
+  #-----------------------------------------------------------------------------------------------------------
+  ### TAINT add `li` ###
+  @$em_and_strong_1 = ( S ) ->
+    #.........................................................................................................
+    return $ ( d, send ) =>
+      #.......................................................................................................
+      is_achr = select d, '.', 'achr-split'
+      #.......................................................................................................
+      if is_achr and ( d.value in [ '*', '**', '***', ] )
+        send new_text_event d.left, { clean: true, $: d } unless is_empty d.left
+        switch d.value
+          when '*'    then send new_event ')(', 'em',         null, $: d
+          when '**'   then send new_event ')(', 'strong',     null, $: d
+          when '***'  then send new_event ')(', 'em-strong',  null, $: d
+        send new_text_event d.right, $: d unless is_empty d.right
+      #.......................................................................................................
+      else
+        send d
+      #.......................................................................................................
+      return null
+
+  #-----------------------------------------------------------------------------------------------------------
+  @$em_and_strong_2 = ( S ) ->
+    send        = null
+    buffer      = []
+    open_tags   = []
+    get_top     = -> open_tags[ open_tags.length - 1 ]
+    # within_any  = ( key ) -> key in open_tags
+    within      = ( key ) -> get_top() is key
+    open        = ( key ) -> open_tags.push key
+    # close       = ( key ) -> open_tags[ .. ] = open_tags.filter ( x ) -> x isnt key; return null
+    close       = ( key ) ->
+      if ( key is get_top() )
+        open_tags.pop()
+      else
+        throw "stack error: expected #{rpr key}, but stack is #{rpr open_tags}"
+      return null
+    flush       = -> send buffer.shift() while buffer.length > 0
+    #.........................................................................................................
+    return $ ( d, _send ) =>
+      whisper '29998', ( within 'em-strong' ), ( if d.key is 'flush' then CND.steel else CND.grey ) jr d
+      send = _send
+      if select d, '~', 'flush'
+        if within 'em-strong'
+          close 'em-strong'
+          debug CND.white '99930-1', "close 'em-strong'"
+          send new_start_event  'em',     null, $: d
+          send new_start_event  'strong', null, $: d
+        flush()
+        return send d
+      #.......................................................................................................
+      if select d, ')(', 'em-strong'
+        help '89887-1', d.$
+        help '89887-2', open_tags, within 'em-strong'
+        help '89887-3', buffer
+        if within 'em-strong'
+          debug '77222-1'
+          close 'em-strong'
+          debug CND.white '99930-2', "close 'em-strong'"
+          send new_start_event  'em',     null, $: d
+          send new_start_event  'strong', null, $: d
+          flush()
+          send new_stop_event   'strong', null, $: d
+          send new_stop_event   'em',     null, $: d
+        else if ( within 'em' ) or ( within 'strong' )
+          debug '77222-2'
+          loop
+            if within 'em'
+              close 'em'
+              send new_stop_event 'em', null, $: d
+            else if within 'strong'
+              close 'strong'
+              send new_stop_event 'strong', null, $: d
+            else
+              break
+        else
+          open 'em-strong'
+          debug '77222-3', open_tags, within 'em-strong'
+      #.......................................................................................................
+      else if select d, ')(', 'em'
+        if within 'em-strong'
+          close 'em-strong'
+          debug CND.white '99930-3', "close 'em-strong'"
+          open 'strong'
+          send new_stop_event   'em',     null, $: d
+        else if within 'em'
+          close 'em'
+          send new_stop_event   'em',     null, $: d
+        else
+          open 'em'
+          send new_start_event  'em',     null, $: d
+      #.......................................................................................................
+      else if select d, ')(', 'strong'
+        if within 'em-strong'
+          close 'em-strong'
+          debug CND.white '99930-4', "close 'em-strong'"
+          open 'em'
+          send new_stop_event   'strong', null, $: d
+        else if within 'strong'
+          close 'strong'
+          send new_stop_event   'strong', null, $: d
+        else
+          open 'strong'
+          send new_start_event  'strong', null, $: d
+      #.......................................................................................................
+      else if within 'em-strong'
+        buffer.push d
+        debug '10002', jr buffer
+      #.......................................................................................................
+      else
+        send d
+      #.......................................................................................................
+      # urge '89887-fin', open_tags, within 'em-strong'
+      return null
+
   # #-----------------------------------------------------------------------------------------------------------
-  # ### TAINT add `li` ###
-  # @$em_and_strong = ( S ) ->
-  #   stack   = []
-  #   get_top = -> stack[ stack.length - 1 ] ? null
-  #   within  = ( key ) -> key in stack
+  # @$em = ( S ) ->
+  #   within = false
   #   return $ ( d, send ) =>
-  #     if ( select d, '.', 'achr-split' ) and ( d.value is '***' )
-  #       # if within 'em'
+  #     if ( select d, '.', 'achr-split' ) and ( d.value is '*' )
   #       ### using ad-hoc `clean` attribute to indicate that text does not contain active characters ###
   #       send new_text_event d.left, { clean: true, $: d }
   #       if not within then  send new_start_event 'sf', 'em', $: d
@@ -149,35 +270,20 @@ provide_achrs_transforms = ->
   #       send d
   #     return null
 
-  #-----------------------------------------------------------------------------------------------------------
-  @$em = ( S ) ->
-    within = false
-    return $ ( d, send ) =>
-      if ( select d, '.', 'achr-split' ) and ( d.value is '*' )
-        ### using ad-hoc `clean` attribute to indicate that text does not contain active characters ###
-        send new_text_event d.left, { clean: true, $: d }
-        if not within then  send new_start_event 'sf', 'em', $: d
-        else                send new_stop_event  'sf', 'em', $: d
-        send new_text_event d.right, $: d
-        within = not within
-      else
-        send d
-      return null
-
-  #-----------------------------------------------------------------------------------------------------------
-  @$strong = ( S ) ->
-    within = false
-    return $ ( d, send ) =>
-      if ( select d, '.', 'achr-split' ) and ( d.value is '**' )
-        ### using ad-hoc `clean` attribute to indicate that text does not contain active characters ###
-        send new_text_event d.left, { clean: true, $: d }
-        if not within then  send new_start_event 'sf', 'strong', $: d
-        else                send new_stop_event  'sf', 'strong', $: d
-        send new_text_event d.right, $: d
-        within = not within
-      else
-        send d
-      return null
+  # #-----------------------------------------------------------------------------------------------------------
+  # @$strong = ( S ) ->
+  #   within = false
+  #   return $ ( d, send ) =>
+  #     if ( select d, '.', 'achr-split' ) and ( d.value is '**' )
+  #       ### using ad-hoc `clean` attribute to indicate that text does not contain active characters ###
+  #       send new_text_event d.left, { clean: true, $: d }
+  #       if not within then  send new_start_event 'sf', 'strong', $: d
+  #       else                send new_stop_event  'sf', 'strong', $: d
+  #       send new_text_event d.right, $: d
+  #       within = not within
+  #     else
+  #       send d
+  #     return null
 
   #-----------------------------------------------------------------------------------------------------------
   return @
@@ -202,7 +308,7 @@ ACHRS_TRANSFORMS = provide_achrs_transforms.apply {}
   #.........................................................................................................
   return PS.$watch ( d ) =>
     if delta isnt 0
-      level        += delta
+      level         = Math.max 0, level + delta
       delta         = 0
       indentation   = ( '  '.repeat level ) + '  '
     #.......................................................................................................
@@ -243,7 +349,7 @@ ACHRS_TRANSFORMS = provide_achrs_transforms.apply {}
     if CND.isa_text d
       lnr  += +1
       d     = new_text_event d, $: { lnr, text: d, }
-    else if ( select '.', 'text' ) and d.$?.lnr?
+    else if ( select d, '.', 'text' ) and d.$?.lnr?
       lnr   = d.$.lnr
     #.......................................................................................................
     send d
@@ -251,7 +357,7 @@ ACHRS_TRANSFORMS = provide_achrs_transforms.apply {}
   #---------------------------------------------------------------------------------------------------------
   @get_transformer = =>
     pipeline    = []
-    pipeline.push PS.$watch ( d ) => whisper '12091', jr d
+    # pipeline.push PS.$watch ( d ) => whisper '12091', jr d
     pipeline.push @$_as_text_event()
     #.......................................................................................................
     pipeline.push $ ( d, send ) =>
@@ -272,8 +378,10 @@ ACHRS_TRANSFORMS = provide_achrs_transforms.apply {}
     pipeline.push $unwrap_recycled()
     #.......................................................................................................
     pipeline.push @$split_on_first_active_chr         S
-    pipeline.push ACHRS_TRANSFORMS.$em                S
-    pipeline.push ACHRS_TRANSFORMS.$strong            S
+    pipeline.push ACHRS_TRANSFORMS.$em_and_strong_1   S
+    pipeline.push ACHRS_TRANSFORMS.$em_and_strong_2   S
+    # pipeline.push ACHRS_TRANSFORMS.$em                S
+    # pipeline.push ACHRS_TRANSFORMS.$strong            S
     pipeline.push @$recycle_untouched_texts           S
     pipeline.push @$warn_on_unhandled_achrs           S
     #.......................................................................................................
@@ -294,16 +402,17 @@ ACHRS_TRANSFORMS = provide_achrs_transforms.apply {}
 unless module.parent?
   S = {}
   texts = [
-    'a line of text.'
-    'a line of *text*.'
-    'a line of 𣥒text*.'
-    'a **strong** and a *less strong* emphasis.'
+    # 'a line of text.'
+    # 'a line of *text*.'
+    # 'a line of 𣥒text*.'
+    # 'a **strong** and a *less strong* emphasis.'
     'a *normal and a **strong** emphasis*.'
     # 'another *such and **such*** emphasis.'
     # '***em* strong**.'
     # '***strong** em*.'
-    # '***strong-em***.'
+    'triple ***strong-em***.'
     'lone *star'
+    'triple lone ***star'
     ]
   MKTSP2    = @
   source    = new_push_source()
@@ -319,6 +428,7 @@ unless module.parent?
   for text in texts
     whisper '#'.repeat 50
     source.push text
+    source.push new_flush_event()
 
   # pattern = /// (?<!\\) (?<achr> (?<chr> [ \* ` + p ] ) \k<chr>* ) ///
   # # pattern = /// (?<!\\) (?<achr> ( [ \* ` + p ] ) \2* ) ///

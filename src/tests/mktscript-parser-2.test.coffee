@@ -23,6 +23,10 @@ jr                        = JSON.stringify
 join                      = ( x, joiner = '' ) -> x.join joiner
 # XREGEXP                   = require 'xregexp'
 MKTSP2                    = require '../experiments/mktscript-parser-2'
+RCY                       = require '../experiments/recycle'
+select                    = RCY.select
+PS                        = require 'pipestreams'
+{ $, $async, }            = PS
 
 
 
@@ -38,29 +42,102 @@ MKTSP2                    = require '../experiments/mktscript-parser-2'
   test @, 'timeout': 30000
 
 #-----------------------------------------------------------------------------------------------------------
+@_parse = ( text, handler ) ->
+  S         = {}
+  collector = null
+  source    = RCY.new_push_source()
+  pipeline  = []
+  pipeline.push source
+  # pipeline.push PS.$watch ( d ) => whisper '33301', jr d unless select d, '~', 'flush'
+  pipeline.push MKTSP2.$parse_special_forms S
+  # pipeline.push PS.$watch ( d ) => urge jr d
+  # pipeline.push MKTSP2.$show_events         S
+  pipeline.push PS.$watch ( d ) ->
+    collector ?= []
+    if RCY.select d, '~', 'flush'
+      handler null, collector
+      collector = null
+    else
+      collector.push d
+    return null
+  pipeline.push PS.$drain()
+  PS.pull pipeline...
+  source.push text
+  source.push RCY.new_system_event 'flush'
+  return null
+
+#-----------------------------------------------------------------------------------------------------------
+_reduce = ( d ) ->
+  R = {}
+  R[ key ] = value for key, value of d when key not in [ 'sigil', 'key', 'value', '$', ]
+  return if ( Object.keys R ).length > 0 then jr R else ''
+
+#-----------------------------------------------------------------------------------------------------------
+@_as_mktscript = ( events ) ->
+  R = []
+  #.........................................................................................................
+  for d in events
+    #.......................................................................................................
+    if ( select d, '.', 'text' )
+      R.push d.value
+    #.......................................................................................................
+    else if ( select d, '~', 'warning' )
+      R.push "<warning ref=#{rpr d.ref}>#{d.message}</warning>"
+    #.......................................................................................................
+    else if ( select d, '~', null )
+      R.push "<~#{d.key}/>"
+    #.......................................................................................................
+    else if ( select d, '.', null )
+      R.push "<#{d.key}/>"
+    # #.......................................................................................................
+    # else if ( select d, '(', 'sf' )
+    #   R.push "<#{d.key} value=#{d.value}>"
+    # #.......................................................................................................
+    # else if ( select d, ')', 'sf' )
+    #   R.push "<#{d.key} value=#{d.value}>"
+    #.......................................................................................................
+    else if ( select d, '(', null )
+      ### TAINT add attributes ###
+      R.push "<#{d.key}>"
+    #.......................................................................................................
+    else if ( select d, ')', null )
+      ### TAINT add attributes ###
+      R.push "</#{d.key}>"
+    #.......................................................................................................
+    else
+      throw new Error "illegal event #{rpr d}"
+  #.........................................................................................................
+  return R.join ''
+
+#-----------------------------------------------------------------------------------------------------------
 @[ "htmlish-tag-parser" ] = ( T, done ) ->
   S = {}
   probes_and_matchers = [
-    'a line of text.'
-    'a line of *text*.'
-    'a line of 𣥒text*.'
-    'a **strong** and a *less strong* emphasis.'
-    'a *normal and a **strong** emphasis*.'
-    # 'another *such and **such*** emphasis.'
-    # '***em* strong**.'
-    # '***strong** em*.'
-    # '***strong-em***.'
-    # 'lone *star'
+    ["a line of text.","a line of text."]
+    ["a line of *text*.","a line of <em>text</em>."]
+    ["a line of 𣥒text*.","a line of <warning ref='µ99823'>unhandled active characters '𣥒' on line 1 in 'a line of 𣥒text*.'</warning>"]
+    ["a **strong** and a *less strong* emphasis.","a <strong>strong</strong> and a <em>less strong</em> emphasis."]
+    ["a *normal and a **strong** emphasis*.","a <em>normal and a <strong>strong</strong> emphasis</em>."]
+    ["another *such and **such*** emphasis.","another <em>such and <strong>such</strong></em> emphasis."]
+    ["lone *star","lone <em>star"]
+    ["**lone *star*","<strong>lone <em>star</em>"]
+    ["**lone *star**","<strong>lone <em>star</strong>"]
+    ["*","<em>"]
+    ["**","<strong>"]
+    ["***","<em><strong>"]
+    ["**double *star","<strong>double <em>star"]
+    ["***em* strong**.","<strong><em>em</em> strong</strong>."]
+    ["***strong** em*.","<em><strong>strong</strong> em</em>."]
+    ["***em-strong***.","<em><strong>em-strong</strong></em>."]
     ]
   #.........................................................................................................
   for [ probe, matcher, ], idx in probes_and_matchers
-    parser = MKTSP2.new_parser S, ( error, d ) ->
+    @_parse probe, ( error, result ) =>
       throw error if error?
-      whisper '#'.repeat 50
-      whisper '90283', jr d
-    parser.parse probe
+      result = @_as_mktscript result
+      echo ( if ( CND.equals result, matcher ) then CND.gold else CND.red ) jr [ probe, result, ]
+      # T.eq result, matcher
     # urge '36633', ( jr { name, attributes, } )
-    # T.eq result, matcher
   #.........................................................................................................
   done()
 
@@ -79,7 +156,7 @@ unless module.parent?
   @_prune()
   @_main()
 
-
+  # @_parse 'helo'
 
 
 

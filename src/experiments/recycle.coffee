@@ -112,7 +112,7 @@ $         := pod                    # system-level attributes, to be copied from
   switch arity = arguments.length
     when 3 then return @select_all d, prefix, sigils ### d, sigils, keys ###
     when 4 then return @select_all d, prefix, sigils, keys
-    else throw new Error "expected 3 to 4 arguments, got arity"
+    else throw new Error "expected 3 to 4 arguments, got #{arity}"
 
 # #-----------------------------------------------------------------------------------------------------------
 # @select_system = ( d, prefix, keys ) ->
@@ -191,6 +191,7 @@ $         := pod                    # system-level attributes, to be copied from
 @new_stop_event     = ( key, value, other...  ) -> @new_event ')', key, value, other...
 @new_system_event   = ( key, value, other...  ) -> @new_event '~', key, value, other...
 @new_end_event      =                           -> @new_system_event 'end'
+@new_flush_event    =                           -> @new_system_event 'flush'
 @new_text_event     = (      value, other...  ) -> @new_single_event 'text',    value, other...
 @recycling          = ( d )                     -> @new_system_event 'recycle', d
 
