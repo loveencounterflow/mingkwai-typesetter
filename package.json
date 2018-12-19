@@ -63,7 +63,7 @@
     "ncr": "^0.2.12",
     "parse5": "^5.1.0",
     "pipedreams": "^3.0.9",
-    "pipestreams": "^0.4.1",
+    "pipestreams": "^0.5.0",
     "rehype-stringify": "^4.0.0",
     "remark-grid-tables": "^1.2.0",
     "remark-html": "^8.0.0",

@@ -196,16 +196,16 @@ provide_achrs_transforms = ->
         help '89887-2', open_tags, within 'em-strong'
         help '89887-3', buffer
         if within 'em-strong'
-          debug '77222-1'
+          # debug '77222-1'
           close 'em-strong'
-          debug CND.white '99930-2', "close 'em-strong'"
+          # debug CND.white '99930-2', "close 'em-strong'"
           send new_start_event  'em',     null, $: d
           send new_start_event  'strong', null, $: d
           flush()
           send new_stop_event   'strong', null, $: d
           send new_stop_event   'em',     null, $: d
         else if ( within 'em' ) or ( within 'strong' )
-          debug '77222-2'
+          # debug '77222-2'
           loop
             if within 'em'
               close 'em'
@@ -217,12 +217,12 @@ provide_achrs_transforms = ->
               break
         else
           open 'em-strong'
-          debug '77222-3', open_tags, within 'em-strong'
+          # debug '77222-3', open_tags, within 'em-strong'
       #.......................................................................................................
       else if select d, ')(', 'em'
         if within 'em-strong'
           close 'em-strong'
-          debug CND.white '99930-3', "close 'em-strong'"
+          # debug CND.white '99930-3', "close 'em-strong'"
           open 'strong'
           send new_stop_event   'em',     null, $: d
         else if within 'em'
@@ -235,7 +235,7 @@ provide_achrs_transforms = ->
       else if select d, ')(', 'strong'
         if within 'em-strong'
           close 'em-strong'
-          debug CND.white '99930-4', "close 'em-strong'"
+          # debug CND.white '99930-4', "close 'em-strong'"
           open 'em'
           send new_stop_event   'strong', null, $: d
         else if within 'strong'
@@ -247,7 +247,7 @@ provide_achrs_transforms = ->
       #.......................................................................................................
       else if within 'em-strong'
         buffer.push d
-        debug '10002', jr buffer
+        # debug '10002', jr buffer
       #.......................................................................................................
       else
         send d
@@ -340,7 +340,6 @@ ACHRS_TRANSFORMS = provide_achrs_transforms.apply {}
   #---------------------------------------------------------------------------------------------------------
   lnr                 = 0
   mktsp2_push_source  = null
-  gsend               = null
 
   #---------------------------------------------------------------------------------------------------------
   @$_as_text_event = ( d ) -> $ ( d, send ) =>
@@ -356,13 +355,15 @@ ACHRS_TRANSFORMS = provide_achrs_transforms.apply {}
 
   #---------------------------------------------------------------------------------------------------------
   @get_transformer = =>
-    pipeline    = []
+    mktsp2_push_source  = null
+    pipeline            = []
     # pipeline.push PS.$watch ( d ) => whisper '12091', jr d
     pipeline.push @$_as_text_event()
     #.......................................................................................................
-    pipeline.push $ ( d, send ) =>
-      gsend               = send
+    pipeline.push $async ( d, send, done ) =>
+    # pipeline.push $ ( d, send ) =>
       mktsp2_push_source ?= @get_mktsp2_push_source()
+      mktsp2_push_source.push new_system_event 'send-and-done', { send, done, }
       mktsp2_push_source.push d
       return null
     #.......................................................................................................
@@ -388,7 +389,15 @@ ACHRS_TRANSFORMS = provide_achrs_transforms.apply {}
     pipeline.push PS.$watch ( d ) => if ( select d, '~', 'end' ) then source.end()
     pipeline.push $recycle source.push
     #.......................................................................................................
-    pipeline.push PS.$watch ( d ) -> gsend d
+    pipeline.push do =>
+      senders = null
+      PS.$watch ( d ) ->
+        if select d, '~', 'send-and-done'
+          debug '29922', d
+          senders = d
+        else
+          senders.send d
+          senders.done()
     pipeline.push PS.$drain()
     PS.pull pipeline...
     #.......................................................................................................

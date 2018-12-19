@@ -8,7 +8,7 @@ FS                        = require 'fs'
 #...........................................................................................................
 CND                       = require 'cnd'
 rpr                       = CND.rpr
-badge                     = 'SCRATCH/CIRCULAR-PIPELINES'
+badge                     = 'MKTS/EXPERIMENTS/RECYCLE'
 log                       = CND.get_logger 'plain',     badge
 info                      = CND.get_logger 'info',      badge
 whisper                   = CND.get_logger 'whisper',   badge
@@ -76,10 +76,17 @@ $         := pod                    # system-level attributes, to be copied from
 #===========================================================================================================
 # RECYCLING
 #-----------------------------------------------------------------------------------------------------------
-@$unwrap_recycled = -> return $ ( d, send ) => send @unwrap_recycled d
-@unwrap_recycled = ( d ) ->
-  ### Given an event, return its value if its a `~recycle` event; otherwise, return the event itself. ###
-  return if ( @is_recycling d ) then d.value else d
+@$unwrap_recycled = ->
+  ### If the event is a `~recycle` event, send its associated `~sync` event, if any, then its value;
+  otherwise, send the event itself. ###
+  buffer = []
+  return $async ( d, send, done ) =>
+    if @is_recycling d
+      if @is_sync d.value
+    return send d
+    # send @new_system_event 'sync', null, { sync: 'xxx', }
+    send d.value
+    return null
 
 #-----------------------------------------------------------------------------------------------------------
 @$recycle = ( push ) ->
@@ -88,8 +95,24 @@ $         := pod                    # system-level attributes, to be copied from
   this function). Normally, this will be the `push` method of a push source, but
   it could be any function that accepts a single event as argument. ###
   return $ ( d, send ) =>
-    if ( @is_recycling d ) then push d else send d
+    if      ( @is_sync      d ) then push @recycling d
+    else if ( @is_recycling d ) then push d
+    else send d
     return null
+
+#-----------------------------------------------------------------------------------------------------------
+@recycling = ( d, sync = null ) ->
+  @new_system_event 'recycle', d, if sync? then { sync, } else null
+
+#-----------------------------------------------------------------------------------------------------------
+@is_recycling = ( d ) ->
+  ### Return whether event is a recycling wrapper event. ###
+  return ( d.sigil is '~' ) and ( d.key is 'recycle' )
+
+#-----------------------------------------------------------------------------------------------------------
+@is_sync = ( d ) ->
+  ### Return whether event is a recycling wrapper event. ###
+  return ( d.sigil is '~' ) and ( d.key is 'sync' )
 
 #-----------------------------------------------------------------------------------------------------------
 @new_push_source = ->
@@ -105,9 +128,9 @@ $         := pod                    # system-level attributes, to be copied from
 #
 #-----------------------------------------------------------------------------------------------------------
 @select = ( d, prefix, sigils, keys ) ->
-  ### Reject all stamped and recycle events: ###
+  ### Reject all stamped events: ###
   return false if @is_stamped   d
-  return false if @is_recycling d
+  # return false if @is_recycling d
   ### TAINT avoid to test twice for arity ###
   switch arity = arguments.length
     when 3 then return @select_all d, prefix, sigils ### d, sigils, keys ###
@@ -160,11 +183,6 @@ $         := pod                    # system-level attributes, to be copied from
   return d.sigil is '~'
 
 #-----------------------------------------------------------------------------------------------------------
-@is_recycling = ( d ) ->
-  ### Return whether event is a recycling wrapper event. ###
-  return ( d.sigil is '~' ) and ( d.key is 'recycle' )
-
-#-----------------------------------------------------------------------------------------------------------
 @is_stamped = ( d ) ->
   ### Return whether event is stamped (i.e. already processed). ###
   return d.stamped ? false
@@ -193,7 +211,6 @@ $         := pod                    # system-level attributes, to be copied from
 @new_end_event      =                           -> @new_system_event 'end'
 @new_flush_event    =                           -> @new_system_event 'flush'
 @new_text_event     = (      value, other...  ) -> @new_single_event 'text',    value, other...
-@recycling          = ( d )                     -> @new_system_event 'recycle', d
 
 #-----------------------------------------------------------------------------------------------------------
 @new_warning = ( ref, message, d, other...  ) ->
