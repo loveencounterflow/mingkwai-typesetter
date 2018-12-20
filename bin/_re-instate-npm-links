@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -euo pipefail
+home="$(realpath "$(realpath "${BASH_SOURCE[0]}" | xargs dirname)"/..)"
+cd "$home"
+
+npm link ~/io/sqy
+npm link ~/io/intergrid
+npm link ../pipestreams
+npm link ~/io/cnd
