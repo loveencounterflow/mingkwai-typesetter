@@ -37,7 +37,7 @@
     "async": "^2.6.1",
     "changeset": "^0.1.0",
     "chinesegen": "^0.3.3",
-    "cnd": "^4.3.1",
+    "cnd": "^4.4.0",
     "coffeenode-chr": "^1.0.4",
     "coffeenode-suspend": "^0.1.11",
     "coffeescript": "^2.3.2",
