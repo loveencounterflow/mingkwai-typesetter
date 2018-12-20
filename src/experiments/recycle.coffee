@@ -27,11 +27,15 @@ echo                      = CND.echo.bind CND
 # $async                    = D.remit_async.bind D
 PS                        = require 'pipestreams'
 { $, $async, }            = PS
-_new_push_source          = require 'pull-pushable'
-assign                    = Object.assign
-jr                        = JSON.stringify
-copy                      = ( P... ) -> assign {}, P...
 rprx                      = ( d ) -> "#{d.sigil} #{d.key}:: #{jr d.value ? null} #{jr d.stamped ? false}"
+_new_push_source          = require 'pull-pushable'
+#...........................................................................................................
+{ is_empty
+  copy
+  assign
+  jr }                    = CND
+
+
 
 ###
 
@@ -79,13 +83,53 @@ $         := pod                    # system-level attributes, to be copied from
 @$unwrap_recycled = ->
   ### If the event is a `~recycle` event, send its associated `~sync` event, if any, then its value;
   otherwise, send the event itself. ###
-  buffer = []
-  return $async ( d, send, done ) =>
-    if @is_recycling d
-      if @is_sync d.value
-    return send d
-    # send @new_system_event 'sync', null, { sync: 'xxx', }
-    send d.value
+  q1        = [] ### priority queue for recycled events       ###
+  q2        = [] ### secondary queue for newly arrived events ###
+  waiting   = false
+  # sent_sync = false
+  my_sync   = @new_sync_event()
+  return $ ( d, send ) =>
+    # urge '77833-1', "#{d.sigil}#{d.key}:#{jr d.value ? null}"
+    #.......................................................................................................
+    ### If event is this circle's sync, send next event from q2, followed by my sync, and set state to
+    waiting (for the sync to recycle back to here). If there's nothing left in the q2, that means we are
+    done for the time being, and can stop waiting. ###
+    if d is my_sync
+      waiting = false
+      # debug '77833-2', jr { waiting, q1, q2, }
+      unless is_empty q1
+        ### send next recycled event from the priority queue: ###
+        waiting = true
+        send q1.pop()
+        # debug '77833-3', jr { waiting, q1, q2, }
+        send my_sync
+      else unless is_empty q2
+        ### TAINT must wrap other circles' syncs so they don't get picked up by this circle's transforms ###
+        waiting = true
+        send q2.pop()
+        # debug '77833-4', jr { waiting, q1, q2, }
+        send my_sync
+    #.......................................................................................................
+    ### If event is recycling, put it into the priority queue to send it right after sync has recycled: ###
+    else if @is_recycling d
+      if waiting
+        q1.unshift d.value
+        # debug '77833-5', jr { waiting, q1, q2, }
+      else
+        send d.value
+        # debug '77833-6', jr { waiting, q1, q2, }
+      # send d.value
+    #.......................................................................................................
+    ### If we're in waiting state, q2 the event: ###
+    else if waiting
+      q2.unshift d
+      # debug '77833-7', jr { waiting, q1, q2, }
+    #.......................................................................................................
+    else
+      waiting = true
+      # debug '77833-8', jr { waiting, q1, q2, }
+      send d
+      send my_sync
     return null
 
 #-----------------------------------------------------------------------------------------------------------
@@ -95,7 +139,7 @@ $         := pod                    # system-level attributes, to be copied from
   this function). Normally, this will be the `push` method of a push source, but
   it could be any function that accepts a single event as argument. ###
   return $ ( d, send ) =>
-    if      ( @is_sync      d ) then push @recycling d
+    if      ( @is_sync      d ) then push d
     else if ( @is_recycling d ) then push d
     else send d
     return null
@@ -108,6 +152,11 @@ $         := pod                    # system-level attributes, to be copied from
 @is_recycling = ( d ) ->
   ### Return whether event is a recycling wrapper event. ###
   return ( d.sigil is '~' ) and ( d.key is 'recycle' )
+
+#-----------------------------------------------------------------------------------------------------------
+@is_recycling_sync = ( d ) ->
+  ### Return whether event is a sync event that accompanies a recycling event. ###
+  return ( d.sigil is '~' ) and ( d.key is 'sync' ) and ( d.value > 0 )
 
 #-----------------------------------------------------------------------------------------------------------
 @is_sync = ( d ) ->
@@ -123,13 +172,36 @@ $         := pod                    # system-level attributes, to be copied from
   R.end   = R.end.bind R
   return R
 
+# #-----------------------------------------------------------------------------------------------------------
+# @new_sync_helpers = ->
+#   ###
+#   ###
+#   buffer = []
+#   #.........................................................................................................
+#   hold = ( d ) =>
+#     return false unless @is_sync d
+#     buffer.push d
+#     return true
+#   #.........................................................................................................
+#   recycle = =>
+#     throw new Error "µ49984 sync buffer empty" if is_empty buffer
+#     R       = buffer.shift()
+#     R.value = ( R.value ? 0 ) + 1
+#     return R
+#   #.........................................................................................................
+#   release = =>
+#     throw new Error "µ49984 sync buffer empty" if is_empty buffer
+#     return buffer.shift()
+#   #.........................................................................................................
+#   return { hold, release, recycle, buffer, }
+
 
 #===========================================================================================================
 #
 #-----------------------------------------------------------------------------------------------------------
 @select = ( d, prefix, sigils, keys ) ->
   ### Reject all stamped events: ###
-  return false if @is_stamped   d
+  return false if @is_stamped d
   # return false if @is_recycling d
   ### TAINT avoid to test twice for arity ###
   switch arity = arguments.length
@@ -204,11 +276,12 @@ $         := pod                    # system-level attributes, to be copied from
   return R
 
 #-----------------------------------------------------------------------------------------------------------
-@new_single_event   = ( key, value, other...  ) -> @new_event '.', key, value, other...
-@new_start_event    = ( key, value, other...  ) -> @new_event '(', key, value, other...
-@new_stop_event     = ( key, value, other...  ) -> @new_event ')', key, value, other...
+@new_single_event   = ( key, value, other...  ) -> @new_event '!', key, value, other...
+@new_open_event     = ( key, value, other...  ) -> @new_event '<', key, value, other...
+@new_close_event    = ( key, value, other...  ) -> @new_event '>', key, value, other...
 @new_system_event   = ( key, value, other...  ) -> @new_event '~', key, value, other...
 @new_end_event      =                           -> @new_system_event 'end'
+@new_sync_event     =                           -> @new_system_event 'sync'
 @new_flush_event    =                           -> @new_system_event 'flush'
 @new_text_event     = (      value, other...  ) -> @new_single_event 'text',    value, other...
 

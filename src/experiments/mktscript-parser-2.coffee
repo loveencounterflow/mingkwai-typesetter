@@ -21,8 +21,6 @@ eq                        = CND.equals
 jr                        = JSON.stringify
 #...........................................................................................................
 join                      = ( x, joiner = '' ) -> x.join joiner
-assign                    = Object.assign
-# XREGEXP                   = require 'xregexp'
 PS                        = require 'pipestreams'
 { $, $async, }            = PS
 assign                    = Object.assign
