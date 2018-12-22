@@ -417,7 +417,7 @@ module.exports = options =
       # { texname: 'mktsFontfileLmromantenbolditalic',          home: '', filename: 'lmroman10-bolditalic.otf',       }
       # { texname: 'mktsFontfileLmromantenbold',                home: '', filename: 'lmroman10-bold.otf',             }
       { texname: 'mktsFontfileLmromantenitalic',              home: '', filename: 'lmroman10-italic.otf',           }
-      # { texname: 'mktsFontfileLmromantenregular',             home: '', filename: 'lmroman10-regular.otf',          }
+      { texname: 'mktsFontfileLmromantenregular',             home: '', filename: 'lmroman10-regular.otf',          }
       # { texname: 'mktsFontfileLmromantwelvebold',             home: '', filename: 'lmroman12-bold.otf',             }
       # { texname: 'mktsFontfileLmromantwelveitalic',           home: '', filename: 'lmroman12-italic.otf',           }
       # { texname: 'mktsFontfileLmromantwelveregular',          home: '', filename: 'lmroman12-regular.otf',          }
