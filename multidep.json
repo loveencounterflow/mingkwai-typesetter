@@ -1,0 +1,6 @@
+{
+  "path": "multidep_modules",
+  "versions": {
+    "pipedreams": ["7.0.1"]
+  }
+}

@@ -30,8 +30,7 @@ later                     = suspend.immediately
 test                      = require 'guy-test'
 #...........................................................................................................
 D                         = require 'pipedreams'
-$                         = D.remit.bind D
-$async                    = D.remit_async.bind D
+{ $, $async, }            = D
 #...........................................................................................................
 ### TAINT to be replaced by global `MK.TS`: ###
 MKTS                      = require './main'
