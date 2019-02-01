@@ -24,7 +24,9 @@ suspend                   = require 'coffeenode-suspend'
 step                      = suspend.step
 #...........................................................................................................
 D                         = require 'pipedreams'
-{ $, $async, }            = D
+$                         = D.remit.bind D
+$async                    = D.remit_async.bind D
+# { $, $async, }            = D
 #...........................................................................................................
 MKTS                      = require './main'
 MD_READER                 = require './md-reader'

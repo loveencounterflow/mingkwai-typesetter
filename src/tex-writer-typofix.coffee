@@ -42,8 +42,8 @@ help                      = CND.get_logger 'help',      badge
 urge                      = CND.get_logger 'urge',      badge
 echo                      = CND.echo.bind CND
 #...........................................................................................................
-D                         = require '../../../pipedreams'
-{ $ }                     = D
+PIPEDREAMS3B7B            = require 'pipedreams-3b7b'
+{ $ }                     = PIPEDREAMS3B7B
 MD_READER                 = require './md-reader'
 hide                      = MD_READER.hide.bind        MD_READER
 copy                      = MD_READER.copy.bind        MD_READER
@@ -315,12 +315,12 @@ jr                        = JSON.stringify
     @$consolidate_tex_events    S
     # $ ( event ) -> help '65099', rpr event[ 1 ] if select event, 'tex'
     ]
-  return D.new_stream { pipeline, }
+  return PIPEDREAMS3B7B.new_stream { pipeline, }
 
 #-----------------------------------------------------------------------------------------------------------
 @fix_typography_for_tex = ( S, text, handler ) ->
   collector = []
-  input     = D.new_stream()
+  input     = PIPEDREAMS3B7B.new_stream()
   input
     .pipe @$fix_typography_for_tex S
     .pipe $ ( event ) =>
@@ -330,8 +330,8 @@ jr                        = JSON.stringify
     .pipe $ 'finish', =>
       handler null, collector.join ''
   #.........................................................................................................
-  D.send  input, [ '.', 'text', text, {}, ]
-  D.end   input
+  PIPEDREAMS3B7B.send  input, [ '.', 'text', text, {}, ]
+  PIPEDREAMS3B7B.end   input
   #.........................................................................................................
   return null
 

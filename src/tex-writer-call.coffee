@@ -18,7 +18,7 @@ help                      = CND.get_logger 'help',      badge
 urge                      = CND.get_logger 'urge',      badge
 echo                      = CND.echo.bind CND
 #...........................................................................................................
-PIPEDREAMS                = require '../../../pipedreams'
+PIPEDREAMS3B7B            = require 'pipedreams-3b7b'
 PS                        = require 'pipestreams'
 { $, $async, }            = PS
 #...........................................................................................................
@@ -66,7 +66,7 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
   ### TAINT implicitly assumes return value will be lines of text ###
   ### parses MKTS commands of the form `<<!call_await module_path, method_name, parameters... >>` ###
   # self = @
-  return PIPEDREAMS.$async ( event, send, end ) =>
+  return PIPEDREAMS3B7B.$async ( event, send, end ) =>
     #.......................................................................................................
     if event? and select event, '!', 'call_await'
       { module, method_name, P, meta, locator, crumbs, }  = @_resolve_arguments S, event
@@ -103,7 +103,7 @@ is_stamped                = MD_READER.is_stamped.bind  MD_READER
 @$call_stream = ( S ) =>
   ### TAINT implicitly assumes return value will be lines of text ###
   # self = @
-  return PIPEDREAMS.$async ( event, outer_send, outer_end ) =>
+  return PIPEDREAMS3B7B.$async ( event, outer_send, outer_end ) =>
     #.......................................................................................................
     unless ( event? and select event, '!', 'call_stream' )
       outer_send event

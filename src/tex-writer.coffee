@@ -25,7 +25,7 @@ D                         = require 'pipedreams'
 $                         = D.remit.bind D
 $async                    = D.remit_async.bind D
 # { $, $async, }            = D
-PIPEDREAMS                = require '../../../pipedreams'
+PIPEDREAMS3B7B            = require 'pipedreams-3b7b'
 #...........................................................................................................
 ASYNC                     = require 'async'
 #...........................................................................................................
@@ -2344,7 +2344,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.$mktscript = ( S ) =>
   tex_from_md = promisify @tex_from_md.bind @
-  return PIPEDREAMS.$async ( event, send, end ) =>
+  return PIPEDREAMS3B7B.$async ( event, send, end ) =>
     #.......................................................................................................
     if event?
       if select event, '.', 'mktscript'

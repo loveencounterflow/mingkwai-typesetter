@@ -21,7 +21,7 @@ echo                      = CND.echo.bind CND
 # suspend                   = require 'coffeenode-suspend'
 # step                      = suspend.step
 #...........................................................................................................
-PIPEDREAMS                = require '../../../../pipedreams'
+PIPEDREAMS3B7B            = require 'pipedreams-3b7b'
 # PIPEDREAMS                = require 'pipedreams'
 # PIPEDREAMS.$              = PIPEDREAMS.remit.bind PIPEDREAMS
 # PIPEDREAMS.$async         = PIPEDREAMS.remit_async.bind PIPEDREAMS
@@ -141,7 +141,7 @@ new_sync_sub_sender = ( transforms ) ->
   #.........................................................................................................
   validate_and_cast = OVAL.new_validator schema
   #.........................................................................................................
-  return PIPEDREAMS.$async ( event, send, done ) =>
+  return PIPEDREAMS3B7B.$async ( event, send, done ) =>
     if select event, '.', 'plugin'
       [ type, name, Q, meta, ]  = event
       Q                         = validate_and_cast Q
