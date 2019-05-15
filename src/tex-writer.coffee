@@ -2502,7 +2502,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
   readstream
     ### new plugins: ###
     # .pipe D.$observe ( event ) -> info '23994-1', ( CND.grey '--> ' + ( jr event )[ .. 100 ] )
-    # .pipe @MKTX.PLUGINS.$plugins                            S
+    .pipe @MKTX.PLUGINS.$plugins                            S
     .pipe @MKTX.$insert                                     S
     .pipe @MKTX.SH.$spawn                                   S
     .pipe @MKTX.CALL.$call_await                            S
