@@ -116,5 +116,87 @@ a word and press the Italic or the Bold button on the toolbar, the program will 
 
  -->
 
+## Related Projects
+
+### SILE
+
+Written in Lua, C++
+
+* https://www.youtube.com/watch?v=t_kk20vlamo
+* https://www.youtube.com/watch?v=5BIP_N9qQm4
+* http://sile-typesetter.org
+* http://sile-typesetter.org/images/sile-0.9.4.pdf
+* https://news.ycombinator.com/item?id=13680910
+* https://news.ycombinator.com/item?id=8392653
+
+### Pollen
+
+Written in Rackett
+
+* https://docs.racket-lang.org/pollen/
+
+Written with Pollen:
+
+* Butterick’s Practical Typography, 2nd Edition: https://practicaltypography.com/
+
+### Patoline
+
+* http://patoline.org/patobook.pdf
+
+### Glenn Vanderburg - Cló: The Algorithms of TeX in Clojure
+
+* https://www.youtube.com/watch?v=824yVKUPFjU
+
+> "Cló is a typesetting library for Clojure, implementing the core typesetting algorithms of TeX as
+> composable functions. Although much work remains before Cló is useful in practice, even at an early stage
+> it is instructive, providing interestingly complex examples of real-world procedural algorithms translated
+> into functional form. Thinking about typesetting as a functional problem has yielded valuable clarity and
+> insight about these algorithms, even though in their original form they were written with instruction and
+> teaching in mind (the notion of "literate programming" was invented for TeX). In this talk, I'll share
+> some of the background, code, results, and lessons learned so far."
+
+### Rinohtype, The Python document processor
+
+> "Rinohtype is a document processor in the style of LaTeX. It renders structured documents to PDF based on
+> a document template and a style sheet. An important goal of rinohtype is to be more user-friendly than
+> LaTeX. This includes providing clear error messages and making it very easy to adjust the document style."
+
+* https://github.com/brechtm/rinohtype
+* http://www.mos6581.org/rinohtype
+
+(v0.3.0 released on Dec 7, 2016)
+
+### CSS Paged Media Module Level 3
+
+> W3C Working Draft, 18 October 2018
+>
+> "This CSS module specifies how pages are generated and laid out to hold fragmented content in a paged
+> presentation. It adds functionality for controlling page margins, page size and orientation, and headers
+> and footers, and extends generated content to enable page numbering and running headers / footers. The
+> process of paginating a flow into such generated pages is covered in [CSS3-BREAK].
+>
+> CSS is a language for describing the rendering of structured documents (such as HTML and XML) on screen,
+> on paper, etc."
+
+* https://www.w3.org/TR/css-page-3/
+
+### Prince
+
+
+> "Prince is an ideal printing component for server-based software, such as web applications that need to
+> print reports or invoices. Using Prince, it is quick and easy to create PDF files that can be printed,
+> archived, or downloaded.
+>
+> Prince can also be used by authors and publishers to typeset and print documents written in HTML, XHTML,
+> or one of the many XML-based document formats. Prince is capable of formatting academic papers, journals,
+> magazines, and books."
+
+* https://www.princexml.com/
+* http://css4.pub/2015/icelandic/dictionary.pdf
+
+## Status of Japanese (and CJK) typesetting with TeX in Debian
+
+* https://www.youtube.com/watch?v=i0UO44PNMWM
+
 
 
