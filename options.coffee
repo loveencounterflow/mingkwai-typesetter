@@ -41,6 +41,7 @@ module.exports = options =
   ### type may be `tex` or `text` ###
   entities:
     'nl':           { type: 'tex',  value: '\\\\', }                  ### new line ###
+    'amp':          { type: 'tex',  value: '\\&', }                   ### ampersand ###
     'np':           { type: 'tex',  value: '\\null\\newpage{}', }     ### new page ###
     # 'par':          { type: 'tex',  value: '\n\n', }                  ### paragraph break ###
     'thinspace':    { type: 'tex',  value: '\\thinspace{}', }         ### thin space ###
@@ -51,12 +52,23 @@ module.exports = options =
     'geta':         { type: 'text', value: '〓', }                    ### Geta mark ###
     'MKTS':         { type: 'tex',  value: 'MKTS', }                  ### MKTS logo ###
     'TeX':          { type: 'tex',  value: '\\TeX{}', }               ### TeX logo ###
+    'LaTeX':        { type: 'tex',  value: '\\LaTeX{}', }             ### LaTeX logo ###
+    'identical':    { type: 'tex',  value: '{\\mktsFontfileHanamina{}≡}', }
+    'similar':      { type: 'tex',  value: '{\\mktsFontfileHanamina{}≋}', }
     'nbsp':         { type: 'tex',  value: '~', }                     ### Non-Breaking Space ###
     '~':            { type: 'tex',  value: '~', }                     ### Non-Breaking Space ###
+    '~~':           { type: 'tex',  value: '~~', }                    ### 2 Non-Breaking Spaces ###
+    '~~~~':         { type: 'tex',  value: '~~~~', }                  ### 4 Non-Breaking Spaces ###
+    '~~~~~~':       { type: 'tex',  value: '~~~~~~', }                ### 6 Non-Breaking Spaces ###
     'lt':           { type: 'tex',  value: '<', }                     ### Left Pointy Bracket ###
     'gt':           { type: 'tex',  value: '>', }                     ### Right Pointy Bracket ###
-    'ulsymbolr':    { type: 'tex', value: "\\makebox[\\mktsLineheight][r]{{\\mktstfPushRaise{-0.2}{-0.1}\\mktsFontfileHanamina{}◼}}", }
-    'ulsymbol':     { type: 'tex', value: "\\makebox[\\mktsLineheight][l]{{\\mktstfPushRaise{-0.2}{-0.1}\\mktsFontfileHanamina{}◼}}", }
+    'bt':           { type: 'tex',  value: '`', }                     ### backtick ###
+    '3lines':       { type: 'tex',  value: '{\\mktsFontfileHanamina{}☰}', }      ### 3 lines ###
+    'deleatur':     { type: 'tex',  value: '{\\mktsFontfileSunexta{}₰}', }        ### Deleatur/Denarius ###
+    'ulsymbolr':    { type: 'tex', value: "\\makebox[\\mktsLineheight][r]{{\\mktsFontfileLmromantenregular{}•}}", }
+    'ulsymbol':     { type: 'tex', value: "\\makebox[\\mktsLineheight][l]{{\\mktsFontfileLmromantenregular{}•}}", }
+    # 'ulsymbolr':    { type: 'tex', value: "\\makebox[\\mktsLineheight][r]{{\\mktstfPushRaise{-0.2}{-0.1}\\mktsFontfileHanamina{}◼}}", }
+    # 'ulsymbol':     { type: 'tex', value: "\\makebox[\\mktsLineheight][l]{{\\mktstfPushRaise{-0.2}{-0.1}\\mktsFontfileHanamina{}◼}}", }
 
     ### TAINT these are special-interest symbols that should be defined locally ###
     # 'Quasi':        { type: 'text', value: '𝕼', }
@@ -576,6 +588,7 @@ module.exports = options =
       '╪':      cmd: 'mktsStyleBoxDrawing'
       ### Arrows ###
       '⤾':      cmd: 'mktsFontfileDejavuserif'
+      '₰':      cmd: 'mktsFontfileSunexta'
 
       ### Ideographic description characters: ###
       '↻':         cmd: 'cnxJzr',      glyph: ''       # raise: -0.2,
