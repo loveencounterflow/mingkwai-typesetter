@@ -12,15 +12,6 @@
 
 
 
-- [MingKwai Type Setter 明快排字機](#mingkwai-type-setter-明快排字機)
-- [Syntax](#syntax)
-	- [Level 1—MarkDown Syntax](#level-1—markdown-syntax)
-	- [Level 2—HTML Tags](#level-2—html-tags)
-	- [Level 3—MKTS Tags (MingKwai TypeScript)](#level-3—mkts-tags-mingkwai-typescript)
-
-> **Table of Contents**  *generated with [DocToc](http://doctoc.herokuapp.com/)*
-
-
 # MingKwai Type Setter 明快排字機
 
 A streaming MarkDown -> LaTeX (i.e. XeLaTeX, LuaLaTeX) -> PDF typesetter,
