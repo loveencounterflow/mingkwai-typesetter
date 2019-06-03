@@ -38,7 +38,7 @@
     "changeset": "^0.1.0",
     "chinesegen": "^0.3.3",
     "cnd": "^4.4.0",
-    "coffeenode-chr": "^1.0.4",
+    "coffeenode-chr": "^1.1.0",
     "coffeenode-suspend": "^0.1.11",
     "coffeescript": "^2.3.2",
     "commander": "^2.19.0",
@@ -71,7 +71,7 @@
     "remark-parse": "^5.0.0",
     "remark-rehype": "^3.0.1",
     "semver": "^5.6.0",
-    "sqy": "^0.2.0",
+    "sqy": "^0.4.1",
     "unified": "^7.0.2",
     "xregexp": "^4.2.0"
   },
