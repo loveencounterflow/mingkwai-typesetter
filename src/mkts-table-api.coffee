@@ -124,6 +124,15 @@ UNITS                     = require './mkts-table-units'
   return null
 
 #-----------------------------------------------------------------------------------------------------------
+@set_background = ( me, selectors, style ) ->
+  for fieldnr from @walk_fieldnrs_from_selectors me, selectors
+    me.fieldbackgrounds[ fieldnr ] = style
+    # target = me.fieldbackgrounds[ fieldnr ]?= {}
+    # target.background = style
+  #.........................................................................................................
+  return null
+
+#-----------------------------------------------------------------------------------------------------------
 @set_alignment = ( me, selectors, direction, alignment ) ->
   switch direction
     #.......................................................................................................

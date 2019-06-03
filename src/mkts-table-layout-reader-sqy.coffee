@@ -79,6 +79,7 @@ misfit                    = Symbol 'misfit'
       when 'create_field'       then _ = MKTS_TABLE_API.create_field      R, t.id, t.selector
       when 'set_sel_border'     then _ = MKTS_TABLE_API.set_borders       R, t.selectors, t.edges, t.style
       when 'set_sel_alignment'  then _ = MKTS_TABLE_API.set_alignment     R, t.selectors, t.direction, t.align
+      when 'set_sel_background' then _ = MKTS_TABLE_API.set_background    R, t.selectors, t.style
       when 'set_field_gaps'     then _ = MKTS_TABLE_API.set_field_gaps    R, t.selectors, t.edges, t.feature, t.value
     #.......................................................................................................
     continue unless _ is misfit

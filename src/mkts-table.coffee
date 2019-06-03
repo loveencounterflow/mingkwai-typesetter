@@ -76,6 +76,7 @@ contains = ( text, pattern ) ->
     table_dimensions:     {} ### width and height of enclosing `\minipage`, in terms of (unitwidth,unitheight) ###
     cell_dimensions:      {}
     fieldborders:         {} ### field borders, as TikZ styles by edges ###
+    fieldbackgrounds:     {} ### field backgrounds, as TikZ styles ###
     gaps:
       background:           {} ### gaps between grid and background, by fieldnrs ###
       margins:              {} ### field margins, by fieldnrs ###
@@ -402,6 +403,7 @@ contains = ( text, pattern ) ->
   #.........................................................................................................
   ### Borders, content ###
   yield from @_walk_field_borders_events                me
+  yield from @_walk_field_background_events             me
   yield from @_walk_pod_events                          me, selectors_and_content_events
   #.........................................................................................................
   ### Debugging ### ### TAINT should make ordering configurable so we can under- or overprint debugging ###
@@ -497,6 +499,28 @@ contains = ( text, pattern ) ->
         else
           throw new Error "(MKTS/TABLE µ4801) unknown border instruction mode #{rpr i.mode} in table #{me.name}/#{fieldnr} #{jr i}"
   #.........................................................................................................
+  yield return
+
+#-----------------------------------------------------------------------------------------------------------
+@_walk_field_background_events = ( me ) ->
+  for fieldnr, style of me.fieldbackgrounds
+    # See pgfmanual.pdf p720 62 Patterns
+    # 'pod_dimensions',       'dots',
+    # 'border_dimensions',    'crosshatch dots',
+    # 'field_dimensions',     'fivepointed stars',
+    # 'gaps.background',      'sixpointed stars',
+    # 'horizontal lines',     'bricks',
+    # 'vertical lines',       'checkerboard',
+    # 'north east lines',     'crosshatch dots gray',
+    # 'north west lines',     'crosshatch dots light steel blue',
+    # 'grid',                 'crosshatch',
+    d       = me.field_dimensions[  fieldnr ]
+    gaps    = me.gaps.background[   fieldnr ]
+    left    = d.left    + ( gaps?.left    ? 0 )
+    right   = d.right   - ( gaps?.right   ? 0 )
+    top     = d.top     + ( gaps?.top     ? 0 )
+    bottom  = d.bottom  - ( gaps?.bottom  ? 0 )
+    yield texr 'ð10110', "\\draw[#{style}] (#{left},#{top}) rectangle (#{right},#{bottom});% #{fieldnr} background "
   yield return
 
 #-----------------------------------------------------------------------------------------------------------
