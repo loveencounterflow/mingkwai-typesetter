@@ -2342,26 +2342,43 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       send event
 
 #-----------------------------------------------------------------------------------------------------------
+# xxx_mktscript_nr = 0
 @MKTX.$mktscript = ( S ) =>
-  tex_from_md = promisify @tex_from_md.bind @
-  return PIPEDREAMS3B7B.$async ( event, send, end ) =>
+  tex_from_md           = promisify @tex_from_md.bind @
+  collector             = []
+  processing_mktscript  = false
+  end                   = null
+  return PIPEDREAMS3B7B.$async ( event, send, end_ ) =>
+    end = end_ if end_?
+    return end() if end?
     #.......................................................................................................
-    if event?
-      if select event, '.', 'mktscript'
-        [ type, name, mktscript, meta, ]   = event
-        send stamp event
-        # help '38873-2', '@MKTX.$mktscript START >>>>>>>>>>>>>>>>>>>>>>>>>>', jr event
-        tex_source  = await tex_from_md mktscript, { bare: yes, }
-        # warn '38873-3', '@MKTX.$mktscript STOP <<<<<<<<<<<<<<<<<<<<<<<<<<', jr tex_source[ .. 100 ]
-        send [ 'tex', tex_source, ]
+    ### Buffer all events: ###
+    collector.unshift event
+    #.......................................................................................................
+    ### Postpone all further processing if we're busy:: ###
+    return null if processing_mktscript
+    #.......................................................................................................
+    while collector.length > 0
+      event = collector.pop()
+      #.....................................................................................................
+      if not event?
         send.done()
+        end() if end?
+        return null
+      #.....................................................................................................
+      if select event, '.', 'mktscript'
+        processing_mktscript = true
+        [ type, name, mktscript, meta, ]   = event
+        tex_source  = await tex_from_md mktscript, { bare: yes, }
+        send [ 'tex', tex_source, ]
+        send stamp event
+        send.done()
+        processing_mktscript = false
+      #.....................................................................................................
       else
         send event
         send.done()
-    else
-      send.done()
     #.......................................................................................................
-    end() if end?
     return null
 
 
