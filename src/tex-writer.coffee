@@ -2533,7 +2533,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     # .pipe MKTSCRIPT_WRITER.$show_mktsmd_events              S
     .pipe MKTSCRIPT_WRITER.$produce_mktscript               S
     .pipe @$document                                        S
-    .pipe D.$observe ( event ) -> info '23994-2', ( CND.grey '--> ' + ( jr event )[ .. 100 ] )
+    # .pipe D.$observe ( event ) -> info '23994-2', ( CND.grey '--> ' + ( jr event )[ .. 100 ] )
     #.......................................................................................................
     ### tags that produce tags ###
     #.......................................................................................................
@@ -2709,6 +2709,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
 #-----------------------------------------------------------------------------------------------------------
 XXX_tex_from_md_nr = 0
 @tex_from_md = ( md_source, settings, handler ) ->
+  # info 'µ09090', 'tex_from_md', rpr md_source
   ### TAINT code duplication ###
   switch arity = arguments.length
     when 2

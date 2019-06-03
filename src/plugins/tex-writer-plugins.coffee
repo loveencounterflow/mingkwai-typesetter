@@ -142,23 +142,24 @@ new_sync_sub_sender = ( transforms ) ->
   validate_and_cast = OVAL.new_validator schema
   #.........................................................................................................
   return PIPEDREAMS3B7B.$async ( event, send, end ) =>
-    if select event, '.', 'plugin'
-      [ type, name, Q, meta, ]  = event
-      Q                         = validate_and_cast Q
-      self.callables.push [ Q.callable, { prefix: Q.prefix, }, ]
-      send stamp event
-      send.done()
-      #.....................................................................................................
-      ### TAINT shouldn't build a new pipeline for each event ###
-      plugins               = ( ( callable S, settings ) for [ callable, settings, ] in self.callables )
-      self.send_to_plugins  = new_sync_sub_sender plugins
-    #.......................................................................................................
-    else if self.callables.length > 0
-      self.send_to_plugins event, ( events ) -> send event for event in events; send.done()
-    #.......................................................................................................
-    else
-      send event
-      send.done()
+    if event?
+      if select event, '.', 'plugin'
+        [ type, name, Q, meta, ]  = event
+        Q                         = validate_and_cast Q
+        self.callables.push [ Q.callable, { prefix: Q.prefix, }, ]
+        send stamp event
+        send.done()
+        #.....................................................................................................
+        ### TAINT shouldn't build a new pipeline for each event ###
+        plugins               = ( ( callable S, settings ) for [ callable, settings, ] in self.callables )
+        self.send_to_plugins  = new_sync_sub_sender plugins
+      #.......................................................................................................
+      else if self.callables.length > 0
+        self.send_to_plugins event, ( events ) -> send event for event in events; send.done()
+      #.......................................................................................................
+      else
+        send event
+        send.done()
     #.......................................................................................................
     end() if end?
     return null
