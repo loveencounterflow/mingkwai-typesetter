@@ -65,6 +65,8 @@ module.exports = options =
     'bt':           { type: 'tex',  value: '`', }                     ### backtick ###
     '3lines':       { type: 'tex',  value: '{\\mktsFontfileHanamina{}☰}', }      ### 3 lines ###
     'deleatur':     { type: 'tex',  value: '{\\mktsFontfileSunexta{}₰}', }        ### Deleatur/Denarius ###
+    # ⪧
+    # Black right-pointing pointer: ►
     'ulsymbolr':    { type: 'tex', value: "\\makebox[\\mktsLineheight][r]{{\\mktsFontfileLmromantenregular{}•}}", }
     'ulsymbol':     { type: 'tex', value: "\\makebox[\\mktsLineheight][l]{{\\mktsFontfileLmromantenregular{}•}}", }
     # 'ulsymbolr':    { type: 'tex', value: "\\makebox[\\mktsLineheight][r]{{\\mktstfPushRaise{-0.2}{-0.1}\\mktsFontfileHanamina{}◼}}", }
