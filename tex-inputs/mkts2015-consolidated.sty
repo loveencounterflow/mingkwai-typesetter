@@ -673,8 +673,11 @@
   {\par\xdef\tpd{\the\prevdepth}\egroup
    \prevdepth=\tpd}
 
-
-
+% ----------------------------------------------------------------------------------------------------------
+% Used to separate suffix strokeclass groups in 3-column layout
+\newcommand{\mktsThreeColOverline}{%
+  \begin{tikzpicture}[ overlay, yshift = 5mm, yscale = -1, line cap = rect ]%
+  \tikzset{x=5.26mm,y=5.26mm};\draw[thin] (0,0.25) -- (11,0.25);\end{tikzpicture}}
 
 
 
