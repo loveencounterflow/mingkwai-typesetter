@@ -289,6 +289,15 @@ after = ( names..., method ) ->
     send [ 'tex', "\\null\\newpage{}", ]
 
 #-----------------------------------------------------------------------------------------------------------
+@MKTX.COMMAND.$new_odd_even_page = ( S ) =>
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    if      select event, [ '!', '.', ], 'new-odd-page'   then  send [ 'tex', "\\newoddpage{}",  ]
+    else if select event, [ '!', '.', ], 'new-even-page'  then  send [ 'tex', "\\newevenpage{}", ]
+    else                                                        send event
+    return null
+
+#-----------------------------------------------------------------------------------------------------------
 @MKTX.COMMAND.$blank_page = ( S ) =>
   #.........................................................................................................
   return $ ( event, send ) =>
@@ -2562,6 +2571,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @MKTX.MIXED.$footnote                             S
     .pipe @MKTX.MIXED.$footnote.$remove_extra_paragraphs    S
     .pipe @MKTX.COMMAND.$new_page                           S
+    .pipe @MKTX.COMMAND.$new_odd_even_page                  S
     .pipe @MKTX.COMMAND.$blank_page                         S
     .pipe @MKTX.COMMAND.$comment                            S
     .pipe @MKTX.MIXED.$table                                S
