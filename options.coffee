@@ -41,6 +41,7 @@ module.exports = options =
   ### type may be `tex` or `text` ###
   entities:
     'nl':           { type: 'tex',  value: '\\\\', }                  ### new line ###
+    'obr':          { type: 'tex',  value: '\\allowbreak{}', }        ### optional linebreak ###
     'amp':          { type: 'tex',  value: '\\&', }                   ### ampersand ###
     'np':           { type: 'tex',  value: '\\null\\newpage{}', }     ### new page ###
     # 'par':          { type: 'tex',  value: '\n\n', }                  ### paragraph break ###
