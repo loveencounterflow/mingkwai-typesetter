@@ -112,6 +112,16 @@ module.exports = options =
     'rC':           { type: 'tex', value: '\\mktsWPillbox{rC}', }
     'rA':           { type: 'tex', value: '\\mktsWPillbox{rA}', }
     'rT':           { type: 'tex', value: '\\mktsWPillbox{rT}', }
+    #.......................................................................................................
+    'readC':        { type: 'tex',  value: '\\mktsCWPillbox{C}', }
+    'readK':        { type: 'tex',  value: '\\mktsCWPillbox{K}', }
+    'readJ':        { type: 'tex',  value: '\\mktsCWPillbox{J}', }
+    'readY':        { type: 'tex',  value: '\\mktsCWPillbox{Y}', }
+    'readE':        { type: 'tex',  value: '\\mktsCWPillbox{E}', }
+    # 'readC':        { type: 'tex',  value: '{\\mktstfRaise{-0.1}\\mktsFontfileSourcehansansbold{}Ⓒ}', }
+    # 'readK':        { type: 'tex',  value: '{\\mktstfRaise{-0.1}\\mktsFontfileSourcehansansbold{}Ⓚ}', }
+    # 'readJ':        { type: 'tex',  value: '{\\mktstfRaise{-0.1}\\mktsFontfileSourcehansansbold{}Ⓙ}', }
+    # 'readY':        { type: 'tex',  value: '{\\mktstfRaise{-0.1}\\mktsFontfileSourcehansansbold{}Ⓨ}', }
 
   #.........................................................................................................
   newcommands:
