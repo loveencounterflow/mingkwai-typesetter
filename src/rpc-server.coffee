@@ -77,7 +77,7 @@ counts                    = {}
   #.........................................................................................................
   server.listen O.rpc.port, O.rpc.host, =>
     { address: host, port, family, } = server.address()
-    help "#{O.app.name} RPC server listening on #{family} #{host}:#{port}"
+    help 'µ97288', "#{O.app.name} RPC server listening on #{family} #{host}:#{port}"
   #.........................................................................................................
   return handler null, server if handler?
   return null
