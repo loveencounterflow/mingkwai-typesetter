@@ -259,11 +259,23 @@
   \AfterGroup{\cjkgGlue}%
   }%
 
-\newcommand{\readingKa}{%
+\newcommand{\mktsReadJa}{%
   \cjkgGlue%
   \renewcommand{\cjkgGlue}{\hskip -0.3ex plus 0.3ex minus 0.3ex}%
   % \mktsStyleFontKanaCurrent%
-  \mktsStyleFontCjkDefault%
+  % \mktsStyleFontCjkDefault%
+  \mktsFontfileIpagp%
+  \mktsScaleFontRelative{0.8}%
+  \AfterGroup{\cjkgGlue}%
+  }%
+
+\newcommand{\mktsReadKo}{%
+  \cjkgGlue%
+  \renewcommand{\cjkgGlue}{\hskip -0.3ex plus 0.3ex minus 0.3ex}%
+  % \mktsStyleFontKanaCurrent%
+  % \mktsStyleFontCjkDefault%
+  \mktsFontfileSourcehansansregular%
+  \mktsScaleFontRelative{0.8}%
   \AfterGroup{\cjkgGlue}%
   }%
 
