@@ -342,7 +342,26 @@
 % ### TAINT should only be loaded when needed ###
 % \usepackage{struktex}
 \usepackage{tikz}
-\usetikzlibrary{ shapes.geometric, arrows, calc, backgrounds, decorations, patterns }
+% shapes.arrows, 784
+% shapes.callouts, 796
+% shapes.gates.ee, 621
+% shapes.gates.ee.IEC, 622
+% shapes.gates.logic, 611
+% shapes.gates.logic.IEC, 614
+% shapes.gates.logic.US, 613
+% shapes.geometric, 761
+% shapes.misc, 800
+% shapes.multipart, 790
+% shapes.symbols, 776
+\usetikzlibrary{
+  positioning,
+  shapes.geometric,
+  shapes.misc,
+  arrows,
+  calc,
+  backgrounds,
+  decorations,
+  patterns }
 \usepackage{mkts-tikz-patterns}%
 % \tikzstyle{startstop} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm,text centered, draw=black, fill=red!30]
 % \tikzstyle{io} = [trapezium, trapezium left angle=70, trapezium right angle=110, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=blue!30]
