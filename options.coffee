@@ -218,6 +218,7 @@ module.exports = options =
       { texname: 'mktsFontfileIpam',                           filename: 'ipam.ttf',                            }
       { texname: 'mktsFontfileIpamp',                          filename: 'ipamp.ttf',                           }
       { texname: 'mktsFontfileJizurathreeb',                   filename: 'jizura3b.ttf',                        }
+      { texname: 'mktsFontfileJizurafourbmp',                  filename: 'jizura4bmp.ttf',                      }
       { texname: 'mktsFontfileKai',                            filename: 'Kai.ttf',                             }
       { texname: 'mktsFontfileMonoidbold',                     filename: 'Monoid-Bold.ttf',                     }
       { texname: 'mktsFontfileMonoiditalic',                   filename: 'Monoid-Italic.ttf',                   }
