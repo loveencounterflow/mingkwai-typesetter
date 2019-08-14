@@ -1,6 +1,6 @@
 {
   "name": "mingkwai-typesetter",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "A streaming MarkDown -> (Xe, Lua)LaTeX -> PDF typesetter",
   "main": "lib/main.js",
   "scripts": {
