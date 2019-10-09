@@ -80,6 +80,21 @@ jr                        = JSON.stringify
     return send event
 
 #-----------------------------------------------------------------------------------------------------------
+@escape_tex_specials = ( text ) ->
+  R = text
+  R = R.replace /\\/g,  '\\textbackslash{}'
+  R = R.replace /\{/g,  '\\{'
+  R = R.replace /\}/g,  '\\}'
+  R = R.replace /\$/g,  '\\$'
+  R = R.replace /#/g,   '\\#'
+  R = R.replace /%/g,   '\\%'
+  R = R.replace /_/g,   '\\_'
+  R = R.replace /\^/g,  '\\textasciicircum{}'
+  R = R.replace /~/g,   '\\textasciitilde{}'
+  R = R.replace /&/g,   '\\&'
+  return R
+
+#-----------------------------------------------------------------------------------------------------------
 @$format_cjk = ( S ) ->
   ### NOTE same pattern as in `$consolidate_tex_events` ###
   ### TAINT should preserve raw text from before replacements ###
