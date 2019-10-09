@@ -768,6 +768,33 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     return null
 
 #-----------------------------------------------------------------------------------------------------------
+@MKTX.INLINE.$tabulation = ( S ) =>
+  within_settabs = false
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    if select event, '.', 'tab'
+      [ type, name, Q, meta, ] = event
+      send stamp event
+      send [ 'tex', "\\tab{}", ]
+    #.......................................................................................................
+    else if select event, '(', 'set-tabs'
+      within_settabs = true
+      send stamp event
+    #.......................................................................................................
+    else if select event, ')', 'set-tabs'
+      within_settabs = false
+      send stamp event
+    #.......................................................................................................
+    else if within_settabs and ( select event, '.', 'text' )
+      [ type, name, text, meta, ] = event
+      send [ 'tex', "\\TabPositions{#{text}}", ]
+    #.......................................................................................................
+    else
+      send event
+    #.......................................................................................................
+    return null
+
+#-----------------------------------------------------------------------------------------------------------
 @MKTX.INLINE.$tiny = ( S ) =>
   #.........................................................................................................
   return $ ( event, send ) =>
@@ -777,6 +804,145 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       send [ 'tex', "{\\mktsTiny{}", ]
     #.......................................................................................................
     else if select event, ')', 'tiny'
+      send stamp event
+      send [ 'tex', "}", ]
+    #.......................................................................................................
+    else
+      send event
+    #.......................................................................................................
+    return null
+
+#-----------------------------------------------------------------------------------------------------------
+@MKTX.INLINE.$red = ( S ) =>
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    if select event, '(', 'red'
+      [ type, name, Q, meta, ] = event
+      send stamp event
+      send [ 'tex', "{\\mktsRed{}", ]
+    #.......................................................................................................
+    else if select event, ')', 'red'
+      send stamp event
+      send [ 'tex', "}", ]
+    #.......................................................................................................
+    else
+      send event
+    #.......................................................................................................
+    return null
+
+#-----------------------------------------------------------------------------------------------------------
+@MKTX.INLINE.$readings = ( S ) =>
+  ### TAINT can't nest reading tags ###
+  within = false
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    if select event, '(', 'read-ja'
+      within = true
+      send stamp event
+      send [ 'tex', "{\\thinspace\\cjk\\mktsReadJa{}", ]
+    #.......................................................................................................
+    else if select event, ')', 'read-ja'
+      within = false
+      send stamp event
+      send [ 'tex', "\\thinspace}", ]
+    #.......................................................................................................
+    else if within and select event, '.', 'text'
+      [ type, name, text, meta, ] = event
+      # send stamp event
+      text = @MKTX.TYPOFIX.escape_tex_specials text
+      send [ 'tex', text, ]
+    #.......................................................................................................
+    else
+      send event
+    #.......................................................................................................
+    return null
+
+#-----------------------------------------------------------------------------------------------------------
+@MKTX.INLINE.$font = ( S ) =>
+  within = false
+  schema =
+    postprocess: ( Q ) ->
+      switch Q.cjk ? null
+        when '', 'true'     then Q.cjk = true
+        when null, 'false'  then Q.cjk = false
+        else throw new Error "^mkts@4453^ unexpected value for attribute `cjk` in #{jr Q}"
+      return Q
+    properties:
+      name:    { type: 'string', }
+      cjk:     { type: [ 'string', 'boolean', ] }
+    #.......................................................................................................
+    additionalProperties: false
+  validate_and_cast = OVAL.new_validator schema
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    if select event, '(', 'font'
+      within = true
+      [ type, name, Q, meta, ]  = event
+      Q                         = validate_and_cast Q
+      send stamp event
+      ### TAIT code duplication with $fontnick() ###
+      unless ( Q.name.length > 0 ) or ( Q.name.toLowerCase() is Q.name )
+        throw new Error "^3398^ not a valid fontnick: #{rpr Q.name}"
+      fontnick  = Q.name[ 0 ].toUpperCase() + Q.name[ 1 .. ]
+      cjk       = if Q.cjk then '\\cjk' else ''
+      send [ 'tex', "{#{cjk}\\mktsFontfile#{fontnick}{}", ]
+    #.......................................................................................................
+    else if select event, ')', 'font'
+      within = false
+      send [ 'tex', "}", ]
+    #.......................................................................................................
+    else if within and select event, '.', 'text'
+      [ type, name, text, meta, ] = event
+      text = @MKTX.TYPOFIX.escape_tex_specials text
+      send [ 'tex', text, ]
+    #.......................................................................................................
+    else
+      send event
+    #.......................................................................................................
+    return null
+
+#-----------------------------------------------------------------------------------------------------------
+@MKTX.INLINE.$fontnick = ( S ) =>
+  within    = false
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    if select event, '(', 'fontnick'
+      within = true
+      send stamp event
+      # send [ 'tex', "{\\mktsFontfile#{fontnick}{}", ]
+    #.......................................................................................................
+    else if select event, ')', 'fontnick'
+      within = false
+      # send [ 'tex', "}", ]
+    #.......................................................................................................
+    else if within and select event, '.', 'text'
+      [ type, name, fontnick, meta, ] = event
+      ### TAIT code duplication with $font() ###
+      unless ( fontnick.length > 0 ) or ( fontnick.toLowerCase() is fontnick )
+        throw new Error "^3392^ not a valid fontnick: #{rpr fontnick}"
+      unless ( fontname = @options.filenames_by_fontnicks[ fontnick ] )?
+        throw new Error "^mkts@3822^ unknown fontnick #{rpr fontnick}"
+      fontnick  = fontnick[ 0 ].toUpperCase() + fontnick[ 1 .. ]
+      text      = @MKTX.TYPOFIX.escape_tex_specials fontname
+      send [ 'tex', '{\\mktsStyleCode{}', ]
+      send [ 'tex', text, ]
+      send [ 'tex', '}', ]
+    #.......................................................................................................
+    else
+      send event
+    #.......................................................................................................
+    return null
+
+#-----------------------------------------------------------------------------------------------------------
+@MKTX.INLINE.$strike = ( S ) =>
+  #.........................................................................................................
+  return $ ( event, send ) =>
+    if select event, '(', 'strike'
+      [ type, name, Q, meta, ] = event
+      send stamp event
+      send [ 'tex', "{\\mktsStrike{}", ]
+    #.......................................................................................................
+    else if select event, ')', 'strike'
       send stamp event
       send [ 'tex', "}", ]
     #.......................................................................................................
@@ -1384,44 +1550,18 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     else
       send event
 
-# #-----------------------------------------------------------------------------------------------------------
-# # before '@MKTX.REGION.$single_column', '@MKTX.REGION.$multi_column', \
-# @MKTX.BLOCK.$hr = ( S ) =>
-#   plain_rule  = [ 'tex', "\\mktsRulePlain{}", ]
-#   swell_rule  = [ 'tex', "\\mktsRuleSwell{}", ]
-#   #.........................................................................................................
-#   return $ ( event, send ) =>
-#     #.......................................................................................................
-#     if select event, '.', 'hr'
-#       [ type, name, text, meta, ] = event
-#       switch chr = text[ 0 ]
-#         when '.'
-#           send stamp copy event
-#           send plain_rule
-#         when '-'
-#           send stamp copy event
-#           send swell_rule
-#         when '°'
-#           send stamp hide copy event
-#           send [ '!', 'slash', [], ( copy meta ), ]
-#         when ':'
-#           send stamp hide copy event
-#           send [ '!', 'slash', [ plain_rule, ], ( copy meta ), ]
-#         when '='
-#           send stamp hide copy event
-#           send [ '!', 'slash', [ swell_rule, ], ( copy meta ), ]
-#         when '^'
-#           send stamp hide copy event
-#           send [ '(', 'slash', [], ( copy meta ), ]
-#         when 'v'
-#           send stamp hide copy event
-#           send [ ')', 'slash', [], ( copy meta ), ]
-#         else
-#           send stamp hide copy event
-#           send [ '.', 'warning', "horizontal rule with unknown markup #{rpr text}", ( copy meta ), ]
-#     #.......................................................................................................
-#     else
-#       send event
+#-----------------------------------------------------------------------------------------------------------
+# # before '$hr2', '@MKTX.REGION.$single_column', '@MKTX.REGION.$multi_column', \
+@MKTX.BLOCK.$hr = ( S ) => $ ( event, send ) =>
+  #.........................................................................................................
+  if select event, '.', 'hr'
+    [ type, name, text, meta, ] = event
+    parameters = { slash: false, above: 0, one: '-', two: null, three: null, below: 0, }
+    send [ '.', 'hr2', parameters, ( copy meta ), ]
+    send stamp event
+  #.........................................................................................................
+  else
+    send event
 
 #-----------------------------------------------------------------------------------------------------------
 # before '@MKTX.REGION.$single_column', '@MKTX.REGION.$multi_column', \
@@ -1833,7 +1973,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
       current_fn_cache.push event
       send remark 'caching', "event within footnote", event
     #.......................................................................................................
-    else if select event, '!', 'footnotes'
+    else if ( select event, '.', 'footnotes' ) or ( select event, '!', 'footnotes' ) ### NOTE second for legacy syntax ###
       send stamp event
       insert_footnotes send, meta
     #.......................................................................................................
@@ -2560,9 +2700,15 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @MKTS_TABLE.$main                                 S
     .pipe @MKTX.INLINE.$here_x                              S
     .pipe @MKTX.INLINE.$box                                 S
+    .pipe @MKTX.INLINE.$tabulation                          S
     .pipe @MKTX.INLINE.$hfill                               S
     .pipe @MKTX.INLINE.$tiny                                S
+    .pipe @MKTX.INLINE.$red                                 S
+    .pipe @MKTX.INLINE.$strike                              S
     .pipe @MKTX.INLINE.$scale                               S
+    .pipe @MKTX.INLINE.$readings                            S
+    .pipe @MKTX.INLINE.$font                                S
+    .pipe @MKTX.INLINE.$fontnick                            S
     .pipe @MKTX.BLOCK.$stretch                              S
     .pipe @MKTX.BLOCK.$vspace                               S
     .pipe @MKTX.BLOCK.$landscape                            S
@@ -2586,7 +2732,7 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
     .pipe @MKTX.COMMAND.$comment                            S
     .pipe @MKTX.MIXED.$table                                S
     .pipe @MKTX.COMMAND.$echo                               S
-    # .pipe @MKTX.BLOCK.$hr                                   S
+    .pipe @MKTX.BLOCK.$hr                                   S
     .pipe @MKTX.BLOCK.$hr2                                  S
     .pipe @MKTX.BLOCK.$nl                                   S
     .pipe @MKTX.REGION.$code                                S
