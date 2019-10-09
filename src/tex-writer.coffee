@@ -78,11 +78,20 @@ after = ( names..., method ) ->
 #===========================================================================================================
 #
 #-----------------------------------------------------------------------------------------------------------
+@_compile_options_fontnicks = ->
+  @options.filenames_by_fontnicks = d = {}
+  # debug '^8876^', @options.fonts.files
+  for { texname, filename, } in @options.fonts.files
+    fontnick      = ( texname.replace /^mktsFontfile/, '' ).toLowerCase()
+    d[ fontnick ] = filename
+  return null
+
+#-----------------------------------------------------------------------------------------------------------
 @compile_options = ->
   ### TAINT this method should go to OPTIONS ###
   options_locator                   = require.resolve njs_path.resolve __dirname, options_route
   # debug '©zNzKn', options_locator
-  options_home                      = njs_path.dirname options_locator
+  options_home                      = njs_path.dirname njs_path.join njs_path.dirname options_locator
   @options                          = OPTIONS.from_locator options_locator
   @options[ 'home' ]                = options_home
   @options[ 'locator' ]             = options_locator
@@ -116,6 +125,7 @@ after = ( names..., method ) ->
   if @options.layout.lineheight?
     @options.layout.lineheight = UNITS.new_quantity @options.layout.lineheight
   #.........................................................................................................
+  @_compile_options_fontnicks()
   CACHE.update @options
 #...........................................................................................................
 @compile_options()
