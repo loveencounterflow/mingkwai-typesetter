@@ -139,6 +139,24 @@ module.exports = options =
     # main: '\\mktsFontSunexta'
     home: '\\mktsPathsFontsHome'
     files: [
+
+      ### Conservative CJK Fonts: ###
+
+      { texname: 'mktsFontfileKangxizidianti',                 filename: 'TypeLand-com-KangXiZiDianTi-ShiYongBan-1.otf', }
+      { texname: 'mktsFontfileWenyuegudianmingchaoti',         filename: 'WenYue-GuDianMingChaoTi-NC-W5-1.otf', }
+      { texname: 'mktsFontfileHssfifteen',                     filename: 'H-SS15.ttf' }
+      { texname: 'mktsFontfileHssboldfifteen',                 filename: 'H-SS-Bold15.ttf' }
+      { texname: 'mktsFontfileRpmingliutw',                    filename: 'R-PMingLiU-TW.ttf' }
+      { texname: 'mktsFontfileImingvarcpsixten',                subfolder: 'I.Ming', filename: 'I.MingVarCP-6.10.ttf', }
+      { texname: 'mktsFontfileImingvarsixten',                  subfolder: 'I.Ming', filename: 'I.MingVar-6.10.ttf',   }
+      { texname: 'mktsFontfileImingsixten',                     subfolder: 'I.Ming', filename: 'I.Ming-6.10.ttf',      }
+      { texname: 'mktsFontfileImingcpsixten',                   subfolder: 'I.Ming', filename: 'I.MingCP-6.10.ttf',    }
+      { texname: 'mktsFontfileHkcstraditionalbmpcanonicalonly', subfolder: 'hkcs',   filename: 'hkcs-traditional-bmp-canonicalonly.otf', }
+
+      ### Unifonts: ###
+      { texname: 'mktsFontfileUnifont',       subfolder: 'unifont', filename: 'unifont-12.1.03.ttf',       }
+      { texname: 'mktsFontfileUnifontcsur',   subfolder: 'unifont', filename: 'unifont_csur-12.1.03.ttf',  }
+      { texname: 'mktsFontfileUnifontupper',  subfolder: 'unifont', filename: 'unifont_upper-12.1.03.ttf', }
       # { texname: 'mktsFontfileJizurathreeb',                   filename: 'jizura3b-from-svg-rewritten-by-fontforge.ttf',                        }
       { texname: 'mktsFontfileBabelstonehan',                  filename: 'BabelStoneHan.ttf',                   }
       { texname: 'mktsFontfileBiaukai',                        filename: 'BiauKai.ttf',                         }
@@ -218,7 +236,7 @@ module.exports = options =
       { texname: 'mktsFontfileIpam',                           filename: 'ipam.ttf',                            }
       { texname: 'mktsFontfileIpamp',                          filename: 'ipamp.ttf',                           }
       { texname: 'mktsFontfileJizurathreeb',                   filename: 'jizura3b.ttf',                        }
-      { texname: 'mktsFontfileJizurafourbmp',                  filename: 'jizura4bmp.ttf',                      }
+      # { texname: 'mktsFontfileJizurafourbmp',                  filename: 'jizura4bmp.ttf',                      }
       { texname: 'mktsFontfileKai',                            filename: 'Kai.ttf',                             }
       { texname: 'mktsFontfileMonoidbold',                     filename: 'Monoid-Bold.ttf',                     }
       { texname: 'mktsFontfileMonoiditalic',                   filename: 'Monoid-Italic.ttf',                   }
@@ -342,6 +360,9 @@ module.exports = options =
       { texname: 'mktsFontfileRobotothin',                      subfolder: 'Roboto',                  filename: 'Roboto-Thin.ttf'                     }
       { texname: 'mktsFontfileRobotothinitalic',                subfolder: 'Roboto',                  filename: 'Roboto-ThinItalic.ttf'               }
       { texname: 'mktsFontfileRobotocondensedbold',             subfolder: 'Roboto_Condensed',        filename: 'RobotoCondensed-Bold.ttf'            }
+
+      { texname: 'mktsFontfileRobotocondensedboldsmallcaps',    otf: 'Letters={SmallCaps}', subfolder: 'Roboto_Condensed',        filename: 'RobotoCondensed-Bold.ttf'            }
+
       { texname: 'mktsFontfileRobotocondensedbolditalic',       subfolder: 'Roboto_Condensed',        filename: 'RobotoCondensed-BoldItalic.ttf'      }
       { texname: 'mktsFontfileRobotocondenseditalic',           subfolder: 'Roboto_Condensed',        filename: 'RobotoCondensed-Italic.ttf'          }
       { texname: 'mktsFontfileRobotocondensedlight',            subfolder: 'Roboto_Condensed',        filename: 'RobotoCondensed-Light.ttf'           }
