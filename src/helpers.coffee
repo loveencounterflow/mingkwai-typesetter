@@ -122,14 +122,21 @@ $async                    = D.remit_async.bind D
     count          += 1
     cp              = ( require 'child_process' ).spawn xelatex_command, parameters
     error_detected  = false
+    abort           = false
     urge "run ##{count}"
     #.......................................................................................................
     cp.stdout
       .pipe D.$split()
       #.....................................................................................................
+      .pipe D.$observe ( line ) =>
+        if ( line.match /! I can't write on file/ )?
+          error_detected  = true
+          abort           = true
+      #.....................................................................................................
       .pipe D.$observe ( line ) => error_detected = true if line is 'No pages of output.'
       .pipe D.$observe ( line ) => alert line if error_detected
       .pipe D.$observe ( line ) => echo ( if error_detected then CND.red else CND.grey ) line
+      .pipe D.$observe ( line ) => process.exit 1 if abort
     #.......................................................................................................
     cp.stderr
       .pipe D.$split()
