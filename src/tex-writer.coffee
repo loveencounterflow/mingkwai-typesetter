@@ -1839,17 +1839,12 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
             when 'right'  then col_styles.push 'r'
             else               col_styles.push 'l'
         col_styles  = '| ' + ( col_styles.join ' | ' ) + ' |'
-        send [ 'tex', "{", ]
-        send [ 'tex', "\\mktsVspace{1}", ] ### TAINT arbitrary length ###
+        send [ 'tex', "{\\setlength\\lineskiplimit{-1mm}\\relax\\mktsVspace{#{row_count/2}}", ] ### TAINT arbitrary length ###
         send [ 'tex', "\\begin{tabular}[pos]{ #{col_styles} }\n", ]
       #.....................................................................................................
       else if select event, ')', 'table'
         send stamp hide copy event
-        send [ 'tex', "\\hline\n", ]
-        send [ 'tex', "\\end{tabular}\n", ]
-        send [ 'tex', "\\mktsVspace{1}", ] ### TAINT arbitrary length ###
-        send [ 'tex', "}", ]
-        send [ 'tex', "\n\n", ]
+        send [ 'tex', "\\hline\\end{tabular}\\mktsVspace{#{row_count/2}}}\n\n", ] ### TAINT arbitrary length ###
         description = null
         row_count   = null
       #.....................................................................................................
@@ -1874,8 +1869,8 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
         buffered_field_separator = [ 'tex', " & ", ]
       #.....................................................................................................
       else if select event, '(', 'thead'
-        send [ 'tex', "\\hline\n", ]
         send stamp hide copy event
+        send [ 'tex', "\\hline\n", ]
       #.....................................................................................................
       else if select event, ')', 'thead'
         send stamp hide copy event
