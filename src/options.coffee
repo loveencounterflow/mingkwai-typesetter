@@ -263,6 +263,7 @@ module.exports = options =
       { texname: 'mktsFontfileSourcehansansregular',           filename: 'SourceHanSans-Regular.ttc',           }
       { texname: 'mktsFontfileSunexta',                        filename: 'sun-exta.ttf',                        }
       { texname: 'mktsFontfileSunextb',                        filename: 'Sun-ExtB.ttf',                        }
+      { texname: 'mktsFontfileːsunːextbːttf',                        filename: 'Sun-ExtB.ttf',                        }
       { texname: 'mktsFontfileSunflowerucjkxb',                filename: 'sunflower-u-cjk-xb.ttf',              }
       { texname: 'mktsFontfileTakaopgothic',                   filename: 'TakaoPGothic.ttf',                    }
       { texname: 'mktsFontfileUbuntub',                        filename: 'Ubuntu-B.ttf',                        }
