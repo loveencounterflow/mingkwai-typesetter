@@ -1793,42 +1793,39 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
 @MKTX.MIXED.$table = ( S ) =>
   track                     = MD_READER.TRACKER.new_tracker '(table)', '(th)'
   remark                    = MD_READER._get_remark()
-  buffered_field_separator  = null
   description               = null
   row_count                 = null
+  col_styles                = null
+  buffer                    = null
   #.........................................................................................................
   return $ ( event, send ) =>
     [ type, name, text, meta, ] = event
+    key                         = type + name
     within_table                = track.within '(table)'
     within_th                   = track.within '(th)'
     track event
     #.......................................................................................................
-    return send event unless within_table or select event, '(', 'table'
+    return send event unless within_table or key is '(table'
     #.......................................................................................................
-    if within_th and select event, '.', 'text'
-      send [ '(', 'strong', null, ( copy meta ), ]
-      send stamp event
-      send [ ')', 'strong', null, ( copy meta ), ]
+    if within_th and key is '.text'
+      buffer.push [ key, [ '(', 'strong', null, ( copy meta ), ], ]
+      buffer.push [ key, event, ]
+      buffer.push [ key, [ ')', 'strong', null, ( copy meta ), ], ]
     #.......................................................................................................
-    else if select event, ')', 'tr'
+    else if key is ')tr'
       row_count                += +1
-      buffered_field_separator  = null
       send stamp hide copy event
       ### thx to http://tex.stackexchange.com/a/159260 ###
       if row_count is description[ 'row_count' ]
-        send [ 'tex', "\\\\\n", ]
-        # send [ 'tex', "\\\\[\\mktsTabularLineheightDeltaLast]\n", ]
+        buffer.push [ key, [ 'tex', "\\\\\n", ], ]
       else
-        send [ 'tex', "\\\\\n", ]
-        # send [ 'tex', "\\\\[\\mktsTabularLineheightDelta]\n", ]
-      # last_zerohline_idx = send [ 'tex', "\\mktsZerohline\n", ]
+        buffer.push [ key, [ 'tex', "\\\\\n", ], ]
     #.......................................................................................................
     else
-      send buffered_field_separator if buffered_field_separator
-      buffered_field_separator = null
       #.....................................................................................................
-      if select event, '(', 'table'
+      if key is '(table'
         send stamp hide copy event
+        buffer      = []
         col_styles  = []
         row_count   = 0
         description = meta[ 'table' ]
@@ -1839,48 +1836,46 @@ after '@MKTX.REGION.$toc', '@MKTX.MIXED.$collect_headings_for_toc', \
             when 'right'  then col_styles.push 'r'
             else               col_styles.push 'l'
         col_styles  = '| ' + ( col_styles.join ' | ' ) + ' |'
-        send [ 'tex', "{\\setlength\\lineskiplimit{-1mm}\\relax\\mktsVspace{#{row_count/2}}", ] ### TAINT arbitrary length ###
-        send [ 'tex', "\\begin{tabular}[pos]{ #{col_styles} }\n", ]
       #.....................................................................................................
-      else if select event, ')', 'table'
+      else if key is ')table'
         send stamp hide copy event
-        send [ 'tex', "\\hline\\end{tabular}\\mktsVspace{#{row_count/2}}}\n\n", ] ### TAINT arbitrary length ###
+        send [ 'tex', "{\\setlength\\lineskiplimit{-1mm}\\relax\\mktsVspace{#{row_count/2}}", ]
+        send [ 'tex', "\\begin{tabular}[pos]{ #{col_styles} }\n", ]
+        #...................................................................................................
+        for [ key2, d, ], idx in buffer ### send buffered ###
+          continue unless d?
+          if key2 in [ ')th', ')td', ]
+            if buffer[ idx + 1 ]?[ 0 ] in [ '(th', '(td', ]
+              send d
+          else
+            send d
+        #...................................................................................................
+        send [ 'tex', "\\hline\\end{tabular}\\mktsVspace{#{row_count/2}}}\n\n", ]
         description = null
         row_count   = null
+        col_styles  = null
+        buffer      = null
       #.....................................................................................................
-      else if select event, '(', 'tbody'
+      else if key in [ '(tbody', ')tbody', '(tr', ]
         send stamp hide copy event
       #.....................................................................................................
-      else if select event, ')', 'tbody'
-        send stamp hide copy event
+      else if key in [ '(td', '(th', ]
+        buffer.push [ key, null, ]
       #.....................................................................................................
-      else if select event, '(', 'td'
+      else if key in [ ')td', ')th', ]
         send stamp hide copy event
+        buffer.push [ key, [ 'tex', " & ", ], ]
       #.....................................................................................................
-      else if select event, ')', 'td'
+      else if key is '(thead'
         send stamp hide copy event
-        buffered_field_separator = [ 'tex', " & ", ]
+        buffer.push [ key, [ 'tex', "\\hline\n", ], ]
       #.....................................................................................................
-      else if select event, '(', 'th'
+      else if key is ')thead'
         send stamp hide copy event
-      #.....................................................................................................
-      else if select event, ')', 'th'
-        send stamp hide copy event
-        buffered_field_separator = [ 'tex', " & ", ]
-      #.....................................................................................................
-      else if select event, '(', 'thead'
-        send stamp hide copy event
-        send [ 'tex', "\\hline\n", ]
-      #.....................................................................................................
-      else if select event, ')', 'thead'
-        send stamp hide copy event
-        send [ 'tex', "\n\\hline\n", ]
-      #.....................................................................................................
-      else if select event, '(', 'tr'
-        send stamp hide copy event
+        buffer.push [ key, [ 'tex', "\n\\hline\n", ], ]
       #.....................................................................................................
       else
-        send event
+        buffer.push [ key, event, ]
 
 #-----------------------------------------------------------------------------------------------------------
 @MKTX.MIXED.$footnote = ( S ) =>
