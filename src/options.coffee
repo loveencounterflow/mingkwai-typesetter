@@ -386,10 +386,6 @@ module.exports = options =
       { texname: 'mktsFontfileSourcesansprosemibold',           subfolder: 'Source_Sans_Pro',         filename: 'SourceSansPro-Semibold.ttf'          }
       { texname: 'mktsFontfileSourcesansprosemibolditalic',     subfolder: 'Source_Sans_Pro',         filename: 'SourceSansPro-SemiboldItalic.ttf'    }
       { texname: 'mktsFontfileStintultracondensedregular',      subfolder: 'Stint_Ultra_Condensed',   filename: 'StintUltraCondensed-Regular.ttf'     }
-      { texname: 'mktsFontfileYanonekaffeesatzbold',            subfolder: 'Yanone_Kaffeesatz',       filename: 'YanoneKaffeesatz-Bold.ttf'           }
-      { texname: 'mktsFontfileYanonekaffeesatzextralight',      subfolder: 'Yanone_Kaffeesatz',       filename: 'YanoneKaffeesatz-ExtraLight.ttf'     }
-      { texname: 'mktsFontfileYanonekaffeesatzlight',           subfolder: 'Yanone_Kaffeesatz',       filename: 'YanoneKaffeesatz-Light.ttf'          }
-      { texname: 'mktsFontfileYanonekaffeesatzregular',         subfolder: 'Yanone_Kaffeesatz',       filename: 'YanoneKaffeesatz-Regular.ttf'        }
       { texname: 'mktsFontfilePermianslabseriftypeface',        subfolder: 'Permian_Slab',            filename: 'PermianSlabSerifTypeface.otf',        }
       { texname: 'mktsFontfilePermianslabseriftypefacebold',    subfolder: 'Permian_Slab',            filename: 'PermianSlabSerifTypeface-Bold.otf',   }
       { texname: 'mktsFontfilePermianslabseriftypefaceitalic',  subfolder: 'Permian_Slab',            filename: 'PermianSlabSerifTypeface-Italic.otf', }
