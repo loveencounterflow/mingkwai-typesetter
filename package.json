@@ -51,7 +51,7 @@
     "linebreak": "^0.3.0",
     "lorem-ipsum": "^1.0.6",
     "lorem-ipsum-japanese": "^1.0.1",
-    "markdown-it": "^5.0.2",
+    "markdown-it": "^12.3.2",
     "markdown-it-container": "^2.0.0",
     "markdown-it-footnote": "^2.0.0",
     "markdown-it-mark": "^2.0.0",
