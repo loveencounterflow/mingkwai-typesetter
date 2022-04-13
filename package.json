@@ -34,7 +34,7 @@
   "homepage": "https://github.com/loveencounterflow/mingkwai-typesetter",
   "dependencies": {
     "ajv": "^6.5.5",
-    "async": "^2.6.1",
+    "async": "^3.2.2",
     "changeset": "^0.1.0",
     "chinesegen": "^0.3.3",
     "cnd": "^4.4.0",
